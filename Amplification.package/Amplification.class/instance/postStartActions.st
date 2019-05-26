@@ -1,3 +1,3 @@
 actions
 postStartActions
-	self newTestClass 
+	self newTestClass rename: (testClass name, 'Amp')

@@ -10,7 +10,7 @@ start
 				method: tcase
 				targets: targetClasses ].
 	iterations
-		timesRepeat: [ self halt.
+		timesRepeat: [ 
 			population do: [ :tcase | self removeAssrtion: tcase ].
 			population := (population
 				collect: [ :tcase | self doMutation: tcase ]) flattened.
