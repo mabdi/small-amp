@@ -10,7 +10,6 @@
 		"targetClasses",
 		"testMethods",
 		"iterations",
-		"popSize",
 		"assertAmplifier"
 	],
 	"name" : "EvolutionaryAmplifer",

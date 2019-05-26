@@ -1,3 +1,3 @@
 actions
 postStartActions
-	self notYetImplemented 
+	self newTestClass 

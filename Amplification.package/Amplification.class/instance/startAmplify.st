@@ -1,3 +1,3 @@
 actions
 startAmplify
-	improvmentAlgorithm start
+	newTestClass = improvmentAlgorithm start
