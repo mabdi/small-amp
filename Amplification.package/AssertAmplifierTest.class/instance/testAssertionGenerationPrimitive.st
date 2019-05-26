@@ -1,0 +1,29 @@
+tests
+testAssertionGenerationPrimitive
+	| aMethod aClass generatedClass observer |
+	aMethod := RBParser
+		parseMethod:
+			'testFoo
+	| tmp1|
+	tmp1 := 1.
+	someVariable := someVariable + tmp1.
+	tmp1 := someVariable - 1.
+	someString := someString, ''111'''.
+	aClass := FakeTestcase.
+	instance insertObservers: aMethod.
+	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass suite run.
+	observer := generatedClass observer.
+	instance insertAsserts: aMethod using: observer memory.
+	self
+		assert: aMethod formattedCode
+		equals:
+			'testFoo
+	| tmp1 |
+	tmp1 := 1.
+	someVariable := someVariable + tmp1.
+	self assert: someVariable asString equals: ''2''.
+	tmp1 := someVariable - 1.
+	self assert: tmp1 asString equals: ''1''.
+	someString := someString , ''111''.
+	self assert: someString asString equals: ''abcd111'''

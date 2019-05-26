@@ -1,0 +1,3 @@
+running
+assertPattern
+	^ '``@actual = ``@expected'

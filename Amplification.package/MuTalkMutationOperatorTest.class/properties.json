@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "TestCase",
+	"category" : "Amplification-Tests",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"testMethods",
+		"instance"
+	],
+	"name" : "MuTalkMutationOperatorTest",
+	"type" : "normal"
+}

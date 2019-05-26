@@ -1,0 +1,18 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Core",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"testClass",
+		"targetClasses",
+		"testMethods",
+		"iterations",
+		"popSize",
+		"assertAmplifier"
+	],
+	"name" : "EvolutionaryAmplifer",
+	"type" : "normal"
+}

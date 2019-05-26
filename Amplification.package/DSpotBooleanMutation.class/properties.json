@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "",
+	"super" : "DSpotASTMutation",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "DSpotBooleanMutation",
+	"type" : "normal"
+}

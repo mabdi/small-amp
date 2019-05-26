@@ -1,0 +1,15 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Core",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"observations",
+		"memory",
+		"serializers"
+	],
+	"name" : "Observer",
+	"type" : "normal"
+}

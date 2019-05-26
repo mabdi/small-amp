@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "",
+	"super" : "AbstractSerializer",
+	"category" : "Amplification-Core",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "ObjectSerializer",
+	"type" : "normal"
+}

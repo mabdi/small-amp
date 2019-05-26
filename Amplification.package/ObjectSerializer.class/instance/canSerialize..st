@@ -1,0 +1,3 @@
+private
+canSerialize: anObject
+	^ true

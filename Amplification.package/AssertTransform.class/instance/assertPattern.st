@@ -1,0 +1,3 @@
+running
+assertPattern
+	self subclassResponsibility

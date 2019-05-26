@@ -1,0 +1,2 @@
+accessing
+memory ^memory

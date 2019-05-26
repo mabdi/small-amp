@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "RBProgramNodeVisitor",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"mappings",
+		"ops"
+	],
+	"name" : "DSpotASTMutationRewriter",
+	"type" : "normal"
+}

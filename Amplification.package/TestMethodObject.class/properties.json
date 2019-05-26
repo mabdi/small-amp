@@ -1,0 +1,18 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Core",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"testMethod",
+		"testClass",
+		"testMethodNoAssert",
+		"testMethodMutated",
+		"testMethodNewAssert",
+		"testTargets"
+	],
+	"name" : "TestMethodObject",
+	"type" : "normal"
+}

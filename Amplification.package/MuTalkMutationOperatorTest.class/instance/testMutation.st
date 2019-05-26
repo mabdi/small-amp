@@ -1,0 +1,41 @@
+tests
+testMutation
+	| result |
+	testMethods := FakeTestcase methods.
+	result := OrderedCollection new.
+	testMethods
+		do: [ :atestMethod | 
+			result
+				add:
+					atestMethod sourceCode
+						-> (MuTalkMutationOperator new mutate: atestMethod) ].
+	"xzy := result at: 1.
+	browser := GLMTabulator new.
+	browser
+		row: #navig;
+		row: #diff.
+	browser transmit to: #navig.
+	browser transmit
+		to: #diff;
+		from: #navig;
+		andShow: [ :a | 
+			a diff
+				display: [ :mutant | 
+					{(GeneralHelper stripString: xzy key).
+					(GeneralHelper stripString: mutant)} ] ].
+	browser openOn: xzy value."
+	self
+		assert:
+			(testMethods
+				allSatisfy: [ :amtd | amtd methodNode body statements isNotEmpty ]).
+	self
+		assert:
+			(result allSatisfy: [ :mtd | mtd value allSatisfy: [ :amtd | (RBParser parseMethod: amtd) body statements isNotEmpty ] ]).
+	self
+		deny:
+			(result
+				anySatisfy: [ :org | 
+					org value
+						anySatisfy: [ :mut | 
+							(GeneralHelper stripString: org key)
+								= (GeneralHelper stripString: mut) ] ])

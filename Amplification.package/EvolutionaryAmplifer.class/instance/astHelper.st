@@ -1,0 +1,3 @@
+accessing
+astHelper
+	^ ASTHelper uniqueInstance

@@ -1,0 +1,11 @@
+{
+	"commentStamp" : "",
+	"super" : "AssertTransform",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "AssertCollectionEqulas",
+	"type" : "normal"
+}
