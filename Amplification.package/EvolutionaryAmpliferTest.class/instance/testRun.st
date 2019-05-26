@@ -3,4 +3,5 @@ testRun
 	(Amplification
 		initializeWithTests:
 			{(#testTargets -> {SmallBank}).
-			(#testClass -> SmallBankTests)} asDictionary) launch
+			(#testClass -> SmallBankTests).
+			(#GAIteration -> 2)} asDictionary) launch

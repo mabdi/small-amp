@@ -1,3 +1,3 @@
 adding
 addTemporaryVariables: anInt to: aMethod
-	1 to: anInt do: [ :idx | aMethod body addTemporaryNamed: 'tmp', idx asString  ]
+	1 to: anInt do: [ :idx | aMethod body addTemporaryNamed: self randomString ]

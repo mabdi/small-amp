@@ -7,4 +7,5 @@ doAssertionAmplification: aMethodSrc within: aClass
 	generatedClass suite run.
 	observer := generatedClass observer.
 	self insertAsserts: aMethod using: observer.
+	generatedClass removeFromSystem.
 	^ aMethod formattedCode

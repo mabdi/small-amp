@@ -11,7 +11,8 @@
 		"testMethodNoAssert",
 		"testMethodMutated",
 		"testMethodNewAssert",
-		"testTargets"
+		"testTargets",
+		"selector"
 	],
 	"name" : "TestMethodObject",
 	"type" : "normal"
