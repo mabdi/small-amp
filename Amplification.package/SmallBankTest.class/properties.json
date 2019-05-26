@@ -6,6 +6,6 @@
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [ ],
-	"name" : "SmallBankTests",
+	"name" : "SmallBankTest",
 	"type" : "normal"
 }

@@ -6,5 +6,5 @@ initializeWithTests: dicConfig
 	improvmentAlgorithm := EvolutionaryAmplifer
 		initializeWith: testClass
 		target: testTargets
-		iterations: (dicConfig at: #GAIteration ifAbsent: 100).
+		iterations: (dicConfig at: #GAIteration ifAbsent: 3).
 	improvmentAlgorithm testMethods: testMethods

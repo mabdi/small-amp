@@ -10,7 +10,8 @@
 		"targetClasses",
 		"testMethods",
 		"iterations",
-		"assertAmplifier"
+		"assertAmplifier",
+		"selectorOperator"
 	],
 	"name" : "EvolutionaryAmplifer",
 	"type" : "normal"
