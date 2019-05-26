@@ -6,7 +6,8 @@
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [
-		"targetNodes"
+		"targetNodes",
+		"tmpVariables"
 	],
 	"name" : "MessageCallRewriter",
 	"type" : "normal"

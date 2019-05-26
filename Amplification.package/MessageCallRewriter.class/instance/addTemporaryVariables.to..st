@@ -1,3 +1,6 @@
 adding
 addTemporaryVariables: anInt to: aMethod
-	1 to: anInt do: [ :idx | aMethod body addTemporaryNamed: self randomString ]
+	tmpVariables := (1 to: anInt)
+		collect: [ :idx | 'tmp_' , GeneralHelper randomString , idx asString ].
+	tmpVariables do: [ :tvar | aMethod body
+			addTemporaryNamed: tvar ] 
