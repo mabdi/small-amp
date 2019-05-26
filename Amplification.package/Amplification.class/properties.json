@@ -9,8 +9,7 @@
 		"improvmentAlgorithm",
 		"testMethods",
 		"testTargets",
-		"testClass",
-		"newTestClass"
+		"testClass"
 	],
 	"name" : "Amplification",
 	"type" : "normal"
