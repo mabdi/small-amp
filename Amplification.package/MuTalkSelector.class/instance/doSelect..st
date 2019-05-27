@@ -3,7 +3,7 @@ doSelect: aPopulation
 	| selectedTests newTestClass analysis1 killSelectors testClass targetClasses |
 	selectedTests := OrderedCollection new.
 	testClass := aPopulation atRandom testClass.
-	targetClasses := aPopulation atRandom targetClasses.
+	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := ASTHelper uniqueInstance
 		buildAnTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodNewAssert ])
 		using: testClass.

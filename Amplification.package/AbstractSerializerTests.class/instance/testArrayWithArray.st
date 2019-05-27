@@ -15,5 +15,5 @@ testArrayWithArray
 	self
 		assert: (((value at: #value) at: 3) at: #value) asString
 		equals:
-			'an Array(a Dictionary(#class->SmallInteger #type->#string #value->''3'' ))'.
+			'an OrderedCollection(a Dictionary(#class->SmallInteger #type->#string #value->''3'' ))'.
 	self assert: (((value at: #value) at: 3) at: #class) equals: Array

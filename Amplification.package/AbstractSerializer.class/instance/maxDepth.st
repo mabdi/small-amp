@@ -1,3 +1,3 @@
 accessing
 maxDepth
-	^ 3
+	^ 5

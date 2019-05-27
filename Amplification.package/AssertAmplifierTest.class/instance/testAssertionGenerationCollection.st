@@ -20,8 +20,12 @@ testAssertionGenerationCollection
 	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	instance insertAsserts: aMethod using: observer memory.
-	self assert: aMethod formattedCode equals: 'testFoo
+	generatedClass removeFromSystem .
+	instance insertAsserts: aMethod using: observer.
+	self
+		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		equals:
+			'testFoo
 	| array tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |
 	array := OrderedCollection with: 56.
 	self assert: (array at: 1) equals: 56.

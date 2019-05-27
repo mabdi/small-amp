@@ -1,14 +1,14 @@
 tests
 testMutation
 	| result |
-	testMethods := FakeTestcase methods.
+	testMethods := FakeTestcase methods select: [ :mtd | mtd selector beginsWith: 'test' ].
 	result := OrderedCollection new.
 	testMethods
 		do: [ :atestMethod | 
 			result
 				add:
 					atestMethod sourceCode
-						-> (MuTalkMutationOperator new mutate: atestMethod) ].
+						-> (MuTalkMutationOperator new mutate: atestMethod sourceCode) ].
 	"xzy := result at: 1.
 	browser := GLMTabulator new.
 	browser
@@ -30,7 +30,10 @@ testMutation
 				allSatisfy: [ :amtd | amtd methodNode body statements isNotEmpty ]).
 	self
 		assert:
-			(result allSatisfy: [ :mtd | mtd value allSatisfy: [ :amtd | (RBParser parseMethod: amtd) body statements isNotEmpty ] ]).
+			(result
+				allSatisfy: [ :mtd | 
+					mtd value
+						allSatisfy: [ :amtd | (RBParser parseMethod: amtd) body statements isNotEmpty ] ]).
 	self
 		deny:
 			(result

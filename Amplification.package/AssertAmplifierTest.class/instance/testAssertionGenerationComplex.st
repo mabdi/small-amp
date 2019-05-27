@@ -16,9 +16,10 @@ testAssertionGenerationComplex
 	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	instance insertAsserts: aMethod using: observer memory.
+	generatedClass removeFromSystem.
+	instance insertAsserts: aMethod using: observer.
 	self
-		assert: aMethod formattedCode
+		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
 		equals:
 			'testFoo
 	| array tmp1 tmp2 tmp3 tmp4 |

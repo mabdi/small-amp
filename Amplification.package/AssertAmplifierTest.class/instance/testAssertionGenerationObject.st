@@ -14,8 +14,12 @@ testAssertionGenerationObject
 	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	instance insertAsserts: aMethod using: observer memory.
-	self assert: aMethod formattedCode equals: 'testFoo
+	generatedClass removeFromSystem.
+	instance insertAsserts: aMethod using: observer.
+	self
+		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		equals:
+			'testFoo
 	| node node1 |
 	node := 3 @ 1.
 	self assert: node x equals: 3.

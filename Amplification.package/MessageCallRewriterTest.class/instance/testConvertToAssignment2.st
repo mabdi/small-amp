@@ -1,9 +1,9 @@
 tests
 testConvertToAssignment2
 	node := RBParser parseMethod: 'foo a:=1. Array with:1'.
-	visitor doYourJob:  node.
+	visitor doYourJob: node.
 	self
-		assert: node formattedCode
+		assert: (GeneralHelper renameTempVars: node formattedCode)
 		equals:
 			'foo
 	| tmp1 |

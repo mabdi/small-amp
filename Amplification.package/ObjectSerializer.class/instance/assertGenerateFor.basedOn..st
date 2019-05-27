@@ -1,13 +1,13 @@
 asserting
 assertGenerateFor: anObservation basedOn: theLast
 	| assertStatements changes |
+	
 	changes := (anObservation at: #value) keys
 		select: [ :k | 
 			theLast isNil
-				or: [ (((anObservation at: #value) at: k) at: #type) = #primitive
+				or: [ (((anObservation at: #value) at: k) at: #type) = #string
 						and: [ (self unserialize: ((anObservation at: #value) at: k))
 								~= (self unserialize: ((theLast at: #value) at: k)) ] ] ].
-					
 	assertStatements := changes
 		collect: [ :aChange | 
 			| theObject theValue |

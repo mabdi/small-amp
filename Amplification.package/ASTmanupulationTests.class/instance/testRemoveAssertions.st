@@ -2,7 +2,7 @@ tests
 testRemoveAssertions
 	| result |
 	result := testMethods
-		collect: [ :each | ASTHelper uniqueInstance removeAssertions: each ].
+		collect: [ :each | ASTHelper uniqueInstance removeAssertions: each sourceCode ].
 	self
 		assert:
 			(result
@@ -18,5 +18,6 @@ testRemoveAssertions
 	self
 		assert:
 			(result
-				allSatisfy:
-					[ :src | ((GeneralHelper stripString: src) findString: 'self should:' onlyLetters) == 0 ])
+				allSatisfy: [ :src | 
+					((GeneralHelper stripString: src)
+						findString: 'self should:' onlyLetters) == 0 ])
