@@ -1,11 +1,9 @@
 actions
 doMutation: tcase
 	| newcodes |
-	newcodes := OrderedCollection new.
-	newcodes
-		addAll:
-			(self mutationOperators
-				collect: [ :op | op mutate: tcase testMethodNoAssert ]) flattened.
+	newcodes := PopulationCollection new.
+	self mutationOperators
+		do: [ :op | newcodes addAll: (op mutate: tcase testMethodNoAssert) ].
 	newcodes := newcodes
 		collect: [ :cod | tcase clone testMethodMutated: cod ].
 	^ newcodes

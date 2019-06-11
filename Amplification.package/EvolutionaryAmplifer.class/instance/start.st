@@ -3,6 +3,7 @@ start
 	" Here is the main loop of program."
 
 	| population |
+	EvalLog instanceReset.
 	population := PopulationCollection
 		setUpWith:
 			(testMethods
@@ -12,15 +13,24 @@ start
 						method: tcase
 						targets: targetClasses ]).
 	(1 to: iterations)
-		do: [ :gen | population
+		do: [ :gen | 
+			EvalLog newGeneration.
+			EvalLog tickAt: #time_all.
+			EvalLog tickAt: #input_amp.
+			population
 				do: [ :tcase | self removeAssrtion: tcase ]
 				displayingProgress: 'Removing assertions'.
-			population := (population
-				collect: [ :tcase | self doMutation: tcase ]
-				displayingProgress: 'Mutating test cases') flattened.
+			population := self doPopulationMutation: population.
+			EvalLog tickAt: #input_amp.
+			EvalLog tickAt: #assert_amp.
 			population := population
-				collect: [ :tcase | self assertionAmplify: tcase ] displayingProgress: 'Assert amplifying'.
-			population := self doSelection: population ]
+				collect: [ :tcase | self assertionAmplify: tcase ]
+				displayingProgress: 'Assert amplifying'.
+			EvalLog tickAt: #assert_amp.
+			EvalLog tickAt: #selection.
+			population := self doSelection: population.
+			EvalLog tickAt: #selection.
+			EvalLog tickAt: #time_all ]
 		displayingProgress: 'Main loop'.
 	^ self
 		makeTestClass: (population collect: [ :tcase | tcase testMethod ])

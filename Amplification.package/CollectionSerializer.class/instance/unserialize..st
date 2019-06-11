@@ -7,7 +7,7 @@ unserialize: aDic
 			s instance supportingTypes
 				contains:
 					[ :q | q = theClass or: [ q allSubclasses contains: [ :w | w = theClass ] ] ] ]
-		ifFound: [ :s | ^ s unserialize: (aDic at: #value) ]
+		ifFound: [ :s | ^ s unserialize: aDic ]
 		ifNone: [ ^ (aDic at: #class)
 		withAll:
 			((aDic at: #value)

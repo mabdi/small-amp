@@ -1,8 +1,8 @@
 as yet unclassified
 unserialize: aDic
 	| rowCount columnCount matrix |
-	rowCount := (aDic at: #value) at: #rowCount.
-	columnCount := (aDic at: #value) at: #columnCount.
+	rowCount := (aDic at: #extra) at: #rowCount.
+	columnCount := (aDic at: #extra) at: #columnCount.
 	matrix := Array2D rows: rowCount columns: columnCount.
 	1 to: rowCount
 		do: [ :row | 
