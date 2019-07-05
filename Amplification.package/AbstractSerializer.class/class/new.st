@@ -1,3 +1,3 @@
 private
 new
-	self error: 'singletone'
+	self error: 'dont use me'

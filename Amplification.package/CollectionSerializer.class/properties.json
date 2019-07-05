@@ -1,7 +1,7 @@
 {
 	"commentStamp" : "",
 	"super" : "AbstractSerializer",
-	"category" : "Amplification-Core",
+	"category" : "Amplification-Helpers",
 	"classinstvars" : [ ],
 	"pools" : [ ],
 	"classvars" : [ ],

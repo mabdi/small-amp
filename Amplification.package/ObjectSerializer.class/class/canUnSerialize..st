@@ -1,0 +1,3 @@
+private
+canUnSerialize: anObject
+	^ true

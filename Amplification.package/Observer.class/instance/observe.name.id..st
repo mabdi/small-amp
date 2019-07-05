@@ -1,8 +1,7 @@
 as yet unclassified
 observe: anObject name: aString id: anInt
 	| serialized |
-	
-	serialized := AbstractSerializer serialize: anObject.
+	serialized := SerializerFactory  serialize: anObject.
 	serialized at: #id put: anInt.
 	serialized at: #name put: aString.
 	serialized

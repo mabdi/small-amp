@@ -20,7 +20,7 @@ testAssertionGenerationCollection
 	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	generatedClass removeFromSystem .
+	generatedClass removeFromSystem.
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
@@ -28,32 +28,33 @@ testAssertionGenerationCollection
 			'testFoo
 	| array tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |
 	array := OrderedCollection with: 56.
-	self assert: (array at: 1) equals: 56.
 	self assert: array size equals: 1.
 	tmp1 := array at: 1 put: someVariable.
-	self assert: tmp1 asString equals: ''1''.
+	self assert: tmp1 equals: 1.
 	self deny: (array at: 1) equals: 56.
 	self assert: (array at: 1) equals: 1.
 	tmp2 := array add: someVariable + 10.
-	self assert: tmp2 asString equals: ''11''.
+	self assert: tmp2 equals: 11.
 	self assert: (array at: 2) equals: 11.
 	self assert: array size equals: 2.
 	tmp3 := array addAll: {12 . 13}.
 	self assert: tmp3 size equals: 2.
 	self assert: array size equals: 4.
 	tmp4 := array add: someVariable * 4.
-	self assert: tmp4 asString equals: ''4''.
+	self assert: tmp4 equals: 4.
 	self assert: (array at: 5) equals: 4.
 	self assert: array size equals: 5.
 	tmp5 := array remove: someVariable.
-	self assert: tmp5 asString equals: ''1''.
+	self assert: tmp5 equals: 1.
+	self deny: (array at: 1) equals: 1.
 	self assert: array size equals: 4.
 	tmp6 := array at: 2 put: 3000.
-	self assert: tmp6 asString equals: ''3000''.
+	self assert: tmp6 equals: 3000.
 	self deny: (array at: 2) equals: 12.
 	self assert: (array at: 2) equals: 3000.
 	tmp7 := array removeAt: 2.
-	self assert: tmp7 asString equals: ''3000''.
+	self assert: tmp7 equals: 3000.
+	self deny: (array at: 2) equals: 3000.
 	self assert: array size equals: 3.
 	tmp8 := array removeAll.
 	self assert: tmp8 size equals: 0.

@@ -7,10 +7,8 @@ objectSerialize: anObject depth: anInt
 		do: [ :l | 
 			result
 				at: l selector
-				put: (super serialize: (anObject perform: l selector) depth: anInt) ].
-	"((anObject class allMethods collect: [ :z | z selector ])
-		includes: #asArray)
-		ifTrue: [ result
-				at: #asArray
-				put: (super serialize: anObject asArray depth: anInt) ]".
+				put:
+					(SerializerFactory
+						serialize: (anObject perform: l selector)
+						depth: anInt) ].
 	^ result

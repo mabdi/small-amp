@@ -25,4 +25,4 @@ testObservationCollection
 	self
 		assert: aStringNoTime
 		equals:
-			'an OrderedCollection(a Dictionary(#class->SmallInteger #id->1 #name->#tmp1 #type->#string #value->''4'' ) a Dictionary(#class->ByteString #id->2 #name->#someString #type->#string #value->''abcd'' ) a Dictionary(#class->ByteString #id->3 #name->#someString #type->#string #value->''abcd0'' ) a Dictionary(#class->Array #id->5 #name->#tmp2 #type->#collection #value->an OrderedCollection(a Dictionary(#class->SmallInteger #type->#string #value->''2'' )) ))'
+			'an OrderedCollection(a Dictionary(#class->SmallInteger #id->1 #name->#tmp1 #type->#primitive #value->''4'' ) a Dictionary(#class->ByteString #id->2 #name->#someString #type->#primitive #value->''abcd'' ) a Dictionary(#class->ByteString #id->3 #name->#someString #type->#primitive #value->''abcd0'' ) a Dictionary(#class->Array #id->5 #name->#tmp2 #type->#collection #value->an OrderedCollection(a Dictionary(#class->SmallInteger #type->#primitive #value->''2'' )) ))'

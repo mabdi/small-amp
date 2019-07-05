@@ -1,0 +1,13 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Core",
+	"classinstvars" : [
+		"serializers"
+	],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [ ],
+	"name" : "SerializerFactory",
+	"type" : "normal"
+}

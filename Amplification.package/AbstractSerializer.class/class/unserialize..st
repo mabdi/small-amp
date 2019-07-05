@@ -1,3 +1,3 @@
-private
-unserialize: obj
-	^ self instance unserialize: obj
+as yet unclassified
+unserialize: dictionary
+	self subclassResponsibility

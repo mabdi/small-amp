@@ -23,6 +23,6 @@ testAssertionGenerationCollection1
 	array := OrderedCollection new.
 	self assert: array size equals: 0.
 	tmp1 := array add: someVariable.
-	self assert: tmp1 asString equals: ''1''.
+	self assert: tmp1 equals: 1.
 	self assert: (array at: 1) equals: 1.
 	self assert: array size equals: 1'
