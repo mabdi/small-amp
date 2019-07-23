@@ -5,7 +5,8 @@ serializeDepth: anInt
 		ifTrue: [ | aCollection |
 			aCollection := OrderedCollection new.
 			object
-				do: [ :item | aCollection add: (SerializerFactory  serialize: item depth: anInt - 1) ].
+				do:
+					[ :item | aCollection add: (SerializerFactory serialize: item depth: anInt - 1) ].
 			aCollection ]
 		ifFalse: [ nil ].
 	result := Dictionary

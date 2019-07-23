@@ -1,7 +1,7 @@
 actions
 assertionAmplify: aMethod
 	^ aMethod
-		testMethodNewAssert:
+		testMethodModified:
 			(self assertAmplifier
-				doAssertionAmplification: aMethod testMethodMutated
+				doAssertionAmplification: aMethod testMethodModified
 				within: aMethod testClass)

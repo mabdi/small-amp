@@ -5,7 +5,7 @@ doSelect: aPopulation
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodNewAssert ])
+		buildAnTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodModified  ])
 		using: testClass.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}
@@ -23,4 +23,4 @@ doSelect: aPopulation
 			selectedTests
 				detect: [ :x | x selector = item selector ]
 				ifNone: [ selectedTests add: item ] ].
-			^ selectedTests 
+	^ selectedTests

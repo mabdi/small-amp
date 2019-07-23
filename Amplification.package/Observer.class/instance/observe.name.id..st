@@ -1,7 +1,11 @@
 as yet unclassified
 observe: anObject name: aString id: anInt
 	| serialized |
-	serialized := SerializerFactory  serialize: anObject.
+	serialized := Dictionary new.
+	aString first isUppercase ifFalse: [serialized := SerializerFactory serialize: anObject.].
+	
+	
+	
 	serialized at: #id put: anInt.
 	serialized at: #name put: aString.
 	serialized

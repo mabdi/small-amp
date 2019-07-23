@@ -1,3 +1,3 @@
 accessing
 selector
-	^ selectorOperator ifNil: [ selectorOperator := MuTalkSelector new ]
+	^ selectorOperator ifNil: [ selectorOperator := DspotSelector  new ]

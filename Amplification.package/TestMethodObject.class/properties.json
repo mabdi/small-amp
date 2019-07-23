@@ -8,11 +8,10 @@
 	"instvars" : [
 		"testMethod",
 		"testClass",
-		"testMethodNoAssert",
-		"testMethodMutated",
-		"testMethodNewAssert",
+		"testMethodModified",
 		"testTargets",
-		"selector"
+		"selector",
+		"selectorOriginal"
 	],
 	"name" : "TestMethodObject",
 	"type" : "normal"

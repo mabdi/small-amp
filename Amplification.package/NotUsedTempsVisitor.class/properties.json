@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "RBProgramNodeVisitor",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"tmp_var",
+		"used"
+	],
+	"name" : "NotUsedTempsVisitor",
+	"type" : "normal"
+}

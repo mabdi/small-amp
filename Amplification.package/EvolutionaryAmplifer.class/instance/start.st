@@ -2,7 +2,7 @@ accessing
 start
 	" Here is the main loop of program."
 
-	| population |
+	| population resultPeople |
 	EvalLog instanceReset.
 	population := PopulationCollection
 		setUpWith:
@@ -12,6 +12,7 @@ start
 						withClass: testClass
 						method: tcase
 						targets: targetClasses ]).
+	resultPeople := population clone.
 	(1 to: iterations)
 		do: [ :gen | 
 			EvalLog newGeneration.
@@ -29,8 +30,9 @@ start
 			EvalLog tickAt: #assert_amp.
 			EvalLog tickAt: #selection.
 			population := self doSelection: population.
+			resultPeople addAll: population.
 			EvalLog tickAt: #selection.
 			EvalLog tickAt: #time_all ]
 		displayingProgress: 'Main loop'.
 	^ self
-		makeTestClass: (population collect: [ :tcase | tcase testMethod ])
+		makeTestClass: (resultPeople collect: [ :tcase | tcase testMethod ])

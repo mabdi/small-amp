@@ -11,5 +11,9 @@ buildAxularyClass: aMethod basedOn: aClass
 		compile:
 			'observe: anObj name: aString id:anInt 
 			       ^ self class observer observe: anObj name: aString id: anInt'.
+	generatedClass
+		compile:
+			'observeResult: anObj receiver: arec selector: aSelector name: aString id:anInt 
+			       ^ self class observer observeResult: anObj receiver: arec selector: aSelector name: aString id: anInt'.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass

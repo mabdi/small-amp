@@ -15,9 +15,20 @@ testInsertObservers5
 			'foo
 	| tmp1 tmp2 |
 	tmp1 := foo bar.
-	self observe: tmp1 name: #tmp1 id: 1.
-	self observe: foo name: #foo id: 2.
+	self observe: foo name: #foo id: 1.
+	self
+		observeResult: tmp1
+		receiver: foo
+		selector: #bar
+		name: #tmp1
+		id: 2.
 	tmp2 := Array
 		with: 1;
 		with: 2.
-	self observe: tmp2 name: #tmp2 id: 3'
+	self observe: Array name: #Array id: 3.
+	self
+		observeResult: tmp2
+		receiver: Array
+		selector: #with:
+		name: #tmp2
+		id: 4'

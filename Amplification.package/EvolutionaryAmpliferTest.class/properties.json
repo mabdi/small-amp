@@ -5,14 +5,7 @@
 	"classinstvars" : [ ],
 	"pools" : [ ],
 	"classvars" : [ ],
-	"instvars" : [
-		"testClass",
-		"targetClasses",
-		"testMethods",
-		"iterations",
-		"popSize",
-		"assertAmplifier"
-	],
+	"instvars" : [ ],
 	"name" : "EvolutionaryAmpliferTest",
 	"type" : "normal"
 }

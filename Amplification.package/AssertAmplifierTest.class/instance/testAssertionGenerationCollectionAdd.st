@@ -25,14 +25,14 @@ testAssertionGenerationCollectionAdd
 	array := OrderedCollection with: 10 with: 20 with: 30.
 	self assert: array size equals: 3.
 	tmp1 := array add: 40.
-	self assert: tmp1 equals: 40.
 	self assert: (array at: 4) equals: 40.
 	self assert: array size equals: 4.
+	self assert: tmp1 equals: 40.
 	tmp2 := array add: 11 after: 10.
-	self assert: tmp2 equals: 11.
 	self assert: (array at: 2) equals: 11.
 	self assert: array size equals: 5.
+	self assert: tmp2 equals: 11.
 	tmp3 := array add: 21 afterIndex: 3.
-	self assert: tmp3 equals: 21.
 	self assert: (array at: 4) equals: 21.
-	self assert: array size equals: 6'
+	self assert: array size equals: 6.
+	self assert: tmp3 equals: 21'

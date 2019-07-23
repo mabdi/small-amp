@@ -6,5 +6,5 @@ doSelection: aPopulation
 		collect: [ :obj | 
 			TestMethodObject
 				withClass: obj testClass
-				method: obj testMethodNewAssert
+				method: (self astHelper cleanUp: obj testMethodModified)
 				targets: obj testTargets ]

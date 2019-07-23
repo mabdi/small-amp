@@ -1,4 +1,4 @@
 actions
 removeAssrtion: tcase
 	tcase
-		testMethodNoAssert: (self astHelper removeAssertions: tcase testMethod)
+		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
