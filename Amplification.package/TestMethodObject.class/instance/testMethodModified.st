@@ -1,3 +1,3 @@
 accessing
 testMethodModified
-	^ testMethodModified
+	^ testMethodModified ifNil: [ ^ testMethod  ]

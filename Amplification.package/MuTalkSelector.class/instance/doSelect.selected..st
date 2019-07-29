@@ -1,11 +1,13 @@
 enumerating
-doSelect: aPopulation
+doSelect: aPopulation selected: aPopulationAll
 	| selectedTests newTestClass analysis1 killSelectors testClass targetClasses |
 	selectedTests := OrderedCollection new.
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodModified  ])
+		buildAnTestClassWith:
+			(aPopulation , aPopulationAll
+				collect: [ :tcase | tcase testMethodModified ])
 		using: testClass.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}
@@ -24,3 +26,5 @@ doSelect: aPopulation
 				detect: [ :x | x selector = item selector ]
 				ifNone: [ selectedTests add: item ] ].
 	^ selectedTests
+		reject:
+			[ :item1 | aPopulationAll anySatisfy: [ :item2 | item2 selector = item1 selector ] ]

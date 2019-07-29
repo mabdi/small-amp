@@ -1,11 +1,11 @@
 {
 	"commentStamp" : "",
-	"super" : "AbstractSelector",
-	"category" : "Amplification-Core",
+	"super" : "TestCase",
+	"category" : "Amplification-Tests",
 	"classinstvars" : [ ],
 	"pools" : [ ],
 	"classvars" : [ ],
 	"instvars" : [ ],
-	"name" : "DspotSelector",
+	"name" : "ObserverProxyTest",
 	"type" : "normal"
 }

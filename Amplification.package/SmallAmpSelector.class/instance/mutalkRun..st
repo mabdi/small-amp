@@ -1,7 +1,7 @@
 as yet unclassified
 mutalkRun: aPopulation
-| testClass targetClasses newTestClass analysis1 |
-testClass := aPopulation atRandom testClass.
+	| testClass targetClasses newTestClass analysis1 |
+	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := ASTHelper uniqueInstance
 		buildAnTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodModified ])
@@ -13,4 +13,4 @@ testClass := aPopulation atRandom testClass.
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
 	analysis1 run.
 	newTestClass removeFromSystem.
-	^ analysis1 
+	^ analysis1

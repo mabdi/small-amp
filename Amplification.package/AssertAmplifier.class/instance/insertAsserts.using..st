@@ -5,7 +5,6 @@ insertAsserts: aMethod using: anObserver
 			"self cleanExtraObservations: aMethod"
 			| asserts unserializer generateAsserts |
 			generateAsserts := true.
-			
 			observation
 				at: #equalReceiver
 				ifPresent: [ :equalReceiver | 

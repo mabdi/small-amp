@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"before",
+		"after"
+	],
+	"name" : "MethodProfile",
+	"type" : "normal"
+}

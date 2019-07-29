@@ -29,7 +29,7 @@ start
 				displayingProgress: 'Assert amplifying'.
 			EvalLog tickAt: #assert_amp.
 			EvalLog tickAt: #selection.
-			population := self doSelection: population.
+			population := self doSelection: population selected: resultPeople.
 			resultPeople addAll: population.
 			EvalLog tickAt: #selection.
 			EvalLog tickAt: #time_all ]

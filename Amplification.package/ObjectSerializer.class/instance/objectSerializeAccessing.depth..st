@@ -1,5 +1,5 @@
 as yet unclassified
-objectSerialize: anObject depth: anInt
+objectSerializeAccessing: anObject depth: anInt
 	| result |
 	result := Dictionary new.
 	((anObject class methodsInProtocol: #accessing)

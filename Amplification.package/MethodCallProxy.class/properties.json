@@ -1,0 +1,14 @@
+{
+	"commentStamp" : "",
+	"super" : "Object",
+	"category" : "Amplification-Helpers",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"method",
+		"action"
+	],
+	"name" : "MethodCallProxy",
+	"type" : "normal"
+}
