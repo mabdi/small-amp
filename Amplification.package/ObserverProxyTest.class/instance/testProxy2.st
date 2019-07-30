@@ -1,12 +1,11 @@
 tests
 testProxy2
-	| b proxy |
-	proxy := AbstractProxy new.
-	proxy add: SmallBank >> #withdraw:.
-	proxy add: SmallBank >> #deposit:.
-	[ b := SmallBank new.
+	| b observer mtds |
+	observer := Observer new.
+	mtds := { SmallBank >> #withdraw: .  SmallBank >> #deposit:}.
+	mtds do: [ :mtd | ObservationProxy for: mtd observer: observer inside: self].	
+	b := SmallBank new.
 	b deposit: 10.
 	b deposit: 20.
 	b withdraw: 4.
-	self assert: proxy observer equals: '' ]
-		ensure: [ proxy destory ]
+		mtds do: [ :mtd | ObservationProxy fixMethod: mtd ] 

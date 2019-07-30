@@ -8,12 +8,12 @@ testAssertionGenerationRedundant
 	b := SmallBank new.
 	b deposit: 100.
 	'.
-	aClass := FakeTestcase.
+	aClass := SmallBankTest .
 	instance insertObservers: aMethod.
 	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	generatedClass removeFromSystem.
+	"generatedClass removeFromSystem."
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod formattedCode)

@@ -24,9 +24,7 @@ start
 			population := self doPopulationMutation: population.
 			EvalLog tickAt: #input_amp.
 			EvalLog tickAt: #assert_amp.
-			population := population
-				collect: [ :tcase | self assertionAmplify: tcase ]
-				displayingProgress: 'Assert amplifying'.
+			population := self doAssertAmplification: population.
 			EvalLog tickAt: #assert_amp.
 			EvalLog tickAt: #selection.
 			population := self doSelection: population selected: resultPeople.

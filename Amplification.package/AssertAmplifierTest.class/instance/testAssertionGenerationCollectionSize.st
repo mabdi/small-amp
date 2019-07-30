@@ -25,14 +25,11 @@ testAssertionGenerationCollectionSize
 	array := OrderedCollection with: 10 with: 20 with: 30.
 	self assert: array size equals: 3.
 	tmp1 := array add: 40.
-	self assert: (array at: 4) equals: 40.
 	self assert: array size equals: 4.
 	self assert: tmp1 equals: 40.
 	tmp2 := array at: 1 put: 100.
-	self deny: (array at: 1) equals: 10.
-	self assert: (array at: 1) equals: 100.
+	self assert: array size equals: 4.
 	self assert: tmp2 equals: 100.
 	tmp3 := array remove: 20.
-	self deny: (array at: 2) equals: 20.
 	self assert: array size equals: 3.
 	self assert: tmp3 equals: 20'

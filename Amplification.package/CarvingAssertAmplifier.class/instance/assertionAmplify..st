@@ -1,7 +1,7 @@
-actions
+as yet unclassified
 assertionAmplify: aMethod
 	^ aMethod
 		testMethodModified:
-			(self assertAmplifier
+			(self 
 				doAssertionAmplification: aMethod testMethodModified
 				within: aMethod testClass)

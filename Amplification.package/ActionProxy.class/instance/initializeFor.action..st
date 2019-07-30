@@ -1,5 +1,5 @@
 initialization
 initializeFor: aMethod action: anAction
-	method := aMethod.
-	self installMethod: aMethod.
+	
+	self initializeFor: aMethod.
 	action := anAction

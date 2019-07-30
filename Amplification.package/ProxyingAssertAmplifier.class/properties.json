@@ -1,0 +1,13 @@
+{
+	"commentStamp" : "",
+	"super" : "AbstractAssertAmplifier",
+	"category" : "Amplification-Core",
+	"classinstvars" : [ ],
+	"pools" : [ ],
+	"classvars" : [ ],
+	"instvars" : [
+		"targets"
+	],
+	"name" : "ProxyingAssertAmplifier",
+	"type" : "normal"
+}

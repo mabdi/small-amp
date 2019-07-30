@@ -25,6 +25,7 @@ testAssertionGenerationPrimitive
 	someVariable := someVariable + tmp1.
 	self assert: someVariable equals: 2.
 	tmp1 := someVariable - 1.
+	self assert: someVariable equals: 2.
 	self assert: tmp1 equals: 1.
 	someString := someString , ''111''.
 	self assert: someString equals: ''abcd111'''

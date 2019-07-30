@@ -1,4 +1,4 @@
 asserting
 assertAmplifier
 	^ assertAmplifier
-		ifNil: [ assertAmplifier := AssertAmplifier new ]
+		ifNil: [ assertAmplifier := ProxyingAssertAmplifier new ]

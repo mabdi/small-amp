@@ -34,6 +34,7 @@ testAssertionGenerationComplex
 	self assert: tmp2 x equals: 100.
 	self assert: tmp2 y equals: 100.
 	tmp3 := array at: 2 put: 23 @ 23.
+	self assert: array size equals: 3.
 	self assert: tmp3 x equals: 23.
 	self assert: tmp3 y equals: 23.
 	tmp4 := array removeAt: 3.
