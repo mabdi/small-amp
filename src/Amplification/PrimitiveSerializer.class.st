@@ -6,17 +6,19 @@ Class {
 
 { #category : #asserting }
 PrimitiveSerializer class >> makeAssertName: aName value: aValue last: theLast [
-	| assertStatement theObject theValue |
+	| assertStatements theObject theValue |
+	assertStatements := OrderedCollection new. 
 	theObject := RBVariableNode named: aName.
 	theValue := RBLiteralValueNode
 		value: (SerializerFactory unserialize: aValue).
-	assertStatement := RBMessageNode
+	assertStatements add: (RBMessageNode
 		receiver: (RBSelfNode named: 'self')
 		selector: #assert:equals:description:
 		arguments:
 			{theObject.
-			theValue .     RBLiteralValueNode value: 'smallAmp'      }.
-	^ {assertStatement}
+			theValue .     RBLiteralValueNode value: 'smallAmp'      }).
+	assertStatements addFirst: (self assertClassName: (aValue at: #class) name name: aName).
+	^ assertStatements
 ]
 
 { #category : #'as yet unclassified' }

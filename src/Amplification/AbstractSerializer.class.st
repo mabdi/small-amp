@@ -8,6 +8,20 @@ Class {
 	#category : #'Amplification-Helpers'
 }
 
+{ #category : #asserting }
+AbstractSerializer class >> assertClassName: aClassName name: aName [
+	| assertStatement theObject theValue |
+	theObject := RBMessageNode receiver: (RBVariableNode named: aName) selector: #class .
+	theValue := RBVariableNode named: aClassName.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:description:
+		arguments:
+			{theObject.
+			theValue .     RBLiteralValueNode value: 'smallAmp'      }.
+	^ assertStatement
+]
+
 { #category : #private }
 AbstractSerializer class >> canSerialize: anObject [
 	^ self supportingTypes
