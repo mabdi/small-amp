@@ -1,4 +1,0 @@
-accessing
-balance
-<SmallAmpAccessing>
-	^ balance

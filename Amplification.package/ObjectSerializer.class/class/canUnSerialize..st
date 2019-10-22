@@ -1,3 +1,0 @@
-private
-canUnSerialize: anObject
-	^ true

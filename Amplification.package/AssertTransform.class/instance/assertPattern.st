@@ -1,3 +1,0 @@
-running
-assertPattern
-	self subclassResponsibility

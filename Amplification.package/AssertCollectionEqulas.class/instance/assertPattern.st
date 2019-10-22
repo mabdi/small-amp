@@ -1,3 +1,0 @@
-running
-assertPattern
-	^ '``@actual = ``@expected'

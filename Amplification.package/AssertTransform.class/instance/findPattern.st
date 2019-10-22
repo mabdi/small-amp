@@ -1,3 +1,0 @@
-running
-findPattern
-	self subclassResponsibility
