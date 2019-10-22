@@ -8,7 +8,7 @@ Test Amplification for Pharo SmallTalk
 ## How to load
 ```smalltalk
 Metacello new
-  baseline: 'smallamp';
+  baseline: 'Amplification';
   repository: 'github://mabdi/small-amp/src';
   load.
 ```
