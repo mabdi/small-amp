@@ -11,15 +11,20 @@ Class {
 { #category : #asserting }
 AbstractSerializer class >> assertClassName: aClassName name: aName [
 	| assertStatement theObject theValue |
-	theObject := RBMessageNode receiver: (RBVariableNode named: aName) selector: #class .
-	theValue := RBVariableNode named: aClassName.
+	aClassName isTestCase
+		ifTrue: [ ^ {} ].
+	theObject := RBMessageNode
+		receiver: (RBVariableNode named: aName)
+		selector: #class.
+	theValue := RBVariableNode named: aClassName name.
 	assertStatement := RBMessageNode
 		receiver: (RBSelfNode named: 'self')
 		selector: #assert:equals:description:
 		arguments:
 			{theObject.
-			theValue .     RBLiteralValueNode value: 'smallAmp'      }.
-	^ assertStatement
+			theValue.
+			(RBLiteralValueNode value: 'smallAmp')}.
+	^ {assertStatement}
 ]
 
 { #category : #private }

@@ -54,21 +54,6 @@ EvolutionaryAmpliferTest >> testRunN100 [
 ]
 
 { #category : #tests }
-EvolutionaryAmpliferTest >> testRunRoassel3_RSView [
-
-	| newTest run1 run2 |
-	newTest := (Amplification
-		initializeWithTests:
-			{(#testTargets -> {RSView}).
-			(#testClass -> RSViewTest).
-			(#GAIteration -> 2)} asDictionary) launch.
-	run1 := self mutalkTarget: {RSView} testSuite: {RSViewTest}.
-	run2 := self mutalkTarget: {RSView} testSuite: {newTest}.
-	self
-		assert: run2 generalResult mutationScore > run1 generalResult mutationScore
-]
-
-{ #category : #tests }
 EvolutionaryAmpliferTest >> testRunRoassel3_TSSequentialAnimation [
 	| newTest run1 run2 |
 	newTest := (Amplification

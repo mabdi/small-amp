@@ -32,7 +32,7 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 		subclass: (testClass name asString , self getId asString) asSymbol
 		instanceVariableNames: testClass instanceVariablesString
 		classVariableNames: ''
-		category: 'Amplification-TempClasses'.
+		package: 'Amplification-TempClasses'.
 	#(#setUp #tearDown)
 		do: [ :each | 
 			testClass methods
@@ -58,7 +58,7 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 					'assert: actual equals: expected description: description ^ self
 		assert: actual = expected
 		description: description'.
-		tempClass
+			tempClass
 				compile:
 					'deny: actual equals: expected description: description ^ self
 		deny: actual = expected
@@ -142,6 +142,19 @@ ASTHelper >> removeClass: theClass source: sid [
 	debug := false.
 	debug
 		ifFalse: [ theClass removeFromSystem ]
+]
+
+{ #category : #'as yet unclassified' }
+ASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
+	(self environment includesKey: aName)
+		ifTrue: [^ self error: aName , ' already exists'].
+	aClass renameSilently: aName.
+	
+]
+
+{ #category : #'as yet unclassified' }
+ASTHelper >> renameClass: aClass name: aName [
+	aClass rename: aName
 ]
 
 { #category : #'as yet unclassified' }

@@ -22,7 +22,6 @@ ObjectSerializer class >> canUnSerialize: anObject [
 { #category : #asserting }
 ObjectSerializer class >> makeAssertName: aName value: aValue last: theLast [
 	| assertStatements changes |
-	
 	(aValue at: #value) ifNil: [ ^ {} ].
 	changes := (aValue at: #value) keys
 		select: [ :k | 
@@ -30,7 +29,6 @@ ObjectSerializer class >> makeAssertName: aName value: aValue last: theLast [
 				or: [ ((SerializerFactory getUnserializer: ((aValue at: #value) at: k))
 						isEqualWith: ((theLast at: #value) at: k)) not ] ].
 	assertStatements := OrderedCollection new.
-	
 	changes
 		do: [ :k | 
 			assertStatements
@@ -45,9 +43,11 @@ ObjectSerializer class >> makeAssertName: aName value: aValue last: theLast [
 			| tmp msgNode |
 			tmp := aRBMessageNode arguments at: 1.
 			"msgNode := RBMessageNode receiver: (RBVariableNode named: aName) selector: tmp name."
-			msgNode := RBParser parseExpression: aName, ' ', tmp formattedCode.
+			msgNode := RBParser
+				parseExpression: aName , ' ' , tmp formattedCode.
 			aRBMessageNode arguments at: 1 put: msgNode ].
-	assertStatements addFirst: (self assertClassName: (aValue at: #class) name name: aName).
+	assertStatements
+		addAllFirst: (self assertClassName: (aValue at: #class) name: aName).
 	^ assertStatements
 ]
 

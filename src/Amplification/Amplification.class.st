@@ -38,7 +38,8 @@ Class {
 		'testMethods',
 		'testTargets',
 		'testClass',
-		'newTestClass'
+		'newTestClass',
+		'minifiedTestClass'
 	],
 	#category : #'Amplification-Core'
 }
@@ -138,6 +139,11 @@ Amplification >> makeMinifiedClass [
 		final: true
 ]
 
+{ #category : #actions }
+Amplification >> minifiedTestClass [
+^ minifiedTestClass
+]
+
 { #category : #'as yet unclassified' }
 Amplification >> mutalkRun: aClass [
 	| targetClasses analysis1 |
@@ -169,8 +175,8 @@ Amplification >> newTestClass [
 
 { #category : #actions }
 Amplification >> postStartActions [
-	| minified |
-	minified:= self makeMinifiedClass.
+	
+	minifiedTestClass := self makeMinifiedClass.
 	^ newTestClass
 ]
 

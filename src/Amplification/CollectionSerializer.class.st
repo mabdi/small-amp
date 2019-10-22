@@ -147,9 +147,10 @@ CollectionSerializer class >> makeAssertName: aName value: aValue last: theLast 
 		addAll: (self assertionsAddingName: aName value: aValue last: theLast).
 	assertStatements
 		addAll: (self assertionsUpdatingName: aName value: aValue last: theLast).
-	assertStatements	
+	assertStatements
 		addAll: (self assertionsRemovingName: aName value: aValue last: theLast).
-	assertStatements addFirst: (self assertClassName: (aValue at: #class) name name: aName).
+	assertStatements
+		addAllFirst: (self assertClassName: (aValue at: #class) name: aName).
 	^ assertStatements
 ]
 
