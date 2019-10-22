@@ -132,7 +132,7 @@ AbstractSerializer >> makeAssertsBasedOnMemory: aMemory differnetial: aBoolean [
 
 { #category : #accessing }
 AbstractSerializer >> maxDepth [
-	^ 5
+	^ 4
 ]
 
 { #category : #accessing }
