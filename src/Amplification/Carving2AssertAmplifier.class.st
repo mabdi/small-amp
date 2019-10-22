@@ -23,6 +23,11 @@ Carving2AssertAmplifier >> buildAsserts: anObserver methodName: selector [
 				ifPresent: [ :exceptionClass | 
 					asserts := {(ErrorSerializer makeAssertError: exceptionClass)}.
 					generateAsserts := false ].
+			observation
+				at: #timeOutLimit
+				ifPresent: [ :timeOutLimit | 
+					asserts := {(AbstractSerializer makeAssertTimeOut: timeOutLimit)}.
+					generateAsserts := false ].
 			generateAsserts
 				ifTrue: [ unserializer := SerializerFactory getUnserializer: observation.
 					asserts := unserializer
@@ -34,7 +39,9 @@ Carving2AssertAmplifier >> buildAsserts: anObserver methodName: selector [
 							[ :obj | obj class = RBLiteralValueNode and: [ obj value = 'smallAmp' ] ]
 						ifFound: [ :obj | 
 							obj
-								value: selector asString , ':' , (observation at: #id) asString , '.' , index asString
+								value:
+									selector asString , ':' , (observation at: #id) asString , '.'
+										, index asString
 								start: 0
 								stop: -1 ] ].
 			(observation at: #id) -> asserts ]
@@ -49,6 +56,8 @@ Carving2AssertAmplifier >> buildAxularyClass: aMethod basedOn: aClass [
 	generatedClass class addInstVarNamed: 'observer'.
 	generatedClass class
 		compile: 'observer ^ observer ifNil: [ observer := Observer new ]'.
+	generatedClass class
+		compile: 'testTarget ^ ' , theAmplifier targetClasses asString .
 	generatedClass class compile: 'isLogging ^true'.
 	generatedClass
 		compile:
@@ -75,7 +84,9 @@ Carving2AssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	generatedClass suite run.
 	observer := generatedClass observer.
 	src3 := self insertAsserts: src2 using: observer.
-	ASTHelper uniqueInstance removeClass: generatedClass source: self class name.
+	ASTHelper uniqueInstance
+		removeClass: generatedClass
+		source: self class name.
 	^ src3
 ]
 
@@ -86,12 +97,18 @@ Carving2AssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	newAsserts := self
 		buildAsserts: anObserver
 		methodName: aMethod selector.
-		
 	newAsserts reverse
 		do: [ :pair | 
 			pair value reverse
 				do: [ :assrt | 
+					| enclouse |
+					enclouse := false.
 					assrt selector = #should:raise:description:
+						ifTrue: [ enclouse := true ].
+					assrt selector = #should:notTakeMoreThan:description:
+						ifTrue: [ enclouse := true ].
+						
+					enclouse
 						ifTrue: [ | msg block |
 							msg := aMethod body statements at: pair key.
 							block := RBBlockNode body: (RBSequenceNode statements: {msg}).

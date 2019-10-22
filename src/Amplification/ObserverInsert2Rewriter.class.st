@@ -24,42 +24,51 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 	i := 0.
 	targetNodes
 		do: [ :x | 
-			| idx y rcv sel offset a b|
+			| idx y rcv sel offset a b |
 			idx := aMethod body statements indexOf: x.
 			offset := 0.
 			rcv := nil.
 			sel := nil.
-
-x value class = RBCascadeNode
+			x value class = RBCascadeNode
 				ifTrue: [ rcv := (x value messages at: 1) receiver.
 					sel := x value messages last selector ].
 			x value class = RBMessageNode
 				ifTrue: [ rcv := x value receiver.
 					sel := x value selector ].
-				rcv ifNotNil: [ 
-				
-				
-a:= RBParser parseExpression: '[]
+			rcv
+				ifNotNil: [ a := RBParser
+						parseExpression:
+							'[]
 		on: Error
 		do: [ :ex | 
-			self class observer observeException: ex id: ',idx asString,']'.
-		
-b:= RBParser parseExpression: '[|smallamp_elapsedTime| smallamp_elapsedTime := Time
-		millisecondsToRun: [ ', x formattedCode ,' ].
-	self class observer observe: ', rcv formattedCode ,' name: ''', rcv formattedCode ,''' id: ',idx asString ,'.
-	self class observer observeResult: ',x variable name,'
-		receiver: ',rcv  formattedCode,'
-		selector: #', sel asString ,'
-		name: #',x variable name,'
-		id: ',idx asString ,' ]'.
-	
-a receiver: b.
-aMethod body statements at: idx put: a.
-			
-			
-]			
-			
-			]
+			self class observer observeException: ex id: ' , idx asString , ']'.
+					b := RBParser
+						parseExpression:
+							'[|smallamp_elapsedTime| smallamp_elapsedTime := Time
+		millisecondsToRun: [ [ ' , x formattedCode
+								,
+									' ]
+		valueWithin: 999 milliSeconds
+		onTimeout: [ self halt. self class observer observeTimeOut: 1000 milliSeconds id: ', idx asString, '  ] ].
+	self class observer observe: ' , rcv formattedCode , ' name: '''
+								, rcv formattedCode , ''' id: ' , idx asString
+								,
+									'.
+	self class observer observeResult: ' , x variable name
+								,
+									'
+		receiver: ' , rcv formattedCode
+								,
+									'
+		selector: #' , sel asString
+								,
+									'
+		name: #' , x variable name
+								,
+									'
+		id: ' , idx asString , ' ]'.
+					a receiver: b.
+					aMethod body statements at: idx put: a ] ]
 ]
 
 { #category : #accessing }

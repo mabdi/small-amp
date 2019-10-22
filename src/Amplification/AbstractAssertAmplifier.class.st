@@ -1,6 +1,9 @@
 Class {
 	#name : #AbstractAssertAmplifier,
 	#superclass : #Object,
+	#instVars : [
+		'theAmplifier'
+	],
 	#category : #'Amplification-Core'
 }
 
@@ -16,7 +19,8 @@ AbstractAssertAmplifier >> assertionAmplify: aMethod [
 
 { #category : #'as yet unclassified' }
 AbstractAssertAmplifier >> doAssertAmplification: population amplifier: anAmplifier [
-		^ population
+	theAmplifier := anAmplifier.
+	^ population
 		collect: [ :tcase | self assertionAmplify: tcase ]
 		displayingProgress: 'Assert amplifying'
 ]

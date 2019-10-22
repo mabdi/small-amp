@@ -6,11 +6,13 @@ Class {
 
 { #category : #asserting }
 PrimitiveSerializer class >> makeAssertName: aName value: aValue last: theLast [
-	| assertStatements theObject theValue |
+	| assertStatements theObject theValue variableValue |
 	assertStatements := OrderedCollection new.
 	theObject := RBVariableNode named: aName.
-	theValue := RBLiteralValueNode
-		value: (SerializerFactory unserialize: aValue).
+	variableValue := SerializerFactory unserialize: aValue.
+	theValue := RBLiteralValueNode value: variableValue.
+	theValue formattedCode = '''<an unprintable nonliteral value>'''
+		ifTrue: [ self halt ].
 	assertStatements
 		add:
 			(RBMessageNode

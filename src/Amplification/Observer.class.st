@@ -44,10 +44,13 @@ Observer >> memory [ ^memory
 
 { #category : #'as yet unclassified' }
 Observer >> observe: anObject name: aString id: anInt [
-	| serialized |
+	| serialized doseialize|
+	doseialize := true.
+	aString = 'self' ifTrue: [doseialize := false].
+	aString first isUppercase ifTrue: [doseialize := false].
 	serialized := Dictionary new.
-	aString first isUppercase
-		ifFalse: [ serialized := SerializerFactory serialize: anObject ].
+	doseialize 
+		ifTrue: [ serialized := SerializerFactory serialize: anObject ].
 	serialized at: #id put: anInt.
 	serialized at: #name put: aString.
 	serialized
@@ -94,6 +97,18 @@ Observer >> observeResult: aResult receiver: aReceiver selector: aSelector name:
 	serialized at: #id put: anInt.
 	serialized at: #name put: aString.
 	serialized at: #equalReceiver put: (aReceiver == aResult).
+	serialized
+		at: #time
+		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
+	memory add: serialized
+]
+
+{ #category : #'as yet unclassified' }
+Observer >> observeTimeOut: duarationInMilliSeconds id: idx [
+	| serialized |
+	serialized := Dictionary new.
+	serialized at: #timeOutLimit put: duarationInMilliSeconds.
+	serialized at: #id put: idx.
 	serialized
 		at: #time
 		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.

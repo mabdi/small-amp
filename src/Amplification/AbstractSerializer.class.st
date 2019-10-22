@@ -54,6 +54,22 @@ AbstractSerializer class >> makeAssertName: aString value: anObject last: theLas
 ]
 
 { #category : #'as yet unclassified' }
+AbstractSerializer class >> makeAssertTimeOut: timeOut [
+	| assertStatement theMessage theTimeOut theDiscription |
+	theMessage := RBVariableNode named: 'fake'.
+	theTimeOut := RBMessageNode receiver: (RBVariableNode named: 'Duration') selector: #milliSeconds: arguments: {RBLiteralValueNode  value: timeOut}.
+	theDiscription := RBLiteralValueNode value: 'smallAmp'.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #should:notTakeMoreThan:description:
+		arguments:
+			{theMessage.
+			theTimeOut.
+			theDiscription}.
+	^ assertStatement
+]
+
+{ #category : #'as yet unclassified' }
 AbstractSerializer class >> myTag [
 	self subclassResponsibility
 ]
