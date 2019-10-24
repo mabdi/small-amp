@@ -98,15 +98,18 @@ SmallAmpSelector >> doSelectOld: aPopulation selected: aPopulationAll [
 { #category : #testing }
 SmallAmpSelector >> isMutationResult: mutatedSelector betterThan: parentSelector basedOn: analysis [
 	| pkilled mkilled |
+	"TODO I forget terminated result. have a look to mutalk sourcecode to see why terminated results dont have any result"
 	pkilled := (analysis particularResults
 		select: [ :res | 
-			res result failures
-				anySatisfy: [ :meth | meth selector = parentSelector ] ])
+			res result isNotNil ifTrue: [
+				res result failures
+					anySatisfy: [ :meth | meth selector = parentSelector ] ]
+				 ifFalse: [false] ])
 		collect: [ :item | item mutant modifiedSource ].
 	mkilled := (analysis particularResults
 		select: [ :res | 
-			res result failures
-				anySatisfy: [ :meth | meth selector = mutatedSelector ] ])
+			res result isNotNil ifTrue:[res result failures
+				anySatisfy: [ :meth | meth selector = mutatedSelector ] ] ifFalse: [ false ] ])
 		collect: [ :item | item mutant modifiedSource ].
 	^ (pkilled allSatisfy: [ :item | mkilled includes: item ])
 		and: [ mkilled anySatisfy: [ :item | (pkilled includes: item) not ] ]

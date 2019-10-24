@@ -49,7 +49,10 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 								,
 									' ]
 		valueWithin: 999 milliSeconds
-		onTimeout: [ self halt. self class observer observeTimeOut: 1000 milliSeconds id: ', idx asString, '  ] ].
+		onTimeout: [ self class observer observeTimeOut: 1000 id: '
+								, idx asString
+								,
+									'  ] ].
 	self class observer observe: ' , rcv formattedCode , ' name: '''
 								, rcv formattedCode , ''' id: ' , idx asString
 								,

@@ -107,7 +107,8 @@ Carving2AssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 						ifTrue: [ enclouse := true ].
 					assrt selector = #should:notTakeMoreThan:description:
 						ifTrue: [ enclouse := true ].
-						
+					assrt selector = #should:takeMoreThan:description:
+						ifTrue: [ enclouse := true ].
 					enclouse
 						ifTrue: [ | msg block |
 							msg := aMethod body statements at: pair key.

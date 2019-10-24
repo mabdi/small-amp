@@ -57,11 +57,14 @@ AbstractSerializer class >> makeAssertName: aString value: anObject last: theLas
 AbstractSerializer class >> makeAssertTimeOut: timeOut [
 	| assertStatement theMessage theTimeOut theDiscription |
 	theMessage := RBVariableNode named: 'fake'.
-	theTimeOut := RBMessageNode receiver: (RBVariableNode named: 'Duration') selector: #milliSeconds: arguments: {RBLiteralValueNode  value: timeOut}.
+	theTimeOut := RBMessageNode
+		receiver: (RBVariableNode named: 'Duration')
+		selector: #milliSeconds:
+		arguments: {(RBLiteralValueNode value: timeOut)}.
 	theDiscription := RBLiteralValueNode value: 'smallAmp'.
 	assertStatement := RBMessageNode
 		receiver: (RBSelfNode named: 'self')
-		selector: #should:notTakeMoreThan:description:
+		selector: #should:takeMoreThan:description:
 		arguments:
 			{theMessage.
 			theTimeOut.
@@ -167,7 +170,7 @@ AbstractSerializer >> makeAssertsBasedOnMemory: aMemory differnetial: aBoolean [
 
 { #category : #accessing }
 AbstractSerializer >> maxDepth [
-	^ 4
+	^ 3
 ]
 
 { #category : #accessing }

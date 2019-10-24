@@ -2,7 +2,8 @@ Class {
 	#name : #ASTHelper,
 	#superclass : #Object,
 	#instVars : [
-		'instanceIds'
+		'instanceIds',
+		'debug'
 	],
 	#classInstVars : [
 		'instance'
@@ -63,6 +64,20 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 					'deny: actual equals: expected description: description ^ self
 		deny: actual = expected
 		description: description'.
+			tempClass
+				compile:
+					'should: aBlock notTakeMoreThan: aDuration description: description ^ aBlock
+		valueWithin: aDuration
+		onTimeout: [ self
+				assert: false
+				description: description ]'.
+			tempClass
+				compile:
+					'should: aBlock takeMoreThan: aDuration description: description ^ aBlock
+		valueWithin: aDuration
+		onTimeout: [ self
+				assert: true
+				description: description ]'.
 			tempClass compile: 'isLogging ^true' ].
 	^ tempClass
 ]
@@ -86,12 +101,32 @@ ASTHelper >> cleanUp: aSourceCode [
 	^ mtd formattedCode
 ]
 
+{ #category : #'as yet unclassified' }
+ASTHelper >> clearTempClasses [
+	<script: 'ASTHelper uniqueInstance clearTempClasses '>
+	'Amplification-TempClasses' asPackage classes
+		do:    [ :item | item removeFromSystem ] 
+		displayingProgress: 'Clear temp amplified classes.'
+]
+
 { #category : #removing }
 ASTHelper >> convertAllToAssert: aMethod [
 	^ (AssertTransform
 		convertAllToAssert: aMethod parseTree
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
 		formattedCode
+]
+
+{ #category : #'as yet unclassified' }
+ASTHelper >> debugFalse [
+	<script: 'ASTHelper uniqueInstance debugFalse'>
+	debug := false
+]
+
+{ #category : #'as yet unclassified' }
+ASTHelper >> debugTrue [
+	<script: 'ASTHelper uniqueInstance debugTrue'>
+	debug := true
 ]
 
 { #category : #'as yet unclassified' }
@@ -138,8 +173,6 @@ ASTHelper >> removeAssertionsOld: aMethod [
 
 { #category : #removing }
 ASTHelper >> removeClass: theClass source: sid [
-	| debug |
-	debug := false.
 	debug
 		ifFalse: [ theClass removeFromSystem ]
 ]
