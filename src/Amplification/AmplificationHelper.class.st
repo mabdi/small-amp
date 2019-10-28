@@ -110,6 +110,7 @@ AmplificationHelper >> visualizeAmplification2: aList [
 					{(('Killed %' , ks asString) -> r killedMutants).
 					(('Alive %' , ls asString) -> r aliveMutants).
 					(('Terminated %' , ts asString) -> r terminatedMutants)} ];
+
 				format: [ :row | row key ] ].
 	browser transmit
 		to: #mutants;
