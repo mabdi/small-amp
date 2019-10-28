@@ -96,11 +96,21 @@ AmplificationHelper >> visualizeAmplification2: aList [
 		andShow: [ :a | 
 			a list
 				display: [ :dic | 
-					| r |
+					| r size ks ls ts |
 					r := (dic at: #analysis) generalResult.
-					{('Killed' -> r killedMutants).
-					('Alive' -> r aliveMutants).
-					('Terminated' -> r terminatedMutants)} ];
+					size := r killedMutants size + r aliveMutants size
+						+ r terminatedMutants size.
+					ks := 0.
+					ls := 0.
+					ts := 0.
+					size > 0
+						ifTrue: [ ks := 100 * (r killedMutants size / size) truncateTo: 0.01.
+							ls := 100 * (r aliveMutants size / size) truncateTo: 0.01.
+							ts := 100 * (r terminatedMutants size / size) truncateTo: 0.01 ].
+					{(('Killed %' , ks asString) -> r killedMutants).
+					(('Alive %' , ls asString) -> r aliveMutants).
+					(('Terminated %' , ts asString) -> r terminatedMutants)} ];
+
 				format: [ :row | row key ] ].
 	browser transmit
 		to: #mutants;

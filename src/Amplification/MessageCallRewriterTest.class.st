@@ -136,3 +136,44 @@ MessageCallRewriterTest >> testFunction5 [
 	visitor visitNode: node.
 	self assert: visitor targetNodes size equals: 2
 ]
+
+{ #category : #tests }
+MessageCallRewriterTest >> testMessageCall2Rewriter [
+	node := RBParser parseMethod: 'foo a:=1. Array with:1'.
+	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	self
+		assert: (GeneralHelper renameTempVars: node formattedCode)
+		equals:
+			'foo
+	| tmp1 |
+	a := 1.
+	tmp1 := Array with: 1'
+]
+
+{ #category : #tests }
+MessageCallRewriterTest >> testMessageCall2Rewriter2 [
+	node := RBParser parseMethod: 'foo a:=1. Array with:1;with:2'.
+	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	self
+		assert: (GeneralHelper renameTempVars: node formattedCode)
+		equals:
+			'foo
+	| tmp1 tmp2 |
+	a := 1.
+	tmp2 := Array with: 1.
+	tmp1 := Array with: 2'
+]
+
+{ #category : #tests }
+MessageCallRewriterTest >> testMessageCall2Rewriter3 [
+	node := RBParser parseMethod: 'foo a:=1. (Array with:1 with:2) size'.
+	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	self
+		assert: (GeneralHelper renameTempVars: node formattedCode)
+		equals:
+			'foo
+	| tmp1 tmp2 |
+	a := 1.
+	tmp2 := Array with: 1 with: 2.
+	tmp1 := tmp2 size'
+]
