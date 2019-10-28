@@ -75,8 +75,9 @@ Carving2AssertAmplifier >> buildAxularyClass: aMethod basedOn: aClass [
 Carving2AssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer aMethod aVisitor src2 src3 |
 	aMethod := RBParser parseMethod: aMethodSrc.
-	aVisitor := MessageCallRewriter new.
-	aVisitor doYourJob: aMethod.
+	"aVisitor := MessageCallRewriter new.
+	aVisitor doYourJob: aMethod."
+	(MessageCall2Rewriter initializeFor: aMethod) doYourJob.
 	src2 := aMethod formattedCode.
 	aVisitor := ObserverInsert2Rewriter new.
 	aVisitor doYourJob: aMethod.

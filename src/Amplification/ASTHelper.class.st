@@ -33,7 +33,7 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 		subclass: (testClass name asString , self getId asString) asSymbol
 		instanceVariableNames: testClass instanceVariablesString
 		classVariableNames: ''
-		package: 'Amplification-TempClasses'.
+		package: 'AmplificationTempClasses'.
 	#(#setUp #tearDown)
 		do: [ :each | 
 			testClass methods
@@ -104,8 +104,8 @@ ASTHelper >> cleanUp: aSourceCode [
 { #category : #'as yet unclassified' }
 ASTHelper >> clearTempClasses [
 	<script: 'ASTHelper uniqueInstance clearTempClasses '>
-	'Amplification-TempClasses' asPackage classes
-		do:    [ :item | item removeFromSystem ] 
+	'AmplificationTempClasses' asPackage classes
+		do: [ :item | item removeFromSystem ]
 		displayingProgress: 'Clear temp amplified classes.'
 ]
 
@@ -115,6 +115,11 @@ ASTHelper >> convertAllToAssert: aMethod [
 		convertAllToAssert: aMethod parseTree
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
 		formattedCode
+]
+
+{ #category : #accessing }
+ASTHelper >> debug [ 
+	^ debug 
 ]
 
 { #category : #'as yet unclassified' }
@@ -173,7 +178,7 @@ ASTHelper >> removeAssertionsOld: aMethod [
 
 { #category : #removing }
 ASTHelper >> removeClass: theClass source: sid [
-	debug
+	self debug 
 		ifFalse: [ theClass removeFromSystem ]
 ]
 
