@@ -118,8 +118,8 @@ ASTHelper >> convertAllToAssert: aMethod [
 ]
 
 { #category : #accessing }
-ASTHelper >> debug [ 
-	^ debug 
+ASTHelper >> debug [
+	^ debug ifNil: [ debug := false ]
 ]
 
 { #category : #'as yet unclassified' }
