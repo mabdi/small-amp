@@ -36,7 +36,7 @@ Observer >> addOrCheck: obj [
 	
 	chekingFlaky
 		ifFalse: [ memory add: obj ]
-		ifTrue: [ self checkFlaky: obj ]
+		ifTrue: [ [self checkFlaky: obj] on: Error do: [:er | self halt ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -55,22 +55,26 @@ Observer >> checkFlaky: obj [
 { #category : #testing }
 Observer >> checkFlaky: oldOne with: newOne path: apath [
 	| oldVal newVal |
+	
 	oldVal := oldOne.
 	newVal := newOne.
 	apath
 		do: [ :key | 
 			oldVal := oldVal at: key.
 			newVal := newVal at: key ].
-	
 	(oldVal at: #type ifAbsent: [ #ignore ]) = #object
-		ifTrue: [ (oldVal at: #value)
-				keysDo: [ :key | 
+		ifTrue: [ (oldVal at: #value) ifNotNil:[
+				(oldVal at: #value) keysDo: [ :key | 
 					| newPath |
-					newPath := apath , {#value. key}.
-					self checkFlaky: oldOne with: newOne path: newPath ] ].
+					newPath := apath
+						,
+							{#value.
+							key}.
+					self checkFlaky: oldOne with: newOne path: newPath ] ]].
 	(oldVal at: #type ifAbsent: [ #ignore ]) = #primitive
-		ifTrue: [ ((oldVal at: #class) = (newVal at: #class) and: [ (oldVal at: #value) = (newVal at: #value) ])ifFalse: [ oldVal at: #flaky put: true ]  ].
-	
+		ifTrue: [ ((oldVal at: #class) = (newVal at: #class)
+				and: [ (oldVal at: #value) = (newVal at: #value) ])
+				ifFalse: [ oldVal at: #flaky put: true ] ]
 ]
 
 { #category : #initialization }
