@@ -104,7 +104,7 @@ ASTHelper >> cleanUp: aSourceCode [
 { #category : #'as yet unclassified' }
 ASTHelper >> clearTempClasses [
 	<script: 'ASTHelper uniqueInstance clearTempClasses '>
-	'AmplificationTempClasses' asPackage classes
+	('AmplificationTempClasses' asPackageIfAbsent:[^ true]) classes
 		do: [ :item | item removeFromSystem ]
 		displayingProgress: 'Clear temp amplified classes.'
 ]
