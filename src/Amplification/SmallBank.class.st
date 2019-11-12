@@ -25,6 +25,13 @@ SmallBank >> initialize [
 ]
 
 { #category : #accessing }
+SmallBank >> rand [
+	" Flaky detection "
+	^ (1 to: 1000) atRandom
+
+]
+
+{ #category : #accessing }
 SmallBank >> withdraw: amount [
 <SmallAmpAction>
 	balance >= amount

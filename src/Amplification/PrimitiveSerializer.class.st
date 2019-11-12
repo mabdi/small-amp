@@ -7,7 +7,9 @@ Class {
 { #category : #asserting }
 PrimitiveSerializer class >> makeAssertName: aName value: aValue last: theLast [
 	| assertStatements theObject theValue variableValue |
+	
 	assertStatements := OrderedCollection new.
+	aValue at: #flaky ifPresent: [^ assertStatements ].
 	theObject := RBVariableNode named: aName.
 	variableValue := SerializerFactory unserialize: aValue.
 	theValue := RBLiteralValueNode value: variableValue.
