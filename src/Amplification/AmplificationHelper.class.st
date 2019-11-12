@@ -17,10 +17,10 @@ AmplificationHelper >> amplify: aTestClass target: aTargetClass [
 	minifiedTestClass := amp minifiedTestClass.
 	ASTHelper uniqueInstance
 		renameClass: newTest
-		name: aTargetClass name , 'AmpTest'.
+		name: aTestClass name , 'AmpTest'.
 	ASTHelper uniqueInstance
 		renameClass: minifiedTestClass
-		name: aTargetClass name , 'MinAmpTest'.
+		name: aTestClass name , 'MinAmpTest'.
 	run1 := self mutalkTarget: {aTargetClass} testSuite: {aTestClass}.
 	run2 := self mutalkTarget: {aTargetClass} testSuite: {newTest}.
 	run3 := self

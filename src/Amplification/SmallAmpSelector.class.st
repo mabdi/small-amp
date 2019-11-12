@@ -36,8 +36,8 @@ SmallAmpSelector >> doSelect: aPopulation selected: aPopulationAll [
 			survives
 				detect: [ :s | s = item mutant modifiedSource ]
 				ifFound: [ :s | 
-					item result failures
-						ifNotEmpty: [ selectedTests add: item result failures atRandom selector ] ] ].
+					item result ifNotNil: [ item result failures
+						ifNotEmpty: [ selectedTests add: item result failures atRandom selector ] ] ] ].
 	result := aPopulation
 		select: [ :item | selectedTests includes: item selector ].
 	"extrakills := Dictionary new.

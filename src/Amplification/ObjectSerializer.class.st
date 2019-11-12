@@ -91,18 +91,22 @@ ObjectSerializer >> makeAssertsBasedOnLast: theLast [
 
 { #category : #'as yet unclassified' }
 ObjectSerializer >> objectSerializeAccessing: anObject depth: anInt [
-	| result |
+	| result methods |
 	result := Dictionary new.
-	((anObject class methodsInProtocol: #accessing)
-		select: [ :method | (method selector indexOf: $:) = 0 ])
+	methods := (anObject class methodsInProtocol: #accessing)
+		, (anObject class methodsInProtocol: #testing).
+	
+	methods := methods select: [ :m | m ast lastIsReturn ].
+	(methods select: [ :method | (method selector indexOf: $:) = 0 ])
 		do: [ :l | 
 			| v |
-			[ v := SerializerFactory
+			[ 
+			v := SerializerFactory
 				serialize: (anObject perform: l selector)
 				depth: anInt ]
 				on: Error
 				do: [ :ex | nil ].
-			v ifNotNil: [result at: l selector put: v] ].
+			v ifNotNil: [ result at: l selector put: v ] ].
 	^ result
 ]
 
