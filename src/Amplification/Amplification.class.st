@@ -39,7 +39,8 @@ Class {
 		'testTargets',
 		'testClass',
 		'newTestClass',
-		'minifiedTestClass'
+		'minifiedTestClass',
+		'minifiedAddedTestClass'
 	],
 	#category : #'Amplification-Core'
 }
@@ -114,6 +115,20 @@ Amplification >> makeAssertImportant: id atMethod: methodast [
 ]
 
 { #category : #actions }
+Amplification >> makeMinifiedAddedClass [
+	| l methods |
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
+	methods := l value: testClass.
+	methods := methods
+		,
+			(l value: minifiedTestClass).
+	^ ASTHelper uniqueInstance
+		buildAnTestClassWith: methods
+		using: testClass
+		final: true
+]
+
+{ #category : #actions }
 Amplification >> makeMinifiedClass [
 	| logs methods |
 	self mutalkRun: newTestClass target: testTargets.
@@ -137,6 +152,11 @@ Amplification >> makeMinifiedClass [
 		buildAnTestClassWith: (methods values collect: [ :m | m formattedCode ])
 		using: testClass
 		final: true
+]
+
+{ #category : #actions }
+Amplification >> minifiedAddedTestClass [
+	^ minifiedAddedTestClass
 ]
 
 { #category : #actions }
@@ -175,8 +195,8 @@ Amplification >> newTestClass [
 
 { #category : #actions }
 Amplification >> postStartActions [
-	
 	minifiedTestClass := self makeMinifiedClass.
+	minifiedAddedTestClass := self makeMinifiedAddedClass.
 	^ newTestClass
 ]
 

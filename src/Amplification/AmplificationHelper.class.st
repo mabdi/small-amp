@@ -6,7 +6,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 AmplificationHelper >> amplify: aTestClass target: aTargetClass [
-	| amp newTest run1 run2 minifiedTestClass run3 |
+	| amp newTest run1 run2 minifiedTestClass run3 run4 minifiedAddedTestClass |
 	amp := Amplification
 		initializeWithTests:
 			{(#testTargets -> {aTargetClass}).
@@ -15,20 +15,28 @@ AmplificationHelper >> amplify: aTestClass target: aTargetClass [
 	amp launch.
 	newTest := amp newTestClass.
 	minifiedTestClass := amp minifiedTestClass.
+	minifiedAddedTestClass := amp minifiedAddedTestClass.
 	ASTHelper uniqueInstance
 		renameClass: newTest
 		name: aTestClass name , 'AmpTest'.
 	ASTHelper uniqueInstance
 		renameClass: minifiedTestClass
 		name: aTestClass name , 'MinAmpTest'.
+	ASTHelper uniqueInstance
+		renameClass: minifiedAddedTestClass
+		name: aTestClass name , 'MinAddAmpTest'.
 	run1 := self mutalkTarget: {aTargetClass} testSuite: {aTestClass}.
 	run2 := self mutalkTarget: {aTargetClass} testSuite: {newTest}.
 	run3 := self
 		mutalkTarget: {aTargetClass}
 		testSuite: {minifiedTestClass}.
+	run4 := self
+		mutalkTarget: {aTargetClass}
+		testSuite: {minifiedAddedTestClass}.
 	^ {run1.
 	run2.
-	run3}
+	run3.
+	run4}
 ]
 
 { #category : #'as yet unclassified' }
@@ -38,8 +46,13 @@ AmplificationHelper >> amplifyAll [
 
 { #category : #'as yet unclassified' }
 AmplificationHelper >> amplifyAll: aList [
-	^ aList
-		collect: [ :item | item -> (self amplify: item key target: item value) ]
+	| res |
+	res := OrderedCollection new.
+	aList
+		do:
+			[ :item | res add: item -> (self amplify: item key target: item value) ]
+		displayingProgress: [ :item | 'Processing ' , item key name ].
+	^ res
 ]
 
 { #category : #'as yet unclassified' }

@@ -83,8 +83,12 @@ EvolutionaryAmplifer >> initialAssertAmplify: aPopulation [
 	| population |
 	population := aPopulation
 		collect: [ :tcase | 
-			tcase
-				testMethodModified: (self astHelper removeAssertions: tcase testMethod) ]
+			| noAsserts renamed |
+			noAsserts := self astHelper removeAssertions: tcase testMethod.
+			renamed := (ASTHelper uniqueInstance
+				renameMethodName: noAsserts
+				append: '_amp') formattedCode.
+			tcase testMethodModified: renamed ]
 		displayingProgress: 'Removing assertions'.
 	population := self doAssertAmplification: population.
 	^ population
@@ -139,7 +143,7 @@ EvolutionaryAmplifer >> start [
 						withClass: testClass
 						method: tcase
 						targets: targetClasses ]).
-	
+					
 	resultPeople := self initialAssertAmplify: population clone.
 	(1 to: iterations)
 		do: [ :gen | 
