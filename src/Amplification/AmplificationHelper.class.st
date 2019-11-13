@@ -56,6 +56,54 @@ AmplificationHelper >> amplifyAll: aList [
 ]
 
 { #category : #'as yet unclassified' }
+AmplificationHelper >> createMdTable: runs [
+	| head row detail |
+	head := [ :s | 
+	s
+		nextPutAll: '| Test case | Test target | Original | Amp | AmpMin | AmpMinAdd |';
+		cr;
+		nextPutAll:
+			'| -------- | ----------- | -------- | ----------- | -------- | ----------- |';
+		cr ].
+	detail := [ :s :d | 
+	s nextPutAll: '#TestMethods: '.
+	s nextPutAll: ((d at: #testClass) at: 1) testSelectors size asString.
+	s nextPutAll: '<br>'.
+	s nextPutAll: '#AllMutations: '.
+	s
+		nextPutAll: (d at: #analysis) generalResult numberOfEvaluatedMutants asString.
+	s nextPutAll: '<br>'.
+	s nextPutAll: '#KilledMutants: '.
+	s
+		nextPutAll:
+			(d at: #analysis) generalResult numberOfKilledOrTerminatedMutants
+				asString.
+	s nextPutAll: '<br>'.
+	s nextPutAll: 'Score: %'.
+	s nextPutAll: (d at: #analysis) generalResult mutationScore asString ].
+	row := [ :s :i | 
+	s
+		nextPutAll: '| ';
+		nextPutAll: i key key name;
+		nextPutAll: ' | ';
+		nextPutAll: i key value name;
+		nextPutAll: ' | '.
+	detail value: s value: (i value at: 1).
+	s nextPutAll: ' | '.
+	detail value: s value: (i value at: 2).
+	s nextPutAll: ' | '.
+	detail value: s value: (i value at: 3).
+	s nextPutAll: ' | '.
+	detail value: s value: (i value at: 4).
+	s nextPutAll: ' | '.
+	s cr ].
+	^ String
+		streamContents: [ :stream | 
+			head value: stream.
+			runs do: [ :item | row value: stream value: item ] ]
+]
+
+{ #category : #'as yet unclassified' }
 AmplificationHelper >> mutalkTarget: aClass testSuite: aTestSuite [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
