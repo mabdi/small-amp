@@ -5,6 +5,65 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+AmplificationHelper class >> getPairsForPackage: aPackageNameString [
+	| ins clsss |
+	ins := self new.
+	clsss := aPackageNameString asPackage classes select: #isTestCase.
+	^ clsss collect: [ :cls | cls -> (ins guessTestTargetFor: cls) ]
+]
+
+{ #category : #'as yet unclassified' }
+AmplificationHelper class >> getPairsForPackagePrefix: aPrefix [
+	| pkgs ins clsss |
+	ins := self new.
+	pkgs := RPackageOrganizer default packageNames
+		select: [ :n | n matchesRegex: aPrefix ].
+	clsss := pkgs
+		inject: OrderedCollection new
+		into: [ :res :pkg | 
+			res addAll: (pkg asPackage classes select: #isTestCase).
+			res ].
+	^ clsss collect: [ :cls | cls -> (ins guessTestTargetFor: cls) ]
+]
+
+{ #category : #'as yet unclassified' }
+AmplificationHelper class >> getStringPairsForPackagePrefix: aPrefix [
+	| pairs |
+	pairs := self getPairsForPackagePrefix: aPrefix.
+	^ String
+		streamContents: [ :s | 
+			s
+				nextPutAll: 'testTargtsMapping';
+				cr;
+				nextPutAll: '"generatedBy: `AmplificationHelper getStringPairsForPackagePrefix: ''';
+				nextPutAll: aPrefix;
+				nextPutAll: '''`"';
+				cr;
+				nextPutAll: '| list |';
+				cr;
+				nextPutAll: 'list := OrderedCollection new.';
+				cr.
+			pairs
+				do: [ :p | 
+					| c |
+					c := ''.
+					p value ifNil: [ c := '"' ].
+					s
+						nextPutAll: c;
+						nextPutAll: 'list add: ';
+						nextPutAll: p asString;
+						nextPutAll: '.';
+						nextPutAll: c;
+						cr ].
+			s nextPutAll: '^ list.' ]
+]
+
+{ #category : #'as yet unclassified' }
+AmplificationHelper class >> guessTestTargetFor: aTestClass [
+	^ self new guessTestTargetFor: aTestClass
+]
+
+{ #category : #'as yet unclassified' }
 AmplificationHelper >> amplify: aTestClass target: aTargetClass [
 	| amp newTest run1 run2 minifiedTestClass run3 run4 minifiedAddedTestClass |
 	amp := Amplification
@@ -101,6 +160,22 @@ AmplificationHelper >> createMdTable: runs [
 		streamContents: [ :stream | 
 			head value: stream.
 			runs do: [ :item | row value: stream value: item ] ]
+]
+
+{ #category : #'as yet unclassified' }
+AmplificationHelper >> guessTestTargetFor: aTestClass [
+	"1. Name
+	2. setup TODO
+	3. asserted object TODO
+	4. manipulated object TODO
+	"
+
+	| g |
+	(aTestClass name matchesRegex: '.*Test$')
+		ifTrue: [ g := aTestClass name copyWithRegex: 'Test$' matchesReplacedWith: ''.
+			(SmalltalkImage current hasClassNamed: g)
+				ifTrue: [ ^ SmalltalkImage current classNamed: g ] ].
+	^ nil
 ]
 
 { #category : #'as yet unclassified' }
