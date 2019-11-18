@@ -32,11 +32,12 @@ Observer >> ObservationOn: aSelector with: anArray in: aReceiver method: method 
 ]
 
 { #category : #adding }
-Observer >> addOrCheck: obj [ 
-	
+Observer >> addOrCheck: obj [
 	chekingFlaky
 		ifFalse: [ memory add: obj ]
-		ifTrue: [ [self checkFlaky: obj] on: Error do: [:er | self halt ] ]
+		ifTrue: [ [ self checkFlaky: obj ]
+				on: Exception
+				do: [ :er | self halt ] ]
 ]
 
 { #category : #'as yet unclassified' }
