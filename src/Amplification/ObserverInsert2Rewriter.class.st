@@ -24,9 +24,8 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 	i := 0.
 	targetNodes
 		do: [ :x | 
-			| idx y rcv sel offset a b |
+			| idx rcv sel a b |
 			idx := aMethod body statements indexOf: x.
-			offset := 0.
 			rcv := nil.
 			sel := nil.
 			x value class = RBCascadeNode
@@ -36,42 +35,44 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 				ifTrue: [ rcv := x value receiver.
 					sel := x value selector ].
 			rcv
-				ifNotNil: [ a := RBParser
-						parseExpression:
-							'[]
+				ifNotNil: [ rcv isVariable
+						ifTrue: [ a := RBParser
+								parseExpression:
+									'[]
 		on: Error
 		do: [ :ex | 
 			self class observer observeException: ex id: ' , idx asString , ']'.
-					b := RBParser
-						parseExpression:
-							'[|smallamp_elapsedTime| smallamp_elapsedTime := Time
+							b := RBParser
+								parseExpression:
+									'[|smallamp_elapsedTime noObserve| noObserve:=false. smallamp_elapsedTime := Time
 		millisecondsToRun: [ [ ' , x formattedCode
-								,
-									' ]
+										,
+											' ]
 		valueWithin: 999 milliSeconds
 		onTimeout: [ self class observer observeTimeOut: 1000 id: '
-								, idx asString
-								,
-									'  ] ].
-	self class observer observe: ' , rcv formattedCode , ' name: '''
-								, rcv formattedCode , ''' id: ' , idx asString
-								,
-									'.
+										, idx asString
+										,
+											'. noObserve:=true  ] ].
+	noObserve ifFalse: [ self class observer observe: '
+										, rcv formattedCode , ' name: ''' , rcv formattedCode
+										, ''' id: ' , idx asString
+										,
+											'.
 	self class observer observeResult: ' , x variable name
-								,
-									'
+										,
+											'
 		receiver: ' , rcv formattedCode
-								,
-									'
+										,
+											'
 		selector: #' , sel asString
-								,
-									'
+										,
+											'
 		name: #' , x variable name
-								,
-									'
-		id: ' , idx asString , ' ]'.
-					a receiver: b.
-					aMethod body statements at: idx put: a ] ]
+										,
+											'
+		id: ' , idx asString , ' ] on: Exception do: [ self halt ] ]'.
+							a receiver: b.
+							aMethod body statements at: idx put: a ] ] ]
 ]
 
 { #category : #accessing }
