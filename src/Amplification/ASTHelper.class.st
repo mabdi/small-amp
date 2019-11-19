@@ -34,11 +34,12 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 		instanceVariableNames: testClass instanceVariablesString
 		classVariableNames: ''
 		package: 'AmplificationTempClasses'.
-	#(#setUp #tearDown)
+	"#(#setUp #tearDown)
 		do: [ :each | 
 			testClass methods
 				detect: [ :mtd | mtd selector = each ]
-				ifFound: [ :item | tempClass compile: item sourceCode ] ].
+				ifFound: [ :item | tempClass compile: item sourceCode ] ]."
+	(testClass methods reject: #isTestMethod) do: [ :item | tempClass compile: item sourceCode ].
 	aCollection
 		do: [ :item | 
 			| ast |
