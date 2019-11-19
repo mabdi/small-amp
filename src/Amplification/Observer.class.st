@@ -7,7 +7,8 @@ Class {
 		'serializers',
 		'chekingFlaky',
 		'flankyIdx',
-		'flakyLen'
+		'flakyLen',
+		'flakyMem'
 	],
 	#category : #'Amplification-Core'
 }
@@ -35,14 +36,30 @@ Observer >> ObservationOn: aSelector with: anArray in: aReceiver method: method 
 Observer >> addOrCheck: obj [
 	chekingFlaky
 		ifFalse: [ memory add: obj ]
-		ifTrue: [ [ self checkFlaky: obj ]
-				on: Exception
-				do: [ :er | self halt ] ]
+		ifTrue: [ flakyMem add: obj ]
+				
 ]
 
 { #category : #'as yet unclassified' }
 Observer >> amplify: aMethod [
 	
+]
+
+{ #category : #accessing }
+Observer >> checkFlaky [
+	memory
+		select: [ :item | (item at: #observedby) = #observeResult ]
+		thenDo: [ :item | 
+			flakyMem
+				detect:
+					[ :i | (i at: #id) = (item at: #id) and: [ (i at: #observedby) = #observeResult ] ]
+				ifFound: [ :i | self checkFlaky: item with: i path: {} ] ].
+	memory
+		select: [ :item | (item at: #observedby) = #observe ]
+		thenDo: [ :item | 
+			flakyMem
+				detect: [ :i | (i at: #id) = (item at: #id) and: [ (i at: #observedby) = #observe ] ]
+				ifFound: [ :i | self checkFlaky: item with: i path: {} ] ]
 ]
 
 { #category : #adding }
@@ -81,6 +98,7 @@ Observer >> checkFlaky: oldOne with: newOne path: apath [
 { #category : #initialization }
 Observer >> initialize [
 	memory := OrderedCollection new.
+	flakyMem := OrderedCollection new.
 	chekingFlaky := false
 ]
 
@@ -100,6 +118,7 @@ Observer >> observe: anObject name: aString id: anInt [
 	doseialize
 		ifTrue: [ serialized := SerializerFactory serialize: anObject ].
 	serialized at: #id put: anInt.
+	serialized at: #observedby put: #observe.
 	serialized at: #name put: aString.
 	serialized
 		at: #time
@@ -132,6 +151,7 @@ Observer >> observeException: exception id: anInt [
 	serialized := Dictionary new.
 	serialized at: #exceptionClass put: exception class name.
 	serialized at: #id put: anInt.
+	serialized at: #observedby put: #observeException.
 	serialized
 		at: #time
 		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
@@ -143,6 +163,9 @@ Observer >> observeResult: aResult receiver: aReceiver selector: aSelector name:
 	| serialized |
 	serialized := SerializerFactory serialize: aResult.
 	serialized at: #id put: anInt.
+	serialized
+		at: #observedby
+		put: #observeResult.
 	serialized at: #name put: aString.
 	serialized at: #equalReceiver put: aReceiver == aResult.
 	serialized
@@ -157,6 +180,7 @@ Observer >> observeTimeOut: duarationInMilliSeconds id: idx [
 	serialized := Dictionary new.
 	serialized at: #timeOutLimit put: duarationInMilliSeconds.
 	serialized at: #id put: idx.
+	serialized at: #observedby put: #observeTimeOut.
 	serialized
 		at: #time
 		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.

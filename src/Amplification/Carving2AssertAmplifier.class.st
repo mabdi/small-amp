@@ -82,11 +82,12 @@ Carving2AssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	aVisitor := ObserverInsert2Rewriter new.
 	aVisitor doYourJob: aMethod.
 	generatedClass := self buildAxularyClass: aMethod basedOn: aClass.
-	
 	generatedClass suite run.
 	3
 		timesRepeat: [ generatedClass observer resetFlakyDetection.
-			generatedClass suite run ].	"Flaky detection"
+			generatedClass suite run.
+			generatedClass observer checkFlaky ].	"Flaky detection"
+	
 	observer := generatedClass observer.
 	src3 := self insertAsserts: src2 using: observer.
 	ASTHelper uniqueInstance
