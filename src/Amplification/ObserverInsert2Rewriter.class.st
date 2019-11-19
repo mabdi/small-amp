@@ -53,7 +53,7 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 										, idx asString
 										,
 											'. noObserve:=true  ] ].
-	noObserve ifFalse: [ self class observer observe: '
+	noObserve ifFalse: [ [self class observer observe: '
 										, rcv formattedCode , ' name: ''' , rcv formattedCode
 										, ''' id: ' , idx asString
 										,
@@ -70,7 +70,7 @@ ObserverInsert2Rewriter >> insertObservers: aMethod [
 		name: #' , x variable name
 										,
 											'
-		id: ' , idx asString , ' ] on: Exception do: [ self halt ] ]'.
+		id: ' , idx asString , ' ] on: Exception do: [ self halt ] ] ]'.
 							a receiver: b.
 							aMethod body statements at: idx put: a ] ] ]
 ]
