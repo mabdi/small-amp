@@ -21,13 +21,13 @@ ASTHelper class >> uniqueInstance [
 	^ instance ifNil: [ instance := self new ]
 ]
 
-{ #category : #'as yet unclassified' }
-ASTHelper >> buildAnTestClassWith: aCollection using: testClass [
-	 ^ self buildAnTestClassWith: aCollection using: testClass final: false
+{ #category : #'method operations' }
+ASTHelper >> buildTestClassWith: aCollection using: testClass [
+	 ^ self buildTestClassWith: aCollection using: testClass final: false
 ]
 
-{ #category : #'as yet unclassified' }
-ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
+{ #category : #'method operations' }
+ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 	| tempClass |
 	tempClass := testClass superclass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -39,11 +39,12 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 			testClass methods
 				detect: [ :mtd | mtd selector = each ]
 				ifFound: [ :item | tempClass compile: item sourceCode ] ]."
-	(testClass methods reject: #isTestMethod) do: [ :item | tempClass compile: item sourceCode ].
+	(testClass methods reject: #isTestMethod)
+		do: [ :item | tempClass compile: item sourceCode ].
 	aCollection
 		do: [ :item | 
 			| ast |
-			ast := RBParser parseMethod: item.
+			ast := self parsedMethodFrom: item.
 			(ast hasPragmaNamed: #madeBySmallAmp)
 				ifFalse: [ ast
 						addPragma: (RBPragmaNode selector: #madeBySmallAmp arguments: {}) ].
@@ -86,7 +87,7 @@ ASTHelper >> buildAnTestClassWith: aCollection using: testClass final: isFinal [
 { #category : #cleanup }
 ASTHelper >> cleanUp: aSourceCode [
 	| mtd tmps rewriter |
-	mtd := RBParser parseMethod: aSourceCode.
+	mtd := self parsedMethodFrom: aSourceCode.
 	tmps := (mtd body temporaries
 		select: [ :tmp | tmp name beginsWith: 'tmp_' ])
 		reject: [ :tmp | 
@@ -96,15 +97,17 @@ ASTHelper >> cleanUp: aSourceCode [
 			mtd acceptVisitor: visitor.
 			visitor used ].
 	rewriter := RBParseTreeRewriter new.
-	tmps do: [ :tmp | rewriter replace: (tmp name,' := ``@x') with: '``@x' ].
+	tmps
+		do: [ :tmp | rewriter replace: tmp name , ' := ``@x' with: '``@x' ].
 	rewriter executeTree: mtd.
-	tmps do: [ :tmp | mtd body temporaries remove: tmp].
+	tmps do: [ :tmp | mtd body temporaries remove: tmp ].
 	^ mtd formattedCode
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #cleanup }
 ASTHelper >> clearTempClasses [
 	<script: 'ASTHelper uniqueInstance clearTempClasses '>
+	
 	('AmplificationTempClasses' asPackageIfAbsent:[^ true]) classes
 		do: [ :item | item removeFromSystem ]
 		displayingProgress: 'Clear temp amplified classes.'
@@ -123,26 +126,26 @@ ASTHelper >> debug [
 	^ debug ifNil: [ debug := false ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #debug }
 ASTHelper >> debugFalse [
 	<script: 'ASTHelper uniqueInstance debugFalse'>
+	
 	debug := false
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #debug }
 ASTHelper >> debugTrue [
 	<script: 'ASTHelper uniqueInstance debugTrue'>
+	
 	debug := true
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> extractMethodName: aSourceCode [
-	| re |
-	re := RBParser parseMethod: aSourceCode.
-	^ re selector
+	^ (self parsedMethodFrom: aSourceCode) selector
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> extractMethodNameRegex: aSourceCode [
 	| re |
 	re := '^(\S+)(\:|\s).*' asRegex.
@@ -158,13 +161,24 @@ ASTHelper >> getId [
 
 { #category : #initialization }
 ASTHelper >> initialize [ 
-instanceIds :=0
+
+	instanceIds := 0
+]
+
+{ #category : #'method operations' }
+ASTHelper >> parsedMethodFrom: aSourceCode [
+	^ self parserClass parseMethod: aSourceCode
+]
+
+{ #category : #factory }
+ASTHelper >> parserClass [
+	^ RBParser
 ]
 
 { #category : #removing }
 ASTHelper >> removeAssertions: aMethod [
 	^ (AssertTransform
-		removeAssertionsNoExtract: (RBParser parseMethod: aMethod)
+		removeAssertionsNoExtract: (self parsedMethodFrom: aMethod)
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
 		formattedCode
 ]
@@ -172,7 +186,7 @@ ASTHelper >> removeAssertions: aMethod [
 { #category : #removing }
 ASTHelper >> removeAssertionsOld: aMethod [
 	^ (AssertTransform
-		removeAssertions: (RBParser parseMethod: aMethod)
+		removeAssertions: (self parsedMethodFrom: aMethod)
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
 		formattedCode
 ]
@@ -183,7 +197,7 @@ ASTHelper >> removeClass: theClass source: sid [
 		ifFalse: [ theClass removeFromSystem ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
 	(self environment includesKey: aName)
 		ifTrue: [^ self error: aName , ' already exists'].
@@ -191,21 +205,21 @@ ASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> renameClass: aClass name: aName [
 	aClass rename: aName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> renameMethodName: aSourceCode append: aText [
 	| re first |
-	re := RBParser parseMethod: aSourceCode.
+	re := self parsedMethodFrom: aSourceCode.
 	first := (re selector splitOn: $:) at: 1.
 	re selector: ((re selector splitOn: $:) at: 1 put: first , aText).
 	^ re
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 ASTHelper >> renameMethodNameRegex: aSourceCode append: aText [
 	| mName |
 	mName := self extractMethodNameRegex: aSourceCode.

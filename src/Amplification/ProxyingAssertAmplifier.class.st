@@ -44,7 +44,7 @@ ProxyingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer proxies |
 	observer := Observer new.
 	generatedClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: {}
+		buildTestClassWith: {}
 		using: aClass.
 	generatedClass compile: aMethodSrc.
 	proxies := self methodsToBeProxied

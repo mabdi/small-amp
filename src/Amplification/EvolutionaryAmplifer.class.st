@@ -106,7 +106,7 @@ EvolutionaryAmplifer >> iterations: anInt [
 
 { #category : #actions }
 EvolutionaryAmplifer >> makeTestClass: aCollection [
-	^ self astHelper buildAnTestClassWith: aCollection using: testClass
+	^ self astHelper buildTestClassWith: aCollection using: testClass
 ]
 
 { #category : #accessing }

@@ -48,10 +48,10 @@ Carving2AssertAmplifier >> buildAsserts: anObserver methodName: selector [
 ]
 
 { #category : #'as yet unclassified' }
-Carving2AssertAmplifier >> buildAxularyClass: aMethod basedOn: aClass [
+Carving2AssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: {}
+		buildTestClassWith: {}
 		using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
 	generatedClass class
@@ -81,7 +81,7 @@ Carving2AssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	src2 := aMethod formattedCode.
 	aVisitor := ObserverInsert2Rewriter new.
 	aVisitor doYourJob: aMethod.
-	generatedClass := self buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := self buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	3
 		timesRepeat: [ generatedClass observer resetFlakyDetection.
