@@ -5,10 +5,10 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> buildAxularyClass: aMethod basedOn: aClass [
+CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: {}
+		buildTestClassWith: {}
 		using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
 	generatedClass class
@@ -36,7 +36,7 @@ CarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer aMethod |
 	aMethod := RBParser parseMethod: aMethodSrc.
 	self insertObservers: aMethod.
-	generatedClass := self buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := self buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	self insertAsserts: aMethod using: observer.

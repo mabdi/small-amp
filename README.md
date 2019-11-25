@@ -1,5 +1,5 @@
 # small-amp
-Test Amplification for Pharo SmallTalk
+Test Amplification for Pharo
 
 ### Current status 
 

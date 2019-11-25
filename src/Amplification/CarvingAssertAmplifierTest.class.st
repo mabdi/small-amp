@@ -33,7 +33,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -82,7 +82,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection1 [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -113,7 +113,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionAdd [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -148,7 +148,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionChange [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -178,7 +178,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionRemove [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -212,7 +212,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionSize [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -250,7 +250,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationComplex [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -293,7 +293,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationObject [
 	'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -328,7 +328,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationPrimitive [
 	someString := someString, ''111'''.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
@@ -360,7 +360,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationRedundant [
 	'.
 	aClass := SmallBankTest .
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	"generatedClass removeFromSystem."
@@ -390,7 +390,7 @@ CarvingAssertAmplifierTest >> testObservationCollection [
 		with: 2'.
 	aClass := FakeTestcase.
 	instance insertObservers: aMethod.
-	generatedClass := instance buildAxularyClass: aMethod basedOn: aClass.
+	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	anArrayTime := generatedClass observer memory
 		collect: [ :item | item at: #time ].

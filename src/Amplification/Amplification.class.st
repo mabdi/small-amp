@@ -123,7 +123,7 @@ Amplification >> makeMinifiedAddedClass [
 		,
 			(l value: minifiedTestClass).
 	^ ASTHelper uniqueInstance
-		buildAnTestClassWith: methods
+		buildTestClassWith: methods
 		using: testClass
 		final: true
 ]
@@ -149,7 +149,7 @@ Amplification >> makeMinifiedClass [
 	newTestClass logs removeAll.
 	methods values do: [ :m | self cleanAndMinifyMethod: m ].
 	^ ASTHelper uniqueInstance
-		buildAnTestClassWith: (methods values collect: [ :m | m formattedCode ])
+		buildTestClassWith: (methods values collect: [ :m | m formattedCode ])
 		using: testClass
 		final: true
 ]

@@ -9,7 +9,7 @@ MuTalkMutationOperator >> mutate: aMethod [
 	| mutations tempClass |
 	mutations := OrderedCollection new.
 	tempClass := ASTHelper uniqueInstance
-		buildAnTestClassWith: {aMethod}
+		buildTestClassWith: {aMethod}
 		using: TestCase.
 	mutations
 		addAll:

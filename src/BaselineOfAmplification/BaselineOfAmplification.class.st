@@ -9,8 +9,11 @@ BaselineOfAmplification >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
-		do: [ spec package: 'Amplification' with:[ spec requires: #('MuTalk')].
+		do: [ 
 			spec
 				baseline: 'MuTalk'
-				with: [ spec repository: 'github://pavel-krivanek/mutalk/src' ] ]
+				with: [ spec repository: 'github://pavel-krivanek/mutalk/src' ].	
+			spec package: 'Amplification' 
+				with:[ spec requires: #('MuTalk')].
+			 ]
 ]

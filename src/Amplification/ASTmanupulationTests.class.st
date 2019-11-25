@@ -17,7 +17,7 @@ ASTmanupulationTests >> setUp [
 ]
 
 { #category : #tests }
-ASTmanupulationTests >> testBulidTestClassAndRun [
+ASTmanupulationTests >> testBuildTestClassAndRun [
 	| result methods |
 	"methods := testMethods
 		collect:
@@ -26,7 +26,7 @@ ASTmanupulationTests >> testBulidTestClassAndRun [
 	methods := testMethods
 		collect: [ :atestMethod | atestMethod sourceCode ].
 	result := ASTHelper uniqueInstance
-		buildAnTestClassWith: methods
+		buildTestClassWith: methods
 		using: FakeTestcase.
 	self
 		deny: (result methods detect: [ :mtd | mtd selector = #setUp ]) isNil.
