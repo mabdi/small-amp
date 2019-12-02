@@ -111,7 +111,7 @@ SerializerFactoryTests >> testObject1 [
 	self
 		assert: (value at: #value) asString
 		equals:
-			'a Dictionary(#x->a Dictionary(#class->SmallInteger #type->#primitive #value->''1'' ) #y->a Dictionary(#class->SmallInteger #type->#primitive #value->''2'' ) )'
+			'a Dictionary(#isFloatPoint->a Dictionary(#class->False #type->#primitive #value->''false'' ) #isIntegerPoint->a Dictionary(#class->True #type->#primitive #value->''true'' ) #isPoint->a Dictionary(#class->True #type->#primitive #value->''true'' ) #isZero->a Dictionary(#class->False #type->#primitive #value->''false'' ) #x->a Dictionary(#class->SmallInteger #type->#primitive #value->''1'' ) #y->a Dictionary(#class->SmallInteger #type->#primitive #value->''2'' ) )'
 ]
 
 { #category : #tests }
@@ -195,7 +195,7 @@ SerializerFactoryTests >> testUnObject1 [
 	self
 		assert: value asString
 		equals:
-			'a Dictionary(#x->a Dictionary(#class->SmallInteger #type->#primitive #value->''1'' ) #y->a Dictionary(#class->SmallInteger #type->#primitive #value->''2'' ) )'
+			'a Dictionary(#isFloatPoint->a Dictionary(#class->False #type->#primitive #value->''false'' ) #isIntegerPoint->a Dictionary(#class->True #type->#primitive #value->''true'' ) #isPoint->a Dictionary(#class->True #type->#primitive #value->''true'' ) #isZero->a Dictionary(#class->False #type->#primitive #value->''false'' ) #x->a Dictionary(#class->SmallInteger #type->#primitive #value->''1'' ) #y->a Dictionary(#class->SmallInteger #type->#primitive #value->''2'' ) )'
 ]
 
 { #category : #tests }

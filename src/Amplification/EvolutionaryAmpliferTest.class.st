@@ -31,29 +31,6 @@ EvolutionaryAmpliferTest >> testRun [
 ]
 
 { #category : #tests }
-EvolutionaryAmpliferTest >> testRunArray2DTest [
-	(Amplification
-		initializeWithTests:
-			{(#testTargets -> {Array2D}).
-			(#testClass -> Array2DTest).
-			(#GAIteration -> 2)} asDictionary) launch
-]
-
-{ #category : #tests }
-EvolutionaryAmpliferTest >> testRunN100 [
-	| run1 newTest run2 |
-	newTest := (Amplification
-		initializeWithTests:
-			{(#testTargets -> {SmallBank}).
-			(#testClass -> SmallBankTest).
-			(#GAIteration -> 100)} asDictionary) launch.
-	run1 := self mutalkTarget: {SmallBank} testSuite: {SmallBankTest}.
-	run2 := self mutalkTarget: {SmallBank} testSuite: {newTest}.
-	self
-		assert: run2 generalResult mutationScore > run1 generalResult mutationScore
-]
-
-{ #category : #tests }
 EvolutionaryAmpliferTest >> testRunSmallBank2 [
 	| newTest run1 run2 |
 	newTest := (Amplification

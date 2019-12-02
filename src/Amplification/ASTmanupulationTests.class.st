@@ -30,7 +30,7 @@ ASTmanupulationTests >> testBuildTestClassAndRun [
 		using: FakeTestcase.
 	self
 		deny: (result methods detect: [ :mtd | mtd selector = #setUp ]) isNil.
-	self assert: result methods size - 1 equals: methods size.
+	self assert: result testSelectors size equals: methods size.
 	ASTHelper uniqueInstance removeClass: result source: self class name.
 ]
 
