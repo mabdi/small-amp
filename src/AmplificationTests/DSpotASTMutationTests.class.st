@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'operators'
 	],
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #tests }

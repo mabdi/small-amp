@@ -6,7 +6,7 @@ Class {
 		'visitor',
 		'node'
 	],
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #running }

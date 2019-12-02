@@ -1,7 +1,7 @@
 Class {
 	#name : #EvolutionaryAmpliferTest,
 	#superclass : #TestCase,
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #'as yet unclassified' }

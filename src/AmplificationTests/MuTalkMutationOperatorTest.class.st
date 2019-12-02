@@ -5,7 +5,7 @@ Class {
 		'testMethods',
 		'instance'
 	],
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #running }

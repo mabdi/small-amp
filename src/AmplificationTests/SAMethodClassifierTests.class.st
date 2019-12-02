@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'instance'
 	],
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #running }

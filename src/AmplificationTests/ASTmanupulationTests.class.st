@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'testMethods'
 	],
-	#category : #'Amplification-Tests'
+	#category : #AmplificationTests
 }
 
 { #category : #running }
