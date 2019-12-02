@@ -39,99 +39,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |
-	array := OrderedCollection with: 56.
-	self assert: array size equals: 1 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array at: 1 put: someVariable.
-	self assert: array size equals: 1 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 1 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp2 := array add: someVariable + 10.
-	self assert: array size equals: 2 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp2 equals: 11 description: ''smallAmp''.
-	self
-		assert: tmp2 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp3 := array addAll: {12 . 13}.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp3 size equals: 2 description: ''smallAmp''.
-	self
-		assert: tmp3 class
-		equals: Array
-		description: ''smallAmp''.
-	tmp4 := array add: someVariable * 4.
-	self assert: array size equals: 5 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp4 equals: 4 description: ''smallAmp''.
-	self
-		assert: tmp4 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp5 := array remove: someVariable.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp5 equals: 1 description: ''smallAmp''.
-	self
-		assert: tmp5 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp6 := array at: 2 put: 3000.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp6 equals: 3000 description: ''smallAmp''.
-	self
-		assert: tmp6 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp7 := array removeAt: 2.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp7 equals: 3000 description: ''smallAmp''.
-	self
-		assert: tmp7 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp8 := array removeAll.
-	self assert: array size equals: 0 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. RBVariableNode named: #tmp2. RBVariableNode named: #tmp3. RBVariableNode named: #tmp4. RBVariableNode named: #tmp5. RBVariableNode named: #tmp6. RBVariableNode named: #tmp7. RBVariableNode named: #tmp8. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with: arguments: {RBLiteralValueNode value: 56. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #at:put: arguments: {RBLiteralValueNode value: 1. RBVariableNode named: #someVariable. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp2) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #+ arguments: {RBLiteralValueNode value: 10. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp2. RBLiteralValueNode value: 11. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp3) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #addAll: arguments: {RBArrayNode statements: { RBLiteralValueNode value: 12. RBLiteralValueNode value: 13. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #size. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #class. RBVariableNode named: #Array. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp4) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #* arguments: {RBLiteralValueNode value: 4. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 5. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp4. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp5) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #remove: arguments: {RBVariableNode named: #someVariable. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp5. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp5) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp6) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #at:put: arguments: {RBLiteralValueNode value: 2. RBLiteralValueNode value: 3000. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp6. RBLiteralValueNode value: 3000. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp6) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp7) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #removeAt: arguments: {RBLiteralValueNode value: 2. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp7. RBLiteralValueNode value: 3000. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp7) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp8) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #removeAll). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 0. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -152,27 +62,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection1 [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 |
-	array := OrderedCollection new.
-	self assert: array size equals: 0 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array add: someVariable.
-	self assert: array size equals: 1 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 1 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #new). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 0. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBVariableNode named: #someVariable. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -195,49 +87,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionAdd [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 tmp2 tmp3 |
-	array := OrderedCollection with: 10 with: 20 with: 30.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array add: 40.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 40 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp2 := array add: 11 after: 10.
-	self assert: array size equals: 5 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp2 equals: 11 description: ''smallAmp''.
-	self
-		assert: tmp2 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp3 := array add: 21 afterIndex: 3.
-	self assert: array size equals: 6 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp3 equals: 21 description: ''smallAmp''.
-	self
-		assert: tmp3 class
-		equals: SmallInteger
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. RBVariableNode named: #tmp2. RBVariableNode named: #tmp3. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with:with:with: arguments: {RBLiteralValueNode value: 10. RBLiteralValueNode value: 20. RBLiteralValueNode value: 30. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBLiteralValueNode value: 40. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 40. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp2) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add:after: arguments: {RBLiteralValueNode value: 11. RBLiteralValueNode value: 10. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 5. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp2. RBLiteralValueNode value: 11. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp3) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add:afterIndex: arguments: {RBLiteralValueNode value: 21. RBLiteralValueNode value: 3. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 6. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp3. RBLiteralValueNode value: 21. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -258,27 +110,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionChange [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 |
-	array := OrderedCollection with: 10 with: 20 with: 30.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array at: 2 put: 2000.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 2000 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with:with:with: arguments: {RBLiteralValueNode value: 10. RBLiteralValueNode value: 20. RBLiteralValueNode value: 30. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #at:put: arguments: {RBLiteralValueNode value: 2. RBLiteralValueNode value: 2000. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 2000. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -300,38 +134,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionRemove [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 tmp2 |
-	array := OrderedCollection with: 10 with: 20 with: 30.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array add: 40.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 40 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp2 := array remove: 20.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp2 equals: 20 description: ''smallAmp''.
-	self
-		assert: tmp2 class
-		equals: SmallInteger
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. RBVariableNode named: #tmp2. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with:with:with: arguments: {RBLiteralValueNode value: 10. RBLiteralValueNode value: 20. RBLiteralValueNode value: 30. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBLiteralValueNode value: 40. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 40. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp2) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #remove: arguments: {RBLiteralValueNode value: 20. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp2. RBLiteralValueNode value: 20. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -354,49 +159,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionSize [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 tmp2 tmp3 |
-	array := OrderedCollection with: 10 with: 20 with: 30.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array add: 40.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 40 description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp2 := array at: 1 put: 100.
-	self assert: array size equals: 4 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp2 equals: 100 description: ''smallAmp''.
-	self
-		assert: tmp2 class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp3 := array remove: 20.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self assert: tmp3 equals: 20 description: ''smallAmp''.
-	self
-		assert: tmp3 class
-		equals: SmallInteger
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. RBVariableNode named: #tmp2. RBVariableNode named: #tmp3. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with:with:with: arguments: {RBLiteralValueNode value: 10. RBLiteralValueNode value: 20. RBLiteralValueNode value: 30. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBLiteralValueNode value: 40. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 40. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp2) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #at:put: arguments: {RBLiteralValueNode value: 1. RBLiteralValueNode value: 100. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 4. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp2. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp3) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #remove: arguments: {RBLiteralValueNode value: 20. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp3. RBLiteralValueNode value: 20. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -420,224 +185,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationComplex [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| array tmp1 tmp2 tmp3 tmp4 |
-	array := OrderedCollection with: 1 @ 1.
-	self assert: array size equals: 1 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	tmp1 := array add: 10 @ 10.
-	self assert: array size equals: 2 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: tmp1 x equals: 10 description: ''smallAmp''.
-	self
-		assert: tmp1 x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isIntegerPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isFloatPoint
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: tmp1 y equals: 10 description: ''smallAmp''.
-	self
-		assert: tmp1 y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isZero
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp1 isZero class
-		equals: False
-		description: ''smallAmp''.
-	self
-		assert: tmp1 class
-		equals: Point
-		description: ''smallAmp''.
-	tmp2 := array add: 100 @ 100.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: tmp2 x equals: 100 description: ''smallAmp''.
-	self
-		assert: tmp2 x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isIntegerPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isFloatPoint
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: tmp2 y equals: 100 description: ''smallAmp''.
-	self
-		assert: tmp2 y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isZero
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp2 isZero class
-		equals: False
-		description: ''smallAmp''.
-	self
-		assert: tmp2 class
-		equals: Point
-		description: ''smallAmp''.
-	tmp3 := array at: 2 put: 23 @ 23.
-	self assert: array size equals: 3 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: tmp3 x equals: 23 description: ''smallAmp''.
-	self
-		assert: tmp3 x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isIntegerPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isFloatPoint
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: tmp3 y equals: 23 description: ''smallAmp''.
-	self
-		assert: tmp3 y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isZero
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp3 isZero class
-		equals: False
-		description: ''smallAmp''.
-	self
-		assert: tmp3 class
-		equals: Point
-		description: ''smallAmp''.
-	tmp4 := array removeAt: 3.
-	self assert: array size equals: 2 description: ''smallAmp''.
-	self
-		assert: array class
-		equals: OrderedCollection
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: tmp4 x equals: 100 description: ''smallAmp''.
-	self
-		assert: tmp4 x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isIntegerPoint
-		equals: true
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isFloatPoint
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: tmp4 y equals: 100 description: ''smallAmp''.
-	self
-		assert: tmp4 y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isZero
-		equals: false
-		description: ''smallAmp''.
-	self
-		assert: tmp4 isZero class
-		equals: False
-		description: ''smallAmp''.
-	self
-		assert: tmp4 class
-		equals: Point
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #array. RBVariableNode named: #tmp1. RBVariableNode named: #tmp2. RBVariableNode named: #tmp3. RBVariableNode named: #tmp4. } statements: {RBAssignmentNode variable: (RBVariableNode named: #array) value: (RBMessageNode receiver: (RBVariableNode named: #OrderedCollection) selector: #with: arguments: {RBMessageNode receiver: (RBLiteralValueNode value: 1) selector: #@ arguments: {RBLiteralValueNode value: 1. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBMessageNode receiver: (RBLiteralValueNode value: 10) selector: #@ arguments: {RBLiteralValueNode value: 10. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #x. RBLiteralValueNode value: 10. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #y. RBLiteralValueNode value: 10. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp2) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #add: arguments: {RBMessageNode receiver: (RBLiteralValueNode value: 100) selector: #@ arguments: {RBLiteralValueNode value: 100. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #x. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #y. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp2) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp3) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #at:put: arguments: {RBLiteralValueNode value: 2. RBMessageNode receiver: (RBLiteralValueNode value: 23) selector: #@ arguments: {RBLiteralValueNode value: 23. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #x. RBLiteralValueNode value: 23. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #y. RBLiteralValueNode value: 23. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp3) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp4) value: (RBMessageNode receiver: (RBVariableNode named: #array) selector: #removeAt: arguments: {RBLiteralValueNode value: 3. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #size. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #array) selector: #class. RBVariableNode named: #OrderedCollection. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #x. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #y. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp4) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -659,90 +209,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationObject [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| node node1 |
-	node := 3 @ 1.
-	self assert: node isPoint equals: true description: ''smallAmp''.
-	self assert: node isPoint class equals: True description: ''smallAmp''.
-	self assert: node x equals: 3 description: ''smallAmp''.
-	self
-		assert: node x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isIntegerPoint equals: true description: ''smallAmp''.
-	self
-		assert: node isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: node isFloatPoint equals: false description: ''smallAmp''.
-	self
-		assert: node isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: node y equals: 1 description: ''smallAmp''.
-	self
-		assert: node y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isZero equals: false description: ''smallAmp''.
-	self assert: node isZero class equals: False description: ''smallAmp''.
-	self assert: node class equals: Point description: ''smallAmp''.
-	node := node + (10 @ 10).
-	self assert: node isPoint equals: true description: ''smallAmp''.
-	self assert: node isPoint class equals: True description: ''smallAmp''.
-	self assert: node x equals: 13 description: ''smallAmp''.
-	self
-		assert: node x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isIntegerPoint equals: true description: ''smallAmp''.
-	self
-		assert: node isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: node isFloatPoint equals: false description: ''smallAmp''.
-	self
-		assert: node isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: node y equals: 11 description: ''smallAmp''.
-	self
-		assert: node y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isZero equals: false description: ''smallAmp''.
-	self assert: node isZero class equals: False description: ''smallAmp''.
-	self assert: node class equals: Point description: ''smallAmp''.
-	node1 := node dist: 0 @ 1.
-	self assert: node isPoint equals: true description: ''smallAmp''.
-	self assert: node isPoint class equals: True description: ''smallAmp''.
-	self assert: node x equals: 13 description: ''smallAmp''.
-	self
-		assert: node x class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isIntegerPoint equals: true description: ''smallAmp''.
-	self
-		assert: node isIntegerPoint class
-		equals: True
-		description: ''smallAmp''.
-	self assert: node isFloatPoint equals: false description: ''smallAmp''.
-	self
-		assert: node isFloatPoint class
-		equals: False
-		description: ''smallAmp''.
-	self assert: node y equals: 11 description: ''smallAmp''.
-	self
-		assert: node y class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: node isZero equals: false description: ''smallAmp''.
-	self assert: node isZero class equals: False description: ''smallAmp''.
-	self assert: node class equals: Point description: ''smallAmp''.
-	self assert: node1 equals: 16.401219466856727 description: ''smallAmp''.
-	self assert: node1 class equals: SmallFloat64 description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #node. RBVariableNode named: #node1. } statements: {RBAssignmentNode variable: (RBVariableNode named: #node) value: (RBMessageNode receiver: (RBLiteralValueNode value: 3) selector: #@ arguments: {RBLiteralValueNode value: 1. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #x. RBLiteralValueNode value: 3. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #y. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #node) value: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #+ arguments: {RBMessageNode receiver: (RBLiteralValueNode value: 10) selector: #@ arguments: {RBLiteralValueNode value: 10. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #x. RBLiteralValueNode value: 13. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #y. RBLiteralValueNode value: 11. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #node1) value: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #dist: arguments: {RBMessageNode receiver: (RBLiteralValueNode value: 0) selector: #@ arguments: {RBLiteralValueNode value: 1. }. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #x. RBLiteralValueNode value: 13. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #x) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint. RBLiteralValueNode value: true. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isIntegerPoint) selector: #class. RBVariableNode named: #True. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isFloatPoint) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #y. RBLiteralValueNode value: 11. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #y) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero. RBLiteralValueNode value: false. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #node) selector: #isZero) selector: #class. RBVariableNode named: #False. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node) selector: #class. RBVariableNode named: #Point. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #node1. RBLiteralValueNode value: 16.401219466856727. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #node1) selector: #class. RBVariableNode named: #SmallFloat64. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -764,31 +233,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationPrimitive [
 	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| tmp1 |
-	tmp1 := 1.
-	someVariable := someVariable + tmp1.
-	self assert: someVariable equals: 2 description: ''smallAmp''.
-	self
-		assert: someVariable class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	tmp1 := someVariable - 1.
-	self assert: someVariable equals: 2 description: ''smallAmp''.
-	self
-		assert: someVariable class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: tmp1 equals: 1 description: ''smallAmp''.
-	self assert: tmp1 class equals: SmallInteger description: ''smallAmp''.
-	someString := someString , ''111''.
-	self assert: someString equals: ''abcd111'' description: ''smallAmp''.
-	self
-		assert: someString class
-		equals: ByteString
-		description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #tmp1. } statements: {RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBLiteralValueNode value: 1). RBAssignmentNode variable: (RBVariableNode named: #someVariable) value: (RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #+ arguments: {RBVariableNode named: #tmp1. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #someVariable. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #- arguments: {RBLiteralValueNode value: 1. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #someVariable. RBLiteralValueNode value: 2. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #someVariable) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #tmp1. RBLiteralValueNode value: 1. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #tmp1) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #someString) value: (RBMessageNode receiver: (RBVariableNode named: #someString) selector: #, arguments: {RBLiteralValueNode value: ''111''. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBVariableNode named: #someString. RBLiteralValueNode value: ''abcd111''. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #someString) selector: #class. RBVariableNode named: #ByteString. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
@@ -814,24 +261,9 @@ CarvingAssertAmplifierTest >> testAssertionGenerationRedundant [
 	"generatedClass removeFromSystem."
 	instance insertAsserts: aMethod using: observer.
 	self
-		assert: (GeneralHelper renameTempVars: aMethod formattedCode)
+		assert: (GeneralHelper renameTempVars: aMethod dump)
 		equals:
-			'testFoo
-	| b tmp1 |
-	b := SmallBank new.
-	self assert: b balance equals: 0 description: ''smallAmp''.
-	self
-		assert: b balance class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: b class equals: SmallBank description: ''smallAmp''.
-	tmp1 := b deposit: 100.
-	self assert: b balance equals: 100 description: ''smallAmp''.
-	self
-		assert: b balance class
-		equals: SmallInteger
-		description: ''smallAmp''.
-	self assert: b class equals: SmallBank description: ''smallAmp'''
+			'RBMethodNode selector: #testFoo body: (RBSequenceNode temporaries: {RBVariableNode named: #b. RBVariableNode named: #tmp1. } statements: {RBAssignmentNode variable: (RBVariableNode named: #b) value: (RBMessageNode receiver: (RBVariableNode named: #SmallBank) selector: #new). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #b) selector: #balance. RBLiteralValueNode value: 0. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #b) selector: #balance) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #b) selector: #class. RBVariableNode named: #SmallBank. RBLiteralValueNode value: ''smallAmp''. }. RBAssignmentNode variable: (RBVariableNode named: #tmp1) value: (RBMessageNode receiver: (RBVariableNode named: #b) selector: #deposit: arguments: {RBLiteralValueNode value: 100. }). RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #b) selector: #balance. RBLiteralValueNode value: 100. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBMessageNode receiver: (RBVariableNode named: #b) selector: #balance) selector: #class. RBVariableNode named: #SmallInteger. RBLiteralValueNode value: ''smallAmp''. }. RBMessageNode receiver: (RBSelfNode named: #self) selector: #assert:equals:description: arguments: {RBMessageNode receiver: (RBVariableNode named: #b) selector: #class. RBVariableNode named: #SmallBank. RBLiteralValueNode value: ''smallAmp''. }. })'
 ]
 
 { #category : #tests }
