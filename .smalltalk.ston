@@ -1,0 +1,9 @@
+SmalltalkCISpec {
+    #loading : [
+        SCIMetacelloLoadSpec {
+            #baseline : 'Amplification',
+            #directory : 'src',
+            #platforms : [ #pharo ]
+        }
+    ]
+}
