@@ -1,4 +1,6 @@
 # small-amp
+[![Build Status](https://travis-ci.org/mabdi/small-amp.svg?branch=master)](https://travis-ci.org/mabdi/small-amp)
+
 Test Amplification for Pharo
 
 ### Current status 
