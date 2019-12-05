@@ -1,7 +1,7 @@
 Class {
 	#name : #MuTalkMutationOperator,
 	#superclass : #AbstractMutationOperator,
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #removing }

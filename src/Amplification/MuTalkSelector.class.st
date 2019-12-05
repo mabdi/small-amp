@@ -1,7 +1,7 @@
 Class {
 	#name : #MuTalkSelector,
 	#superclass : #AbstractSelector,
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #enumerating }

@@ -1,7 +1,7 @@
 Class {
 	#name : #CarvingAssertAmplifier,
 	#superclass : #AbstractAssertAmplifier,
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }
