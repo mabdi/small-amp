@@ -85,7 +85,7 @@ Amplification >> initializeWithTests: dicConfig [
 	testTargets := dicConfig at: #testTargets.
 	testClass := dicConfig at: #testClass.
 	testMethods := testClass allTestSelectors.
-	improvmentAlgorithm := EvolutionaryAmplifer
+	improvmentAlgorithm := EvolutionaryAmplifier
 		initializeWith: testClass
 		target: testTargets
 		iterations: (dicConfig at: #GAIteration ifAbsent: 3).

@@ -66,6 +66,8 @@ AmplificationHelper class >> guessTestTargetFor: aTestClass [
 { #category : #'as yet unclassified' }
 AmplificationHelper >> amplify: aTestClass target: aTargetClass [
 	| amp newTest run1 run2 minifiedTestClass run3 run4 minifiedAddedTestClass |
+	self flag: #TODO. "Reify the concept of test configuration as an object."
+	self flag: #TODO. "Reify the concept of amplification result as an object."
 	amp := Amplification
 		initializeWithTests:
 			{(#testTargets -> {aTargetClass}).
@@ -117,6 +119,8 @@ AmplificationHelper >> amplifyAll: aList [
 { #category : #'as yet unclassified' }
 AmplificationHelper >> createMdTable: runs [
 	| head row detail |
+	self flag: #TODO. "Rename method #createMarkdownTable:."
+	self flag: #TODO. "Rename argument to be more understandable."
 	head := [ :s | 
 	s
 		nextPutAll: '| Test case | Test target | Original | Amp | AmpMin | AmpMinAdd |';
