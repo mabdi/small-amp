@@ -100,7 +100,7 @@ AmplificationHelper >> amplify: aTestClass target: aTargetClass [
 
 { #category : #'as yet unclassified' }
 AmplificationHelper >> amplifyAll [
-	^ self amplifyAll: self testTargtsMapping
+	^ self amplifyAll: self testTargetsMapping
 ]
 
 { #category : #'as yet unclassified' }
@@ -193,7 +193,7 @@ AmplificationHelper >> mutalkTarget: aClass testSuite: aTestSuite [
 ]
 
 { #category : #tests }
-AmplificationHelper >> testTargtsMapping [
+AmplificationHelper >> testTargetsMapping [
 	^ self subclassResponsibility 
 ]
 
