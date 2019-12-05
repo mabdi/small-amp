@@ -53,7 +53,7 @@ ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 		ifFalse: [ tempClass class addInstVarNamed: 'smallamp_logs'.
 			tempClass class
 				compile:
-					'logs ^ smallamp_logs ifNil: [ smallamp_logs:= OrderedCollection new ]  '.
+					'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
 			tempClass
 				compile: 'logFailure: aString self class logs add: aString'.
 			tempClass
