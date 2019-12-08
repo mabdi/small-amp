@@ -30,7 +30,7 @@ EvolutionaryAmplifier >> assertAmplifier [
 
 { #category : #accessing }
 EvolutionaryAmplifier >> astHelper [
-	^ ASTHelper uniqueInstance
+	^ ASTHelper new
 ]
 
 { #category : #'as yet unclassified' }
@@ -85,7 +85,7 @@ EvolutionaryAmplifier >> initialAssertAmplify: aPopulation [
 		collect: [ :tcase | 
 			| noAsserts renamed |
 			noAsserts := self astHelper removeAssertions: tcase testMethod.
-			renamed := (ASTHelper uniqueInstance
+			renamed := (ASTHelper new
 				renameMethodName: noAsserts
 				append: '_amp') formattedCode.
 			tcase testMethodModified: renamed ]

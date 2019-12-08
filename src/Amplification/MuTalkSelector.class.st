@@ -10,7 +10,7 @@ MuTalkSelector >> doSelect: aPopulation selected: aPopulationAll [
 	selectedTests := OrderedCollection new.
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	newTestClass := ASTHelper uniqueInstance
+	newTestClass := ASTHelper new
 		buildTestClassWith:
 			(aPopulation , aPopulationAll
 				collect: [ :tcase | tcase testMethodModified ])

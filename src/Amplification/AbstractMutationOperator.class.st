@@ -17,7 +17,7 @@ AbstractMutationOperator >> renameMutations: mutations [
 		collect: [ :mtd | 
 
 			idx := idx + 1.
-			(ASTHelper uniqueInstance
+			(ASTHelper new
 				renameMethodName: mtd
 				append: '_' , idx asString) formattedCode ]
 ]

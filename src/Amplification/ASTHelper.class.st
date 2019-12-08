@@ -6,19 +6,16 @@ Class {
 		'debug'
 	],
 	#classInstVars : [
-		'instance'
+		'instanceId'
 	],
 	#category : #'Amplification-Helpers'
 }
 
-{ #category : #'instance creation' }
-ASTHelper class >> resetInstance [
-	instance := nil
-]
-
-{ #category : #'instance creation' }
-ASTHelper class >> uniqueInstance [
-	^ instance ifNil: [ instance := self new ]
+{ #category : #'as yet unclassified' }
+ASTHelper class >> instanceId [
+	instanceId ifNil: [ instanceId:=0 ].
+	instanceId := instanceId + 1.
+	^ instanceId
 ]
 
 { #category : #'method operations' }
@@ -155,8 +152,7 @@ ASTHelper >> extractMethodNameRegex: aSourceCode [
 
 { #category : #private }
 ASTHelper >> getId [
-	instanceIds := instanceIds + 1.
-	^ instanceIds
+	^ self class instanceId
 ]
 
 { #category : #initialization }

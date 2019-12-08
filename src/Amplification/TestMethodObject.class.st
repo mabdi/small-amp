@@ -43,14 +43,14 @@ TestMethodObject >> printOn: aStream [
 { #category : #accessing }
 TestMethodObject >> selector [
 	^ selector
-		ifNil: [ selector := ASTHelper uniqueInstance
+		ifNil: [ selector := ASTHelper new
 				extractMethodName: testMethodModified ]
 ]
 
 { #category : #accessing }
 TestMethodObject >> selectorOriginal [
 	^ selectorOriginal
-		ifNil: [ selectorOriginal := ASTHelper uniqueInstance
+		ifNil: [ selectorOriginal := ASTHelper new
 				extractMethodName: testMethod ]
 ]
 

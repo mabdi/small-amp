@@ -19,19 +19,15 @@ ASTmanupulationTests >> setUp [
 { #category : #tests }
 ASTmanupulationTests >> testBuildTestClassAndRun [
 	| result methods |
-	"methods := testMethods
-		collect:
-			[ :atestMethod | DSpotMutationOperator new mutate: atestMethod sourceCode ].
-	methods := methods flattened."
 	methods := testMethods
 		collect: [ :atestMethod | atestMethod sourceCode ].
-	result := ASTHelper uniqueInstance
+	result := ASTHelper new
 		buildTestClassWith: methods
 		using: FakeTestcase.
 	self
 		deny: (result methods detect: [ :mtd | mtd selector = #setUp ]) isNil.
 	self assert: result testSelectors size equals: methods size.
-	ASTHelper uniqueInstance removeClass: result source: self class name.
+	ASTHelper new removeClass: result source: self class name.
 ]
 
 { #category : #tests }
@@ -60,7 +56,7 @@ ASTmanupulationTests >> testCleanUpVisitor [
 ASTmanupulationTests >> testConvertAllToAssert [
 	| result |
 	result := testMethods
-		collect: [ :each | ASTHelper uniqueInstance convertAllToAssert: each ].
+		collect: [ :each | ASTHelper new convertAllToAssert: each ].
 	self
 		assert:
 			(result
@@ -86,7 +82,7 @@ ASTmanupulationTests >> testExtractMethodName [
 					self
 						assert: (method selector asString)
 						equals:
-							(ASTHelper uniqueInstance extractMethodName: method sourceCode)
+							(ASTHelper new extractMethodName: method sourceCode)
 								 ] ]
 ]
 
@@ -105,9 +101,9 @@ ASTmanupulationTests >> testMethodRename [
 							self
 								assert: ((method selector asString splitOn: $:) at: 1) , post
 								equals:
-									(ASTHelper uniqueInstance
+									(ASTHelper new
 										extractMethodName:
-											(((ASTHelper uniqueInstance
+											(((ASTHelper new
 												renameMethodName: method sourceCode
 												append: post)selector asString splitOn: $:)at: 1)) ] ] ]
 ]
@@ -116,7 +112,7 @@ ASTmanupulationTests >> testMethodRename [
 ASTmanupulationTests >> testRemoveAssertions [
 	| result |
 	result := testMethods
-		collect: [ :each | ASTHelper uniqueInstance removeAssertions: each sourceCode ].
+		collect: [ :each | ASTHelper new removeAssertions: each sourceCode ].
 	self
 		assert:
 			(result

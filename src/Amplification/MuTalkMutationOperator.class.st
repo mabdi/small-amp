@@ -8,7 +8,7 @@ Class {
 MuTalkMutationOperator >> mutate: aMethod [
 	| mutations tempClass |
 	mutations := OrderedCollection new.
-	tempClass := ASTHelper uniqueInstance
+	tempClass := ASTHelper new
 		buildTestClassWith: {aMethod}
 		using: TestCase.
 	mutations

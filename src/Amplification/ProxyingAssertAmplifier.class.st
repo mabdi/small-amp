@@ -43,7 +43,7 @@ ProxyingAssertAmplifier >> doAssertAmplification: population amplifier: anAmplif
 ProxyingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer proxies |
 	observer := Observer new.
-	generatedClass := ASTHelper uniqueInstance
+	generatedClass := ASTHelper new
 		buildTestClassWith: {}
 		using: aClass.
 	generatedClass compile: aMethodSrc.

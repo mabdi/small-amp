@@ -176,7 +176,7 @@ SmallAmpSelector >> mutalkRun: aPopulation [
 	| testClass targetClasses newTestClass analysis1 |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	newTestClass := ASTHelper uniqueInstance
+	newTestClass := ASTHelper new
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodModified ])
 		using: testClass.
 	analysis1 := MutationTestingAnalysis

@@ -50,7 +50,7 @@ Carving2AssertAmplifier >> buildAsserts: anObserver methodName: selector [
 { #category : #'as yet unclassified' }
 Carving2AssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
-	generatedClass := ASTHelper uniqueInstance
+	generatedClass := ASTHelper new
 		buildTestClassWith: {}
 		using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
@@ -90,7 +90,7 @@ Carving2AssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	
 	observer := generatedClass observer.
 	src3 := self insertAsserts: src2 using: observer.
-	ASTHelper uniqueInstance
+	ASTHelper new
 		removeClass: generatedClass
 		source: self class name.
 	^ src3
