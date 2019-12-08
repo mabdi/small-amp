@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'targets'
 	],
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }

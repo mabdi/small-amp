@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'proxies'
 	],
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #initialization }

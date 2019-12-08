@@ -5,7 +5,7 @@ Class {
 		'class',
 		'profile'
 	],
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'instance creation' }

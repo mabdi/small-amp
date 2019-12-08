@@ -1,5 +1,5 @@
 Class {
-	#name : #EvolutionaryAmplifer,
+	#name : #EvolutionaryAmplifier,
 	#superclass : #Object,
 	#instVars : [
 		'testClass',
@@ -13,7 +13,7 @@ Class {
 }
 
 { #category : #initialization }
-EvolutionaryAmplifer class >> initializeWith: atestClass target: aTarget iterations: anInt [
+EvolutionaryAmplifier class >> initializeWith: atestClass target: aTarget iterations: anInt [
 	| obj |
 	obj := self new.
 	obj testClass: atestClass.
@@ -23,23 +23,23 @@ EvolutionaryAmplifer class >> initializeWith: atestClass target: aTarget iterati
 ]
 
 { #category : #asserting }
-EvolutionaryAmplifer >> assertAmplifier [
+EvolutionaryAmplifier >> assertAmplifier [
 	^ assertAmplifier
 		ifNil: [ assertAmplifier := Carving2AssertAmplifier  new ]
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> astHelper [
+EvolutionaryAmplifier >> astHelper [
 	^ ASTHelper uniqueInstance
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifer >> doAssertAmplification: population [
+EvolutionaryAmplifier >> doAssertAmplification: population [
 	^ self assertAmplifier doAssertAmplification: population amplifier: self
 ]
 
 { #category : #actions }
-EvolutionaryAmplifer >> doMutation: tcase [
+EvolutionaryAmplifier >> doMutation: tcase [
 	| newcodes |
 	newcodes := PopulationCollection new.
 	self mutationOperators
@@ -50,7 +50,7 @@ EvolutionaryAmplifer >> doMutation: tcase [
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifer >> doPopulationMutation: aPopulation [
+EvolutionaryAmplifier >> doPopulationMutation: aPopulation [
 	| newcodes |
 	newcodes := PopulationCollection new.
 	aPopulation
@@ -62,7 +62,7 @@ EvolutionaryAmplifer >> doPopulationMutation: aPopulation [
 ]
 
 { #category : #actions }
-EvolutionaryAmplifer >> doSelection: aPopulation selected: aPopulationAll [
+EvolutionaryAmplifier >> doSelection: aPopulation selected: aPopulationAll [
 	| selectedTests |
 	aPopulation ifEmpty: [ ^ aPopulation  ].
 	selectedTests := OrderedCollection new.
@@ -79,7 +79,7 @@ EvolutionaryAmplifer >> doSelection: aPopulation selected: aPopulationAll [
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifer >> initialAssertAmplify: aPopulation [
+EvolutionaryAmplifier >> initialAssertAmplify: aPopulation [
 	| population |
 	population := aPopulation
 		collect: [ :tcase | 
@@ -100,36 +100,36 @@ EvolutionaryAmplifer >> initialAssertAmplify: aPopulation [
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> iterations: anInt [
+EvolutionaryAmplifier >> iterations: anInt [
 	iterations := anInt 
 ]
 
 { #category : #actions }
-EvolutionaryAmplifer >> makeTestClass: aCollection [
+EvolutionaryAmplifier >> makeTestClass: aCollection [
 	^ self astHelper buildTestClassWith: aCollection using: testClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> mutationOperators [
+EvolutionaryAmplifier >> mutationOperators [
 	"^ {MuTalkMutationOperator new}"
 	^ { DSpotMutationOperator new }
 ]
 
 { #category : #actions }
-EvolutionaryAmplifer >> removeAssrtion: tcase [
+EvolutionaryAmplifier >> removeAssertion: tcase [
 	tcase
 		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> selectors [
+EvolutionaryAmplifier >> selectors [
 	^ selectorOperator
 		ifNil: [ selectorOperator := {SmallAmpSelector new.
 			} ]
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> start [
+EvolutionaryAmplifier >> start [
 	" Here is the main loop of program."
 
 	| population resultPeople |
@@ -151,7 +151,7 @@ EvolutionaryAmplifer >> start [
 			EvalLog tickAt: #time_all.
 			EvalLog tickAt: #input_amp.
 			population
-				do: [ :tcase | self removeAssrtion: tcase ]
+				do: [ :tcase | self removeAssertion: tcase ]
 				displayingProgress: 'Removing assertions'.
 			population := self doPopulationMutation: population.
 			EvalLog tickAt: #input_amp.
@@ -169,31 +169,31 @@ EvolutionaryAmplifer >> start [
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> targetClasses [
+EvolutionaryAmplifier >> targetClasses [
 	^ targetClasses
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> targetClasses: colTarget [
+EvolutionaryAmplifier >> targetClasses: colTarget [
 	targetClasses := colTarget
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> testClass [
+EvolutionaryAmplifier >> testClass [
 	^ testClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> testClass: atestClass [
+EvolutionaryAmplifier >> testClass: atestClass [
 	testClass := atestClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> testMethods [
+EvolutionaryAmplifier >> testMethods [
 	^ testMethods
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifer >> testMethods: collTestMethods [
+EvolutionaryAmplifier >> testMethods: collTestMethods [
 	testMethods := collTestMethods
 ]
