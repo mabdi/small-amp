@@ -31,11 +31,6 @@ ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 		instanceVariableNames: testClass instanceVariablesString
 		classVariableNames: ''
 		package: 'AmplificationTempClasses'.
-	"#(#setUp #tearDown)
-		do: [ :each | 
-			testClass methods
-				detect: [ :mtd | mtd selector = each ]
-				ifFound: [ :item | tempClass compile: item sourceCode ] ]."
 	(testClass methods reject: #isTestMethod)
 		do: [ :item | tempClass compile: item sourceCode ].
 	aCollection
@@ -53,30 +48,6 @@ ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 					'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
 			tempClass
 				compile: 'logFailure: aString self class logs add: aString'.
-			tempClass
-				compile:
-					'assert: actual equals: expected description: description ^ self
-		assert: actual = expected
-		description: description'.
-			tempClass
-				compile:
-					'deny: actual equals: expected description: description ^ self
-		deny: actual = expected
-		description: description'.
-			tempClass
-				compile:
-					'should: aBlock notTakeMoreThan: aDuration description: description ^ aBlock
-		valueWithin: aDuration
-		onTimeout: [ self
-				assert: false
-				description: description ]'.
-			tempClass
-				compile:
-					'should: aBlock takeMoreThan: aDuration description: description ^ aBlock
-		valueWithin: aDuration
-		onTimeout: [ self
-				assert: true
-				description: description ]'.
 			tempClass compile: 'isLogging ^true' ].
 	^ tempClass
 ]
