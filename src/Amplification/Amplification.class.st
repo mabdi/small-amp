@@ -45,9 +45,47 @@ Class {
 	#category : #'Amplification-Core'
 }
 
+{ #category : #example }
+Amplification class >> example [
+	| newTest run1 run2 |
+	newTest := (Amplification
+		initializeWithTests:
+			{(#testTargets -> {SmallBank}).
+			(#testClass -> SmallBankTest).
+			(#GAIteration -> 2)} asDictionary) launch.
+	run1 := self mutalkTarget: {SmallBank} testSuite: {SmallBankTest}.
+	run2 := self mutalkTarget: {SmallBank} testSuite: {newTest}.
+	
+]
+
+{ #category : #examples }
+Amplification class >> example2 [
+	| newTest run1 run2 |
+	newTest := (Amplification
+		initializeWithTests:
+			{(#testTargets -> {SmallBank2}).
+			(#testClass -> SmallBank2Test).
+			(#GAIteration -> 2)} asDictionary) launch.
+	run1 := self mutalkTarget: {SmallBank2} testSuite: {SmallBank2Test}.
+	run2 := self mutalkTarget: {SmallBank2} testSuite: {newTest}.
+	
+]
+
 { #category : #initialization }
 Amplification class >> initializeWithTests: dicConfig [
 	^ self new initializeWithTests: dicConfig
+]
+
+{ #category : #'as yet unclassified' }
+Amplification class >> mutalkTarget: aClass testSuite: aTestSuite [
+	| analysis1 |
+	analysis1 := MutationTestingAnalysis
+		testCasesFrom: aTestSuite
+		mutating: aClass
+		using: MutantOperator contents
+		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
+	analysis1 run.
+	^ analysis1
 ]
 
 { #category : #'as yet unclassified' }
