@@ -97,7 +97,7 @@ ObjectSerializer >> objectSerializeAccessing: anObject depth: anInt [
 		, (anObject class methodsInProtocol: #testing).
 	
 	methods := methods select: [ :m | m ast lastIsReturn ].
-	(methods select: [ :method | (method selector indexOf: $:) = 0 ])
+	((methods sort: [:a :b | a selector <= b selector]) select: [ :method | (method selector indexOf: $:) = 0 ])
 		do: [ :l | 
 			| v |
 			[ 
