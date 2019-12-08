@@ -4,36 +4,8 @@ Class {
 	#instVars : [
 		'loggers'
 	],
-	#classInstVars : [
-		'instance'
-	],
 	#category : #'Amplification-Helpers'
 }
-
-{ #category : #accessing }
-EvalLog class >> at: anIdx put: anObj [
-	self instance at: anIdx put: anObj
-]
-
-{ #category : #accessing }
-EvalLog class >> instance [
-	^ instance ifNil: [ instance:= self new ]
-]
-
-{ #category : #accessing }
-EvalLog class >> instanceReset [
-	instance := nil
-]
-
-{ #category : #accessing }
-EvalLog class >> newGeneration [ 
-	self instance newGeneration 
-]
-
-{ #category : #accessing }
-EvalLog class >> tickAt: anIdx [
-	self instance tickAt: anIdx 
-]
 
 { #category : #'as yet unclassified' }
 EvalLog >> at: anIdx put: anObj [

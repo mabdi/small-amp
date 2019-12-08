@@ -133,8 +133,6 @@ EvolutionaryAmplifier >> start [
 	" Here is the main loop of program."
 
 	| population resultPeople |
-	EvalLog instanceReset.
-	EvalLog newGeneration.
 	population := PopulationCollection
 		setUpWith:
 			(testMethods
@@ -147,22 +145,14 @@ EvolutionaryAmplifier >> start [
 	resultPeople := self initialAssertAmplify: population clone.
 	(1 to: iterations)
 		do: [ :gen | 
-			EvalLog newGeneration.
-			EvalLog tickAt: #time_all.
-			EvalLog tickAt: #input_amp.
 			population
 				do: [ :tcase | self removeAssertion: tcase ]
 				displayingProgress: 'Removing assertions'.
 			population := self doPopulationMutation: population.
-			EvalLog tickAt: #input_amp.
-			EvalLog tickAt: #assert_amp.
 			population := self doAssertAmplification: population.
-			EvalLog tickAt: #assert_amp.
-			EvalLog tickAt: #selection.
 			population := self doSelection: population selected: resultPeople.
 			resultPeople addAll: population.
-			EvalLog tickAt: #selection.
-			EvalLog tickAt: #time_all ]
+			 ]
 		displayingProgress: 'Main loop'.
 	^ self
 		makeTestClass: (resultPeople collect: [ :tcase | tcase testMethod ])
