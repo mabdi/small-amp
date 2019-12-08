@@ -41,7 +41,7 @@ EvolutionaryAmplifier >> doAssertAmplification: population [
 { #category : #actions }
 EvolutionaryAmplifier >> doMutation: tcase [
 	| newcodes |
-	newcodes := PopulationCollection new.
+	newcodes := OrderedCollection new.
 	self mutationOperators
 		do: [ :op | newcodes addAll: (op mutate: tcase testMethodModified) ].
 	newcodes := newcodes
@@ -52,7 +52,7 @@ EvolutionaryAmplifier >> doMutation: tcase [
 { #category : #'as yet unclassified' }
 EvolutionaryAmplifier >> doPopulationMutation: aPopulation [
 	| newcodes |
-	newcodes := PopulationCollection new.
+	newcodes := OrderedCollection new.
 	aPopulation
 		do: [ :tcase | 
 			newcodes addAll: (self doMutation: tcase).
@@ -133,8 +133,8 @@ EvolutionaryAmplifier >> start [
 	" Here is the main loop of program."
 
 	| population resultPeople |
-	population := PopulationCollection
-		setUpWith:
+	population := OrderedCollection
+		withAll:
 			(testMethods
 				collect: [ :tcase | 
 					TestMethodObject
