@@ -18,7 +18,7 @@ MuTalkMutationOperator >> mutate: aMethod [
 				usingAll: self operators
 				logginIn: NullMutationTestingAnalysisLogger new)
 				collect: [ :mtd | mtd modifiedSource ]).
-	ASTHelper uniqueInstance removeClass: tempClass  source: self class name..
+	ASTHelper new removeClass: tempClass  source: self class name..
 	^ self renameMutations: mutations
 ]
 
