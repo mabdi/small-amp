@@ -1,10 +1,10 @@
 Class {
-	#name : #AbstractSelector,
+	#name : #SAAbstractSelector,
 	#superclass : #Object,
 	#category : #'Amplification-Core'
 }
 
 { #category : #enumerating }
-AbstractSelector >> doSelect: aPopulation selected: aPopulationAll [
+SAAbstractSelector >> doSelect: aPopulation selected: aPopulationAll [
 	self subclassResponsibility
 ]

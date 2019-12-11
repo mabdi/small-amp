@@ -25,7 +25,7 @@ SAMainLoop class >> initializeWith: atestClass target: aTarget iterations: anInt
 { #category : #asserting }
 SAMainLoop >> assertAmplifier [
 	^ assertAmplifier
-		ifNil: [ assertAmplifier := CarvingAssertAmplifier  new ]
+		ifNil: [ assertAmplifier := SADefaultAssertAmplifier  new ]
 ]
 
 { #category : #accessing }
@@ -112,7 +112,7 @@ SAMainLoop >> makeTestClass: aCollection [
 { #category : #accessing }
 SAMainLoop >> mutationOperators [
 	"^ {MuTalkMutationOperator new}"
-	^ { DSpotMutationOperator new }
+	^ { SALiteralInputAmplifier new }
 ]
 
 { #category : #actions }
@@ -124,7 +124,7 @@ SAMainLoop >> removeAssertion: tcase [
 { #category : #accessing }
 SAMainLoop >> selectors [
 	^ selectorOperator
-		ifNil: [ selectorOperator := {SmallAmpSelector new.
+		ifNil: [ selectorOperator := {SAMutationCoverageSelector new.
 			} ]
 ]
 

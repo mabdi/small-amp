@@ -1,16 +1,16 @@
 Class {
-	#name : #AbstractMutationOperator,
+	#name : #SAAbstractInputAmplifier,
 	#superclass : #Object,
 	#category : #'Amplification-Core'
 }
 
 { #category : #removing }
-AbstractMutationOperator >> mutate: aMethod [
+SAAbstractInputAmplifier >> mutate: aMethod [
 	self subclassResponsibility 
 ]
 
 { #category : #'as yet unclassified' }
-AbstractMutationOperator >> renameMutations: mutations [
+SAAbstractInputAmplifier >> renameMutations: mutations [
 	| idx |
 	idx := 0.
 	^ mutations

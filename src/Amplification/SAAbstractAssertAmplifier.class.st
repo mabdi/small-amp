@@ -1,5 +1,5 @@
 Class {
-	#name : #AbstractAssertAmplifier,
+	#name : #SAAbstractAssertAmplifier,
 	#superclass : #Object,
 	#instVars : [
 		'theAmplifier'
@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-AbstractAssertAmplifier >> assertionAmplify: aMethod [
+SAAbstractAssertAmplifier >> assertionAmplify: aMethod [
 	^ aMethod
 		testMethodModified:
 			(self
@@ -18,7 +18,7 @@ AbstractAssertAmplifier >> assertionAmplify: aMethod [
 ]
 
 { #category : #'as yet unclassified' }
-AbstractAssertAmplifier >> doAssertAmplification: population amplifier: anAmplifier [
+SAAbstractAssertAmplifier >> doAssertAmplification: population amplifier: anAmplifier [
 	theAmplifier := anAmplifier.
 	^ population
 		collect: [ :tcase | self assertionAmplify: tcase ]
@@ -26,6 +26,6 @@ AbstractAssertAmplifier >> doAssertAmplification: population amplifier: anAmplif
 ]
 
 { #category : #'as yet unclassified' }
-AbstractAssertAmplifier >> doAssertionAmplification: aMethod within: atestClass [
+SAAbstractAssertAmplifier >> doAssertionAmplification: aMethod within: atestClass [
 	self subclassResponsibility 
 ]

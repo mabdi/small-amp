@@ -10,7 +10,7 @@ Class {
 		'flakyLen',
 		'flakyMem'
 	],
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Helpers'
 }
 
 { #category : #'as yet unclassified' }

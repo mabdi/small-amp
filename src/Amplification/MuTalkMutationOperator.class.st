@@ -1,6 +1,6 @@
 Class {
 	#name : #MuTalkMutationOperator,
-	#superclass : #AbstractMutationOperator,
+	#superclass : #SAAbstractInputAmplifier,
 	#category : #'Amplification-Experiment'
 }
 

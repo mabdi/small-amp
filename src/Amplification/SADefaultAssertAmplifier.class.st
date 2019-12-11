@@ -1,11 +1,11 @@
 Class {
-	#name : #CarvingAssertAmplifier,
-	#superclass : #AbstractAssertAmplifier,
+	#name : #SADefaultAssertAmplifier,
+	#superclass : #SAAbstractAssertAmplifier,
 	#category : #'Amplification-Core'
 }
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> buildAsserts: anObserver methodName: selector [
+SADefaultAssertAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver memory
 		collect: [ :observation | 
 			"self cleanExtraObservations: aMethod"
@@ -48,7 +48,7 @@ CarvingAssertAmplifier >> buildAsserts: anObserver methodName: selector [
 ]
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
+SADefaultAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := ASTHelper new
 		buildTestClassWith: {}
@@ -72,7 +72,7 @@ CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
+SADefaultAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer aMethod aVisitor src2 src3 |
 	aMethod := RBParser parseMethod: aMethodSrc.
 	"aVisitor := MessageCallRewriter new.
@@ -97,7 +97,7 @@ CarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
+SADefaultAssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	| aMethod newAsserts |
 	aMethod := RBParser parseMethod: aMethodSrc.
 	newAsserts := self
