@@ -1,5 +1,5 @@
 Class {
-	#name : #EvolutionaryAmplifier,
+	#name : #SAMainLoop,
 	#superclass : #Object,
 	#instVars : [
 		'testClass',
@@ -13,7 +13,7 @@ Class {
 }
 
 { #category : #initialization }
-EvolutionaryAmplifier class >> initializeWith: atestClass target: aTarget iterations: anInt [
+SAMainLoop class >> initializeWith: atestClass target: aTarget iterations: anInt [
 	| obj |
 	obj := self new.
 	obj testClass: atestClass.
@@ -23,23 +23,23 @@ EvolutionaryAmplifier class >> initializeWith: atestClass target: aTarget iterat
 ]
 
 { #category : #asserting }
-EvolutionaryAmplifier >> assertAmplifier [
+SAMainLoop >> assertAmplifier [
 	^ assertAmplifier
-		ifNil: [ assertAmplifier := Carving2AssertAmplifier  new ]
+		ifNil: [ assertAmplifier := CarvingAssertAmplifier  new ]
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> astHelper [
+SAMainLoop >> astHelper [
 	^ ASTHelper new
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifier >> doAssertAmplification: population [
+SAMainLoop >> doAssertAmplification: population [
 	^ self assertAmplifier doAssertAmplification: population amplifier: self
 ]
 
 { #category : #actions }
-EvolutionaryAmplifier >> doMutation: tcase [
+SAMainLoop >> doMutation: tcase [
 	| newcodes |
 	newcodes := OrderedCollection new.
 	self mutationOperators
@@ -50,7 +50,7 @@ EvolutionaryAmplifier >> doMutation: tcase [
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifier >> doPopulationMutation: aPopulation [
+SAMainLoop >> doPopulationMutation: aPopulation [
 	| newcodes |
 	newcodes := OrderedCollection new.
 	aPopulation
@@ -62,7 +62,7 @@ EvolutionaryAmplifier >> doPopulationMutation: aPopulation [
 ]
 
 { #category : #actions }
-EvolutionaryAmplifier >> doSelection: aPopulation selected: aPopulationAll [
+SAMainLoop >> doSelection: aPopulation selected: aPopulationAll [
 	| selectedTests |
 	aPopulation ifEmpty: [ ^ aPopulation  ].
 	selectedTests := OrderedCollection new.
@@ -79,7 +79,7 @@ EvolutionaryAmplifier >> doSelection: aPopulation selected: aPopulationAll [
 ]
 
 { #category : #'as yet unclassified' }
-EvolutionaryAmplifier >> initialAssertAmplify: aPopulation [
+SAMainLoop >> initialAssertAmplify: aPopulation [
 	| population |
 	population := aPopulation
 		collect: [ :tcase | 
@@ -100,36 +100,36 @@ EvolutionaryAmplifier >> initialAssertAmplify: aPopulation [
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> iterations: anInt [
+SAMainLoop >> iterations: anInt [
 	iterations := anInt 
 ]
 
 { #category : #actions }
-EvolutionaryAmplifier >> makeTestClass: aCollection [
+SAMainLoop >> makeTestClass: aCollection [
 	^ self astHelper buildTestClassWith: aCollection using: testClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> mutationOperators [
+SAMainLoop >> mutationOperators [
 	"^ {MuTalkMutationOperator new}"
 	^ { DSpotMutationOperator new }
 ]
 
 { #category : #actions }
-EvolutionaryAmplifier >> removeAssertion: tcase [
+SAMainLoop >> removeAssertion: tcase [
 	tcase
 		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> selectors [
+SAMainLoop >> selectors [
 	^ selectorOperator
 		ifNil: [ selectorOperator := {SmallAmpSelector new.
 			} ]
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> start [
+SAMainLoop >> start [
 	" Here is the main loop of program."
 
 	| population resultPeople |
@@ -159,31 +159,31 @@ EvolutionaryAmplifier >> start [
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> targetClasses [
+SAMainLoop >> targetClasses [
 	^ targetClasses
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> targetClasses: colTarget [
+SAMainLoop >> targetClasses: colTarget [
 	targetClasses := colTarget
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> testClass [
+SAMainLoop >> testClass [
 	^ testClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> testClass: atestClass [
+SAMainLoop >> testClass: atestClass [
 	testClass := atestClass
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> testMethods [
+SAMainLoop >> testMethods [
 	^ testMethods
 ]
 
 { #category : #accessing }
-EvolutionaryAmplifier >> testMethods: collTestMethods [
+SAMainLoop >> testMethods: collTestMethods [
 	testMethods := collTestMethods
 ]
