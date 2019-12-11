@@ -1,8 +1,51 @@
 Class {
 	#name : #CarvingAssertAmplifier,
 	#superclass : #AbstractAssertAmplifier,
-	#category : #'Amplification-Experiment'
+	#category : #'Amplification-Core'
 }
+
+{ #category : #'as yet unclassified' }
+CarvingAssertAmplifier >> buildAsserts: anObserver methodName: selector [
+	^ anObserver memory
+		collect: [ :observation | 
+			"self cleanExtraObservations: aMethod"
+			| asserts unserializer generateAsserts |
+			generateAsserts := true.
+			observation
+				at: #equalReceiver
+				ifPresent: [ :equalReceiver | 
+					equalReceiver
+						ifTrue: [ generateAsserts := false ] ].
+			observation at: #class ifAbsent: [ generateAsserts := false ].
+			asserts := OrderedCollection new.
+			observation
+				at: #exceptionClass
+				ifPresent: [ :exceptionClass | 
+					asserts := {(ErrorSerializer makeAssertError: exceptionClass)}.
+					generateAsserts := false ].
+			observation
+				at: #timeOutLimit
+				ifPresent: [ :timeOutLimit | 
+					asserts := {(AbstractSerializer makeAssertTimeOut: timeOutLimit)}.
+					generateAsserts := false ].
+			generateAsserts
+				ifTrue: [ unserializer := SerializerFactory getUnserializer: observation.
+					asserts := unserializer
+						makeAssertsBasedOnMemory: anObserver memory ].
+			asserts
+				doWithIndex: [ :assrt :index | 
+					assrt arguments
+						detect:
+							[ :obj | obj class = RBLiteralValueNode and: [ obj value = 'smallAmp' ] ]
+						ifFound: [ :obj | 
+							obj
+								value:
+									selector asString , ':' , (observation at: #id) asString , '.'
+										, index asString
+								start: 0
+								stop: -1 ] ].
+			(observation at: #id) -> asserts ]
+]
 
 { #category : #'as yet unclassified' }
 CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
@@ -13,6 +56,9 @@ CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	generatedClass class addInstVarNamed: 'observer'.
 	generatedClass class
 		compile: 'observer ^ observer ifNil: [ observer := Observer new ]'.
+	generatedClass class
+		compile: 'testTarget ^ ' , theAmplifier targetClasses asString .
+	generatedClass class compile: 'isLogging ^true'.
 	generatedClass
 		compile:
 			'observe: anObj name: aString id:anInt 
@@ -26,88 +72,59 @@ CarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> cleanExtraObservations: aMethod [
-	(aMethod body statements
-		select: [ :item | self isObservationPoint: item ]) do: [ :item | aMethod body statements remove: item ]
-]
-
-{ #category : #'as yet unclassified' }
 CarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
-	| generatedClass observer aMethod |
+	| generatedClass observer aMethod aVisitor src2 src3 |
 	aMethod := RBParser parseMethod: aMethodSrc.
-	self insertObservers: aMethod.
+	"aVisitor := MessageCallRewriter new.
+	aVisitor doYourJob: aMethod."
+	(MessageCall2Rewriter initializeFor: aMethod) doYourJob.
+	src2 := aMethod formattedCode.
+	aVisitor := ObserverInsert2Rewriter new.
+	aVisitor doYourJob: aMethod.
 	generatedClass := self buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
-	observer := generatedClass observer.
-	self insertAsserts: aMethod using: observer.
-	ASTHelper new removeClass: generatedClass source: self class name..
-	^ aMethod formattedCode
-]
-
-{ #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> findObservationPoint: item id: id [
-	(item isKindOf: RBMessageNode)
-		ifFalse: [ ^ false ].
-	(item selector = #observe:name:id:
-		and: [ (item arguments at: 3) value = id ])
-		ifTrue: [ ^ true ].
-	(item selector = #observeResult:receiver:selector:name:id:
-		and: [ (item arguments at: 5) value = id ])
-		ifTrue: [ ^ true ].
-	^ false
-]
-
-{ #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> insertAssertions: asserts in: aMethod on: observation [
-	aMethod body statements
-		detect: [ :item | self findObservationPoint: item id: (observation at: #id) ]
-		ifFound: [ :item | 
-			| idx |
-			idx := aMethod body statements indexOf: item.
-			asserts
-				do: [ :assert | aMethod body statements add: assert afterIndex: idx ].
-			aMethod body statements remove: item ]
-]
-
-{ #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> insertAsserts: aMethod using: anObserver [
-	anObserver memory
-		do: [ :observation | 
-			"self cleanExtraObservations: aMethod"
-			| asserts unserializer generateAsserts |
-			generateAsserts := true.
-			observation
-				at: #equalReceiver
-				ifPresent: [ :equalReceiver | 
-					equalReceiver
-						ifTrue: [ generateAsserts := false ] ].
-			observation at: #class ifAbsent: [ generateAsserts := false ].
-			asserts := OrderedCollection new.
-			
-			generateAsserts
-				ifTrue: [ unserializer := SerializerFactory getUnserializer: observation.
-					asserts := unserializer
-						makeAssertsBasedOnMemory: anObserver memory ].
-			self insertAssertions: asserts in: aMethod on: observation ]
-]
-
-{ #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> insertObservers: aMethod [
-	| aVisitor |
-	aVisitor := MessageCallRewriter new.
-	aVisitor doYourJob: aMethod.
-	aVisitor := ObserverInsertRewriter new.
-	aVisitor doYourJob: aMethod.
+	3
+		timesRepeat: [ generatedClass observer resetFlakyDetection.
+			generatedClass suite run.
+			generatedClass observer checkFlaky ].	"Flaky detection"
 	
+	observer := generatedClass observer.
+	src3 := self insertAsserts: src2 using: observer.
+	ASTHelper new
+		removeClass: generatedClass
+		source: self class name.
+	^ src3
 ]
 
 { #category : #'as yet unclassified' }
-CarvingAssertAmplifier >> isObservationPoint: item [
-	(item isKindOf: RBMessageNode)
-		ifFalse: [ ^ false ].
-	item selector = #observe:name:id:
-		ifTrue: [ ^ true ].
-	item selector = #observeResult:receiver:selector:name:id:
-		ifTrue: [ ^ true ].
-	^ false
+CarvingAssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
+	| aMethod newAsserts |
+	aMethod := RBParser parseMethod: aMethodSrc.
+	newAsserts := self
+		buildAsserts: anObserver
+		methodName: aMethod selector.
+	newAsserts reverse
+		do: [ :pair | 
+			pair value reverse
+				do: [ :assrt | 
+					| enclouse |
+					enclouse := false.
+					assrt selector = #should:raise:description:
+						ifTrue: [ enclouse := true ].
+					assrt selector = #should:notTakeMoreThan:description:
+						ifTrue: [ enclouse := true ].
+					assrt selector = #should:takeMoreThan:description:
+						ifTrue: [ enclouse := true ].
+					enclouse
+						ifTrue: [ | msg block |
+							msg := aMethod body statements at: pair key.
+							block := RBBlockNode body: (RBSequenceNode statements: {msg}).
+							"(msg isKindOf: RBAssignmentNode)
+								ifTrue: [ msg := (aMethod body statements at: pair key) value ]."
+							"(msg isKindOf: RBMessageNode)
+								ifTrue: [ "
+							assrt arguments at: 1 put: block.
+							aMethod body statements at: pair key put: assrt	"] " ]
+						ifFalse: [ aMethod body statements add: assrt afterIndex: pair key ] ] ].
+	^ aMethod formattedCode
 ]
