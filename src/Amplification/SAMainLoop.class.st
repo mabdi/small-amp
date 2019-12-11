@@ -72,7 +72,7 @@ SAMainLoop >> doSelection: aPopulation selected: aPopulationAll [
 				addAll: (sel doSelect: aPopulation selected: aPopulationAll) ].
 	^ selectedTests
 		collect: [ :obj | 
-			TestMethodObject
+			SATestMethod
 				withClass: obj testClass
 				method: (self astHelper cleanUp: obj testMethodModified)
 				targets: obj testTargets ]
@@ -93,7 +93,7 @@ SAMainLoop >> initialAssertAmplify: aPopulation [
 	population := self doAssertAmplification: population.
 	^ population
 		collect: [ :obj | 
-			TestMethodObject
+			SATestMethod
 				withClass: obj testClass
 				method: (self astHelper cleanUp: obj testMethodModified)
 				targets: obj testTargets ]
@@ -137,7 +137,7 @@ SAMainLoop >> start [
 		withAll:
 			(testMethods
 				collect: [ :tcase | 
-					TestMethodObject
+					SATestMethod
 						withClass: testClass
 						method: tcase
 						targets: targetClasses ]).

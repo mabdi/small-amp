@@ -1,5 +1,5 @@
 Class {
-	#name : #TestMethodObject,
+	#name : #SATestMethod,
 	#superclass : #Object,
 	#instVars : [
 		'testMethod',
@@ -9,11 +9,11 @@ Class {
 		'selector',
 		'selectorOriginal'
 	],
-	#category : #'Amplification-Core'
+	#category : #'Amplification-Model'
 }
 
 { #category : #'as yet unclassified' }
-TestMethodObject class >> withClass: aClass method: aMethod targets: colTarget [
+SATestMethod class >> withClass: aClass method: aMethod targets: colTarget [
 	^ self new
 		testClass: aClass;
 		testMethod: aMethod;
@@ -22,7 +22,7 @@ TestMethodObject class >> withClass: aClass method: aMethod targets: colTarget [
 ]
 
 { #category : #copying }
-TestMethodObject >> clone [
+SATestMethod >> clone [
 	| obj |
 	obj := self class
 		withClass: self testClass
@@ -33,7 +33,7 @@ TestMethodObject >> clone [
 ]
 
 { #category : #printing }
-TestMethodObject >> printOn: aStream [
+SATestMethod >> printOn: aStream [
 	"Append to the argument, aStream, a sequence of characters that  
 	identifies the receiver."
 
@@ -41,56 +41,56 @@ TestMethodObject >> printOn: aStream [
 ]
 
 { #category : #accessing }
-TestMethodObject >> selector [
+SATestMethod >> selector [
 	^ selector
 		ifNil: [ selector := ASTHelper new
 				extractMethodName: testMethodModified ]
 ]
 
 { #category : #accessing }
-TestMethodObject >> selectorOriginal [
+SATestMethod >> selectorOriginal [
 	^ selectorOriginal
 		ifNil: [ selectorOriginal := ASTHelper new
 				extractMethodName: testMethod ]
 ]
 
 { #category : #accessing }
-TestMethodObject >> testClass [ 
+SATestMethod >> testClass [ 
 	^ testClass 
 ]
 
 { #category : #accessing }
-TestMethodObject >> testClass: atestClass [
+SATestMethod >> testClass: atestClass [
 	testClass := atestClass 
 ]
 
 { #category : #accessing }
-TestMethodObject >> testMethod [
+SATestMethod >> testMethod [
 	^ testMethod
 ]
 
 { #category : #accessing }
-TestMethodObject >> testMethod: atestMethod [
+SATestMethod >> testMethod: atestMethod [
 	testMethod := atestMethod
 ]
 
 { #category : #accessing }
-TestMethodObject >> testMethodModified [
+SATestMethod >> testMethodModified [
 	^ testMethodModified ifNil: [ ^ testMethod  ]
 ]
 
 { #category : #accessing }
-TestMethodObject >> testMethodModified: atestMethodModified [
+SATestMethod >> testMethodModified: atestMethodModified [
 	testMethodModified:= atestMethodModified
 ]
 
 { #category : #accessing }
-TestMethodObject >> testTargets [
+SATestMethod >> testTargets [
 	^ testTargets
 ]
 
 { #category : #accessing }
-TestMethodObject >> testTargets: colTarget [
+SATestMethod >> testTargets: colTarget [
 	"comment stating purpose of message"
 
 	testTargets := colTarget 
