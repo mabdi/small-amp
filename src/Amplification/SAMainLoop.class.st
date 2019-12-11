@@ -5,27 +5,30 @@ Class {
 		'testClass',
 		'targetClasses',
 		'testMethods',
-		'iterations',
-		'assertAmplifier',
-		'selectorOperator'
+		'config'
 	],
 	#category : #'Amplification-Core'
 }
 
-{ #category : #initialization }
-SAMainLoop class >> initializeWith: atestClass target: aTarget iterations: anInt [
-	| obj |
-	obj := self new.
-	obj testClass: atestClass.
-	obj targetClasses: aTarget.
-	obj iterations: anInt.
-	^ obj
+{ #category : #'instance creation' }
+SAMainLoop class >> with: aConfig [
+	^ self new config: aConfig ; yourself
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> assertAmplification: population [
+	^ self assertAmplifiers
+		  inject: OrderedCollection new
+		  into: [ :coll :amplifier | 
+			  coll addAll:
+				  (amplifier doAssertAmplification: population amplifier: self).
+				coll ]
 ]
 
 { #category : #asserting }
-SAMainLoop >> assertAmplifier [
-	^ assertAmplifier
-		ifNil: [ assertAmplifier := SADefaultAssertAmplifier  new ]
+SAMainLoop >> assertAmplifiers [
+	self flag: #TODO. "think about naming. Assertion Amplification is better"
+	^ config assertAmplifiers
 ]
 
 { #category : #accessing }
@@ -33,36 +36,73 @@ SAMainLoop >> astHelper [
 	^ ASTHelper new
 ]
 
+{ #category : #accessing }
+SAMainLoop >> config: aConfig [
+	config := aConfig 
+]
+
 { #category : #'as yet unclassified' }
-SAMainLoop >> doAssertAmplification: population [
-	^ self assertAmplifier doAssertAmplification: population amplifier: self
+SAMainLoop >> initialAssertAmplify: aPopulation [
+	| population |
+	population := aPopulation
+		collect: [ :tcase | 
+			| noAsserts renamed |
+			noAsserts := self astHelper removeAssertions: tcase testMethod.
+			renamed := (ASTHelper new
+				renameMethodName: noAsserts
+				append: '_amp') formattedCode.
+			tcase testMethodModified: renamed ]
+		displayingProgress: 'Removing assertions'.
+	population := self assertAmplification: population.
+	^ population
+		collect: [ :obj | 
+			SATestMethod
+				withClass: obj testClass
+				method: (self astHelper cleanUp: obj testMethodModified)
+				targets: obj testTargets ]
 ]
 
 { #category : #actions }
-SAMainLoop >> doMutation: tcase [
+SAMainLoop >> inputAmplification: tcase [
 	| newcodes |
 	newcodes := OrderedCollection new.
-	self mutationOperators
-		do: [ :op | newcodes addAll: (op mutate: tcase testMethodModified) ].
-	newcodes := newcodes
-		collect: [ :cod | tcase clone testMethodModified: cod ].
+	self inputAmplifiers do: [ :op | 
+		newcodes addAll: (op mutate: tcase testMethodModified) ].
+	newcodes := newcodes collect: [ :cod | 
+		            tcase clone testMethodModified: cod ].
 	^ newcodes
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoop >> doPopulationMutation: aPopulation [
+SAMainLoop >> inputAmplificationAll: aPopulation [
 	| newcodes |
 	newcodes := OrderedCollection new.
 	aPopulation
 		do: [ :tcase | 
-			newcodes addAll: (self doMutation: tcase).
+			newcodes addAll: (self inputAmplification: tcase).
 			newcodes add: (tcase clone) ]
 		displayingProgress: 'Mutating test cases'.
 	^ newcodes
 ]
 
+{ #category : #accessing }
+SAMainLoop >> inputAmplifiers [
+	^ config inputAmplifiers
+]
+
+{ #category : #accessing }
+SAMainLoop >> iterations [
+	^ config iterations 
+]
+
 { #category : #actions }
-SAMainLoop >> doSelection: aPopulation selected: aPopulationAll [
+SAMainLoop >> removeAssertion: tcase [
+	tcase
+		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
+]
+
+{ #category : #actions }
+SAMainLoop >> selectionFrom: aPopulation alreadySelected: aPopulationAll [
 	| selectedTests |
 	aPopulation ifEmpty: [ ^ aPopulation  ].
 	selectedTests := OrderedCollection new.
@@ -78,54 +118,10 @@ SAMainLoop >> doSelection: aPopulation selected: aPopulationAll [
 				targets: obj testTargets ]
 ]
 
-{ #category : #'as yet unclassified' }
-SAMainLoop >> initialAssertAmplify: aPopulation [
-	| population |
-	population := aPopulation
-		collect: [ :tcase | 
-			| noAsserts renamed |
-			noAsserts := self astHelper removeAssertions: tcase testMethod.
-			renamed := (ASTHelper new
-				renameMethodName: noAsserts
-				append: '_amp') formattedCode.
-			tcase testMethodModified: renamed ]
-		displayingProgress: 'Removing assertions'.
-	population := self doAssertAmplification: population.
-	^ population
-		collect: [ :obj | 
-			SATestMethod
-				withClass: obj testClass
-				method: (self astHelper cleanUp: obj testMethodModified)
-				targets: obj testTargets ]
-]
-
-{ #category : #accessing }
-SAMainLoop >> iterations: anInt [
-	iterations := anInt 
-]
-
-{ #category : #actions }
-SAMainLoop >> makeTestClass: aCollection [
-	^ self astHelper buildTestClassWith: aCollection using: testClass
-]
-
-{ #category : #accessing }
-SAMainLoop >> mutationOperators [
-	"^ {MuTalkMutationOperator new}"
-	^ { SALiteralInputAmplifier new }
-]
-
-{ #category : #actions }
-SAMainLoop >> removeAssertion: tcase [
-	tcase
-		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
-]
-
 { #category : #accessing }
 SAMainLoop >> selectors [
-	^ selectorOperator
-		ifNil: [ selectorOperator := {SAMutationCoverageSelector new.
-			} ]
+	self flag: #TODO. "change the name. selector is used to the name of methods. selection is better"
+	^ config selectors
 ]
 
 { #category : #accessing }
@@ -133,29 +129,27 @@ SAMainLoop >> start [
 	" Here is the main loop of program."
 
 	| population resultPeople |
-	population := OrderedCollection
-		withAll:
-			(testMethods
-				collect: [ :tcase | 
-					SATestMethod
-						withClass: testClass
-						method: tcase
-						targets: targetClasses ]).
-					
+	population := OrderedCollection withAll:
+		              (testMethods collect: [ :tcase | 
+			               SATestMethod
+				               withClass: testClass
+				               method: tcase
+				               targets: targetClasses ]).
 	resultPeople := self initialAssertAmplify: population clone.
-	(1 to: iterations)
+	(1 to: self iterations)
 		do: [ :gen | 
 			population
 				do: [ :tcase | self removeAssertion: tcase ]
 				displayingProgress: 'Removing assertions'.
-			population := self doPopulationMutation: population.
-			population := self doAssertAmplification: population.
-			population := self doSelection: population selected: resultPeople.
-			resultPeople addAll: population.
-			 ]
+			population := self inputAmplificationAll: population.
+			population := self assertAmplification: population.
+			population := self
+				              selectionFrom: population
+				              alreadySelected: resultPeople.
+			resultPeople addAll: population ]
 		displayingProgress: 'Main loop'.
-	^ self
-		makeTestClass: (resultPeople collect: [ :tcase | tcase testMethod ])
+	^ self astHelper buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ]) using: testClass
+		  
 ]
 
 { #category : #accessing }

@@ -34,13 +34,14 @@ Class {
 	#name : #SmallAmp,
 	#superclass : #Object,
 	#instVars : [
-		'improvmentAlgorithm',
+		'mainLoop',
 		'testMethods',
 		'testTargets',
 		'testClass',
 		'newTestClass',
 		'minifiedTestClass',
-		'minifiedAddedTestClass'
+		'minifiedAddedTestClass',
+		'config'
 	],
 	#category : #'Amplification-Core'
 }
@@ -128,6 +129,16 @@ SmallAmp class >> getStringPairsForPackagePrefix: aPrefix [
 { #category : #'as yet unclassified' }
 SmallAmp class >> guessTestTargetFor: aTestClass [
 	^ self new guessTestTargetFor: aTestClass
+]
+
+{ #category : #initialization }
+SmallAmp class >> initializeWith: aConfig [
+	^ self new initializeWith: aConfig
+]
+
+{ #category : #initialization }
+SmallAmp class >> initializeWith: aConfig toAmplify: aList [
+	^ self new initializeWith: aConfig toAmplify: aList
 ]
 
 { #category : #initialization }
@@ -297,15 +308,27 @@ SmallAmp >> guessTestTargetFor: aTestClass [
 ]
 
 { #category : #accessing }
+SmallAmp >> initializeWith: aConfig [
+	config := aConfig
+]
+
+{ #category : #accessing }
+SmallAmp >> initializeWith: aConfig toAmplify: aList [
+	self initializeWith: aConfig.
+	testClass := aList.
+	
+]
+
+{ #category : #accessing }
 SmallAmp >> initializeWithTests: dicConfig [
 	testTargets := dicConfig at: #testTargets.
 	testClass := dicConfig at: #testClass.
 	testMethods := testClass allTestSelectors.
-	improvmentAlgorithm := SAMainLoop
+	mainLoop := SAMainLoop
 		initializeWith: testClass
 		target: testTargets
 		iterations: (dicConfig at: #GAIteration ifAbsent: 3).
-	improvmentAlgorithm testMethods: testMethods
+	mainLoop testMethods: testMethods
 ]
 
 { #category : #actions }
@@ -442,12 +465,12 @@ SmallAmp >> preStartActions [
 		collect: [ :passed | 
 			(testClass methods detect: [ :m | m selector = passed selector ])
 				sourceCode ].
-	improvmentAlgorithm testMethods: testMethods
+	mainLoop testMethods: testMethods
 ]
 
 { #category : #actions }
 SmallAmp >> startAmplify [
-	newTestClass := improvmentAlgorithm start
+	newTestClass := mainLoop start
 ]
 
 { #category : #tests }
