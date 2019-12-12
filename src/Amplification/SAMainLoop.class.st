@@ -14,15 +14,14 @@ Class {
 { #category : #'instance creation' }
 SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 	^ self new
-		  config: aConfig;
-		testClass: aTestClass ;
-		targetClasses: targetClasses;  
+		  with: aConfig for: aTestClass targets: targetClasses;	
 		  yourself
 ]
 
 { #category : #accessing }
 SAMainLoop >> amplify [
 	| resultPeople |
+	self halt.
 	self methodProfiling.
 	resultPeople := self initialAssertionAmplify.
 	config lite ifFalse: [ 
@@ -54,11 +53,6 @@ SAMainLoop >> assertionAmplifiers [
 { #category : #accessing }
 SAMainLoop >> astHelper [
 	^ ASTHelper new
-]
-
-{ #category : #accessing }
-SAMainLoop >> config: aConfig [
-	config := aConfig 
 ]
 
 { #category : #actions }
@@ -172,17 +166,15 @@ SAMainLoop >> targetClasses [
 ]
 
 { #category : #accessing }
-SAMainLoop >> targetClasses: arrayOfTargetClasses [
-	targetClasses := arrayOfTargetClasses
-]
-
-{ #category : #accessing }
 SAMainLoop >> testClass [
 	^ testClass
 ]
 
-{ #category : #accessing }
-SAMainLoop >> testClass: atestClass [
-	testClass := atestClass.
+{ #category : #'instance creation' }
+SAMainLoop >> with: aConfig for: aTestClass targets: listofTargetClasses [
+	self initialize.
+	config := aConfig.
+	targetClasses := listofTargetClasses.
+	testClass := aTestClass.
 	self discardFailingTests 
 ]
