@@ -1,23 +1,23 @@
 Class {
 	#name : #SAAbstractInputAmplifier,
 	#superclass : #Object,
+	#instVars : [
+		'testMethodModel'
+	],
 	#category : #'Amplification-Core'
 }
 
 { #category : #removing }
-SAAbstractInputAmplifier >> mutate: aMethod [
-	self subclassResponsibility 
+SAAbstractInputAmplifier class >> inputAmplify: aTestMethodModel [
+	^ self new with: aTestMethodModel; amplifyInputs
 ]
 
-{ #category : #'as yet unclassified' }
-SAAbstractInputAmplifier >> renameMutations: mutations [
-	| idx |
-	idx := 0.
-	^ mutations
-		collect: [ :mtd | 
+{ #category : #removing }
+SAAbstractInputAmplifier >> amplifyInputs [
+	^ self subclassResponsibility 
+]
 
-			idx := idx + 1.
-			(ASTHelper new
-				renameMethodName: mtd
-				append: '_' , idx asString) formattedCode ]
+{ #category : #removing }
+SAAbstractInputAmplifier >> with: aMethodModel [
+	testMethodModel := aMethodModel
 ]

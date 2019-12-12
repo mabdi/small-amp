@@ -5,14 +5,16 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> assertionAmplifiedSourceCode [
+SADefaultAssertionAmplifier >> amplifyAssertions [
 	| generatedClass observer aMethodAST aVisitor srcv2 srcv3 |
 	aMethodAST := RBParser parseMethod: testMethodModel testMethod.
 	(MessageCall2Rewriter initializeFor: aMethodAST) doYourJob.
 	srcv2 := aMethodAST formattedCode.
 	aVisitor := ObserverInsert2Rewriter new.
 	aVisitor doYourJob: aMethodAST.
-	generatedClass := self buildAuxillaryClass: aMethodAST basedOn: testMethodModel testClass.
+	generatedClass := self
+		                  buildAuxillaryClass: aMethodAST
+		                  basedOn: testMethodModel testClass.
 	generatedClass suite run.
 	3 timesRepeat: [ 
 		generatedClass observer resetFlakyDetection.

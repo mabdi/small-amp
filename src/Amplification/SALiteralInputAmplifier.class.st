@@ -5,8 +5,6 @@ Class {
 }
 
 { #category : #removing }
-SALiteralInputAmplifier >> mutate: aMethod [
-	| mutants |
-	mutants := DSpotASTMutationRewriter new doYourJob: aMethod.
-	^ self renameMutations: mutants
+SALiteralInputAmplifier >> amplifyInputs [
+	^ DSpotASTMutationRewriter new doYourJob: testMethodModel testMethod
 ]

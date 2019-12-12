@@ -9,16 +9,18 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAAbstractAssertionAmplifier class >> assertionAmplify: aTestMethodModel [
-	^ self new assertionAmplify: aTestMethodModel
+	^ self new
+		  with: aTestMethodModel;
+		  amplifyAssertions
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertionAmplifier >> assertionAmplifiedSourceCode [
-	^ self subclassResponsibility 
+SAAbstractAssertionAmplifier >> amplifyAssertions [
+	^ self subclassResponsibility
 ]
 
-{ #category : #'as yet unclassified' }
-SAAbstractAssertionAmplifier >> assertionAmplify: aTestMethodModel [
-	testMethodModel := aTestMethodModel.
-	^ self assertionAmplifiedSourceCode
+{ #category : #initialization }
+SAAbstractAssertionAmplifier >> with: aTestMethodModel [
+	self initialize.
+	testMethodModel := aTestMethodModel
 ]

@@ -55,6 +55,19 @@ SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUn
 		                                   aTestMethod
 ]
 
+{ #category : #cleanup }
+SATestMethod >> inputAmplifyBy: anAmplifier [
+	| idx versions |
+	versions := anAmplifier inputAmplify: self.
+	idx := 0.
+	^ versions collect: [ :mtd | |cp| 
+		cp := self renamedCopy: '_' , idx asString.  
+		cp testMethod: (self astHelper renameMethodName: mtd append: '_' , idx asString)
+			  formattedCode.
+		idx := idx + 1.
+		   ]
+]
+
 { #category : #printing }
 SATestMethod >> printOn: aStream [
 	"Append to the argument, aStream, a sequence of characters that  

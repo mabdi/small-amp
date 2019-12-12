@@ -6,7 +6,7 @@ Class {
 		'targetClasses',
 		'population',
 		'config',
-		'newTestClass'
+		'finalResult'
 	],
 	#category : #'Amplification-Core'
 }
@@ -21,7 +21,6 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 { #category : #accessing }
 SAMainLoop >> amplify [
 	| resultPeople |
-	self halt.
 	self methodProfiling.
 	resultPeople := self initialAssertionAmplify.
 	config lite ifFalse: [ 
@@ -40,8 +39,8 @@ SAMainLoop >> amplify [
 SAMainLoop >> assertionAmplification [
 	population
 		do: [ :tcase | 
-			self assertAmplifiers do: [ :amplifier | 
-				tcase assertAmplifyBy: amplifier ] ]
+			self assertionAmplifiers do: [ :amplifier | 
+				tcase assertionAmplifyBy: amplifier ] ]
 		displayingProgress: 'Assertion Amplification'
 ]
 
@@ -59,12 +58,13 @@ SAMainLoop >> astHelper [
 SAMainLoop >> discardFailingTests [
 	| result testMethods |
 	result := testClass suite run.
-	self flag: #TODO. "Warn if there is failing tests"
 	testMethods := result passed collect: [ :passed | 
 		               (testClass methodNamed: passed selector) sourceCode ].
+	finalResult addFailedSelectorInOriginal: result failed.
 	population := testMethods collect: [ :tcase | 
 		              SATestMethod
-			              with: tcase class: testClass
+			              with: tcase
+			              class: testClass
 			              targets: targetClasses ]
 ]
 
@@ -89,21 +89,10 @@ SAMainLoop >> inputAmplification [
 	newcodes := OrderedCollection new.
 	population
 		do: [ :tcase | 
-			newcodes addAll: (self inputAmplificationMethod: tcase).
-			newcodes add: tcase clone ]
+			self inputAmplifiers do: [ :amplifier | 
+				newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 		displayingProgress: 'Input Amplification'.
-	^ newcodes
-]
-
-{ #category : #actions }
-SAMainLoop >> inputAmplificationMethod: tcase [
-	| newcodes |
-	newcodes := OrderedCollection new.
-	self inputAmplifiers do: [ :op | 
-		newcodes addAll: (op mutate: tcase testMethod) ].
-	newcodes := newcodes collect: [ :cod | 
-		            tcase clone testMethod: cod ].
-	^ newcodes
+	population addAll: newcodes
 ]
 
 { #category : #accessing }
@@ -114,10 +103,10 @@ SAMainLoop >> inputAmplifiers [
 { #category : #private }
 SAMainLoop >> makeResult: resultPeople [
 	self flag: #TODO.
-	newTestClass := self astHelper
+	finalResult addNewTestClass: (self astHelper
 		                buildTestClassWith:
 		                (resultPeople collect: [ :tcase | tcase testMethod ])
-		                using: testClass.
+		                using: testClass).
 	^ SAResultItem new
 ]
 
@@ -127,19 +116,14 @@ SAMainLoop >> methodProfiling [
 		SAMethodProfiler classifyClass: anObjectUnderTest ]
 ]
 
-{ #category : #accessing }
-SAMainLoop >> newTestClass [
-	^ newTestClass
-]
-
 { #category : #actions }
-SAMainLoop >> selectionAlreadySelected: aPopulationAll [
+SAMainLoop >> selectionAlreadySelected: aSelectedPopulation [
 	| selectedTests |
 	population ifEmpty: [ ^ population ].
 	selectedTests := OrderedCollection new.
 	self selectors do: [ :sel | 
 		selectedTests addAll:
-			(sel doSelect: population selected: aPopulationAll) ].
+			(sel doSelect: population selected: aSelectedPopulation) ].
 	^ selectedTests collect: [ :obj | 
 		  SATestMethod
 			  with: (self astHelper cleanUp: obj testMethod)
@@ -176,5 +160,6 @@ SAMainLoop >> with: aConfig for: aTestClass targets: listofTargetClasses [
 	config := aConfig.
 	targetClasses := listofTargetClasses.
 	testClass := aTestClass.
-	self discardFailingTests 
+	finalResult := SAResultItem new.
+	self discardFailingTests
 ]
