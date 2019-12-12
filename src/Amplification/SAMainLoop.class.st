@@ -119,22 +119,21 @@ SAMainLoop >> methodProfiling [
 { #category : #actions }
 SAMainLoop >> selectionAlreadySelected: aSelectedPopulation [
 	| selectedTests |
-	population ifEmpty: [ ^ population ].
+	population ifEmpty: [ ^ self ].
 	selectedTests := OrderedCollection new.
 	self selectors do: [ :sel | 
 		selectedTests addAll:
 			(sel doSelect: population selected: aSelectedPopulation) ].
-	^ selectedTests collect: [ :obj | 
-		  SATestMethod
-			  with: (self astHelper cleanUp: obj testMethod)
-			  class: obj testClass
-			  targets: obj testTargets ]
+	population := selectedTests collect: [ :obj | 
+		SATestMethod
+			with: (self astHelper cleanUp: obj testMethod)
+			class: obj testClass
+			targets: obj testTargets ]
 ]
 
 { #category : #accessing }
-SAMainLoop >> selectors [
-	self flag: #TODO. "change the name. selector is used to the name of methods. selection is better"
-	^ config selectors
+SAMainLoop >> selections [
+	^ config selections
 ]
 
 { #category : #'as yet unclassified' }

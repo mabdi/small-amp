@@ -1,6 +1,6 @@
 Class {
 	#name : #MuTalkSelector,
-	#superclass : #SAAbstractSelector,
+	#superclass : #SAAbstractSelection,
 	#category : #'Amplification-Experiment'
 }
 

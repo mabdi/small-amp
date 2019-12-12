@@ -4,11 +4,11 @@ Class {
 	#instVars : [
 		'inputAmplifiers',
 		'assertionAmplifiers',
-		'selectors',
 		'iterations',
 		'debug',
 		'lite',
-		'logger'
+		'logger',
+		'selections'
 	],
 	#category : #'Amplification-Model'
 }
@@ -74,12 +74,11 @@ SAConfig >> logger: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> selectors [
-	self flag: #TODO. "rename from selector. because selector is the name of method. use selection or sth"
-	^ selectors
+SAConfig >> selections [
+	^ selections
 ]
 
 { #category : #accessing }
-SAConfig >> selectors: anObject [
-	selectors := anObject
+SAConfig >> selections: aListOfSelections [
+	selections := aListOfSelections
 ]

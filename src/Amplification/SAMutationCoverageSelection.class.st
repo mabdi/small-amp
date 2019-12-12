@@ -1,11 +1,11 @@
 Class {
-	#name : #SAMutationCoverageSelector,
-	#superclass : #SAAbstractSelector,
+	#name : #SAMutationCoverageSelection,
+	#superclass : #SAAbstractSelection,
 	#category : #'Amplification-Core'
 }
 
 { #category : #enumerating }
-SAMutationCoverageSelector >> doSelect: aPopulation selected: aPopulationAll [
+SAMutationCoverageSelection >> doSelect: aPopulation selected: aPopulationAll [
 	| selectedTests analysis groups result analysis2 survives |
 	
 	selectedTests := OrderedCollection new.
@@ -54,7 +54,7 @@ SAMutationCoverageSelector >> doSelect: aPopulation selected: aPopulationAll [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageSelector >> doSelectOld: aPopulation selected: aPopulationAll [
+SAMutationCoverageSelection >> doSelectOld: aPopulation selected: aPopulationAll [
 	| selectedTests analysis groups kills extrakills result analysis2 |
 	selectedTests := OrderedCollection new.
 	analysis := (aPopulation
@@ -96,7 +96,7 @@ SAMutationCoverageSelector >> doSelectOld: aPopulation selected: aPopulationAll 
 ]
 
 { #category : #testing }
-SAMutationCoverageSelector >> isMutationResult: mutatedSelector betterThan: parentSelector basedOn: analysis [
+SAMutationCoverageSelection >> isMutationResult: mutatedSelector betterThan: parentSelector basedOn: analysis [
 	| pkilled mkilled |
 	"TODO I forget terminated result. have a look to mutalk sourcecode to see why terminated results dont have any result"
 	pkilled := (analysis particularResults
@@ -116,7 +116,7 @@ SAMutationCoverageSelector >> isMutationResult: mutatedSelector betterThan: pare
 ]
 
 { #category : #testing }
-SAMutationCoverageSelector >> isMutationResultOld: analysis1 betterThan: analysis2 [
+SAMutationCoverageSelection >> isMutationResultOld: analysis1 betterThan: analysis2 [
 	| kills1 kills2 |
 	kills1 := analysis1 generalResult killedMutants
 		collect: [ :item | item mutant modifiedSource ].
@@ -127,7 +127,7 @@ SAMutationCoverageSelector >> isMutationResultOld: analysis1 betterThan: analysi
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelector >> matrixFromMutalk: aResult [
+SAMutationCoverageSelection >> matrixFromMutalk: aResult [
 	| matrix instance selectors muts |
 	muts := OrderedCollection new.
 	selectors := OrderedCollection new.
@@ -172,7 +172,7 @@ SAMutationCoverageSelector >> matrixFromMutalk: aResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelector >> mutalkRun: aPopulation [
+SAMutationCoverageSelection >> mutalkRun: aPopulation [
 	| testClass targetClasses newTestClass analysis1 |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
