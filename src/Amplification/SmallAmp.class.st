@@ -47,7 +47,7 @@ SmallAmp class >> example [
 		          iterations: 3;
 		          assertionAmplifiers: { SADefaultAssertionAmplifier };
 		          inputAmplifiers: { SALiteralInputAmplifier };
-		          selectors: { SAMutationCoverageSelector };
+		          selections: { SAMutationCoverageSelection };
 		          yourself.
 	result := (SmallAmp initializeWith: config)
 		          testCase: SmallBankTest targets: { SmallBank };
