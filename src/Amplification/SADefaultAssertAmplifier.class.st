@@ -5,6 +5,26 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SADefaultAssertAmplifier >> assertionAmplifiedSourceCode [
+	| generatedClass observer aMethodAST aVisitor srcv2 srcv3 |
+	aMethodAST := RBParser parseMethod: testMethodModel testMethod.
+	(MessageCall2Rewriter initializeFor: aMethodAST) doYourJob.
+	srcv2 := aMethodAST formattedCode.
+	aVisitor := ObserverInsert2Rewriter new.
+	aVisitor doYourJob: aMethodAST.
+	generatedClass := self buildAuxillaryClass: aMethodAST basedOn: testMethodModel testClass.
+	generatedClass suite run.
+	3 timesRepeat: [ 
+		generatedClass observer resetFlakyDetection.
+		generatedClass suite run.
+		generatedClass observer checkFlaky ]. "Flaky detection"
+	observer := generatedClass observer.
+	srcv3 := self insertAsserts: srcv2 using: observer.
+	ASTHelper new removeClass: generatedClass source: self class name.
+	^ srcv3
+]
+
+{ #category : #'as yet unclassified' }
 SADefaultAssertAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver memory
 		collect: [ :observation | 
@@ -51,49 +71,21 @@ SADefaultAssertAmplifier >> buildAsserts: anObserver methodName: selector [
 SADefaultAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := ASTHelper new
-		buildTestClassWith: {}
-		using: aClass.
+		                  buildTestClassWith: {  }
+		                  using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
-	generatedClass class
-		compile: 'observer ^ observer ifNil: [ observer := Observer new ]'.
-	generatedClass class
-		compile: 'testTarget ^ ' , theAmplifier targetClasses asString .
+	generatedClass class compile:
+		'observer ^ observer ifNil: [ observer := Observer new ]'.
+	generatedClass class compile:
+		'testTarget ^ ' , testMethodModel targetClasses asString.
 	generatedClass class compile: 'isLogging ^true'.
-	generatedClass
-		compile:
-			'observe: anObj name: aString id:anInt 
+	generatedClass compile: 'observe: anObj name: aString id:anInt 
 			       ^ self class observer observe: anObj name: aString id: anInt'.
-	generatedClass
-		compile:
-			'observeResult: anObj receiver: arec selector: aSelector name: aString id:anInt 
+	generatedClass compile:
+		'observeResult: anObj receiver: arec selector: aSelector name: aString id:anInt 
 			       ^ self class observer observeResult: anObj receiver: arec selector: aSelector name: aString id: anInt'.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass
-]
-
-{ #category : #'as yet unclassified' }
-SADefaultAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
-	| generatedClass observer aMethod aVisitor src2 src3 |
-	aMethod := RBParser parseMethod: aMethodSrc.
-	"aVisitor := MessageCallRewriter new.
-	aVisitor doYourJob: aMethod."
-	(MessageCall2Rewriter initializeFor: aMethod) doYourJob.
-	src2 := aMethod formattedCode.
-	aVisitor := ObserverInsert2Rewriter new.
-	aVisitor doYourJob: aMethod.
-	generatedClass := self buildAuxillaryClass: aMethod basedOn: aClass.
-	generatedClass suite run.
-	3
-		timesRepeat: [ generatedClass observer resetFlakyDetection.
-			generatedClass suite run.
-			generatedClass observer checkFlaky ].	"Flaky detection"
-	
-	observer := generatedClass observer.
-	src3 := self insertAsserts: src2 using: observer.
-	ASTHelper new
-		removeClass: generatedClass
-		source: self class name.
-	^ src3
 ]
 
 { #category : #'as yet unclassified' }

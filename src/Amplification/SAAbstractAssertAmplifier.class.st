@@ -2,30 +2,23 @@ Class {
 	#name : #SAAbstractAssertAmplifier,
 	#superclass : #Object,
 	#instVars : [
-		'theAmplifier'
+		'testMethodModel'
 	],
 	#category : #'Amplification-Core'
 }
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier >> assertionAmplify: aMethod [
-	^ aMethod
-		testMethod:
-			(self
-				doAssertionAmplification: aMethod testMethod
-				within: aMethod testClass
-				)
+SAAbstractAssertAmplifier class >> assertionAmplify: aTestMethodModel [
+	^ self new assertionAmplify: aTestMethodModel
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier >> doAssertAmplification: population amplifier: anAmplifier [
-	theAmplifier := anAmplifier.
-	^ population
-		collect: [ :tcase | self assertionAmplify: tcase ]
-		displayingProgress: 'Assert amplifying'
+SAAbstractAssertAmplifier >> assertionAmplifiedSourceCode [
+	^ self subclassResponsibility 
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier >> doAssertionAmplification: aMethod within: atestClass [
-	self subclassResponsibility 
+SAAbstractAssertAmplifier >> assertionAmplify: aTestMethodModel [
+	testMethodModel := aTestMethodModel.
+	^ self assertionAmplifiedSourceCode
 ]

@@ -19,6 +19,11 @@ SATestMethod class >> with: aTestMethod class: aTestClass targets: objectsUnderT
 		  targets: objectsUnderTest
 ]
 
+{ #category : #cleanup }
+SATestMethod >> assertAmplifyBy: anAmplifier [ 
+	testMethod := anAmplifier assertionAmplify: self
+]
+
 { #category : #removing }
 SATestMethod >> astHelper [
 	^ ASTHelper new

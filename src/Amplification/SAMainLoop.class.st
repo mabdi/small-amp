@@ -39,13 +39,11 @@ SAMainLoop >> amplify [
 
 { #category : #private }
 SAMainLoop >> assertAmplification [
-	self flag: #TODO. "1. refactor Assert amplifier and testModel"
-	^ self assertAmplifiers
-		  inject: OrderedCollection new
-		  into: [ :res :amplifier | 
-			  res addAll:
-				  (amplifier doAssertAmplification: population amplifier: self).
-			  res ]
+	population
+		do: [ :tcase | 
+			self assertAmplifiers do: [ :amplifier | 
+				tcase assertAmplifyBy: amplifier ] ]
+		displayingProgress: 'Assertion Amplification'
 ]
 
 { #category : #asserting }
@@ -83,19 +81,13 @@ SAMainLoop >> initialAssertAmplify [
 	aPopulation := population collect: [ :tcase | 
 		               tcase renamedCopy: '_amp' ].
 	aPopulation do: [ :tcase | tcase strip ].
-	aPopulation := self assertAmplifiers
-		inject: OrderedCollection new
-		into: [ :res :amplifier | 
-			res addAll:
-				(amplifier doAssertAmplification: aPopulation amplifier: self).
-			res ].
-	^ aPopulation collect: [ :obj | 
-		  obj cleanup.
-		  self flag: #TODO. "investigate why wee need this mapping?"
-		  SATestMethod
-			  with: obj testClass
-			  class: obj testMethod
-			  targets: obj testTargets ]
+	aPopulation
+		do: [ :tcase | 
+			self assertAmplifiers do: [ :amplifier | 
+				tcase assertAmplifyBy: amplifier ].
+			tcase cleanup ]
+		displayingProgress: 'Assertion Amplification'.
+	^ aPopulation
 ]
 
 { #category : #private }
