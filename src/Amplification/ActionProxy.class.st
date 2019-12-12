@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'action'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #initialization }

@@ -8,7 +8,7 @@ Class {
 	#classInstVars : [
 		'history'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #accessing }

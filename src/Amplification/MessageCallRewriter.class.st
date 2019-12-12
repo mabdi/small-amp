@@ -5,7 +5,7 @@ Class {
 		'targetNodes',
 		'tmpVariables'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #adding }

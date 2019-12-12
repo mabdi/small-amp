@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'loggers'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }

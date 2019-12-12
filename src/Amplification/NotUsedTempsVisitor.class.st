@@ -5,7 +5,7 @@ Class {
 		'tmp_var',
 		'used'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #initialization }

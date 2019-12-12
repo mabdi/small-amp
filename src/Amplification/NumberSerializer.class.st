@@ -1,7 +1,7 @@
 Class {
 	#name : #NumberSerializer,
 	#superclass : #PrimitiveSerializer,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #accessing }

@@ -1,7 +1,7 @@
 Class {
 	#name : #CharacterSerializer,
 	#superclass : #PrimitiveSerializer,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #accessing }

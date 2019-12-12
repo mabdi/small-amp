@@ -5,7 +5,7 @@ Class {
 		'before',
 		'after'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #adding }

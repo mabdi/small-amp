@@ -6,7 +6,7 @@ Class {
 		'aMethod',
 		'idx'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #initialization }

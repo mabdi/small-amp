@@ -1,7 +1,7 @@
 Class {
 	#name : #AssertCollectionEqulas,
 	#superclass : #AssertTransform,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #running }

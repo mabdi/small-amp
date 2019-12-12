@@ -1,7 +1,7 @@
 Class {
 	#name : #ErrorSerializer,
 	#superclass : #AbstractSerializer,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #asserting }

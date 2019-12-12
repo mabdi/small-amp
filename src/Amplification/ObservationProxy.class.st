@@ -5,7 +5,7 @@ Class {
 		'observer',
 		'insideObject'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }

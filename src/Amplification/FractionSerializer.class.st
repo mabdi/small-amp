@@ -1,7 +1,7 @@
 Class {
 	#name : #FractionSerializer,
 	#superclass : #NumberSerializer,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #asserting }

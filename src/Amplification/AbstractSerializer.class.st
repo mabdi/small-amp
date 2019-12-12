@@ -5,7 +5,7 @@ Class {
 		'object',
 		'dictionary'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #asserting }

@@ -60,7 +60,7 @@ SAMainLoop >> discardFailingTests [
 	result := testClass suite run.
 	testMethods := result passed collect: [ :passed | 
 		               (testClass methodNamed: passed selector) sourceCode ].
-	finalResult addFailedSelectorInOriginal: result failed.
+	finalResult addFailedSelectorInOriginal: result failures.
 	population := testMethods collect: [ :tcase | 
 		              SATestMethod
 			              with: tcase
@@ -121,9 +121,9 @@ SAMainLoop >> selectionAlreadySelected: aSelectedPopulation [
 	| selectedTests |
 	population ifEmpty: [ ^ self ].
 	selectedTests := OrderedCollection new.
-	self selectors do: [ :sel | 
+	self selections do: [ :sel | 
 		selectedTests addAll:
-			(sel doSelect: population selected: aSelectedPopulation) ].
+			(sel select: population alreadySelected: aSelectedPopulation) ].
 	population := selectedTests collect: [ :obj | 
 		SATestMethod
 			with: (self astHelper cleanUp: obj testMethod)

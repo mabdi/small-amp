@@ -26,7 +26,7 @@ SATestMethod >> assertionAmplifyBy: anAmplifier [
 
 { #category : #removing }
 SATestMethod >> astHelper [
-	^ ASTHelper new
+	^ SAASTHelper new
 ]
 
 { #category : #cleanup }
@@ -60,12 +60,14 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 	| idx versions |
 	versions := anAmplifier inputAmplify: self.
 	idx := 0.
-	^ versions collect: [ :mtd | |cp| 
-		cp := self renamedCopy: '_' , idx asString.  
-		cp testMethod: (self astHelper renameMethodName: mtd append: '_' , idx asString)
-			  formattedCode.
-		idx := idx + 1.
-		   ]
+	^ versions collect: [ :mtd | 
+		  | cp |
+		  cp := self renamedCopy: '_' , idx asString.
+		  cp testMethod:
+			  (self astHelper renameMethodName: mtd append: '_' , idx asString)
+				  formattedCode.
+		  idx := idx + 1.
+		cp ]
 ]
 
 { #category : #printing }

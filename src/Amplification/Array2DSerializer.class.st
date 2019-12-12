@@ -1,7 +1,7 @@
 Class {
 	#name : #Array2DSerializer,
 	#superclass : #CollectionSerializer,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }

@@ -5,12 +5,12 @@ Class {
 }
 
 { #category : #enumerating }
-MuTalkSelector >> doSelect: aPopulation selected: aPopulationAll [
+MuTalkSelector >> select: aPopulation alreadySelected: aPopulationAll [
 	| selectedTests newTestClass analysis1 killSelectors testClass targetClasses |
 	selectedTests := OrderedCollection new.
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	newTestClass := ASTHelper new
+	newTestClass := SAASTHelper new
 		buildTestClassWith:
 			(aPopulation , aPopulationAll
 				collect: [ :tcase | tcase testMethod ])
@@ -21,7 +21,7 @@ MuTalkSelector >> doSelect: aPopulation selected: aPopulationAll [
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
 	analysis1 run.
-	ASTHelper uniqueInstance removeClass: newTestClass  source: self class name..
+	SAASTHelper uniqueInstance removeClass: newTestClass  source: self class name..
 	killSelectors := analysis1 generalResult killedMutants
 		collect: [ :item | 
 			aPopulation

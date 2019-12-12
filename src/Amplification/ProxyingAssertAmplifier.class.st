@@ -43,7 +43,7 @@ ProxyingAssertAmplifier >> doAssertAmplification: population amplifier: anAmplif
 ProxyingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer proxies |
 	observer := Observer new.
-	generatedClass := ASTHelper new
+	generatedClass := SAASTHelper new
 		buildTestClassWith: {}
 		using: aClass.
 	generatedClass compile: aMethodSrc.
@@ -52,7 +52,7 @@ ProxyingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 			[ :mtd | ObservationProxy for: mtd observer: observer inside: generatedClass ].
 	[ generatedClass suite run ]
 		ensure: [ proxies do: [ :mtd | mtd destroy ] ].
-	ASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
+	SAASTHelper uniqueInstance removeClass: generatedClass  source: self class name..
 	^ self insertAsserts: aMethodSrc using: observer
 ]
 

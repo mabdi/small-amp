@@ -36,7 +36,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -59,7 +59,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollection1 [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -84,7 +84,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionAdd [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -107,7 +107,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionChange [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -131,7 +131,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionRemove [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -156,7 +156,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationCollectionSize [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -182,7 +182,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationComplex [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -206,7 +206,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationObject [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -230,7 +230,7 @@ CarvingAssertAmplifierTest >> testAssertionGenerationPrimitive [
 	generatedClass := instance buildAuxillaryClass: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	instance insertAsserts: aMethod using: observer.
 	self
 		assert: (GeneralHelper renameTempVars: aMethod dump)
@@ -288,7 +288,7 @@ CarvingAssertAmplifierTest >> testObservationCollection [
 		collect: [ :item | 
 			item removeKey: #time.
 			item ]) asString.
-	ASTHelper new removeClass: generatedClass  source: self class name..
+	SAASTHelper new removeClass: generatedClass  source: self class name..
 	self assert: anArrayTime sorted equals: anArrayTime.
 	self
 		assert: aStringNoTime

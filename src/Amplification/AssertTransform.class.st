@@ -1,7 +1,7 @@
 Class {
 	#name : #AssertTransform,
 	#superclass : #Object,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #removing }

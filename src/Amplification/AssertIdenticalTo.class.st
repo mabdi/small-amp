@@ -1,7 +1,7 @@
 Class {
 	#name : #AssertIdenticalTo,
 	#superclass : #AssertTransform,
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #running }

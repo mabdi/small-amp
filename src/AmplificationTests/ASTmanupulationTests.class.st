@@ -21,13 +21,13 @@ ASTmanupulationTests >> testBuildTestClassAndRun [
 	| result methods |
 	methods := testMethods
 		collect: [ :atestMethod | atestMethod sourceCode ].
-	result := ASTHelper new
+	result := SAASTHelper new
 		buildTestClassWith: methods
 		using: FakeTestcase.
 	self
 		deny: (result methods detect: [ :mtd | mtd selector = #setUp ]) isNil.
 	self assert: result testSelectors size equals: methods size.
-	ASTHelper new removeClass: result source: self class name.
+	SAASTHelper new removeClass: result source: self class name.
 ]
 
 { #category : #tests }
@@ -41,7 +41,7 @@ ASTmanupulationTests >> testCleanUpVisitor [
 	self assert: tmp_ZISDO00DGz1 balance equals: 102.
 	tmp_9nbUP3optD2 := b withdraw: 30.
 	self assert: b balance equals: 72'.
-	r := ASTHelper new cleanUp: s.
+	r := SAASTHelper new cleanUp: s.
 	self assert: r equals: 'testWithdraw_1_1
 	| b tmp_ZISDO00DGz1 |
 	b := SmallBank new.
@@ -56,7 +56,7 @@ ASTmanupulationTests >> testCleanUpVisitor [
 ASTmanupulationTests >> testConvertAllToAssert [
 	| result |
 	result := testMethods
-		collect: [ :each | ASTHelper new convertAllToAssert: each ].
+		collect: [ :each | SAASTHelper new convertAllToAssert: each ].
 	self
 		assert:
 			(result
@@ -82,7 +82,7 @@ ASTmanupulationTests >> testExtractMethodName [
 					self
 						assert: (method selector asString)
 						equals:
-							(ASTHelper new extractMethodName: method sourceCode)
+							(SAASTHelper new extractMethodName: method sourceCode)
 								 ] ]
 ]
 
@@ -101,9 +101,9 @@ ASTmanupulationTests >> testMethodRename [
 							self
 								assert: ((method selector asString splitOn: $:) at: 1) , post
 								equals:
-									(ASTHelper new
+									(SAASTHelper new
 										extractMethodName:
-											(((ASTHelper new
+											(((SAASTHelper new
 												renameMethodName: method sourceCode
 												append: post)selector asString splitOn: $:)at: 1)) ] ] ]
 ]
@@ -112,7 +112,7 @@ ASTmanupulationTests >> testMethodRename [
 ASTmanupulationTests >> testRemoveAssertions [
 	| result |
 	result := testMethods
-		collect: [ :each | ASTHelper new removeAssertions: each sourceCode ].
+		collect: [ :each | SAASTHelper new removeAssertions: each sourceCode ].
 	self
 		assert:
 			(result
