@@ -1,10 +1,6 @@
 Class {
-	#name : #ASTHelper,
+	#name : #SAASTHelper,
 	#superclass : #Object,
-	#instVars : [
-		'instanceIds',
-		'debug'
-	],
 	#classInstVars : [
 		'instanceId'
 	],
@@ -12,19 +8,19 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-ASTHelper class >> instanceId [
+SAASTHelper class >> instanceId [
 	instanceId ifNil: [ instanceId:=0 ].
 	instanceId := instanceId + 1.
 	^ instanceId
 ]
 
 { #category : #'method operations' }
-ASTHelper >> buildTestClassWith: aCollection using: testClass [
+SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	 ^ self buildTestClassWith: aCollection using: testClass final: false
 ]
 
 { #category : #'method operations' }
-ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
+SAASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 	| tempClass |
 	tempClass := testClass superclass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -53,7 +49,7 @@ ASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 ]
 
 { #category : #cleanup }
-ASTHelper >> cleanUp: aSourceCode [
+SAASTHelper >> cleanUp: aSourceCode [
 	| mtd tmps rewriter |
 	mtd := self parsedMethodFrom: aSourceCode.
 	tmps := (mtd body temporaries
@@ -73,48 +69,28 @@ ASTHelper >> cleanUp: aSourceCode [
 ]
 
 { #category : #cleanup }
-ASTHelper >> clearTempClasses [
-	<script: 'ASTHelper uniqueInstance clearTempClasses '>
-	
-	('AmplificationTempClasses' asPackageIfAbsent:[^ true]) classes
+SAASTHelper >> clearTempClasses [
+	<script: 'ASTHelper new clearTempClasses '>
+	('AmplificationTempClasses' asPackageIfAbsent: [ ^ true ]) classes
 		do: [ :item | item removeFromSystem ]
 		displayingProgress: 'Clear temp amplified classes.'
 ]
 
 { #category : #removing }
-ASTHelper >> convertAllToAssert: aMethod [
+SAASTHelper >> convertAllToAssert: aMethod [
 	^ (AssertTransform
 		convertAllToAssert: aMethod parseTree
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
 		formattedCode
 ]
 
-{ #category : #accessing }
-ASTHelper >> debug [
-	^ debug ifNil: [ debug := false ]
-]
-
-{ #category : #debug }
-ASTHelper >> debugFalse [
-	<script: 'ASTHelper uniqueInstance debugFalse'>
-	
-	debug := false
-]
-
-{ #category : #debug }
-ASTHelper >> debugTrue [
-	<script: 'ASTHelper uniqueInstance debugTrue'>
-	
-	debug := true
-]
-
 { #category : #'method operations' }
-ASTHelper >> extractMethodName: aSourceCode [
+SAASTHelper >> extractMethodName: aSourceCode [
 	^ (self parsedMethodFrom: aSourceCode) selector
 ]
 
 { #category : #'method operations' }
-ASTHelper >> extractMethodNameRegex: aSourceCode [
+SAASTHelper >> extractMethodNameRegex: aSourceCode [
 	| re |
 	re := '^(\S+)(\:|\s).*' asRegex.
 	re matchesPrefix: aSourceCode.
@@ -122,28 +98,22 @@ ASTHelper >> extractMethodNameRegex: aSourceCode [
 ]
 
 { #category : #private }
-ASTHelper >> getId [
+SAASTHelper >> getId [
 	^ self class instanceId
 ]
 
-{ #category : #initialization }
-ASTHelper >> initialize [ 
-
-	instanceIds := 0
-]
-
 { #category : #'method operations' }
-ASTHelper >> parsedMethodFrom: aSourceCode [
+SAASTHelper >> parsedMethodFrom: aSourceCode [
 	^ self parserClass parseMethod: aSourceCode
 ]
 
 { #category : #factory }
-ASTHelper >> parserClass [
+SAASTHelper >> parserClass [
 	^ RBParser
 ]
 
 { #category : #removing }
-ASTHelper >> removeAssertions: aMethod [
+SAASTHelper >> removeAssertions: aMethod [
 	^ (AssertTransform
 		removeAssertionsNoExtract: (self parsedMethodFrom: aMethod)
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
@@ -151,7 +121,7 @@ ASTHelper >> removeAssertions: aMethod [
 ]
 
 { #category : #removing }
-ASTHelper >> removeAssertionsOld: aMethod [
+SAASTHelper >> removeAssertionsOld: aMethod [
 	^ (AssertTransform
 		removeAssertions: (self parsedMethodFrom: aMethod)
 		transformers: (AssertTransform allSubclasses collect: [ :each | each new ]))
@@ -159,13 +129,12 @@ ASTHelper >> removeAssertionsOld: aMethod [
 ]
 
 { #category : #removing }
-ASTHelper >> removeClass: theClass source: sid [
-	self debug 
-		ifFalse: [ theClass removeFromSystem ]
+SAASTHelper >> removeClass: theClass source: sid [
+	theClass removeFromSystem
 ]
 
 { #category : #'method operations' }
-ASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
+SAASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
 	(self environment includesKey: aName)
 		ifTrue: [^ self error: aName , ' already exists'].
 	aClass renameSilently: aName.
@@ -173,12 +142,12 @@ ASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
 ]
 
 { #category : #'method operations' }
-ASTHelper >> renameClass: aClass name: aName [
+SAASTHelper >> renameClass: aClass name: aName [
 	aClass rename: aName
 ]
 
 { #category : #'method operations' }
-ASTHelper >> renameMethodName: aSourceCode append: aText [
+SAASTHelper >> renameMethodName: aSourceCode append: aText [
 	| re first |
 	re := self parsedMethodFrom: aSourceCode.
 	first := (re selector splitOn: $:) at: 1.
@@ -187,7 +156,7 @@ ASTHelper >> renameMethodName: aSourceCode append: aText [
 ]
 
 { #category : #'method operations' }
-ASTHelper >> renameMethodNameRegex: aSourceCode append: aText [
+SAASTHelper >> renameMethodNameRegex: aSourceCode append: aText [
 	| mName |
 	mName := self extractMethodNameRegex: aSourceCode.
 	^ mName , aText
