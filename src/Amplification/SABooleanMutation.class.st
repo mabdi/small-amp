@@ -1,11 +1,11 @@
 Class {
-	#name : #DSpotBooleanMutation,
-	#superclass : #DSpotASTMutation,
+	#name : #SABooleanMutation,
+	#superclass : #SALiteralMutation,
 	#category : #'Amplification-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-DSpotBooleanMutation >> mutateNode: aNode [
+SABooleanMutation >> mutateNode: aNode [
 	| nodes |
 	nodes := OrderedCollection new.
 	nodes add: (RBLiteralValueNode value: aNode value not).
@@ -13,6 +13,6 @@ DSpotBooleanMutation >> mutateNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotBooleanMutation >> myType [
+SABooleanMutation >> myType [
 	^ Boolean 
 ]

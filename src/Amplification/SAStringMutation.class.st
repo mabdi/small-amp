@@ -1,11 +1,11 @@
 Class {
-	#name : #DSpotStringMutation,
-	#superclass : #DSpotASTMutation,
+	#name : #SAStringMutation,
+	#superclass : #SALiteralMutation,
 	#category : #'Amplification-Helpers'
 }
 
 { #category : #'recursive descent' }
-DSpotStringMutation >> characterSet [
+SAStringMutation >> characterSet [
 	^ String
 		streamContents: [ :stream | 
 			Character alphabet putOn: stream.
@@ -18,7 +18,7 @@ DSpotStringMutation >> characterSet [
 ]
 
 { #category : #removing }
-DSpotStringMutation >> insertRandom: aStr [
+SAStringMutation >> insertRandom: aStr [
 	| x |
 	x := aStr size atRandom.
 	^ (aStr copyFrom: 1 to: x) , self characterSet atRandom asString
@@ -26,7 +26,7 @@ DSpotStringMutation >> insertRandom: aStr [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotStringMutation >> mutateNode: aNode [
+SAStringMutation >> mutateNode: aNode [
 	| nodes |
 	nodes := OrderedCollection new.
 	nodes add: (RBLiteralValueNode value: '').
@@ -41,22 +41,22 @@ DSpotStringMutation >> mutateNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotStringMutation >> myType [
+SAStringMutation >> myType [
 	^ ByteString 
 ]
 
 { #category : #'as yet unclassified' }
-DSpotStringMutation >> randomString [
+SAStringMutation >> randomString [
 	^ (String new: 32)
 		collect: [ :each | self characterSet atRandom ]
 ]
 
 { #category : #removing }
-DSpotStringMutation >> removeRandom: aStr [
+SAStringMutation >> removeRandom: aStr [
 	^ aStr copyWithoutIndex: aStr size atRandom
 ]
 
 { #category : #removing }
-DSpotStringMutation >> updateRandom: aStr [
+SAStringMutation >> updateRandom: aStr [
 	^ aStr copy at: aStr size atRandom put: self characterSet atRandom;yourself
 ]

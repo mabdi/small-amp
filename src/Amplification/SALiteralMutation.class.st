@@ -1,5 +1,5 @@
 Class {
-	#name : #DSpotASTMutation,
+	#name : #SALiteralMutation,
 	#superclass : #Object,
 	#instVars : [
 		'operators'
@@ -8,13 +8,13 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-DSpotASTMutation >> canHandle: aNode [
+SALiteralMutation >> canHandle: aNode [
 	^ (aNode isKindOf: RBLiteralValueNode)
 		and: [ aNode value isKindOf: self myType ]
 ]
 
 { #category : #'as yet unclassified' }
-DSpotASTMutation >> mutateNode: aNode [
+SALiteralMutation >> mutateNode: aNode [
 	self operators
 		detect: [ :op | op canHandle: aNode ]
 		ifFound: [ :op | ^ op mutateNode: aNode ].
@@ -22,11 +22,11 @@ DSpotASTMutation >> mutateNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotASTMutation >> myType [
+SALiteralMutation >> myType [
 	self subclassResponsibility 
 ]
 
 { #category : #accessing }
-DSpotASTMutation >> operators [
+SALiteralMutation >> operators [
 	^ operators ifNil: [ operators := self class subclasses collect: [ :op | op new ] ]
 ]

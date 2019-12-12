@@ -1,11 +1,11 @@
 Class {
-	#name : #DSpotIntegerMutation,
-	#superclass : #DSpotASTMutation,
+	#name : #SAIntegerMutation,
+	#superclass : #SALiteralMutation,
 	#category : #'Amplification-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-DSpotIntegerMutation >> mutateNode: aNode [
+SAIntegerMutation >> mutateNode: aNode [
 	| nodes |
 	nodes := OrderedCollection new.
 	nodes add: (RBLiteralValueNode value: aNode value + 1).
@@ -27,6 +27,6 @@ DSpotIntegerMutation >> mutateNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotIntegerMutation >> myType [
+SAIntegerMutation >> myType [
 	^ Integer
 ]

@@ -1,11 +1,11 @@
 Class {
-	#name : #DSpotCharMutation,
-	#superclass : #DSpotASTMutation,
+	#name : #SACharMutation,
+	#superclass : #SALiteralMutation,
 	#category : #'Amplification-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-DSpotCharMutation >> mutateNode: aNode [
+SACharMutation >> mutateNode: aNode [
 	| nodes |
 	nodes := OrderedCollection new.
 	nodes add: (RBLiteralValueNode value: Character null).
@@ -19,6 +19,6 @@ DSpotCharMutation >> mutateNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-DSpotCharMutation >> myType [
+SACharMutation >> myType [
 	^ Character 
 ]
