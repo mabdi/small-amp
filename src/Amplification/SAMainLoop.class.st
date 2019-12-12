@@ -78,7 +78,7 @@ SAMainLoop >> initialAssertionAmplify [
 		do: [ :tcase | 
 			self assertionAmplifiers do: [ :amplifier | 
 				tcase assertionAmplifyBy: amplifier ].
-			tcase cleanup ]
+			tcase cleanUp ]
 		displayingProgress: 'Assertion Amplification'.
 	^ aPopulation
 ]
