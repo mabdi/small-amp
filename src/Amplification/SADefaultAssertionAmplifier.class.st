@@ -6,24 +6,30 @@ Class {
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
-	| generatedClass observer aMethodAST aVisitor srcv2 srcv3 |
-	aMethodAST := RBParser parseMethod: testMethodModel testMethod.
-	(MessageCall2Rewriter initializeFor: aMethodAST) doYourJob.
-	srcv2 := aMethodAST formattedCode.
-	aVisitor := ObserverInsert2Rewriter new.
+	| generatedClass observer aMethodAST aVisitor srcV2 srcV3 |
+	aMethodAST := self astHelper parsedMethodFrom:
+		              testMethodModel testMethod.
+	SAMethodNormalizingRewriter runWith: aMethodAST.
+	srcV2 := aMethodAST formattedCode.
+	aVisitor := SAObserverInsertingRewriter new.
 	aVisitor doYourJob: aMethodAST.
 	generatedClass := self
 		                  buildAuxillaryClass: aMethodAST
 		                  basedOn: testMethodModel testClass.
 	generatedClass suite run.
-	3 timesRepeat: [ 
+	self flackyTestRepeat timesRepeat: [ 
 		generatedClass observer resetFlakyDetection.
 		generatedClass suite run.
 		generatedClass observer checkFlaky ]. "Flaky detection"
 	observer := generatedClass observer.
-	srcv3 := self insertAsserts: srcv2 using: observer.
+	srcV3 := self insertAsserts: srcV2 using: observer.
 	SAASTHelper new removeClass: generatedClass source: self class name.
-	^ srcv3
+	^ srcV3
+]
+
+{ #category : #accessing }
+SADefaultAssertionAmplifier >> astHelper [
+	^ SAASTHelper new
 ]
 
 { #category : #'as yet unclassified' }
@@ -88,6 +94,11 @@ SADefaultAssertionAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 			       ^ self class observer observeResult: anObj receiver: arec selector: aSelector name: aString id: anInt'.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> flackyTestRepeat [
+	^ 3
 ]
 
 { #category : #'as yet unclassified' }

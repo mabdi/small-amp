@@ -121,7 +121,7 @@ MessageCallRewriterTest >> testFunction5 [
 { #category : #tests }
 MessageCallRewriterTest >> testMessageCall2Rewriter [
 	node := RBParser parseMethod: 'foo a:=1. Array with:1'.
-	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	(SAMethodNormalizingRewriter initializeFor: node) doYourJob.
 	self
 		assert: (GeneralHelper renameTempVars: node dump)
 		equals:
@@ -131,7 +131,7 @@ MessageCallRewriterTest >> testMessageCall2Rewriter [
 { #category : #tests }
 MessageCallRewriterTest >> testMessageCall2Rewriter2 [
 	node := RBParser parseMethod: 'foo a:=1. Array with:1;with:2'.
-	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	(SAMethodNormalizingRewriter initializeFor: node) doYourJob.
 	self
 		assert: (GeneralHelper renameTempVars: node dump)
 		equals:
@@ -141,7 +141,7 @@ MessageCallRewriterTest >> testMessageCall2Rewriter2 [
 { #category : #tests }
 MessageCallRewriterTest >> testMessageCall2Rewriter3 [
 	node := RBParser parseMethod: 'foo a:=1. (Array with:1 with:2) size'.
-	(MessageCall2Rewriter initializeFor: node) doYourJob.
+	(SAMethodNormalizingRewriter initializeFor: node) doYourJob.
 	self
 		assert: (GeneralHelper renameTempVars: node dump)
 		equals:

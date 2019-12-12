@@ -10,6 +10,14 @@ Class {
 }
 
 { #category : #'instance creation' }
+SALiteralMutationRewriter class >> runWith: aTestModel [
+	^ self new
+		  with: aTestModel;
+		run;  
+		yourself
+]
+
+{ #category : #'instance creation' }
 SALiteralMutationRewriter class >> with: aTestModel [
 	^ self new with: aTestModel; yourself
 ]

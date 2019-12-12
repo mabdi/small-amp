@@ -6,5 +6,5 @@ Class {
 
 { #category : #removing }
 SALiteralInputAmplifier >> amplifyInputs [
-	^ SALiteralMutationRewriter new doYourJob: testMethodModel testMethod
+	^ SALiteralMutationRewriter runWith: testMethodModel testMethod
 ]
