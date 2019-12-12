@@ -8,7 +8,7 @@ Class {
 MuTalkMutationOperator >> mutate: aMethod [
 	| mutations tempClass |
 	mutations := OrderedCollection new.
-	tempClass := ASTHelper new
+	tempClass := SAASTHelper new
 		buildTestClassWith: {aMethod}
 		using: TestCase.
 	mutations
@@ -18,7 +18,7 @@ MuTalkMutationOperator >> mutate: aMethod [
 				usingAll: self operators
 				logginIn: NullMutationTestingAnalysisLogger new)
 				collect: [ :mtd | mtd modifiedSource ]).
-	ASTHelper new removeClass: tempClass  source: self class name..
+	SAASTHelper new removeClass: tempClass  source: self class name..
 	^ self renameMutations: mutations
 ]
 

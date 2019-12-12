@@ -11,7 +11,7 @@ Class {
 
 { #category : #accessing }
 SAMuTalkTestCaseMinifier >> astHelper [
-	^ ASTHelper new
+	^ SAASTHelper new
 ]
 
 { #category : #private }

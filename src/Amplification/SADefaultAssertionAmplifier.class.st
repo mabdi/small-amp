@@ -22,7 +22,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		generatedClass observer checkFlaky ]. "Flaky detection"
 	observer := generatedClass observer.
 	srcv3 := self insertAsserts: srcv2 using: observer.
-	ASTHelper new removeClass: generatedClass source: self class name.
+	SAASTHelper new removeClass: generatedClass source: self class name.
 	^ srcv3
 ]
 
@@ -72,7 +72,7 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
-	generatedClass := ASTHelper new
+	generatedClass := SAASTHelper new
 		                  buildTestClassWith: {  }
 		                  using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.

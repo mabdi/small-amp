@@ -51,7 +51,7 @@ SAMainLoop >> assertionAmplifiers [
 
 { #category : #accessing }
 SAMainLoop >> astHelper [
-	^ ASTHelper new
+	^ SAASTHelper new
 ]
 
 { #category : #actions }

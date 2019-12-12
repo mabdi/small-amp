@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 OLDCarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
-	generatedClass := ASTHelper new
+	generatedClass := SAASTHelper new
 		buildTestClassWith: {}
 		using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
@@ -40,7 +40,7 @@ OLDCarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass
 	generatedClass suite run.
 	observer := generatedClass observer.
 	self insertAsserts: aMethod using: observer.
-	ASTHelper new removeClass: generatedClass source: self class name..
+	SAASTHelper new removeClass: generatedClass source: self class name..
 	^ aMethod formattedCode
 ]
 
