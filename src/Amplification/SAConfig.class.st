@@ -55,7 +55,7 @@ SAConfig >> iterations: anObject [
 
 { #category : #accessing }
 SAConfig >> lite [
-	^ lite
+	^ lite ifNil: [ lite:= false ]
 ]
 
 { #category : #accessing }
@@ -75,6 +75,7 @@ SAConfig >> logger: anObject [
 
 { #category : #accessing }
 SAConfig >> selectors [
+	self flag: #TODO. "rename from selector. because selector is the name of method. use selection or sth"
 	^ selectors
 ]
 
