@@ -1,6 +1,6 @@
 Class {
 	#name : #OLDCarvingAssertAmplifier,
-	#superclass : #SAAbstractAssertAmplifier,
+	#superclass : #SAAbstractAssertionAmplifier,
 	#category : #'Amplification-Experiment'
 }
 

@@ -24,13 +24,13 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 SAMainLoop >> amplify [
 	| resultPeople |
 	self methodProfiling.
-	resultPeople := self initialAssertAmplify.
+	resultPeople := self initialAssertionAmplify.
 	config lite ifFalse: [ 
 		(1 to: config iterations)
 			do: [ :gen | 
 				self strip.
 				self inputAmplification.
-				self assertAmplification.
+				self assertionAmplification.
 				self selectionAlreadySelected: resultPeople.
 				resultPeople addAll: population ]
 			displayingProgress: 'Main loop' ].
@@ -38,7 +38,7 @@ SAMainLoop >> amplify [
 ]
 
 { #category : #private }
-SAMainLoop >> assertAmplification [
+SAMainLoop >> assertionAmplification [
 	population
 		do: [ :tcase | 
 			self assertAmplifiers do: [ :amplifier | 
@@ -47,9 +47,8 @@ SAMainLoop >> assertAmplification [
 ]
 
 { #category : #asserting }
-SAMainLoop >> assertAmplifiers [
-	self flag: #TODO. "think about naming. Assertion Amplification is better"
-	^ config assertAmplifiers
+SAMainLoop >> assertionAmplifiers [
+	^ config assertionAmplifiers
 ]
 
 { #category : #accessing }
@@ -76,15 +75,15 @@ SAMainLoop >> discardFailingTests [
 ]
 
 { #category : #private }
-SAMainLoop >> initialAssertAmplify [
+SAMainLoop >> initialAssertionAmplify [
 	| aPopulation |
 	aPopulation := population collect: [ :tcase | 
 		               tcase renamedCopy: '_amp' ].
 	aPopulation do: [ :tcase | tcase strip ].
 	aPopulation
 		do: [ :tcase | 
-			self assertAmplifiers do: [ :amplifier | 
-				tcase assertAmplifyBy: amplifier ].
+			self assertionAmplifiers do: [ :amplifier | 
+				tcase assertionAmplifyBy: amplifier ].
 			tcase cleanup ]
 		displayingProgress: 'Assertion Amplification'.
 	^ aPopulation

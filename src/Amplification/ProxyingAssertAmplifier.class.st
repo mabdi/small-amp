@@ -1,6 +1,6 @@
 Class {
 	#name : #ProxyingAssertAmplifier,
-	#superclass : #SAAbstractAssertAmplifier,
+	#superclass : #SAAbstractAssertionAmplifier,
 	#instVars : [
 		'targets'
 	],

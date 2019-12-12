@@ -1,11 +1,11 @@
 Class {
-	#name : #SADefaultAssertAmplifier,
-	#superclass : #SAAbstractAssertAmplifier,
+	#name : #SADefaultAssertionAmplifier,
+	#superclass : #SAAbstractAssertionAmplifier,
 	#category : #'Amplification-Core'
 }
 
 { #category : #'as yet unclassified' }
-SADefaultAssertAmplifier >> assertionAmplifiedSourceCode [
+SADefaultAssertionAmplifier >> assertionAmplifiedSourceCode [
 	| generatedClass observer aMethodAST aVisitor srcv2 srcv3 |
 	aMethodAST := RBParser parseMethod: testMethodModel testMethod.
 	(MessageCall2Rewriter initializeFor: aMethodAST) doYourJob.
@@ -25,7 +25,7 @@ SADefaultAssertAmplifier >> assertionAmplifiedSourceCode [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertAmplifier >> buildAsserts: anObserver methodName: selector [
+SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver memory
 		collect: [ :observation | 
 			"self cleanExtraObservations: aMethod"
@@ -68,7 +68,7 @@ SADefaultAssertAmplifier >> buildAsserts: anObserver methodName: selector [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
+SADefaultAssertionAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := ASTHelper new
 		                  buildTestClassWith: {  }
@@ -89,7 +89,7 @@ SADefaultAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertAmplifier >> insertAsserts: aMethodSrc using: anObserver [
+SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	| aMethod newAsserts |
 	aMethod := RBParser parseMethod: aMethodSrc.
 	newAsserts := self

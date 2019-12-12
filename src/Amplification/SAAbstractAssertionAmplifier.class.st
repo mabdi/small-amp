@@ -1,5 +1,5 @@
 Class {
-	#name : #SAAbstractAssertAmplifier,
+	#name : #SAAbstractAssertionAmplifier,
 	#superclass : #Object,
 	#instVars : [
 		'testMethodModel'
@@ -8,17 +8,17 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier class >> assertionAmplify: aTestMethodModel [
+SAAbstractAssertionAmplifier class >> assertionAmplify: aTestMethodModel [
 	^ self new assertionAmplify: aTestMethodModel
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier >> assertionAmplifiedSourceCode [
+SAAbstractAssertionAmplifier >> assertionAmplifiedSourceCode [
 	^ self subclassResponsibility 
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertAmplifier >> assertionAmplify: aTestMethodModel [
+SAAbstractAssertionAmplifier >> assertionAmplify: aTestMethodModel [
 	testMethodModel := aTestMethodModel.
 	^ self assertionAmplifiedSourceCode
 ]

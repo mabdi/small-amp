@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'inputAmplifiers',
-		'assertAmplifiers',
+		'assertionAmplifiers',
 		'selectors',
 		'iterations',
 		'debug',
@@ -14,13 +14,13 @@ Class {
 }
 
 { #category : #accessing }
-SAConfig >> assertAmplifiers [
-	^ assertAmplifiers
+SAConfig >> assertionAmplifiers [
+	^ assertionAmplifiers
 ]
 
 { #category : #accessing }
-SAConfig >> assertAmplifiers: anObject [
-	assertAmplifiers := anObject
+SAConfig >> assertionAmplifiers: aListOfClassNames [
+	assertionAmplifiers := aListOfClassNames
 ]
 
 { #category : #accessing }

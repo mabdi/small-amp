@@ -20,7 +20,7 @@ SATestMethod class >> with: aTestMethod class: aTestClass targets: objectsUnderT
 ]
 
 { #category : #cleanup }
-SATestMethod >> assertAmplifyBy: anAmplifier [ 
+SATestMethod >> assertionAmplifyBy: anAmplifier [
 	testMethod := anAmplifier assertionAmplify: self
 ]
 
