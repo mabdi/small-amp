@@ -77,7 +77,7 @@ SADefaultAssertionAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
 	generatedClass class compile:
 		'observer ^ observer ifNil: [ observer := Observer new ]'.
 	generatedClass class compile:
-		'testTarget ^ ' , testMethodModel targetClasses asString.
+		'testTarget ^ ' , testMethodModel testTargets asString.
 	generatedClass class compile: 'isLogging ^true'.
 	generatedClass compile: 'observe: anObj name: aString id:anInt 
 			       ^ self class observer observe: anObj name: aString id: anInt'.

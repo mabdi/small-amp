@@ -51,7 +51,7 @@ SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUn
 	testMethod := aTestMethod.
 	testClass := aTestClass.
 	testTargets := objectsUnderTest.
-	testTargets := selectorOriginal := self astHelper extractMethodName:
+	selectorOriginal := self astHelper extractMethodName:
 		                                   aTestMethod
 ]
 
@@ -83,9 +83,9 @@ SATestMethod >> selector [
 
 { #category : #'as yet unclassified' }
 SATestMethod >> selectorAppend: postfix [
-	testMethod := self astHelper
+	testMethod := (self astHelper
 		                      renameMethodName: testMethod
-		                      append: '_amp'
+		                      append: '_amp') formattedCode 
 ]
 
 { #category : #accessing }
