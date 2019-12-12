@@ -38,8 +38,8 @@ SATestMethod >> cleanUp [
 SATestMethod >> clone [
 	| obj |
 	obj := self class
-		       with: self testClass
-		       class: self testMethod
+		       with: self testMethod 
+		       class: self testClass
 		       targets: self testTargets.
 	obj testMethod: self testMethod.
 	^ obj
@@ -67,8 +67,8 @@ SATestMethod >> printOn: aStream [
 SATestMethod >> renamedCopy: postfix [
 	| obj |
 	obj := self class
-		       with: self testClass
-		       class: self testMethod
+		       with: self testMethod
+		       class: self testClass
 		       targets: self testTargets.
 	obj selectorAppend: postfix.
 	^ obj

@@ -148,8 +148,8 @@ SAMainLoop >> selectionAlreadySelected: aPopulationAll [
 			(sel doSelect: population selected: aPopulationAll) ].
 	^ selectedTests collect: [ :obj | 
 		  SATestMethod
-			  with: obj testClass
-			  class: (self astHelper cleanUp: obj testMethod)
+			  with: (self astHelper cleanUp: obj testMethod)
+			  class: obj testClass
 			  targets: obj testTargets ]
 ]
 
