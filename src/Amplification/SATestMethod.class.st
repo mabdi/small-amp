@@ -21,6 +21,11 @@ SATestMethod class >> withClass: aClass method: aMethod targets: colTarget [
 		yourself
 ]
 
+{ #category : #removing }
+SATestMethod >> astHelper [
+	^ ASTHelper new
+]
+
 { #category : #copying }
 SATestMethod >> clone [
 	| obj |
@@ -38,6 +43,12 @@ SATestMethod >> printOn: aStream [
 	identifies the receiver."
 
 	aStream nextPutAll: testMethodModified
+]
+
+{ #category : #removing }
+SATestMethod >> removeAssertion [
+	self testMethodModified:
+		(self astHelper removeAssertions: self testMethod)
 ]
 
 { #category : #accessing }

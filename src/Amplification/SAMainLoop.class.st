@@ -5,24 +5,35 @@ Class {
 		'testClass',
 		'targetClasses',
 		'testMethods',
-		'config'
+		'config',
+		'newTestClass'
 	],
 	#category : #'Amplification-Core'
 }
 
 { #category : #'instance creation' }
-SAMainLoop class >> with: aConfig [
-	^ self new config: aConfig ; yourself
+SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
+	^ self new
+		  config: aConfig;
+		testClass: aTestClass ;
+		targetClasses: targetClasses;  
+		  yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
+SAMainLoop >> amplify [
+	self start.
+	^ self makeResult
+]
+
+{ #category : #private }
 SAMainLoop >> assertAmplification: population [
 	^ self assertAmplifiers
 		  inject: OrderedCollection new
-		  into: [ :coll :amplifier | 
-			  coll addAll:
+		  into: [ :res :amplifier | 
+			  res addAll:
 				  (amplifier doAssertAmplification: population amplifier: self).
-				coll ]
+			  res ]
 ]
 
 { #category : #asserting }
@@ -41,25 +52,38 @@ SAMainLoop >> config: aConfig [
 	config := aConfig 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
+SAMainLoop >> discardFailingTests [
+	| result |
+	result := testClass suite run.
+	self flag: #TODO. "Warn if there is failing tests"
+	testMethods := result passed collect: [ :passed | 
+		               (testClass methodNamed: passed selector) sourceCode ].
+	self testMethods: (testMethods collect: [ :tcase | 
+			 SATestMethod
+				 withClass: testClass
+				 method: tcase
+				 targets: targetClasses ])
+]
+
+{ #category : #private }
 SAMainLoop >> initialAssertAmplify: aPopulation [
 	| population |
 	population := aPopulation
-		collect: [ :tcase | 
-			| noAsserts renamed |
-			noAsserts := self astHelper removeAssertions: tcase testMethod.
-			renamed := (ASTHelper new
-				renameMethodName: noAsserts
-				append: '_amp') formattedCode.
-			tcase testMethodModified: renamed ]
-		displayingProgress: 'Removing assertions'.
+		              collect: [ :tcase | 
+			              | noAsserts renamed |
+			              noAsserts := tcase removeAssertion.
+			              renamed := (ASTHelper new
+				                          renameMethodName: noAsserts
+				                          append: '_amp') formattedCode.
+			              tcase testMethodModified: renamed ]
+		              displayingProgress: 'Removing assertions'.
 	population := self assertAmplification: population.
-	^ population
-		collect: [ :obj | 
-			SATestMethod
-				withClass: obj testClass
-				method: (self astHelper cleanUp: obj testMethodModified)
-				targets: obj testTargets ]
+	^ population collect: [ :obj | 
+		  SATestMethod
+			  withClass: obj testClass
+			  method: (self astHelper cleanUp: obj testMethodModified)
+			  targets: obj testTargets ]
 ]
 
 { #category : #actions }
@@ -73,14 +97,14 @@ SAMainLoop >> inputAmplification: tcase [
 	^ newcodes
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 SAMainLoop >> inputAmplificationAll: aPopulation [
 	| newcodes |
 	newcodes := OrderedCollection new.
 	aPopulation
 		do: [ :tcase | 
 			newcodes addAll: (self inputAmplification: tcase).
-			newcodes add: (tcase clone) ]
+			newcodes add: tcase clone ]
 		displayingProgress: 'Mutating test cases'.
 	^ newcodes
 ]
@@ -95,10 +119,21 @@ SAMainLoop >> iterations [
 	^ config iterations 
 ]
 
-{ #category : #actions }
-SAMainLoop >> removeAssertion: tcase [
-	tcase
-		testMethodModified: (self astHelper removeAssertions: tcase testMethod)
+{ #category : #private }
+SAMainLoop >> makeResult [
+	self flag: #TODO.
+	^ SAResultItem new
+]
+
+{ #category : #private }
+SAMainLoop >> methodProfiling [
+	targetClasses do: [ :anObjectUnderTest | 
+		SAMethodProfiler classifyClass: anObjectUnderTest ]
+]
+
+{ #category : #accessing }
+SAMainLoop >> newTestClass [
+	^ newTestClass
 ]
 
 { #category : #actions }
@@ -126,30 +161,33 @@ SAMainLoop >> selectors [
 
 { #category : #accessing }
 SAMainLoop >> start [
-	" Here is the main loop of program."
-
 	| population resultPeople |
-	population := OrderedCollection withAll:
-		              (testMethods collect: [ :tcase | 
-			               SATestMethod
-				               withClass: testClass
-				               method: tcase
-				               targets: targetClasses ]).
+	self methodProfiling.
+	population := testMethods clone.
 	resultPeople := self initialAssertAmplify: population clone.
-	(1 to: self iterations)
-		do: [ :gen | 
-			population
-				do: [ :tcase | self removeAssertion: tcase ]
-				displayingProgress: 'Removing assertions'.
-			population := self inputAmplificationAll: population.
-			population := self assertAmplification: population.
-			population := self
-				              selectionFrom: population
-				              alreadySelected: resultPeople.
-			resultPeople addAll: population ]
-		displayingProgress: 'Main loop'.
-	^ self astHelper buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ]) using: testClass
-		  
+	config lite ifFalse: [ 
+		(1 to: self iterations)
+			do: [ :gen | 
+				self strip: population.
+				population := self inputAmplificationAll: population.
+				population := self assertAmplification: population.
+				population := self
+					              selectionFrom: population
+					              alreadySelected: resultPeople.
+				resultPeople addAll: population ]
+			displayingProgress: 'Main loop' ].
+	newTestClass := self astHelper
+		                buildTestClassWith:
+		                (resultPeople collect: [ :tcase | tcase testMethod ])
+		                using: testClass
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> strip: aPopulation [
+	aPopulation
+		do: [ :tcase | tcase removeAssertion ]
+		displayingProgress: 'Removing assertions'.
+	
 ]
 
 { #category : #accessing }
@@ -158,8 +196,8 @@ SAMainLoop >> targetClasses [
 ]
 
 { #category : #accessing }
-SAMainLoop >> targetClasses: colTarget [
-	targetClasses := colTarget
+SAMainLoop >> targetClasses: arrayOfTargetClasses [
+	targetClasses := arrayOfTargetClasses
 ]
 
 { #category : #accessing }
@@ -169,7 +207,8 @@ SAMainLoop >> testClass [
 
 { #category : #accessing }
 SAMainLoop >> testClass: atestClass [
-	testClass := atestClass
+	testClass := atestClass.
+	self discardFailingTests 
 ]
 
 { #category : #accessing }
@@ -178,6 +217,6 @@ SAMainLoop >> testMethods [
 ]
 
 { #category : #accessing }
-SAMainLoop >> testMethods: collTestMethods [
-	testMethods := collTestMethods
+SAMainLoop >> testMethods: arrayOfTestMethods [
+	testMethods := arrayOfTestMethods
 ]

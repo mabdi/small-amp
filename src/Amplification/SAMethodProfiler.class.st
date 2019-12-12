@@ -1,5 +1,5 @@
 Class {
-	#name : #SAMethodClassifier,
+	#name : #SAMethodProfiler,
 	#superclass : #Object,
 	#instVars : [
 		'theClass'
@@ -7,27 +7,27 @@ Class {
 	#classInstVars : [
 		'classes'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Core'
 }
 
 { #category : #adding }
-SAMethodClassifier class >> addClassification: aMethod as: classification [
+SAMethodProfiler class >> addClassification: aMethod as: classification [
 	(self classes at: aMethod name ifAbsentPut: Set new)
 		add: classification
 ]
 
 { #category : #accessing }
-SAMethodClassifier class >> classes [
+SAMethodProfiler class >> classes [
 	^ classes ifNil: [ classes := Dictionary new ]
 ]
 
 { #category : #classification }
-SAMethodClassifier class >> classifyClass: aClass [
+SAMethodProfiler class >> classifyClass: aClass [
 	self new classifyClass: aClass
 ]
 
 { #category : #classification }
-SAMethodClassifier >> classifyClass: aClass [
+SAMethodProfiler >> classifyClass: aClass [
 	self theClass: aClass.
 	self resetMethods.
 	((aClass allSelectorsBelow: Object) asArray
@@ -37,7 +37,7 @@ SAMethodClassifier >> classifyClass: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMethodClassifier >> classifyMethod: aMethod [
+SAMethodProfiler >> classifyMethod: aMethod [
 	| methods |
 	methods := ((aMethod senders )
 		select:
@@ -57,14 +57,14 @@ SAMethodClassifier >> classifyMethod: aMethod [
 ]
 
 { #category : #'as yet unclassified' }
-SAMethodClassifier >> classifyMethod: aMethod as: classification [
+SAMethodProfiler >> classifyMethod: aMethod as: classification [
 	self class
 		addClassification: aMethod
 		as: classification
 ]
 
 { #category : #testing }
-SAMethodClassifier >> isOkToClassify: aMethod [
+SAMethodProfiler >> isOkToClassify: aMethod [
 	aMethod selector = #initialize ifTrue: [^ false].
 	self class classes
 		at: aMethod name
@@ -73,12 +73,12 @@ SAMethodClassifier >> isOkToClassify: aMethod [
 ]
 
 { #category : #initialization }
-SAMethodClassifier >> resetMethods [
+SAMethodProfiler >> resetMethods [
 	theClass methods
 		do: [ :item | self class classes removeKey: item name ifAbsent: [  ] ]
 ]
 
 { #category : #accessing }
-SAMethodClassifier >> theClass: aClass [
+SAMethodProfiler >> theClass: aClass [
 	theClass := aClass
 ]
