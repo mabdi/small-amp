@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'testMethod',
 		'testClass',
-		'testMethodModified',
 		'testTargets',
 		'selector',
 		'selectorOriginal'
@@ -13,12 +12,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SATestMethod class >> withClass: aClass method: aMethod targets: colTarget [
+SATestMethod class >> with: aTestMethod class: aTestClass targets: objectsUnderTest [
 	^ self new
-		testClass: aClass;
-		testMethod: aMethod;
-		testTargets: colTarget;
-		yourself
+		  initializeWith: aTestMethod
+		  class: aTestClass
+		  targets: objectsUnderTest
 ]
 
 { #category : #removing }
@@ -26,15 +24,30 @@ SATestMethod >> astHelper [
 	^ ASTHelper new
 ]
 
+{ #category : #cleanup }
+SATestMethod >> cleanUp [
+	testMethod := (self astHelper cleanUp: testMethod)
+]
+
 { #category : #copying }
 SATestMethod >> clone [
 	| obj |
 	obj := self class
-		withClass: self testClass
-		method: self testMethod
-		targets: self testTargets.
-	obj testMethodModified: self testMethodModified.
+		       with: self testClass
+		       class: self testMethod
+		       targets: self testTargets.
+	obj testMethod: self testMethod.
 	^ obj
+]
+
+{ #category : #accessing }
+SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUnderTest [
+	self initialize.
+	testMethod := aTestMethod.
+	testClass := aTestClass.
+	testTargets := objectsUnderTest.
+	testTargets := selectorOriginal := self astHelper extractMethodName:
+		                                   aTestMethod
 ]
 
 { #category : #printing }
@@ -42,27 +55,42 @@ SATestMethod >> printOn: aStream [
 	"Append to the argument, aStream, a sequence of characters that  
 	identifies the receiver."
 
-	aStream nextPutAll: testMethodModified
+	aStream nextPutAll: testMethod
 ]
 
 { #category : #removing }
-SATestMethod >> removeAssertion [
-	self testMethodModified:
-		(self astHelper removeAssertions: self testMethod)
+SATestMethod >> renamedCopy: postfix [
+	| obj |
+	obj := self class
+		       with: self testClass
+		       class: self testMethod
+		       targets: self testTargets.
+	obj selectorAppend: postfix.
+	^ obj
 ]
 
 { #category : #accessing }
 SATestMethod >> selector [
-	^ selector
-		ifNil: [ selector := ASTHelper new
-				extractMethodName: testMethodModified ]
+	^ selector ifNil: [ 
+		  self flag: #TODO. "keep testMethod as AST instead of string"
+		  selector := self astHelper extractMethodName: testMethod ]
+]
+
+{ #category : #'as yet unclassified' }
+SATestMethod >> selectorAppend: postfix [
+	testMethod := self astHelper
+		                      renameMethodName: testMethod
+		                      append: '_amp'
 ]
 
 { #category : #accessing }
 SATestMethod >> selectorOriginal [
 	^ selectorOriginal
-		ifNil: [ selectorOriginal := ASTHelper new
-				extractMethodName: testMethod ]
+]
+
+{ #category : #removing }
+SATestMethod >> strip [
+	testMethod := self astHelper removeAssertions: testMethod
 ]
 
 { #category : #accessing }
@@ -71,38 +99,16 @@ SATestMethod >> testClass [
 ]
 
 { #category : #accessing }
-SATestMethod >> testClass: atestClass [
-	testClass := atestClass 
-]
-
-{ #category : #accessing }
 SATestMethod >> testMethod [
 	^ testMethod
 ]
 
 { #category : #accessing }
-SATestMethod >> testMethod: atestMethod [
-	testMethod := atestMethod
-]
-
-{ #category : #accessing }
-SATestMethod >> testMethodModified [
-	^ testMethodModified ifNil: [ ^ testMethod  ]
-]
-
-{ #category : #accessing }
-SATestMethod >> testMethodModified: atestMethodModified [
-	testMethodModified:= atestMethodModified
+SATestMethod >> testMethod: atestMethodModified [
+	testMethod := atestMethodModified
 ]
 
 { #category : #accessing }
 SATestMethod >> testTargets [
 	^ testTargets
-]
-
-{ #category : #accessing }
-SATestMethod >> testTargets: colTarget [
-	"comment stating purpose of message"
-
-	testTargets := colTarget 
 ]

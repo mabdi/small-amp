@@ -13,7 +13,7 @@ MuTalkSelector >> doSelect: aPopulation selected: aPopulationAll [
 	newTestClass := ASTHelper new
 		buildTestClassWith:
 			(aPopulation , aPopulationAll
-				collect: [ :tcase | tcase testMethodModified ])
+				collect: [ :tcase | tcase testMethod ])
 		using: testClass.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}

@@ -10,9 +10,9 @@ Class {
 { #category : #'as yet unclassified' }
 SAAbstractAssertAmplifier >> assertionAmplify: aMethod [
 	^ aMethod
-		testMethodModified:
+		testMethod:
 			(self
-				doAssertionAmplification: aMethod testMethodModified
+				doAssertionAmplification: aMethod testMethod
 				within: aMethod testClass
 				)
 ]

@@ -177,7 +177,7 @@ SAMutationCoverageSelector >> mutalkRun: aPopulation [
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := ASTHelper new
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethodModified ])
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}
