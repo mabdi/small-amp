@@ -56,7 +56,7 @@ SAASTHelper >> cleanUp: aSourceCode [
 		select: [ :tmp | tmp name beginsWith: 'tmp_' ])
 		reject: [ :tmp | 
 			| visitor |
-			visitor := NotUsedTempsVisitor new.
+			visitor := SANotUsedTempsVisitor new.
 			visitor tmp_var: tmp name.
 			mtd acceptVisitor: visitor.
 			visitor used ].

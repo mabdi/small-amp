@@ -1,29 +1,29 @@
 Class {
-	#name : #NotUsedTempsVisitor,
+	#name : #SANotUsedTempsVisitor,
 	#superclass : #RBProgramNodeVisitor,
 	#instVars : [
 		'tmp_var',
 		'used'
 	],
-	#category : #'Amplification-Experiment'
+	#category : #'Amplification-Helpers'
 }
 
 { #category : #initialization }
-NotUsedTempsVisitor >> initialize [
+SANotUsedTempsVisitor >> initialize [
 	used := false.
 ]
 
 { #category : #accessing }
-NotUsedTempsVisitor >> tmp_var: aName [
+SANotUsedTempsVisitor >> tmp_var: aName [
 	tmp_var := aName
 ]
 
 { #category : #accessing }
-NotUsedTempsVisitor >> used [ ^ used
+SANotUsedTempsVisitor >> used [ ^ used
 ]
 
 { #category : #visiting }
-NotUsedTempsVisitor >> visitMessageNode: aMessageNode [
+SANotUsedTempsVisitor >> visitMessageNode: aMessageNode [
 	aMessageNode receiver isVariable ifTrue: [ aMessageNode receiver name = tmp_var
 		ifTrue: [ used := true ]. ].
 	
@@ -31,7 +31,7 @@ NotUsedTempsVisitor >> visitMessageNode: aMessageNode [
 ]
 
 { #category : #visiting }
-NotUsedTempsVisitor >> visitVariableNode: aVariableNode [
+SANotUsedTempsVisitor >> visitVariableNode: aVariableNode [
 	(aVariableNode name = tmp_var and: [ aVariableNode isRead ])
 		ifTrue: [ used := true ].
 	super visitVariableNode: aVariableNode
