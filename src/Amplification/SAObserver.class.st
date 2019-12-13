@@ -2,72 +2,53 @@ Class {
 	#name : #SAObserver,
 	#superclass : #Object,
 	#instVars : [
-		'observations',
-		'memory',
-		'serializers',
+		'targetClasses',
+		'history',
 		'chekingFlaky',
 		'flankyIdx',
-		'flakyLen',
 		'flakyMem'
 	],
 	#category : #'Amplification-Helpers'
 }
 
-{ #category : #'as yet unclassified' }
-SAObserver >> ObservationOn: aSelector with: anArray in: aReceiver method: method [
-	| result elapsedTime |
-	[ elapsedTime := Time
-		millisecondsToRun: [ result := aReceiver withArgs: anArray executeMethod: method ].
-	self
-		observe: aReceiver
-		selector: aSelector
-		args: anArray
-		results: result
-		time: elapsedTime.
-	^ result ]
-		on: Error
-		do: [ :ex | 
-			(self observeException: ex)
-				ifTrue: [ ^ aReceiver ]
-				ifFalse: [ ex signal ] ]
+{ #category : #'instance creation' }
+SAObserver class >> newForTarget: targetClasses [
+	^ self new newForTarget: targetClasses
 ]
 
 { #category : #adding }
 SAObserver >> addOrCheck: obj [
 	chekingFlaky
-		ifFalse: [ memory add: obj ]
+		ifFalse: [ history add: obj ]
 		ifTrue: [ flakyMem add: obj ]
-				
-]
-
-{ #category : #'as yet unclassified' }
-SAObserver >> amplify: aMethod [
-	
 ]
 
 { #category : #accessing }
 SAObserver >> checkFlaky [
-	memory
+	history
 		select: [ :item | (item at: #observedby) = #observeResult ]
 		thenDo: [ :item | 
 			flakyMem
-				detect:
-					[ :i | (i at: #id) = (item at: #id) and: [ (i at: #observedby) = #observeResult ] ]
-				ifFound: [ :i | self checkFlaky: item with: i path: {} ] ].
-	memory
+				detect: [ :i | 
+					(i at: #id) = (item at: #id) and: [ 
+						(i at: #observedby) = #observeResult ] ]
+				ifFound: [ :i | self checkFlaky: item with: i path: {  } ] ].
+	history
 		select: [ :item | (item at: #observedby) = #observe ]
 		thenDo: [ :item | 
 			flakyMem
-				detect: [ :i | (i at: #id) = (item at: #id) and: [ (i at: #observedby) = #observe ] ]
-				ifFound: [ :i | self checkFlaky: item with: i path: {} ] ]
+				detect: [ :i | 
+					(i at: #id) = (item at: #id) and: [ 
+						(i at: #observedby) = #observe ] ]
+				ifFound: [ :i | self checkFlaky: item with: i path: {  } ] ]
 ]
 
 { #category : #adding }
 SAObserver >> checkFlaky: obj [
 	| old |
 	flankyIdx := flankyIdx + 1.
-	old := memory at: flankyIdx.
-	self checkFlaky: old with: obj path: {}
+	old := history at: flankyIdx.
+	self checkFlaky: old with: obj path: {  }
 ]
 
 { #category : #testing }
@@ -95,95 +76,76 @@ SAObserver >> checkFlaky: oldOne with: newOne path: apath [
 				ifFalse: [ oldVal at: #flaky put: true ] ]
 ]
 
+{ #category : #accessing }
+SAObserver >> history [
+	^ history
+]
+
 { #category : #initialization }
 SAObserver >> initialize [
-	memory := OrderedCollection new.
+	history := OrderedCollection new.
 	flakyMem := OrderedCollection new.
 	chekingFlaky := false
 ]
 
-{ #category : #accessing }
-SAObserver >> memory [ ^memory
+{ #category : #testing }
+SAObserver >> isInObservationScope: anObject [
+	^ targetClasses includes: anObject class 
+]
+
+{ #category : #'instance creation' }
+SAObserver >> newForTarget: listOfTargetClasses [
+	self initialize.
+	targetClasses := listOfTargetClasses
 ]
 
 { #category : #'as yet unclassified' }
 SAObserver >> observe: anObject name: aString id: anInt [
-	| serialized doseialize |
-	doseialize := true.
-	aString = 'self'
-		ifTrue: [ doseialize := false ].
-	aString first isUppercase
-		ifTrue: [ doseialize := false ].
-	serialized := Dictionary new.
-	doseialize
-		ifTrue: [ serialized := SerializerFactory serialize: anObject ].
-	serialized at: #id put: anInt.
-	serialized at: #observedby put: #observe.
-	serialized at: #name put: aString.
+	| serialized |
+	(self isInObservationScope: anObject) ifFalse: [ ^ self ]. 
+	serialized := anObject
+		              smallAmpAcceptSerializerVisitor:
+		              SAObjectObserversSerializer new
+		              atDepth: 0.
 	serialized
-		at: #time
-		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
-	self addOrCheck: serialized
-]
-
-{ #category : #accessing }
-SAObserver >> observeCall: aSelector reciever: aReceiver receiverName: aReceiverName variable: aVariable variableName: aVariableName id: anInt [
-	| serializer serialized |
-	serializer := SerializerFactory getSerializer: aReceiver.
-	serialized := serializer serialize: aReceiver.
-	serialized at: #id put: anInt.
-	serialized at: #name put: aReceiverName.
-	serialized
-		at: #time
-		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
-	(aVariable ~~ aReceiver and: [ serializer captureResult: aSelector ])
-		ifTrue: [ serialized at: #resultName put: aVariableName.
-			serialized
-				at: #result
-				put: (SerializerFactory serialize: aVariable) ].
+		name: aString;
+		id: anInt;
+		observedBy: #observe.
 	self addOrCheck: serialized
 ]
 
 { #category : #'as yet unclassified' }
-SAObserver >> observeException: exception id: anInt [
+SAObserver >> observeException: exception id: idx [
 	| serialized |
 	exception ifNil: [ ^ self ].
-	serialized := Dictionary new.
-	serialized at: #exceptionClass put: exception class name.
-	serialized at: #id put: anInt.
-	serialized at: #observedby put: #observeException.
-	serialized
-		at: #time
-		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
-	self addOrCheck: serialized
+	serialized := SAObservationError forError:
+		              exception class.
+	serialized id: idx.
+	self addOrCheck: serialized.
+	
 ]
 
 { #category : #'as yet unclassified' }
 SAObserver >> observeResult: aResult receiver: aReceiver selector: aSelector name: aString id: anInt [
 	| serialized |
-	serialized := SerializerFactory serialize: aResult.
-	serialized at: #id put: anInt.
+	aReceiver == aResult ifTrue: [ ^ self ]. "the method is not an observer. it returns itself (Java alternative: void returning methods). "
+	serialized := aResult
+		              smallAmpAcceptSerializerVisitor:
+		              SAObjectObserversSerializer new
+		              atDepth: 0.
 	serialized
-		at: #observedby
-		put: #observeResult.
-	serialized at: #name put: aString.
-	serialized at: #equalReceiver put: aReceiver == aResult.
-	serialized
-		at: #time
-		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
+		name: aString;
+		id: anInt;
+		observedBy: #observeResult.
 	self addOrCheck: serialized
 ]
 
 { #category : #'as yet unclassified' }
 SAObserver >> observeTimeOut: duarationInMilliSeconds id: idx [
 	| serialized |
-	serialized := Dictionary new.
-	serialized at: #timeOutLimit put: duarationInMilliSeconds.
-	serialized at: #id put: idx.
-	serialized at: #observedby put: #observeTimeOut.
-	serialized
-		at: #time
-		put: (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds.
+	serialized := SAObservationTimeout forTimeout:
+		              duarationInMilliSeconds.
+	serialized id: idx.
 	self addOrCheck: serialized
 ]
 

@@ -1,39 +1,72 @@
 Class {
 	#name : #SAObservationItem,
-	#superclass : #Object,
+	#superclass : #SAObservationAbstract,
 	#instVars : [
 		'theClass',
 		'theValue',
-		'theSerializerType'
+		'isFlaky',
+		'name',
+		'observedBy',
+		'depth'
 	],
 	#category : #'Amplification-Model'
 }
 
 { #category : #'instance creation' }
-SAObservationItem class >> newForCollection: anObject values: aCollection [
+SAObservationItem class >> newForClass: theObjectClass values: aCollection [
 	^ self new
 		  theValue: aCollection;
-		  theClass: anObject class;
-		theSerializerType: #Collection;
+		  theClass: theObjectClass;
 		  yourself
 ]
 
 { #category : #'instance creation' }
-SAObservationItem class >> newForObject: anObject observers: result [
-	^ self new
-		  theValue: anObject;
-		  theClass: anObject class;
-		  theSerializerType: #Object;
-		  yourself
+SAObservationItem class >> newForClass: theObjectClass values: aCollection atDepth: anInt [
+	^ self new 
+		  theValue: aCollection;
+		  theClass: theObjectClass;
+			depth: anInt;  
+		yourself
 ]
 
-{ #category : #'instance creation' }
-SAObservationItem class >> newForPrimitive: anObject [
-	^ self new
-		  theValue: anObject;
-		  theClass: anObject class;
-		  theSerializerType: #Primitive;
-		  yourself
+{ #category : #accessing }
+SAObservationItem >> depth [
+	^ depth
+]
+
+{ #category : #accessing }
+SAObservationItem >> depth: anInt [
+	 depth := anInt 
+]
+
+{ #category : #accessing }
+SAObservationItem >> isFlaky [
+^isFlaky
+]
+
+{ #category : #accessing }
+SAObservationItem >> isFlaky: aBoolean [
+	isFlaky:= aBoolean
+]
+
+{ #category : #accessing }
+SAObservationItem >> name [
+	^ name
+]
+
+{ #category : #accessing }
+SAObservationItem >> name: anObject [
+	name := anObject
+]
+
+{ #category : #accessing }
+SAObservationItem >> observedBy [
+	^ observedBy
+]
+
+{ #category : #accessing }
+SAObservationItem >> observedBy: anObject [
+	observedBy := anObject
 ]
 
 { #category : #accessing }
@@ -44,16 +77,6 @@ SAObservationItem >> theClass [
 { #category : #accessing }
 SAObservationItem >> theClass: anObject [
 	theClass := anObject
-]
-
-{ #category : #accessing }
-SAObservationItem >> theSerializerType [
-	^ theSerializerType
-]
-
-{ #category : #accessing }
-SAObservationItem >> theSerializerType: anObject [
-	theSerializerType := anObject
 ]
 
 { #category : #accessing }

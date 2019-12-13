@@ -38,9 +38,7 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 		                  using: aClass.
 	generatedClass class addInstVarNamed: 'observer'.
 	generatedClass class compile:
-		'observer ^ observer ifNil: [ observer := SAObserver new ]'.
-	generatedClass class compile:
-		'testTarget ^ ' , testMethodModel testTargets asString.
+		'observer ^ observer ifNil: [ observer := SAObserver newForTarget: ', testMethodModel testTargets asString ,' ]'.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass
 ]
