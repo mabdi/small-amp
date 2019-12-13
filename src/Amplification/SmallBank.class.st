@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'balance'
 	],
-	#category : #'Amplification-TestsClasses'
+	#category : #'Amplification-Example'
 }
 
 { #category : #accessing }

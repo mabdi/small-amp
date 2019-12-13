@@ -1,7 +1,7 @@
 Class {
 	#name : #SmallBankTest,
 	#superclass : #TestCase,
-	#category : #'Amplification-TestsClasses'
+	#category : #'Amplification-Example'
 }
 
 { #category : #tests }

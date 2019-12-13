@@ -5,7 +5,7 @@ Class {
 		'someVariable',
 		'someString'
 	],
-	#category : #'Amplification-TestsClasses'
+	#category : #'Amplification-Example'
 }
 
 { #category : #running }
