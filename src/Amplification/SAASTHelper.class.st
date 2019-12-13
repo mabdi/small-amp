@@ -79,8 +79,8 @@ SAASTHelper >> clearTempClasses [
 { #category : #removing }
 SAASTHelper >> convertAllToAssert: aMethod [
 	^ (SAAssertTransform
-		convertAllToAssert: aMethod parseTree
-		transformers: (SAAssertTransform allSubclasses collect: [ :each | each new ]))
+		transformAllAsserts: aMethod parseTree
+		)
 		formattedCode
 ]
 
@@ -115,7 +115,7 @@ SAASTHelper >> parserClass [
 { #category : #removing }
 SAASTHelper >> removeAssertions: aMethod [
 	^ (SAAssertTransform
-		   removeAssertionsNoExtract: (self parsedMethodFrom: aMethod)
+		   removeAllAsserts: (self parsedMethodFrom: aMethod)
 		   )
 		  formattedCode
 ]

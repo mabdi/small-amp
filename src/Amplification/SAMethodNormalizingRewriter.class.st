@@ -30,7 +30,7 @@ SAMethodNormalizingRewriter >> addTemporaryVariables [
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> generateATemp [
 	| tmp |
-	tmp := 'tmp_' , GeneralHelper randomString , idx asString.
+	tmp := 'tmp_' , self randomString , idx asString.
 	idx := idx + 1.
 	tmpVariables add: tmp.
 	^ RBVariableNode named: tmp
@@ -46,6 +46,16 @@ SAMethodNormalizingRewriter >> performSteps: changes [
 				afterIndex: (aChange at: #afterIndex) ].
 		(aChange at: #op) = #remove ifTrue: [ 
 			aMethodAST statements removeAt: (aChange at: #atIndex) ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> randomString [
+	| string |
+	string := String streamContents: [ :stream | 
+		          Character alphabet putOn: stream.
+		          Character alphabet asUppercase putOn: stream.
+		          '0123456789' putOn: stream ].
+	^ (String new: 10) collect: [ :each | string atRandom ]
 ]
 
 { #category : #'as yet unclassified' }
