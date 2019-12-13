@@ -45,7 +45,7 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
-	^ anObserver memory collect: [ :observation | 
+	^ anObserver history collect: [ :observation | 
 		  | asserts unserializer generateAsserts |
 		  generateAsserts := true.
 		  observation

@@ -41,7 +41,7 @@ SAObservationItem >> depth: anInt [
 
 { #category : #accessing }
 SAObservationItem >> isFlaky [
-^isFlaky
+	^ isFlaky ifNil: [ isFlaky:= false ]
 ]
 
 { #category : #accessing }

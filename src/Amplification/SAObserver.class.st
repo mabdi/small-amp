@@ -26,21 +26,18 @@ SAObserver >> addOrCheck: obj [
 { #category : #accessing }
 SAObserver >> checkFlaky [
 	history
-		select: [ :item | (item at: #observedby) = #observeResult ]
+		select: [ :item | item observedBy = #observeResult ]
 		thenDo: [ :item | 
 			flakyMem
 				detect: [ :i | 
-					(i at: #id) = (item at: #id) and: [ 
-						(i at: #observedby) = #observeResult ] ]
-				ifFound: [ :i | self checkFlaky: item with: i path: {  } ] ].
+				i id = item id and: [ i observedBy = #observeResult ] ]
+				ifFound: [ :i | self checkFlaky: item with: i ] ].
 	history
-		select: [ :item | (item at: #observedby) = #observe ]
+		select: [ :item | item observedBy = #observe ]
 		thenDo: [ :item | 
 			flakyMem
-				detect: [ :i | 
-					(i at: #id) = (item at: #id) and: [ 
-						(i at: #observedby) = #observe ] ]
-				ifFound: [ :i | self checkFlaky: item with: i path: {  } ] ]
+				detect: [ :i | i id = item id and: [ i observedBy = #observe ] ]
+				ifFound: [ :i | self checkFlaky: item with: i ] ]
 ]
 
 { #category : #adding }
@@ -48,32 +45,14 @@ SAObserver >> checkFlaky: obj [
 	| old |
 	flankyIdx := flankyIdx + 1.
 	old := history at: flankyIdx.
-	self checkFlaky: old with: obj path: {  }
+	self checkFlaky: old with: obj
 ]
 
 { #category : #testing }
-SAObserver >> checkFlaky: oldOne with: newOne path: apath [
-	| oldVal newVal |
-	
-	oldVal := oldOne.
-	newVal := newOne.
-	apath
-		do: [ :key | 
-			oldVal := oldVal at: key.
-			newVal := newVal at: key ].
-	(oldVal at: #type ifAbsent: [ #ignore ]) = #object
-		ifTrue: [ (oldVal at: #value) ifNotNil:[
-				(oldVal at: #value) keysDo: [ :key | 
-					| newPath |
-					newPath := apath
-						,
-							{#value.
-							key}.
-					self checkFlaky: oldOne with: newOne path: newPath ] ]].
-	(oldVal at: #type ifAbsent: [ #ignore ]) = #primitive
-		ifTrue: [ ((oldVal at: #class) = (newVal at: #class)
-				and: [ (oldVal at: #value) = (newVal at: #value) ])
-				ifFalse: [ oldVal at: #flaky put: true ] ]
+SAObserver >> checkFlaky: oldOne with: newOne [
+	(oldOne isKindOf: SAObservationItem) ifFalse: [ ^ self ].
+	(newOne isKindOf: SAObservationItem) ifFalse: [ ^ self ].
+	oldOne checkFlaky: newOne
 ]
 
 { #category : #accessing }

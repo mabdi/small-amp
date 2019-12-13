@@ -8,6 +8,27 @@ Class {
 }
 
 { #category : #tests }
+SAObservationObjectTest >> testCheckFlaky [
+	| item1 item2 obj1 obj2 |
+	obj1 := SmallBank new.
+	obj2 := SmallBank new.
+	item1 := obj1
+		         smallAmpAcceptSerializerVisitor:
+		         SAObjectObserversSerializer new
+		         atDepth: 0.
+	item2 := obj1
+		         smallAmpAcceptSerializerVisitor:
+		         SAObjectObserversSerializer new
+		         atDepth: 0.
+	self deny: (item1 theValue at: #rand) isFlaky.
+	self deny: (item1 theValue at: #balance) isFlaky.
+	item1 checkFlaky: item2.
+	self assert: (item1 theValue at: #rand) isFlaky.
+	self deny: (item1 theValue at: #balance) isFlaky.
+	
+]
+
+{ #category : #tests }
 SAObservationObjectTest >> testMaxDepth [
 	| item deepObj |
 	deepObj := #key -> (Array with: { (10 @ 20 corner: 20 @ 30) }).
