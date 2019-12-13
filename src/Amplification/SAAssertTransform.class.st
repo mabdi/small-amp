@@ -29,75 +29,86 @@ SAAssertTransform >> getAllPatterns [
 
 { #category : #running }
 SAAssertTransform >> transformAllAsserts: aParseTree extract: doExtract [
-	| rewriter parser empty |
+	| rewriter parser empty tree |
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
 	empty := RBParser parseExpression: ''.
 	self getAllPatterns do: [ :each | 
 		doExtract
 			ifTrue: [ rewriter replace: each key with: each value ]
-			ifFalse: [ rewriter addRule:
-			(RBBlockReplaceRule
-				 searchFor: each key
-				 replaceWith: [ :node | empty ]) ].
-		 ].
+			ifFalse: [ 
+				rewriter addRule:
+					(RBBlockReplaceRule
+						 searchFor: each key
+						 replaceWith: [ :node | empty ]) ] ].
 	rewriter executeTree: parser.
-	^ rewriter tree
+	tree := rewriter tree.
+	
+	^ tree
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAsset [
+SAAssertTransform >> transformAssert [
 	^ { 
-	'self assert: ``@aBooleanOrBlock' -> '``@aBooleanOrBlock value'.
-	'self assert: ``@aBooleanOrBlock description: ``@aStringOrBlock' -> '``@aBooleanOrBlock value'.
-	'self assert: ``@aBooleanOrBlock description: ``@aStringOrBlock resumable: ``@resumableBoolean'-> '``@aBooleanOrBlock value'.
-	  'self should: ``@aBooleanOrBlock'. 'self should: ``@aBooleanOrBlock description: ``@aStringOrBlock'-> '``@aBooleanOrBlock value'.
-	 }
+		  ('self assert: ``@aBooleanOrBlock' -> '``@aBooleanOrBlock value').
+		  ('self assert: ``@aBooleanOrBlock description: ``@aStringOrBlock'
+		   -> '``@aBooleanOrBlock value').
+		  ('self assert: ``@aBooleanOrBlock description: ``@aStringOrBlock resumable: ``@resumableBoolean'
+		   -> '``@aBooleanOrBlock value').
+		  ('self should: ``@aBooleanOrBlock' -> '``@aBooleanOrBlock value').
+		  ('self should: ``@aBooleanOrBlock description: ``@aStringOrBlock'
+		   -> '``@aBooleanOrBlock value') }
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetCloseTo [
+SAAssertTransform >> transformAssertCloseTo [
 	^ { 
 		  ('self assert: ``@actual closeTo: ``@expected' -> '``@actual closeTo: ``@expected')}
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetCollectionEquals [
+SAAssertTransform >> transformAssertCollectionEquals [
 	^ { ('self assertCollection: ``@actual equals: ``@expected'
 	   -> '``@actual = ``@expected') }
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetCollectionHasSameElements [
+SAAssertTransform >> transformAssertCollectionHasSameElements [
 	^ { ('self assertCollection: ``@actual hasSameElements: ``@expected'
 	   -> '(``@actual difference: ``@expected) isEmpty and: [(``@expected
 		difference: (``@actual intersection: ``@expected)) isEmpty]') }
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetCollectionIncludesAll [
+SAAssertTransform >> transformAssertCollectionIncludesAll [
 	^ { ('self assertCollection: ``@actual includesAll: ``@subcollection'
 	   ->
 		   '``@actual includesAll: ``@subcollection') }
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetEquals [
+SAAssertTransform >> transformAssertEquals [
 	^ { 'self assert: ``@actual equals: ``@expected' -> '``@actual = ``@expected'.
 	  'self assert: ``@actual equals: ``@expected description: ``@description' -> '``@actual = ``@expected' }
 ]
 
 { #category : #'transform pattern' }
-SAAssertTransform >> transformAssetIdenticalTo [
+SAAssertTransform >> transformAssertIdenticalTo [
 	^ { 'self assert: ``@actual identicalTo: ``@expected' -> '``@expected == ``@actual'}
 ]
 
 { #category : #'transform pattern' }
 SAAssertTransform >> transformDeny [
-	^ { 'self deny: ``@aBooleanOrBlock'. 'self deny: ``@aBooleanOrBlock description: ``@aStringOrBlock' ->'``@aBooleanOrBlock value not'.
-	  'self deny: ``@aBooleanOrBlock description: ``@aStringOrBlock resumable: ``@resumableBoolean' -> '``@aBooleanOrBlock value not'.
-	  'self shouldnt: ``@aBooleanOrBlock' -> '``@aBooleanOrBlock value not'.
-	  'self shouldnt: ``@aBooleanOrBlock description: ``@aStringOrBlock' -> '``@aBooleanOrBlock value not' }
+	^ { 
+		  'self deny: ``@aBooleanOrBlock' -> '``@aBooleanOrBlock value not'.
+		  ('self deny: ``@aBooleanOrBlock description: ``@aStringOrBlock'
+		   -> '``@aBooleanOrBlock value not').
+		  ('self deny: ``@aBooleanOrBlock description: ``@aStringOrBlock resumable: ``@resumableBoolean'
+		   -> '``@aBooleanOrBlock value not').
+		  ('self shouldnt: ``@aBooleanOrBlock'
+		   -> '``@aBooleanOrBlock value not').
+		  ('self shouldnt: ``@aBooleanOrBlock description: ``@aStringOrBlock'
+		   -> '``@aBooleanOrBlock value not') }
 ]
 
 { #category : #'transform pattern' }
