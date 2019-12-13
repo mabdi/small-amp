@@ -112,6 +112,17 @@ SAASTHelper >> parserClass [
 	^ RBParser
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> randomString [
+	| string |
+	string := String
+		streamContents: [ :stream | 
+			Character alphabet putOn: stream.
+			Character alphabet asUppercase putOn: stream.
+			'0123456789' putOn: stream ].
+	^ (String new: 10) collect: [ :each | string atRandom ]
+]
+
 { #category : #removing }
 SAASTHelper >> removeAssertions: aMethod [
 	^ (SAAssertTransform
@@ -153,4 +164,26 @@ SAASTHelper >> renameMethodNameRegex: aSourceCode append: aText [
 	mName := self extractMethodNameRegex: aSourceCode.
 	^ mName , aText
 		, (aSourceCode copyFrom: mName size + 1 to: aSourceCode size)
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> renameTempVars: anStr [
+	^ anStr
+		copyWithRegex: 'tmp_([a-z0-9A-Z]+)\d+'
+		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> stripMethodSrc: aMethod [
+	^ self stripString: aMethod sourceCode 
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> stripString: aString [ 
+	^ aString copyWithoutAll: {Character cr. ' '. Character tab }
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> timeTick [
+	^ (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
 ]

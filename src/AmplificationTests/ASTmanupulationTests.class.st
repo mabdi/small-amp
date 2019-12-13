@@ -55,19 +55,14 @@ ASTmanupulationTests >> testCleanUpVisitor [
 { #category : #tests }
 ASTmanupulationTests >> testConvertAllToAssert [
 	| result |
-	result := testMethods
-		collect: [ :each | SAASTHelper new convertAllToAssert: each ].
-	self
-		assert:
-			(result
-				allSatisfy: [ :src | 
-					((GeneralHelper stripString: src) findString: 'self deny:' onlyLetters)
-						== 0 ]).
-	self
-		assert:
-			(result
-				allSatisfy:
-					[ :src | ((GeneralHelper stripString: src) findString: 'self should:' onlyLetters) == 0 ])
+	result := testMethods collect: [ :each | 
+		          SAASTHelper new convertAllToAssert: each ].
+	self assert: (result allSatisfy: [ :src | 
+			 ((SAASTHelper new stripString: src) findString:
+				  'self deny:' onlyLetters) == 0 ]).
+	self assert: (result allSatisfy: [ :src | 
+			 ((SAASTHelper new stripString: src) findString:
+				  'self should:' onlyLetters) == 0 ])
 ]
 
 { #category : #tests }
@@ -111,24 +106,15 @@ ASTmanupulationTests >> testMethodRename [
 { #category : #tests }
 ASTmanupulationTests >> testRemoveAssertions [
 	| result |
-	result := testMethods
-		collect: [ :each | SAASTHelper new removeAssertions: each sourceCode ].
-	self
-		assert:
-			(result
-				allSatisfy: [ :src | 
-					((GeneralHelper stripString: src)
-						findString: 'self assert:' onlyLetters) == 0 ]).
-	self
-		assert:
-			(result
-				allSatisfy: [ :src | 
-					((GeneralHelper stripString: src) findString: 'self deny:' onlyLetters)
-						== 0 ]).
-	self
-		assert:
-			(result
-				allSatisfy: [ :src | 
-					((GeneralHelper stripString: src)
-						findString: 'self should:' onlyLetters) == 0 ])
+	result := testMethods collect: [ :each | 
+		          SAASTHelper new removeAssertions: each sourceCode ].
+	self assert: (result allSatisfy: [ :src | 
+			 ((SAASTHelper new stripString: src) findString:
+				  'self assert:' onlyLetters) == 0 ]).
+	self assert: (result allSatisfy: [ :src | 
+			 ((SAASTHelper new stripString: src) findString:
+				  'self deny:' onlyLetters) == 0 ]).
+	self assert: (result allSatisfy: [ :src | 
+			 ((SAASTHelper new stripString: src) findString:
+				  'self should:' onlyLetters) == 0 ])
 ]

@@ -4,7 +4,7 @@ Class {
 	#classInstVars : [
 		'serializers'
 	],
-	#category : #'Amplification-Helpers'
+	#category : #'Amplification-Experiment'
 }
 
 { #category : #'as yet unclassified' }
