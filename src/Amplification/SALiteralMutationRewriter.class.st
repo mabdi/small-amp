@@ -4,22 +4,23 @@ Class {
 	#instVars : [
 		'mappings',
 		'mutator',
-		'testModel'
+		'testBody'
 	],
 	#category : #'Amplification-Helpers'
 }
 
 { #category : #'instance creation' }
-SALiteralMutationRewriter class >> runWith: aTestModel [
+SALiteralMutationRewriter class >> runWith: aTestBody [
 	^ self new
-		  with: aTestModel;
-		run;  
-		yourself
+		  with: aTestBody;
+		  run
 ]
 
 { #category : #'instance creation' }
-SALiteralMutationRewriter class >> with: aTestModel [
-	^ self new with: aTestModel; yourself
+SALiteralMutationRewriter class >> with: aTestBody [
+	^ self new
+		  with: aTestBody;
+		  yourself
 ]
 
 { #category : #initialization }
@@ -53,8 +54,7 @@ SALiteralMutationRewriter >> replaceMappings: map on: aMethod [
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> run [
 	| results aMethodAST |
-	
-	aMethodAST := SAASTHelper new parsedMethodFrom: testModel testMethod.
+	aMethodAST := SAASTHelper new parsedMethodFrom: testBody.
 	self visitNode: aMethodAST.
 	results := OrderedCollection new.
 	mappings do: [ :map | 
@@ -70,7 +70,7 @@ SALiteralMutationRewriter >> visitLiteralNode: aLiteralNode [
 ]
 
 { #category : #'instance creation' }
-SALiteralMutationRewriter >> with: aTestModel [
+SALiteralMutationRewriter >> with: aTestBody [
 	self initialize.
-	testModel := aTestModel
+	testBody := aTestBody
 ]

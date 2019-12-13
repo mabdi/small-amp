@@ -1,5 +1,5 @@
 Class {
-	#name : #Observer,
+	#name : #SAObserver,
 	#superclass : #Object,
 	#instVars : [
 		'observations',
@@ -10,11 +10,11 @@ Class {
 		'flakyLen',
 		'flakyMem'
 	],
-	#category : #'Amplification-Experiment'
+	#category : #'Amplification-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-Observer >> ObservationOn: aSelector with: anArray in: aReceiver method: method [
+SAObserver >> ObservationOn: aSelector with: anArray in: aReceiver method: method [
 	| result elapsedTime |
 	[ elapsedTime := Time
 		millisecondsToRun: [ result := aReceiver withArgs: anArray executeMethod: method ].
@@ -33,7 +33,7 @@ Observer >> ObservationOn: aSelector with: anArray in: aReceiver method: method 
 ]
 
 { #category : #adding }
-Observer >> addOrCheck: obj [
+SAObserver >> addOrCheck: obj [
 	chekingFlaky
 		ifFalse: [ memory add: obj ]
 		ifTrue: [ flakyMem add: obj ]
@@ -41,12 +41,12 @@ Observer >> addOrCheck: obj [
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> amplify: aMethod [
+SAObserver >> amplify: aMethod [
 	
 ]
 
 { #category : #accessing }
-Observer >> checkFlaky [
+SAObserver >> checkFlaky [
 	memory
 		select: [ :item | (item at: #observedby) = #observeResult ]
 		thenDo: [ :item | 
@@ -63,7 +63,7 @@ Observer >> checkFlaky [
 ]
 
 { #category : #adding }
-Observer >> checkFlaky: obj [
+SAObserver >> checkFlaky: obj [
 	| old |
 	flankyIdx := flankyIdx + 1.
 	old := memory at: flankyIdx.
@@ -71,7 +71,7 @@ Observer >> checkFlaky: obj [
 ]
 
 { #category : #testing }
-Observer >> checkFlaky: oldOne with: newOne path: apath [
+SAObserver >> checkFlaky: oldOne with: newOne path: apath [
 	| oldVal newVal |
 	
 	oldVal := oldOne.
@@ -96,18 +96,18 @@ Observer >> checkFlaky: oldOne with: newOne path: apath [
 ]
 
 { #category : #initialization }
-Observer >> initialize [
+SAObserver >> initialize [
 	memory := OrderedCollection new.
 	flakyMem := OrderedCollection new.
 	chekingFlaky := false
 ]
 
 { #category : #accessing }
-Observer >> memory [ ^memory
+SAObserver >> memory [ ^memory
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> observe: anObject name: aString id: anInt [
+SAObserver >> observe: anObject name: aString id: anInt [
 	| serialized doseialize |
 	doseialize := true.
 	aString = 'self'
@@ -127,7 +127,7 @@ Observer >> observe: anObject name: aString id: anInt [
 ]
 
 { #category : #accessing }
-Observer >> observeCall: aSelector reciever: aReceiver receiverName: aReceiverName variable: aVariable variableName: aVariableName id: anInt [
+SAObserver >> observeCall: aSelector reciever: aReceiver receiverName: aReceiverName variable: aVariable variableName: aVariableName id: anInt [
 	| serializer serialized |
 	serializer := SerializerFactory getSerializer: aReceiver.
 	serialized := serializer serialize: aReceiver.
@@ -145,7 +145,7 @@ Observer >> observeCall: aSelector reciever: aReceiver receiverName: aReceiverNa
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> observeException: exception id: anInt [
+SAObserver >> observeException: exception id: anInt [
 	| serialized |
 	exception ifNil: [ ^ self ].
 	serialized := Dictionary new.
@@ -159,7 +159,7 @@ Observer >> observeException: exception id: anInt [
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> observeResult: aResult receiver: aReceiver selector: aSelector name: aString id: anInt [
+SAObserver >> observeResult: aResult receiver: aReceiver selector: aSelector name: aString id: anInt [
 	| serialized |
 	serialized := SerializerFactory serialize: aResult.
 	serialized at: #id put: anInt.
@@ -175,7 +175,7 @@ Observer >> observeResult: aResult receiver: aReceiver selector: aSelector name:
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> observeTimeOut: duarationInMilliSeconds id: idx [
+SAObserver >> observeTimeOut: duarationInMilliSeconds id: idx [
 	| serialized |
 	serialized := Dictionary new.
 	serialized at: #timeOutLimit put: duarationInMilliSeconds.
@@ -188,7 +188,7 @@ Observer >> observeTimeOut: duarationInMilliSeconds id: idx [
 ]
 
 { #category : #'as yet unclassified' }
-Observer >> resetFlakyDetection [
+SAObserver >> resetFlakyDetection [
 	chekingFlaky := true.
 	flankyIdx := 0
 ]

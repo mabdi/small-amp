@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-OLDCarvingAssertAmplifier >> buildAuxillaryClass: aMethod basedOn: aClass [
+OLDCarvingAssertAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 	| generatedClass |
 	generatedClass := SAASTHelper new
 		buildTestClassWith: {}
@@ -36,7 +36,7 @@ OLDCarvingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass
 	| generatedClass observer aMethod |
 	aMethod := RBParser parseMethod: aMethodSrc.
 	self insertObservers: aMethod.
-	generatedClass := self buildAuxillaryClass: aMethod basedOn: aClass.
+	generatedClass := self buildANewClassFor: aMethod basedOn: aClass.
 	generatedClass suite run.
 	observer := generatedClass observer.
 	self insertAsserts: aMethod using: observer.

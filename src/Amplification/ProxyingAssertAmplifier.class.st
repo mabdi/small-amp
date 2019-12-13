@@ -42,7 +42,7 @@ ProxyingAssertAmplifier >> doAssertAmplification: population amplifier: anAmplif
 { #category : #'as yet unclassified' }
 ProxyingAssertAmplifier >> doAssertionAmplification: aMethodSrc within: aClass [
 	| generatedClass observer proxies |
-	observer := Observer new.
+	observer := SAObserver new.
 	generatedClass := SAASTHelper new
 		buildTestClassWith: {}
 		using: aClass.
