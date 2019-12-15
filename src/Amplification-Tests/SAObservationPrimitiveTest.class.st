@@ -20,6 +20,67 @@ SAObservationPrimitiveTest >> testBoolean [
 	self assert: item theValue equals: true
 ]
 
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValue [
+	| item |
+	item := SAObservationPrimitive newForNumber: 10.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValue formattedCode
+		equals: 'self assert: foo equals: 10 description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValueBoolean [
+	| item |
+	self flag: #TODO. "use assert and deny instead of assert:equal:"
+	item := SAObservationPrimitive newForFalse.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValue formattedCode
+		equals: 'self assert: foo equals: false description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValueFlaky [
+	| item |
+	item := SAObservationPrimitive newForNumber: 10.
+	item isFlaky: true.
+	self assert: item buildAssertionValue isNil
+]
+
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValueFloat [
+	| item |
+	item := SAObservationPrimitive newForNumber: 3.14.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValue formattedCode
+		equals: 'self assert: foo equals: 3.14 description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValueFraction [
+	| item |
+	item := SAObservationPrimitive newForNumber: 1/2.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValue formattedCode
+		equals: 'self assert: foo asString equals: ''(1/2)'' description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationPrimitiveTest >> testBuildAssertionValueString [
+	| item |
+	item := SAObservationPrimitive
+		        newForString: 'Hello World!'.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValue formattedCode
+		equals:
+		'self assert: foo equals: ''Hello World!'' description: ''smallAmp'''
+]
+
 { #category : #tests }
 SAObservationPrimitiveTest >> testCharacter [
 	| item obj |

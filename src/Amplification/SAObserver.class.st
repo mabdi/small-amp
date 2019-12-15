@@ -26,14 +26,14 @@ SAObserver >> addOrCheck: obj [
 { #category : #accessing }
 SAObserver >> checkFlaky [
 	history
-		select: [ :item | item observedBy = #observeResult ]
+		select: [ :item | item isValueObservation and: [ item observedBy = #observeResult ]  ]
 		thenDo: [ :item | 
 			flakyMem
 				detect: [ :i | 
 				i id = item id and: [ i observedBy = #observeResult ] ]
 				ifFound: [ :i | self checkFlaky: item with: i ] ].
 	history
-		select: [ :item | item observedBy = #observe ]
+		select: [ :item | item isValueObservation and: [item observedBy = #observe] ]
 		thenDo: [ :item | 
 			flakyMem
 				detect: [ :i | i id = item id and: [ i observedBy = #observe ] ]
@@ -50,8 +50,8 @@ SAObserver >> checkFlaky: obj [
 
 { #category : #testing }
 SAObserver >> checkFlaky: oldOne with: newOne [
-	(oldOne isKindOf: SAObservationItem) ifFalse: [ ^ self ].
-	(newOne isKindOf: SAObservationItem) ifFalse: [ ^ self ].
+	(oldOne isKindOf: SAObservationValue) ifFalse: [ ^ self ].
+	(newOne isKindOf: SAObservationValue) ifFalse: [ ^ self ].
 	oldOne checkFlaky: newOne
 ]
 

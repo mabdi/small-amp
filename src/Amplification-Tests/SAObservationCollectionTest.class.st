@@ -64,6 +64,57 @@ SAObservationCollectionTest >> testArrayDeep [
 ]
 
 { #category : #test }
+SAObservationCollectionTest >> testBuildAssertionSize [
+	| arr item |
+	arr := Array with: 10 with: 20 with: 30.
+	item := arr
+		        smallAmpAcceptSerializerVisitor:
+		        SAObjectObserversSerializer new
+		        atDepth: 0.
+	item name: 'foo'.
+	self assert: item buildAssertionSize formattedCode equals: 'self assert: foo size equals: 3 description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationCollectionTest >> testBuildAssertionValues [
+	| arr item |
+	arr := Array with: 10 with: 20 with: 30.
+	item := arr
+		        smallAmpAcceptSerializerVisitor:
+		        SAObjectObserversSerializer new
+		        atDepth: 0.
+	item name: 'foo'.
+	self assert: item buildAssertionValues formattedCode equals: 'self assert: foo equals: #( 10 20 30 ) description: ''smallAmp'''
+]
+
+{ #category : #test }
+SAObservationCollectionTest >> testBuildAssertionValuesMax [
+	| arr item |
+	arr := (1 to: 100) asArray .
+	item := arr
+		        smallAmpAcceptSerializerVisitor:
+		        SAObjectObserversSerializer new
+		        atDepth: 0.
+	item name: 'foo'.
+	self assert: item buildAssertionValues equals: nil
+]
+
+{ #category : #test }
+SAObservationCollectionTest >> testBuildAssertionValuesNonPrimitive [
+	| arr item |
+	arr := Array with: 10 with: 20 with: 30 @ 1.
+	item := arr
+		        smallAmpAcceptSerializerVisitor:
+		        SAObjectObserversSerializer new
+		        atDepth: 0.
+	item name: 'foo'.
+	self
+		assert: item buildAssertionValues 
+		equals:
+ nil
+]
+
+{ #category : #test }
 SAObservationCollectionTest >> testCheckFlaky [
 	| item1 item2 arr1 arr2 |
 	arr1 := Array with: 10 with: 20 with: 30.

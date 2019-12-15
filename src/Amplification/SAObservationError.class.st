@@ -14,6 +14,30 @@ SAObservationError class >> forError: exception [
 		yourself
 ]
 
+{ #category : #'as yet unclassified' }
+SAObservationError >> buildAssertionForError [
+	| assertStatement theMessage theErrorNode theDiscription |
+	theMessage := RBVariableNode named: 'fake'.
+	theErrorNode := RBVariableNode named: theError name.
+	theDiscription := RBLiteralValueNode value: 'smallAmp'.
+	assertStatement := RBMessageNode
+		                   receiver: (RBSelfNode named: 'self')
+		                   selector: #should:raise:description:
+		                   arguments: { 
+				                   theMessage.
+				                   theErrorNode.
+				                   theDiscription }.
+	^ assertStatement
+]
+
+{ #category : #'as yet unclassified' }
+SAObservationError >> buildAssertions [
+	| asserts |
+	asserts := OrderedCollection new.
+	asserts add: self buildAssertionForError.
+	^ asserts
+]
+
 { #category : #'instance creation' }
 SAObservationError >> theError [
 	^ theError

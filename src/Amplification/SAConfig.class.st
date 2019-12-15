@@ -25,7 +25,7 @@ SAConfig >> assertionAmplifiers: aListOfClassNames [
 
 { #category : #accessing }
 SAConfig >> debug [
-	^ debug
+	^ debug ifNil: [ debug := false ]
 ]
 
 { #category : #accessing }
@@ -45,7 +45,7 @@ SAConfig >> inputAmplifiers: anObject [
 
 { #category : #accessing }
 SAConfig >> iterations [
-	^ iterations
+	^ iterations ifNil: [ iterations:= 3 ]
 ]
 
 { #category : #accessing }

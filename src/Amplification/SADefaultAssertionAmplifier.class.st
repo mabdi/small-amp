@@ -49,24 +49,8 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver history collect: [ :observation | 
-		  | asserts unserializer generateAsserts |
-		  generateAsserts := true.
-		  observation
-			  at: #equalReceiver
-			  ifPresent: [ :equalReceiver | 
-			  equalReceiver ifTrue: [ generateAsserts := false ] ].
-		  observation at: #class ifAbsent: [ generateAsserts := false ].
-		  asserts := OrderedCollection new.
-		  observation at: #exceptionClass ifPresent: [ :exceptionClass | 
-			  asserts := { (ErrorSerializer makeAssertError: exceptionClass) }.
-			  generateAsserts := false ].
-		  observation at: #timeOutLimit ifPresent: [ :timeOutLimit | 
-			  asserts := { (AbstractSerializer makeAssertTimeOut: timeOutLimit) }.
-			  generateAsserts := false ].
-		  generateAsserts ifTrue: [ 
-			  unserializer := SerializerFactory getUnserializer: observation.
-			  asserts := unserializer makeAssertsBasedOnMemory:
-				             anObserver memory ].
+		  | asserts |
+		  asserts := observation buildAssertions.
 		  asserts doWithIndex: [ :assrt :index | 
 			  assrt arguments
 				  detect: [ :obj | 
@@ -74,11 +58,11 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 				  ifFound: [ :obj | 
 					  obj
 						  value:
-							  selector asString , ':' , (observation at: #id) asString
-							  , '.' , index asString
+							  selector asString , ':' , observation id asString , '.'
+							  , index asString
 						  start: 0
 						  stop: -1 ] ].
-		  (observation at: #id) -> asserts ]
+		  (observation id) -> asserts ]
 ]
 
 { #category : #cleanup }

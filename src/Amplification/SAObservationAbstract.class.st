@@ -8,6 +8,11 @@ Class {
 	#category : #'Amplification-Model'
 }
 
+{ #category : #'as yet unclassified' }
+SAObservationAbstract >> buildAssertions [
+	^ self subclassResponsibility 
+]
+
 { #category : #accessing }
 SAObservationAbstract >> id [
 	^ id
@@ -22,6 +27,16 @@ SAObservationAbstract >> id: anObject [
 SAObservationAbstract >> initialize [
 	super initialize.
 	timestamp := (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
+]
+
+{ #category : #testing }
+SAObservationAbstract >> isPrimitive [
+	^ false
+]
+
+{ #category : #testing }
+SAObservationAbstract >> isValueObservation [
+	^ false
 ]
 
 { #category : #accessing }
