@@ -16,7 +16,7 @@ SAObjectObserversSerializer >> filterObserversOn: theObject [
 				, (theClass methodsInProtocol: #evaluating). "the value method"
 			theClass := theClass superclass ] ].
 	methods := methods select: [ :method | 
-		           method selector asString size > 2 and: [ 
+		           method selector first isLetter and: [ 
 			           (method selector indexOf: $:) = 0 ] ].
 	methods := methods select: [ :m | m ast lastIsReturn ].
 	methods := methods sort: [ :a :b | a selector <= b selector ].
