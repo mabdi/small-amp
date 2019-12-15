@@ -18,7 +18,7 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 		  yourself
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 SAMainLoop >> amplify [
 	| resultPeople |
 	self methodProfiling.
@@ -30,6 +30,7 @@ SAMainLoop >> amplify [
 				self inputAmplification.
 				self assertionAmplification.
 				self selectionAlreadySelected: resultPeople.
+				self cleanUp .
 				resultPeople addAll: population ]
 			displayingProgress: 'Main loop' ].
 	^ self makeResult: resultPeople
@@ -52,6 +53,11 @@ SAMainLoop >> assertionAmplifiers [
 { #category : #accessing }
 SAMainLoop >> astHelper [
 	^ SAASTHelper new
+]
+
+{ #category : #cleanup }
+SAMainLoop >> cleanUp [
+	population := population collect: [ :obj | obj cleanedUpCopy  ]
 ]
 
 { #category : #actions }
@@ -125,11 +131,7 @@ SAMainLoop >> selectionAlreadySelected: aSelectedPopulation [
 	self selections do: [ :sel | 
 		selectedTests addAll:
 			(sel select: population alreadySelected: aSelectedPopulation) ].
-	population := selectedTests collect: [ :obj | 
-		SATestMethod
-			with: (self astHelper cleanUp: obj testMethod)
-			class: obj testClass
-			targets: obj testTargets ]
+	population := selectedTests
 ]
 
 { #category : #accessing }

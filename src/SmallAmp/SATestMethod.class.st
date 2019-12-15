@@ -34,6 +34,14 @@ SATestMethod >> cleanUp [
 	testMethod := (self astHelper cleanUp: testMethod)
 ]
 
+{ #category : #'as yet unclassified' }
+SATestMethod >> cleanedUpCopy [
+	| obj |
+	obj := self clone.
+	obj cleanUp.
+	^ obj
+]
+
 { #category : #copying }
 SATestMethod >> clone [
 	| obj |
