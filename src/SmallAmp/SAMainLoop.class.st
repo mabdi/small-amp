@@ -6,7 +6,8 @@ Class {
 		'targetClasses',
 		'population',
 		'config',
-		'finalResult'
+		'finalResult',
+		'resultPeople'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -18,22 +19,25 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 		  yourself
 ]
 
+{ #category : #adding }
+SAMainLoop >> addPopulationToResult [
+	population do: [ :item |  resultPeople add: item clone ]
+]
+
 { #category : #actions }
 SAMainLoop >> amplify [
-	| resultPeople |
 	self methodProfiling.
-	resultPeople := self initialAssertionAmplify.
+	self initialAssertionAmplify.
 	config lite ifFalse: [ 
 		(1 to: config iterations)
 			do: [ :gen | 
 				self strip.
 				self inputAmplification.
 				self assertionAmplification.
-				self selectionAlreadySelected: resultPeople.
-				self cleanUp .
-				resultPeople addAll: population ]
+				self selectionAlreadySelected.
+				self cleanUpAndAddToResult ]
 			displayingProgress: 'Main loop' ].
-	^ self makeResult: resultPeople
+	^ self makeResult
 ]
 
 { #category : #private }
@@ -58,6 +62,12 @@ SAMainLoop >> astHelper [
 { #category : #cleanup }
 SAMainLoop >> cleanUp [
 	population := population collect: [ :obj | obj cleanedUpCopy  ]
+]
+
+{ #category : #cleanup }
+SAMainLoop >> cleanUpAndAddToResult [
+	population := population collect: [ :obj | obj cleanedUpCopy ].
+	self addPopulationToResult 
 ]
 
 { #category : #actions }
@@ -86,7 +96,14 @@ SAMainLoop >> initialAssertionAmplify [
 				tcase assertionAmplifyBy: amplifier ].
 			tcase cleanUp ]
 		displayingProgress: 'Assertion Amplification'.
-	^ aPopulation
+	self addPopulationToResult
+	
+]
+
+{ #category : #initialization }
+SAMainLoop >> initialize [
+	finalResult := SAResultItem new.
+	resultPeople := OrderedCollection new.
 ]
 
 { #category : #private }
@@ -108,12 +125,12 @@ SAMainLoop >> inputAmplifiers [
 ]
 
 { #category : #private }
-SAMainLoop >> makeResult: resultPeople [
+SAMainLoop >> makeResult [
 	self flag: #TODO.
 	finalResult addNewTestClass: (self astHelper
-		                buildTestClassWith:
-		                (resultPeople collect: [ :tcase | tcase testMethod ])
-		                using: testClass).
+			 buildTestClassWith:
+			 (resultPeople collect: [ :tcase | tcase testMethod ])
+			 using: testClass).
 	^ SAResultItem new
 ]
 
@@ -124,13 +141,13 @@ SAMainLoop >> methodProfiling [
 ]
 
 { #category : #actions }
-SAMainLoop >> selectionAlreadySelected: aSelectedPopulation [
+SAMainLoop >> selectionAlreadySelected [ 
 	| selectedTests |
 	population ifEmpty: [ ^ self ].
 	selectedTests := OrderedCollection new.
 	self selections do: [ :sel | 
 		selectedTests addAll:
-			(sel select: population alreadySelected: aSelectedPopulation) ].
+			(sel select: population alreadySelected: resultPeople) ].
 	population := selectedTests
 ]
 
@@ -162,6 +179,6 @@ SAMainLoop >> with: aConfig for: aTestClass targets: listofTargetClasses [
 	config := aConfig.
 	targetClasses := listofTargetClasses.
 	testClass := aTestClass.
-	finalResult := SAResultItem new.
+	
 	self discardFailingTests
 ]
