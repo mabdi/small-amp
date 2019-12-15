@@ -1,6 +1,9 @@
 Class {
 	#name : #SADefaultAssertionAmplifier,
 	#superclass : #SAAbstractAssertionAmplifier,
+	#instVars : [
+		'config'
+	],
 	#category : #'Amplification-Core'
 }
 
@@ -21,7 +24,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		                            insertAsserts:
 		                            sourceCodeWithoutObservers
 		                            using: generatedClass observer.
-	self astHelper removeClass: generatedClass source: self class name.
+		self cleanUp: generatedClass.
 	^ sourceCodeWithAssertions
 ]
 
@@ -76,6 +79,12 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 						  start: 0
 						  stop: -1 ] ].
 		  (observation at: #id) -> asserts ]
+]
+
+{ #category : #cleanup }
+SADefaultAssertionAmplifier >> cleanUp: generatedClass [
+	config debug ifFalse: [ 
+		self astHelper removeClass: generatedClass source: self class name ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -40,13 +40,13 @@ SAMainLoop >> assertionAmplification [
 	population
 		do: [ :tcase | 
 			self assertionAmplifiers do: [ :amplifier | 
-				tcase assertionAmplifyBy: amplifier ] ]
+				tcase assertionAmplifyBy: (amplifier ) ] ]
 		displayingProgress: 'Assertion Amplification'
 ]
 
 { #category : #asserting }
 SAMainLoop >> assertionAmplifiers [
-	^ config assertionAmplifiers
+	^ config assertionAmplifiers collect: [ :amplifier | amplifier initializeWith: config ]
 ]
 
 { #category : #accessing }
@@ -97,7 +97,8 @@ SAMainLoop >> inputAmplification [
 
 { #category : #accessing }
 SAMainLoop >> inputAmplifiers [
-	^ config inputAmplifiers
+	^ config inputAmplifiers collect: [ :amplifier | 
+		  amplifier initializeWith: config ]
 ]
 
 { #category : #private }

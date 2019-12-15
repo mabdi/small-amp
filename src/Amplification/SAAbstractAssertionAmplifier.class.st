@@ -2,7 +2,8 @@ Class {
 	#name : #SAAbstractAssertionAmplifier,
 	#superclass : #Object,
 	#instVars : [
-		'testMethodModel'
+		'testMethodModel',
+		'config'
 	],
 	#category : #'Amplification-Core'
 }
@@ -15,12 +16,24 @@ SAAbstractAssertionAmplifier class >> assertionAmplify: aTestMethodModel [
 ]
 
 { #category : #'as yet unclassified' }
+SAAbstractAssertionAmplifier class >> initializeWith: aConfig [
+	^ self new
+		  with: aConfig
+]
+
+{ #category : #'as yet unclassified' }
 SAAbstractAssertionAmplifier >> amplifyAssertions [
 	^ self subclassResponsibility
 ]
 
+{ #category : #'as yet unclassified' }
+SAAbstractAssertionAmplifier >> amplifyAssertionsFor: aTestModel [
+	testMethodModel := aTestModel.
+	^ self amplifyAssertions
+]
+
 { #category : #initialization }
-SAAbstractAssertionAmplifier >> with: aTestMethodModel [
+SAAbstractAssertionAmplifier >> with: aConfig [
 	self initialize.
-	testMethodModel := aTestMethodModel
+	config := aConfig
 ]

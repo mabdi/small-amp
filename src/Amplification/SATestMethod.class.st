@@ -21,7 +21,7 @@ SATestMethod class >> with: aTestMethod class: aTestClass targets: objectsUnderT
 
 { #category : #cleanup }
 SATestMethod >> assertionAmplifyBy: anAmplifier [
-	testMethod := anAmplifier assertionAmplify: self
+	testMethod := anAmplifier amplifyAssertionsFor: self
 ]
 
 { #category : #removing }
@@ -58,7 +58,7 @@ SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUn
 { #category : #cleanup }
 SATestMethod >> inputAmplifyBy: anAmplifier [
 	| idx versions |
-	versions := anAmplifier inputAmplify: self.
+	versions := anAmplifier amplifyInputsFor: self.
 	idx := 0.
 	^ versions collect: [ :mtd | 
 		  | cp |
@@ -67,7 +67,7 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 			  (self astHelper renameMethodName: mtd append: '_' , idx asString)
 				  formattedCode.
 		  idx := idx + 1.
-		cp ]
+		  cp ]
 ]
 
 { #category : #printing }

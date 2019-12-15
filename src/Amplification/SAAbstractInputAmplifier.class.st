@@ -2,14 +2,16 @@ Class {
 	#name : #SAAbstractInputAmplifier,
 	#superclass : #Object,
 	#instVars : [
-		'testMethodModel'
+		'testMethodModel',
+		'config'
 	],
 	#category : #'Amplification-Core'
 }
 
 { #category : #removing }
-SAAbstractInputAmplifier class >> inputAmplify: aTestMethodModel [
-	^ self new with: aTestMethodModel; amplifyInputs
+SAAbstractInputAmplifier class >> initializeWith: aConfig [
+	^ self new
+		  with: aConfig
 ]
 
 { #category : #removing }
@@ -18,6 +20,12 @@ SAAbstractInputAmplifier >> amplifyInputs [
 ]
 
 { #category : #removing }
-SAAbstractInputAmplifier >> with: aMethodModel [
-	testMethodModel := aMethodModel
+SAAbstractInputAmplifier >> amplifyInputsFor: aTestMethodModel [
+	testMethodModel := aTestMethodModel.
+	^ self amplifyInputs
+]
+
+{ #category : #removing }
+SAAbstractInputAmplifier >> with: aConfig [
+	config := aConfig
 ]
