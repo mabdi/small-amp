@@ -70,31 +70,15 @@ SAASTHelper >> cleanUp: aSourceCode [
 
 { #category : #cleanup }
 SAASTHelper >> clearTempClasses [
-	<script: 'ASTHelper new clearTempClasses '>
+	<script: 'SAASTHelper new clearTempClasses '>
 	('AmplificationTempClasses' asPackageIfAbsent: [ ^ true ]) classes
 		do: [ :item | item removeFromSystem ]
 		displayingProgress: 'Clear temp amplified classes.'
 ]
 
-{ #category : #removing }
-SAASTHelper >> convertAllToAssert: aMethod [
-	^ (SAAssertTransform
-		transformAllAsserts: aMethod parseTree
-		)
-		formattedCode
-]
-
 { #category : #'method operations' }
 SAASTHelper >> extractMethodName: aSourceCode [
 	^ (self parsedMethodFrom: aSourceCode) selector
-]
-
-{ #category : #'method operations' }
-SAASTHelper >> extractMethodNameRegex: aSourceCode [
-	| re |
-	re := '^(\S+)(\:|\s).*' asRegex.
-	re matchesPrefix: aSourceCode.
-	^ ((re subexpression: 2) splitOn: ':') at: 1
 ]
 
 { #category : #private }
@@ -156,14 +140,6 @@ SAASTHelper >> renameMethodName: aSourceCode append: aText [
 	first := (re selector splitOn: $:) at: 1.
 	re selector: ((re selector splitOn: $:) at: 1 put: first , aText).
 	^ re
-]
-
-{ #category : #'method operations' }
-SAASTHelper >> renameMethodNameRegex: aSourceCode append: aText [
-	| mName |
-	mName := self extractMethodNameRegex: aSourceCode.
-	^ mName , aText
-		, (aSourceCode copyFrom: mName size + 1 to: aSourceCode size)
 ]
 
 { #category : #'as yet unclassified' }
