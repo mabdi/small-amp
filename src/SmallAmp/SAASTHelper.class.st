@@ -84,7 +84,7 @@ SAASTHelper >> defaultPragma [
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> defaultTempPackage [
-	^ 'AmplificationTempClasses'
+	^ 'SmallAmpTempClasses'
 ]
 
 { #category : #'method operations' }
