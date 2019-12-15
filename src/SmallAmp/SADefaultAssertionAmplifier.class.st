@@ -1,9 +1,6 @@
 Class {
 	#name : #SADefaultAssertionAmplifier,
 	#superclass : #SAAbstractAssertionAmplifier,
-	#instVars : [
-		'config'
-	],
 	#category : #'SmallAmp-Core'
 }
 
