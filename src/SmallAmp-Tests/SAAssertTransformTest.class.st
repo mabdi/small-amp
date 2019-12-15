@@ -12,6 +12,13 @@ SAAssertTransformTest >> astHelper [
 	^ SAASTHelper new
 ]
 
+{ #category : #running }
+SAAssertTransformTest >> setUp [
+	"Hooks that subclasses may override to define the fixture of test."
+	super setUp
+	
+]
+
 { #category : #tests }
 SAAssertTransformTest >> testGetAllPatterns [
 	| anAssertTransform allPatterns |

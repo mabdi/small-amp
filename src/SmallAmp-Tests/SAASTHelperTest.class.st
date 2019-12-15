@@ -10,15 +10,17 @@ Class {
 { #category : #test }
 SAASTHelperTest >> testBuildTestClassAndRun [
 	| result methods testMethods |
-	testMethods := FakeTestcase methods select: [ :each | 
+	testMethods := SAAssertTransformTest methods select: [ :each | 
 		               each selector beginsWith: 'test' ].
 	methods := testMethods collect: [ :atestMethod | 
 		           atestMethod sourceCode ].
 	result := SAASTHelper new
 		          buildTestClassWith: methods
-		          using: FakeTestcase.
+		          using: SAAssertTransformTest.
 	self deny:
 		(result methods detect: [ :mtd | mtd selector = #setUp ]) isNil.
+	self deny:
+		(result methods detect: [ :mtd | mtd selector = #astHelper ]) isNil.
 	self assert: result testSelectors size equals: methods size.
 	SAASTHelper new removeClass: result source: self class name
 ]
