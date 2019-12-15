@@ -126,12 +126,18 @@ SAMainLoop >> inputAmplifiers [
 
 { #category : #private }
 SAMainLoop >> makeResult [
-	self flag: #TODO.
-	finalResult addNewTestClass: (self astHelper
+	| minifier |
+	finalResult generatedTestClass: (self astHelper
 			 buildTestClassWith:
 			 (resultPeople collect: [ :tcase | tcase testMethod ])
 			 using: testClass).
-	^ SAResultItem new
+	minifier := SAMuTalkTestCaseMinifier with:
+		            finalResult generatedTestClass from: testClass target: targetClasses.
+	minifier makeMinifiedClass.
+	minifier makeMinifiedAddedClass.
+	finalResult minifiedTestClass: minifier minifiedTestClass.
+	finalResult minifiedAddedTestClass: minifier minifiedAddedTestClass.
+	^ finalResult
 ]
 
 { #category : #private }

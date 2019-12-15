@@ -1,11 +1,6 @@
 Class {
 	#name : #SAMuTalkTestCaseMinifier,
 	#superclass : #SAAbstractTestCaseMinifier,
-	#instVars : [
-		'newTestClass',
-		'testClass',
-		'targetClasses'
-	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -60,7 +55,7 @@ SAMuTalkTestCaseMinifier >> makeMinifiedAddedClass [
 		     (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
 	methods := methods , (l value: minifiedTestClass).
-	^ self astHelper
+	minifiedAddedTestClass:=  self astHelper
 		  buildTestClassWith: methods
 		  using: testClass
 		  final: true
@@ -82,34 +77,11 @@ SAMuTalkTestCaseMinifier >> makeMinifiedClass [
 			atMethod: (methods at: (item at: 1) asSymbol) ].
 	newTestClass logs removeAll.
 	methods values do: [ :m | self cleanAndMinifyMethod: m ].
-	^ self astHelper
-		  buildTestClassWith:
-		  (methods values collect: [ :m | m formattedCode ])
-		  using: testClass
-		  final: true
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> minify [
-	| logs methods |
-	self mutalkRun: newTestClass.
-	methods := Dictionary new.
-	logs := newTestClass logs.
-	logs sort collect: [ :item | item splitOn: ':' ] thenDo: [ :item | 
-		methods
-			at: (item at: 1) asSymbol
-			put: (newTestClass methodNamed: (item at: 1) asSymbol) ast ].
-	logs sort collect: [ :item | item splitOn: ':' ] thenDo: [ :item | 
-		self
-			makeAssertImportant: (item at: 2)
-			atMethod: (methods at: (item at: 1) asSymbol) ].
-	newTestClass logs removeAll.
-	methods values do: [ :m | self cleanAndMinifyMethod: m ].
-	^ self astHelper
-		  buildTestClassWith:
-		  (methods values collect: [ :m | m formattedCode ])
-		  using: testClass
-		  final: true
+	minifiedTestClass := self astHelper
+		buildTestClassWith:
+		(methods values collect: [ :m | m formattedCode ])
+		using: testClass
+		final: true
 ]
 
 { #category : #'as yet unclassified' }
