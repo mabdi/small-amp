@@ -30,6 +30,34 @@ SAObservationCollectionTest >> testArray [
 ]
 
 { #category : #tests }
+SAObservationCollectionTest >> testArray2D [
+	| item matrix23 s1 |
+	matrix23 := Array2D rows: 3 columns: 2.
+	matrix23 at: 1 at: 1 put: 11.
+	matrix23 at: 1 at: 2 put: 21.
+	matrix23 at: 2 at: 1 put: 12.
+	matrix23 at: 2 at: 2 put: 22.
+	matrix23 at: 3 at: 1 put: 13.
+	matrix23 at: 3 at: 2 put: 23.
+	item := matrix23
+		        smallAmpAcceptSerializerVisitor:
+		        SAObjectObserversSerializer new
+		        atDepth: 0.
+	self assert: item class equals: SAObservationCollection.
+	self assert: item theClass equals: Array2D.
+	self assert: item theValue isNotEmpty.
+	self assert: item theValue size equals: 6.
+	s1 := 12
+		      smallAmpAcceptSerializerVisitor:
+		      SAObjectObserversSerializer new
+		      atDepth: 0.
+	self assert: (item theValue at: 3) theClass equals: s1 theClass.
+	self assert: (item theValue at: 3) theValue equals: s1 theValue.
+	self assert: (item theValue at: 4) theValue equals: 22.
+	self assert: (item theValue at: 4) theClass equals: SmallInteger
+]
+
+{ #category : #tests }
 SAObservationCollectionTest >> testArrayDeep [
 	| item arr s2 |
 	arr := Array with: 10 with: { 'hello'. 1. true }.
