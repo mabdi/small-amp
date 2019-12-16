@@ -25,6 +25,11 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	^ sourceCodeWithAssertions
 ]
 
+{ #category : #asserting }
+SADefaultAssertionAmplifier >> assertBuilder [
+	^ SAAssertGeneratorForObservation new
+]
+
 { #category : #accessing }
 SADefaultAssertionAmplifier >> astHelper [
 	^ SAASTHelper new
@@ -47,7 +52,7 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver history collect: [ :observation | 
 		  | asserts |
-		  asserts := observation buildAssertions.
+		  asserts := observation buildAssertions: self assertBuilder.
 		  asserts doWithIndex: [ :assrt :index | 
 			  assrt arguments
 				  detect: [ :obj | 
@@ -59,7 +64,7 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 							  , index asString
 						  start: 0
 						  stop: -1 ] ].
-		  (observation id) -> asserts ]
+		  observation id -> asserts ]
 ]
 
 { #category : #cleanup }

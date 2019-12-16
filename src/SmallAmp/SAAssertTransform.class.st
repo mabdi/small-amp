@@ -14,6 +14,18 @@ SAAssertTransform class >> transformAllAsserts: aParseTree [
 	^ self new transformAllAsserts: aParseTree extract: true
 ]
 
+{ #category : #running }
+SAAssertTransform >> addLoggerToAllAsserts: aParseTree [
+	| rewriter parser tree |
+	rewriter := RBParseTreeRewriter new.
+	parser := aParseTree copy.
+	self getAllPatterns do: [ :each | 
+		rewriter replace: each key with: each key ].
+	rewriter executeTree: parser.
+	tree := rewriter tree.
+	^ tree
+]
+
 { #category : #accessor }
 SAAssertTransform >> getAllPatterns [
 	| methodsToBeCalled |

@@ -51,18 +51,17 @@ SAAssertGeneratorForObservation >> assertCollectionPrimitiveValues: observation 
 	(observation theValue allSatisfy: [ :item | item isPrimitive ]) 
 		ifFalse: [ ^ nil ].
 	observation theValue size > self maxCollectionSize ifTrue: [ ^ nil ].
-	observation theValue ifEmpty: [ ^ nil ]. 
+	observation theValue ifEmpty: [ ^ nil ].
 	array := (observation theValue collect: [ :item | item theValue ])
 		         asArray.
 	theObject := RBVariableNode named: observation name.
 	theValueNode := RBLiteralArrayNode value: array.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
+		                   selector: #assert:equals:
 		                   arguments: { 
 				                   theObject.
-				                   theValueNode.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theValueNode}.
 	^ assertStatement
 ]
 
@@ -74,11 +73,10 @@ SAAssertGeneratorForObservation >> assertCollectionSize: observation [
 	theValueNode := RBLiteralValueNode value: observation theValue size.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
+		                   selector: #assert:equals:
 		                   arguments: { 
 				                   theObject.
-				                   theValueNode.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theValueNode }.
 	^ assertStatement
 ]
 
@@ -88,10 +86,9 @@ SAAssertGeneratorForObservation >> assertEmpty: observation [
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assertEmpty:description:
+		                   selector: #assertEmpty:
 		                   arguments: { 
-				                   theObject.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theObject }.
 	^ assertStatement
 ]
 
@@ -103,24 +100,22 @@ SAAssertGeneratorForObservation >> assertError: anObservation [
 	theDiscription := RBLiteralValueNode value: 'smallAmp'.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #should:raise:description:
+		                   selector: #should:raise:
 		                   arguments: { 
 				                   theMessage.
-				                   theErrorNode.
-				                   theDiscription }.
+				                   theErrorNode }.
 	^ assertStatement
 ]
 
 { #category : #asserting }
 SAAssertGeneratorForObservation >> assertFalse: observation [
-		| assertStatement theObject |
+	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #deny:description:
+		                   selector: #deny:
 		                   arguments: { 
-				                   theObject.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theObject}.
 	^ assertStatement
 ]
 
@@ -128,67 +123,60 @@ SAAssertGeneratorForObservation >> assertFalse: observation [
 SAAssertGeneratorForObservation >> assertNil: observation [
 	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
-		theObject := RBMessageNode receiver: theObject selector: #isNil.
-
+	theObject := RBMessageNode receiver: theObject selector: #isNil.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:description:
+		                   selector: #assert:
 		                   arguments: { 
-				                   theObject.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theObject }.
 	^ assertStatement
 ]
 
 { #category : #'as yet unclassified' }
 SAAssertGeneratorForObservation >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
-	
 	theObject := RBVariableNode named: observation name.
 	theValueNode := RBLiteralValueNode value: observation theValue.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
+		                   selector: #assert:equals:
 		                   arguments: { 
 				                   theObject.
-				                   theValueNode.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theValueNode }.
 	^ assertStatement
 ]
 
 { #category : #'as yet unclassified' }
 SAAssertGeneratorForObservation >> assertPrimitiveValueAsString: observation [
 	| assertStatement theObject theValueNode |
-	
 	theObject := RBVariableNode named: observation name.
 	theObject := RBMessageNode receiver: theObject selector: #asString.
 	theValueNode := RBLiteralValueNode value:
 		                observation theValue asString.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
+		                   selector: #assert:equals:
 		                   arguments: { 
 				                   theObject.
-				                   theValueNode.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theValueNode }.
 	^ assertStatement
 ]
 
 { #category : #asserting }
 SAAssertGeneratorForObservation >> assertTimeout: observation [
-	| assertStatement theMessage theTimeOut theDiscription |
+	| assertStatement theMessage theTimeOut |
 	theMessage := RBVariableNode named: 'fake'.
 	theTimeOut := RBMessageNode
 		              receiver: (RBVariableNode named: 'Duration')
 		              selector: #milliSeconds:
-		              arguments: { (RBLiteralValueNode value: observation timeout) }.
-	theDiscription := RBLiteralValueNode value: 'smallAmp'.
+		              arguments:
+		              { (RBLiteralValueNode value: observation timeout) }.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #should:takeMoreThan:description:
+		                   selector: #should:takeMoreThan:
 		                   arguments: { 
 				                   theMessage.
-				                   theTimeOut.
-				                   theDiscription }.
+				                   theTimeOut }.
 	^ assertStatement
 ]
 
@@ -198,10 +186,9 @@ SAAssertGeneratorForObservation >> assertTrue: observation [
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:description:
+		                   selector: #assert:
 		                   arguments: { 
-				                   theObject.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   theObject }.
 	^ assertStatement
 ]
 
@@ -215,11 +202,10 @@ SAAssertGeneratorForObservation >> assertType: observation [
 	thClassName := RBVariableNode named: observation theClass name.
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
+		                   selector: #assert:equals:
 		                   arguments: { 
 				                   theObject.
-				                   thClassName.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
+				                   thClassName}.
 	^ assertStatement
 ]
 

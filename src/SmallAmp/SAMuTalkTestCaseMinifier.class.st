@@ -32,6 +32,27 @@ SAMuTalkTestCaseMinifier >> cleanAndMinifyMethod: methodast [
 	methodast statements removeAll: tobecleaned
 ]
 
+{ #category : #'as yet unclassified' }
+SAMuTalkTestCaseMinifier >> installLoggers [
+	self loggersAreInstalled ifTrue: [ ^ self ].
+	newTestClass class addInstVarNamed: 'smallamp_logs'.
+	newTestClass class compile:
+		'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
+	newTestClass compile:
+		'logFailure: aString self class logs add: aString'.
+	newTestClass compile: 'isLogging ^true'.
+	newTestClass compile:
+		'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean 
+	 aBooleanOrBlock value ifFalse: [ self halt ]
+		  
+	'
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkTestCaseMinifier >> loggersAreInstalled [
+	^ newTestClass methodDict includesKey: #logFailure:
+]
+
 { #category : #private }
 SAMuTalkTestCaseMinifier >> makeAssertImportant: id atMethod: methodast [
 	methodast statements
@@ -64,6 +85,7 @@ SAMuTalkTestCaseMinifier >> makeMinifiedAddedClass [
 { #category : #actions }
 SAMuTalkTestCaseMinifier >> makeMinifiedClass [
 	| logs methods |
+	self installLoggers.
 	self mutalkRun: newTestClass.
 	methods := Dictionary new.
 	logs := newTestClass logs.
@@ -78,10 +100,12 @@ SAMuTalkTestCaseMinifier >> makeMinifiedClass [
 	newTestClass logs removeAll.
 	methods values do: [ :m | self cleanAndMinifyMethod: m ].
 	minifiedTestClass := self astHelper
-		buildTestClassWith:
-		(methods values collect: [ :m | m formattedCode ])
-		using: testClass
-		final: true
+		                     buildTestClassWith:
+		                     (methods values collect: [ :m | 
+			                      m formattedCode ])
+		                     using: testClass
+		                     final: true.
+	self uninstallLoggers.
 ]
 
 { #category : #'as yet unclassified' }
@@ -95,4 +119,13 @@ SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
 		             AllTestsMethodsRunningMutantEvaluationStrategy new.
 	analysis1 run.
 	^ analysis1
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkTestCaseMinifier >> uninstallLoggers [
+	self loggersAreInstalled ifFalse: [ ^ self ].
+	"newTestClass class addInstVarNamed: 'smallamp_logs'."
+	newTestClass class removeSelector: #logs.
+	newTestClass class removeSelector: #logFailure:.
+	newTestClass class removeSelector: #isLogging
 ]
