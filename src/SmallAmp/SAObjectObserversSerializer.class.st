@@ -34,11 +34,6 @@ SAObjectObserversSerializer >> maxSuperClass [
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitBoolean: theObject atDepth: anInteger [
-	^ self visitPrimitive: theObject  atDepth: anInteger  
-]
-
-{ #category : #visiting }
 SAObjectObserversSerializer >> visitByteString: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]
@@ -59,6 +54,12 @@ SAObjectObserversSerializer >> visitCollection: theObject atDepth: anInteger [
 	^ SAObservationCollection
 		  newForClass: theObject class
 		  values: aCollection atDepth: anInteger
+]
+
+{ #category : #visiting }
+SAObjectObserversSerializer >> visitFalse: theObject atDepth: anInteger [
+	anInteger > self maxDepth ifTrue: [ ^ nil ].
+	^ SAObservationFalse newAtDepth: anInteger
 ]
 
 { #category : #visiting }
@@ -99,6 +100,14 @@ SAObjectObserversSerializer >> visitPrimitive: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAObjectObserversSerializer >> visitTrue: theObject atDepth: anInteger [
+	anInteger > self maxDepth ifTrue: [ ^ nil ].
+	^ SAObservationTrue
+		  newAtDepth: anInteger
+]
+
+{ #category : #visiting }
 SAObjectObserversSerializer >> visitUndefinedObject: theObject atDepth: anInteger [
-		^ self visitPrimitive: theObject atDepth: anInteger
+	anInteger > self maxDepth ifTrue: [ ^ nil ].
+	^ SAObservationNil newAtDepth: anInteger
 ]

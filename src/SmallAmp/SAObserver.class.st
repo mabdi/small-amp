@@ -55,6 +55,11 @@ SAObserver >> checkFlaky: oldOne with: newOne [
 	oldOne checkFlaky: newOne
 ]
 
+{ #category : #'as yet unclassified' }
+SAObserver >> getASerializer [
+	^ SAObjectObserversSerializer new
+]
+
 { #category : #accessing }
 SAObserver >> history [
 	^ history
@@ -81,10 +86,10 @@ SAObserver >> newForTarget: listOfTargetClasses [
 { #category : #'as yet unclassified' }
 SAObserver >> observe: anObject name: aString id: anInt [
 	| serialized |
-	(self isInObservationScope: anObject) ifFalse: [ ^ self ]. 
+	(self isInObservationScope: anObject) ifFalse: [ ^ self ].
 	serialized := anObject
 		              smallAmpAcceptSerializerVisitor:
-		              SAObjectObserversSerializer new
+		              self getASerializer
 		              atDepth: 0.
 	serialized
 		name: aString;
@@ -110,7 +115,7 @@ SAObserver >> observeResult: aResult receiver: aReceiver selector: aSelector nam
 	aReceiver == aResult ifTrue: [ ^ self ]. "the method is not an observer. it returns itself (Java alternative: void returning methods). "
 	serialized := aResult
 		              smallAmpAcceptSerializerVisitor:
-		              SAObjectObserversSerializer new
+		              self getASerializer
 		              atDepth: 0.
 	serialized
 		name: aString;

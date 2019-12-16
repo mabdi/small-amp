@@ -13,30 +13,8 @@ SAObservationTimeout class >> forTimeout: aMilliSec [
 ]
 
 { #category : #'as yet unclassified' }
-SAObservationTimeout >> buildAssertionForTimeout [
-	| assertStatement theMessage theTimeOut theDiscription |
-	theMessage := RBVariableNode named: 'fake'.
-	theTimeOut := RBMessageNode
-		              receiver: (RBVariableNode named: 'Duration')
-		              selector: #milliSeconds:
-		              arguments: { (RBLiteralValueNode value: timeout) }.
-	theDiscription := RBLiteralValueNode value: 'smallAmp'.
-	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #should:takeMoreThan:description:
-		                   arguments: { 
-				                   theMessage.
-				                   theTimeOut.
-				                   theDiscription }.
-	^ assertStatement
-]
-
-{ #category : #'as yet unclassified' }
-SAObservationTimeout >> buildAssertions [
-	| asserts |
-	asserts := OrderedCollection new.
-	asserts add: self buildAssertionForTimeout.
-	^ asserts
+SAObservationTimeout >> buildAssertions: aGenerator [
+	^ aGenerator buildAssertionsTimeoutObservation: self
 ]
 
 { #category : #accessing }

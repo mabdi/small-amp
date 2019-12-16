@@ -9,8 +9,8 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAObservationAbstract >> buildAssertions [
-	^ self subclassResponsibility 
+SAObservationAbstract >> buildAssertions: aGenerator [
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }

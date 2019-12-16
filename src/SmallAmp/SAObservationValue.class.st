@@ -29,24 +29,6 @@ SAObservationValue class >> newForClass: theObjectClass values: aCollection atDe
 		yourself
 ]
 
-{ #category : #'as yet unclassified' }
-SAObservationValue >> buildAssertionType [
-	| assertStatement theObject thClassName |
-	theClass isTestCase ifTrue: [ ^ {  } ].
-	theObject := RBMessageNode
-		             receiver: (RBVariableNode named: name)
-		             selector: #class.
-	thClassName := RBVariableNode named: theClass name.
-	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:description:
-		                   arguments: { 
-				                   theObject.
-				                   thClassName.
-				                   (RBLiteralValueNode value: 'smallAmp') }.
-	^ assertStatement
-]
-
 { #category : #accessing }
 SAObservationValue >> depth [
 	^ depth
