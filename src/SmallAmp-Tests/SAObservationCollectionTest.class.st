@@ -14,11 +14,11 @@ SAObservationCollectionTest >> testCheckFlaky [
 	arr2 := Array with: 11 with: 20 with: 30.
 	item1 := arr1
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	item2 := arr2
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	self deny: (item1 theValue at: 1) isFlaky.
 	self deny: (item1 theValue at: 2) isFlaky.

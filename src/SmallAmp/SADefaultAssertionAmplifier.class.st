@@ -27,7 +27,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 
 { #category : #asserting }
 SADefaultAssertionAmplifier >> assertBuilder [
-	^ SAAssertGeneratorForObservation new
+	^ SAAssertGenerator new
 ]
 
 { #category : #accessing }

@@ -57,7 +57,7 @@ SAObserver >> checkFlaky: oldOne with: newOne [
 
 { #category : #'as yet unclassified' }
 SAObserver >> getASerializer [
-	^ SAObjectObserversSerializer new
+	^ SAStateSerializer new
 ]
 
 { #category : #accessing }

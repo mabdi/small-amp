@@ -6,7 +6,7 @@ Class {
 		'theSelector',
 		'isOutSideAnAsserion'
 	],
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Experiment'
 }
 
 { #category : #'as yet unclassified' }

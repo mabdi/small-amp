@@ -4,3 +4,8 @@ Extension { #name : #False }
 False >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
 	^ aVisitor visitFalse: self atDepth: anInteger
 ]
+
+{ #category : #'*SmallAmp' }
+False >> smallAmpMutateWith: aMutator [
+	^ aMutator mutateFalse: self
+]

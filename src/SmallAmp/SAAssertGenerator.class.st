@@ -1,11 +1,11 @@
 Class {
-	#name : #SAAssertGeneratorForObservation,
+	#name : #SAAssertGenerator,
 	#superclass : #Object,
 	#category : #'SmallAmp-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> appendCollectionMyName: name ToAssert: aRBMessageNode [
+SAAssertGenerator >> appendCollectionMyName: name ToAssert: aRBMessageNode [
 	| newNode newName |
 	newName := (aRBMessageNode arguments at: 1) formattedCode
 		       copyWithRegex: self temp_arrayElementNamePrefix , '(\d+)'
@@ -18,7 +18,7 @@ SAAssertGeneratorForObservation >> appendCollectionMyName: name ToAssert: aRBMes
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> appendMyName: name ToAssert: aRBMessageNode [
+SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 	| tmp msgNode |
 	tmp := aRBMessageNode arguments at: 1.
 	msgNode := RBParser parseExpression: name , ' ' , tmp formattedCode.
@@ -26,7 +26,7 @@ SAAssertGeneratorForObservation >> appendMyName: name ToAssert: aRBMessageNode [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertCollectionIncludeValues: observation [
+SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
 	(observation theValue allSatisfy: [ :item | item isPrimitive ]) 
@@ -46,7 +46,7 @@ SAAssertGeneratorForObservation >> assertCollectionIncludeValues: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertCollectionPrimitiveValues: observation [
+SAAssertGenerator >> assertCollectionPrimitiveValues: observation [
 	| assertStatement theObject theValueNode array |
 	(observation theValue allSatisfy: [ :item | item isPrimitive ]) 
 		ifFalse: [ ^ nil ].
@@ -66,7 +66,7 @@ SAAssertGeneratorForObservation >> assertCollectionPrimitiveValues: observation 
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertCollectionSize: observation [
+SAAssertGenerator >> assertCollectionSize: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
 	theObject := RBMessageNode receiver: theObject selector: #size.
@@ -81,7 +81,7 @@ SAAssertGeneratorForObservation >> assertCollectionSize: observation [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertEmpty: observation [
+SAAssertGenerator >> assertEmpty: observation [
 	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
@@ -93,7 +93,7 @@ SAAssertGeneratorForObservation >> assertEmpty: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertError: anObservation [
+SAAssertGenerator >> assertError: anObservation [
 	| assertStatement theMessage theErrorNode theDiscription |
 	theMessage := RBVariableNode named: 'fake'.
 	theErrorNode := RBVariableNode named: anObservation theError name.
@@ -108,7 +108,7 @@ SAAssertGeneratorForObservation >> assertError: anObservation [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertFalse: observation [
+SAAssertGenerator >> assertFalse: observation [
 	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
@@ -120,7 +120,7 @@ SAAssertGeneratorForObservation >> assertFalse: observation [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertNil: observation [
+SAAssertGenerator >> assertNil: observation [
 	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
 	theObject := RBMessageNode receiver: theObject selector: #isNil.
@@ -133,7 +133,7 @@ SAAssertGeneratorForObservation >> assertNil: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertPrimitiveValue: observation [
+SAAssertGenerator >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
 	theValueNode := RBLiteralValueNode value: observation theValue.
@@ -147,7 +147,7 @@ SAAssertGeneratorForObservation >> assertPrimitiveValue: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertPrimitiveValueAsString: observation [
+SAAssertGenerator >> assertPrimitiveValueAsString: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
 	theObject := RBMessageNode receiver: theObject selector: #asString.
@@ -163,7 +163,7 @@ SAAssertGeneratorForObservation >> assertPrimitiveValueAsString: observation [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertTimeout: observation [
+SAAssertGenerator >> assertTimeout: observation [
 	| assertStatement theMessage theTimeOut |
 	theMessage := RBVariableNode named: 'fake'.
 	theTimeOut := RBMessageNode
@@ -181,7 +181,7 @@ SAAssertGeneratorForObservation >> assertTimeout: observation [
 ]
 
 { #category : #asserting }
-SAAssertGeneratorForObservation >> assertTrue: observation [
+SAAssertGenerator >> assertTrue: observation [
 	| assertStatement theObject |
 	theObject := RBVariableNode named: observation name.
 	assertStatement := RBMessageNode
@@ -193,7 +193,7 @@ SAAssertGeneratorForObservation >> assertTrue: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> assertType: observation [
+SAAssertGenerator >> assertType: observation [
 	| assertStatement theObject thClassName |
 	observation theClass isTestCase ifTrue: [ ^ {  } ].
 	theObject := RBMessageNode
@@ -210,7 +210,7 @@ SAAssertGeneratorForObservation >> assertType: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsCollectionObservation: observation [
+SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
 	assertStatements add: (self assertType: observation).
@@ -228,7 +228,7 @@ SAAssertGeneratorForObservation >> buildAssertionsCollectionObservation: observa
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsErrorObservation: observation [
+SAAssertGenerator >> buildAssertionsErrorObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertError: observation).
@@ -237,7 +237,7 @@ SAAssertGeneratorForObservation >> buildAssertionsErrorObservation: observation 
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsFalseObservation: observation [
+SAAssertGenerator >> buildAssertionsFalseObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertFalse: observation).
@@ -246,7 +246,7 @@ SAAssertGeneratorForObservation >> buildAssertionsFalseObservation: observation 
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsFractionObservation: observation [
+SAAssertGenerator >> buildAssertionsFractionObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertType: observation).
@@ -257,7 +257,7 @@ SAAssertGeneratorForObservation >> buildAssertionsFractionObservation: observati
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsNilObservation: observation [
+SAAssertGenerator >> buildAssertionsNilObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertNil: observation).
@@ -266,7 +266,7 @@ SAAssertGeneratorForObservation >> buildAssertionsNilObservation: observation [
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsObjectObservation: observation [
+SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	observation theValue keysDo: [ :key | 
@@ -279,7 +279,7 @@ SAAssertGeneratorForObservation >> buildAssertionsObjectObservation: observation
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsPrimitiveObservation: observation [
+SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertType: observation).
@@ -290,7 +290,7 @@ SAAssertGeneratorForObservation >> buildAssertionsPrimitiveObservation: observat
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsTimeoutObservation: observation [
+SAAssertGenerator >> buildAssertionsTimeoutObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertTimeout: observation).
@@ -299,7 +299,7 @@ SAAssertGeneratorForObservation >> buildAssertionsTimeoutObservation: observatio
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> buildAssertionsTrueObservation: observation [
+SAAssertGenerator >> buildAssertionsTrueObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertTrue: observation).
@@ -308,11 +308,11 @@ SAAssertGeneratorForObservation >> buildAssertionsTrueObservation: observation [
 ]
 
 { #category : #accessing }
-SAAssertGeneratorForObservation >> maxCollectionSize [
+SAAssertGenerator >> maxCollectionSize [
 	^ 10
 ]
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservation >> temp_arrayElementNamePrefix [
+SAAssertGenerator >> temp_arrayElementNamePrefix [
 	^ 'at_'
 ]

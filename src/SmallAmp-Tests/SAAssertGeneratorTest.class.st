@@ -2,7 +2,7 @@
 A SAAssertGeneratorForObservationTest is a test class for testing the behavior of SAAssertGeneratorForObservation
 "
 Class {
-	#name : #SAAssertGeneratorForObservationTest,
+	#name : #SAAssertGeneratorTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'assertGenerator'
@@ -11,17 +11,17 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAAssertGeneratorForObservationTest >> getASerializer [
-	^ SAObjectObserversSerializer new
+SAAssertGeneratorTest >> getASerializer [
+	^ SAStateSerializer new
 ]
 
 { #category : #running }
-SAAssertGeneratorForObservationTest >> setUp [
-	assertGenerator := SAAssertGeneratorForObservation new
+SAAssertGeneratorTest >> setUp [
+	assertGenerator := SAAssertGenerator new
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionEmpty [
+SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 	| arr item assertions |
 	arr := Array new.
 	item := arr
@@ -39,7 +39,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionEmpty [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionSize [
+SAAssertGeneratorTest >> testBuildAssertionCollectionSize [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
@@ -60,7 +60,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionSize [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesMax [
+SAAssertGeneratorTest >> testBuildAssertionCollectionValuesMax [
 	| arr item assertions |
 	arr := (1 to: 100) asArray.
 	item := arr
@@ -78,7 +78,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesMax [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesNonPrimitive [
+SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30 @ 1.
 	item := arr
@@ -132,7 +132,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesNonPrim
 ]
 
 { #category : #tests }
-SAAssertGeneratorForObservationTest >> testBuildAssertionForError [
+SAAssertGeneratorTest >> testBuildAssertionForError [
 	| item assertions |
 	item := SAObservationError forError: OutOfMemory.
 	assertions := item buildAssertions: assertGenerator.
@@ -142,7 +142,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionForError [
 ]
 
 { #category : #tests }
-SAAssertGeneratorForObservationTest >> testBuildAssertionForTimeout [
+SAAssertGeneratorTest >> testBuildAssertionForTimeout [
 	| item assertions |
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
@@ -153,7 +153,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionForTimeout [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionPrimitiveCollectionValues [
+SAAssertGeneratorTest >> testBuildAssertionPrimitiveCollectionValues [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
@@ -174,7 +174,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionPrimitiveCollectionValu
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionSize [
+SAAssertGeneratorTest >> testBuildAssertionSize [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
@@ -195,7 +195,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionSize [
 ]
 
 { #category : #tests }
-SAAssertGeneratorForObservationTest >> testBuildAssertionType [
+SAAssertGeneratorTest >> testBuildAssertionType [
 	| item assertions |
 	item := SAObservationPrimitive
 		        newForClass: SmallInteger
@@ -209,7 +209,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionType [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValue [
+SAAssertGeneratorTest >> testBuildAssertionValue [
 	| item assertions |
 	item := SAObservationPrimitive newFor: 10 atDepth: 1.
 	item name: 'foo'.
@@ -224,7 +224,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValue [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueFalse [
+SAAssertGeneratorTest >> testBuildAssertionValueFalse [
 	| item assertions |
 	item := SAObservationFalse newAtDepth: 1.
 	item name: 'foo'.
@@ -236,7 +236,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFalse [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueFlaky [
+SAAssertGeneratorTest >> testBuildAssertionValueFlaky [
 	| item assertions |
 	item := SAObservationPrimitive newFor: 10 atDepth: 1.
 	item name: 'foo'.
@@ -249,7 +249,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFlaky [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueFloat [
+SAAssertGeneratorTest >> testBuildAssertionValueFloat [
 	| item assertions |
 	item := SAObservationPrimitive newFor: 3.14 atDepth: 1.
 	item name: 'foo'.
@@ -264,7 +264,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFloat [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueFraction [
+SAAssertGeneratorTest >> testBuildAssertionValueFraction [
 	| item assertions |
 	item := SAObservationFraction newFor: 1 / 2 atDepth: 1.
 	item name: 'foo'.
@@ -279,7 +279,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFraction [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueString [
+SAAssertGeneratorTest >> testBuildAssertionValueString [
 	| item assertions |
 	item := SAObservationPrimitive newFor: 'Hello World!' atDepth: 1.
 	item name: 'foo'.
@@ -294,7 +294,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueString [
 ]
 
 { #category : #test }
-SAAssertGeneratorForObservationTest >> testBuildAssertionValueTrue [
+SAAssertGeneratorTest >> testBuildAssertionValueTrue [
 	| item assertions |
 	item := SAObservationTrue newAtDepth: 1.
 	item name: 'foo'.
@@ -306,7 +306,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueTrue [
 ]
 
 { #category : #tests }
-SAAssertGeneratorForObservationTest >> testBuildAssertions [
+SAAssertGeneratorTest >> testBuildAssertions [
 	| item assertions |
 	item := SAObservationError forError: OutOfMemory.
 	assertions:= (item buildAssertions: assertGenerator).
@@ -315,7 +315,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertions [
 ]
 
 { #category : #tests }
-SAAssertGeneratorForObservationTest >> testBuildAssertionsTimeout [
+SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	| item assertions |
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.

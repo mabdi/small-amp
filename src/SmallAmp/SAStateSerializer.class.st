@@ -1,11 +1,11 @@
 Class {
-	#name : #SAObjectObserversSerializer,
+	#name : #SAStateSerializer,
 	#superclass : #Object,
 	#category : #'SmallAmp-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-SAObjectObserversSerializer >> filterObserversOn: theObject [
+SAStateSerializer >> filterObserversOn: theObject [
 	| methods theClass |
 	theClass := theObject class.
 	methods := OrderedCollection new.
@@ -24,27 +24,27 @@ SAObjectObserversSerializer >> filterObserversOn: theObject [
 ]
 
 { #category : #accessing }
-SAObjectObserversSerializer >> maxDepth [ 
+SAStateSerializer >> maxDepth [ 
 	^ 3
 ]
 
 { #category : #accessing }
-SAObjectObserversSerializer >> maxSuperClass [
+SAStateSerializer >> maxSuperClass [
 	^ 2
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitByteString: theObject atDepth: anInteger [
+SAStateSerializer >> visitByteString: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitChar: theObject atDepth: anInteger [
+SAStateSerializer >> visitChar: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitCollection: theObject atDepth: anInteger [
+SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 	| aCollection |
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	aCollection := OrderedCollection new.
@@ -57,18 +57,18 @@ SAObjectObserversSerializer >> visitCollection: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitFalse: theObject atDepth: anInteger [
+SAStateSerializer >> visitFalse: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationFalse newAtDepth: anInteger
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitNumber: theObject atDepth: anInteger [
+SAStateSerializer >> visitNumber: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitObject: theObject atDepth: anInteger [
+SAStateSerializer >> visitObject: theObject atDepth: anInteger [
 	| result methods |
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	result := Dictionary new.
@@ -91,7 +91,7 @@ SAObjectObserversSerializer >> visitObject: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitPrimitive: theObject atDepth: anInteger [
+SAStateSerializer >> visitPrimitive: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationPrimitive
 		  newForClass: theObject class
@@ -100,14 +100,14 @@ SAObjectObserversSerializer >> visitPrimitive: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitTrue: theObject atDepth: anInteger [
+SAStateSerializer >> visitTrue: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationTrue
 		  newAtDepth: anInteger
 ]
 
 { #category : #visiting }
-SAObjectObserversSerializer >> visitUndefinedObject: theObject atDepth: anInteger [
+SAStateSerializer >> visitUndefinedObject: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationNil newAtDepth: anInteger
 ]

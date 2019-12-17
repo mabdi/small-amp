@@ -7,7 +7,7 @@ Class {
 	#classInstVars : [
 		'classes'
 	],
-	#category : #'SmallAmp-Core'
+	#category : #'SmallAmp-Experiment'
 }
 
 { #category : #adding }

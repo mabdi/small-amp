@@ -26,12 +26,17 @@ SALiteralMutationRewriter class >> with: aTestBody [
 { #category : #initialization }
 SALiteralMutationRewriter >> initialize [
 	mappings := OrderedCollection new.
-	mutator := SALiteralMutation new
+	mutator := self mutator
 ]
 
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> mutationsOfLiteralNode: aLiteralNode [
 	^ mutator mutateNode: aLiteralNode
+]
+
+{ #category : #accessing }
+SALiteralMutationRewriter >> mutator [
+	^ SALiteralMutator new
 ]
 
 { #category : #'as yet unclassified' }

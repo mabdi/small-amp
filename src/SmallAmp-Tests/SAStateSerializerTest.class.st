@@ -2,18 +2,18 @@
 A SAObjectObserversSerializerTest is a test class for testing the behavior of SAObjectObserversSerializer
 "
 Class {
-	#name : #SAObjectObserversSerializerTest,
+	#name : #SAStateSerializerTest,
 	#superclass : #TestCase,
 	#category : #'SmallAmp-Tests-Helpers'
 }
 
 { #category : #'as yet unclassified' }
-SAObjectObserversSerializerTest >> getASerializer [
-	^ SAObjectObserversSerializer new
+SAStateSerializerTest >> getASerializer [
+	^ SAStateSerializer new
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testArray [
+SAStateSerializerTest >> testArray [
 	| item arr s1 |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
@@ -34,7 +34,7 @@ SAObjectObserversSerializerTest >> testArray [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testArray2D [
+SAStateSerializerTest >> testArray2D [
 	| item matrix23 s1 |
 	matrix23 := Array2D rows: 3 columns: 2.
 	matrix23 at: 1 at: 1 put: 11.
@@ -61,7 +61,7 @@ SAObjectObserversSerializerTest >> testArray2D [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testArrayDeep [
+SAStateSerializerTest >> testArrayDeep [
 	| item arr s2 |
 	arr := Array with: 10 with: { 'hello'. 1. true }.
 	item := arr
@@ -96,7 +96,7 @@ SAObjectObserversSerializerTest >> testArrayDeep [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testBoolean [
+SAStateSerializerTest >> testBoolean [
 	| item obj |
 	obj := true.
 	item := obj
@@ -109,7 +109,7 @@ SAObjectObserversSerializerTest >> testBoolean [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testCharacter [
+SAStateSerializerTest >> testCharacter [
 	| item obj |
 	obj := $r.
 	item := obj
@@ -122,14 +122,14 @@ SAObjectObserversSerializerTest >> testCharacter [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testError [
+SAStateSerializerTest >> testError [
 	| item |
 	item := SAObservationError forError: OutOfMemory.
 	self assert: item theError equals: OutOfMemory
 ]
 
 { #category : #test }
-SAObjectObserversSerializerTest >> testFilterObserversOn [
+SAStateSerializerTest >> testFilterObserversOn [
 	"Here we are testing the filterObserversOn on a few different type"
 
 	"this test may fail, depend on change on the structure of these types"
@@ -159,7 +159,7 @@ SAObjectObserversSerializerTest >> testFilterObserversOn [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testFloat [
+SAStateSerializerTest >> testFloat [
 	| item obj |
 	obj := 3.14.
 	item := obj
@@ -172,7 +172,7 @@ SAObjectObserversSerializerTest >> testFloat [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testFraction [
+SAStateSerializerTest >> testFraction [
 	| item obj |
 	obj := 1 / 2.
 	item := obj
@@ -185,7 +185,7 @@ SAObjectObserversSerializerTest >> testFraction [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testInteger [
+SAStateSerializerTest >> testInteger [
 	| item obj |
 	obj := 1368.
 	item := obj
@@ -198,7 +198,7 @@ SAObjectObserversSerializerTest >> testInteger [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testMaxDepth [
+SAStateSerializerTest >> testMaxDepth [
 	| item deepObj |
 	deepObj := #key -> (Array with: { (10 @ 20 corner: 20 @ 30) }).
 	item := deepObj
@@ -227,7 +227,7 @@ SAObjectObserversSerializerTest >> testMaxDepth [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testNil [
+SAStateSerializerTest >> testNil [
 	| item obj |
 	obj := nil.
 	item := obj
@@ -240,7 +240,7 @@ SAObjectObserversSerializerTest >> testNil [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testPoint [
+SAStateSerializerTest >> testPoint [
 	| item obj |
 	obj := 10 @ 20.
 	item := obj
@@ -260,7 +260,7 @@ SAObjectObserversSerializerTest >> testPoint [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testRecangle [
+SAStateSerializerTest >> testRecangle [
 	| item obj |
 	obj := 10 @ 20 corner: 20 @ 30.
 	item := obj
@@ -286,7 +286,7 @@ SAObjectObserversSerializerTest >> testRecangle [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testSmallBank [
+SAStateSerializerTest >> testSmallBank [
 	| item obj |
 	obj := SmallBank new.
 	item := obj
@@ -317,7 +317,7 @@ SAObjectObserversSerializerTest >> testSmallBank [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testString [
+SAStateSerializerTest >> testString [
 	| item obj |
 	obj := 'Hello World!'.
 	item := obj
@@ -330,7 +330,7 @@ SAObjectObserversSerializerTest >> testString [
 ]
 
 { #category : #tests }
-SAObjectObserversSerializerTest >> testTimeout [
+SAStateSerializerTest >> testTimeout [
 	| item |
 	item := SAObservationTimeout forTimeout: 125.
 	self assert: item timeout equals: 125

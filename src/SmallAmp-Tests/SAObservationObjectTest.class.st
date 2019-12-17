@@ -14,11 +14,11 @@ SAObservationObjectTest >> testCheckFlaky [
 	obj2 := SmallBank new.
 	item1 := obj1
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	item2 := obj1
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	self deny: (item1 theValue at: #rand) isFlaky.
 	self deny: (item1 theValue at: #balance) isFlaky.

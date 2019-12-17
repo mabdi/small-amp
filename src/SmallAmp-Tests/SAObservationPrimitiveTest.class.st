@@ -14,11 +14,11 @@ SAObservationPrimitiveTest >> testCheckFlaky [
 	p2 := 11.
 	item1 := p1
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	item2 := p2
 		         smallAmpAcceptSerializerVisitor:
-		         SAObjectObserversSerializer new
+		         SAStateSerializer new
 		         atDepth: 0.
 	self deny: item1 isFlaky.
 	item1 checkFlaky: item2.
