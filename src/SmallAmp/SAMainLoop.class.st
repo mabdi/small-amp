@@ -144,8 +144,9 @@ SAMainLoop >> makeResult [
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
-	targetClasses do: [ :anObjectUnderTest | 
-		SAMethodProfiler classifyClass: anObjectUnderTest ]
+	self flag: #TODO. "experiment"
+	"targetClasses do: [ :anObjectUnderTest | 
+		SAMethodProfiler classifyClass: anObjectUnderTest ]"
 ]
 
 { #category : #actions }
