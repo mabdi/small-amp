@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator class >> blockPlaceHolder [
+	^ 'smallAmpBlockPlaceHolder'
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> appendCollectionMyName: name ToAssert: aRBMessageNode [
 	| newNode newName |
 	newName := (aRBMessageNode arguments at: 1) formattedCode
@@ -94,10 +99,10 @@ SAAssertGenerator >> assertEmpty: observation [
 
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> assertError: anObservation [
-	| assertStatement theMessage theErrorNode theDiscription |
-	theMessage := RBVariableNode named: 'fake'.
+	| assertStatement theMessage theErrorNode  |
+	theMessage := RBVariableNode named: self class blockPlaceHolder.
 	theErrorNode := RBVariableNode named: anObservation theError name.
-	theDiscription := RBLiteralValueNode value: 'smallAmp'.
+	
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
 		                   selector: #should:raise:
@@ -165,7 +170,7 @@ SAAssertGenerator >> assertPrimitiveValueAsString: observation [
 { #category : #asserting }
 SAAssertGenerator >> assertTimeout: observation [
 	| assertStatement theMessage theTimeOut |
-	theMessage := RBVariableNode named: 'fake'.
+	theMessage := RBVariableNode named: self class blockPlaceHolder.
 	theTimeOut := RBMessageNode
 		              receiver: (RBVariableNode named: 'Duration')
 		              selector: #milliSeconds:

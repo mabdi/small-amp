@@ -66,8 +66,7 @@ SAAssertTransform >> removeAllAssertsAndTransformImportants: listOfIds in: aPars
 			 | thisId theAssertion |
 			 thisId := (((node arguments at: 2) body statements at: 1)
 				            arguments at: 1) value.
-			 theAssertion := node receiver body statements at: 1.
-			self halt. 
+			 theAssertion := node receiver body statements at: 1. 
 			(listOfIds includes: thisId)
 				 ifTrue: [ theAssertion ]
 				 ifFalse: [ empty ] ]).

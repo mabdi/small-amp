@@ -82,7 +82,7 @@ SAMutationCoverageSelection >> matrixFromMutalk: aResult [
 
 { #category : #'as yet unclassified' }
 SAMutationCoverageSelection >> mutalkRun: aPopulation [
-	| testClass targetClasses newTestClass analysis1 |
+	| testClass targetClasses newTestClass analysis1 result |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := self astHelper
@@ -95,8 +95,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 		             using: MutantOperator contents
 		             with:
 		             AllTestsMethodsRunningMutantEvaluationStrategy new.
-	analysis1 run.
-	self cleanUp:  newTestClass.
+	result := analysis1 run.
+	result ifTrue: [self cleanUp: newTestClass].
 	^ analysis1
 ]
 

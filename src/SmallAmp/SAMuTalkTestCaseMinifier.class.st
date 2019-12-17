@@ -123,6 +123,7 @@ SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
 		             with:
 		             AllTestsMethodsRunningMutantEvaluationStrategy new.
 	analysis1 run.
+	
 	^ analysis1
 ]
 

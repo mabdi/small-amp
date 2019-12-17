@@ -138,7 +138,6 @@ SAMainLoop >> makeResult [
 	minifier makeMinifiedAddedClass.
 	finalResult minifiedTestClass: minifier minifiedTestClass.
 	finalResult minifiedAddedTestClass: minifier minifiedAddedTestClass.
-	self halt.
 	^ finalResult
 ]
 

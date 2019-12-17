@@ -138,7 +138,7 @@ SAAssertGeneratorTest >> testBuildAssertionForError [
 	assertions := item buildAssertions: assertGenerator.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self should: fake raise: OutOfMemory'
+		equals: 'self should: ', SAAssertGenerator blockPlaceHolder , ' raise: OutOfMemory'
 ]
 
 { #category : #tests }
@@ -149,7 +149,7 @@ SAAssertGeneratorTest >> testBuildAssertionForTimeout [
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals:
-		'self should: fake takeMoreThan: (Duration milliSeconds: 125)'
+		'self should: ',SAAssertGenerator blockPlaceHolder,' takeMoreThan: (Duration milliSeconds: 125)'
 ]
 
 { #category : #test }

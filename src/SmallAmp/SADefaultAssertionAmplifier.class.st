@@ -97,12 +97,8 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 		pair value reverse do: [ :assrt | 
 			| enclouse |
 			enclouse := false.
-			assrt selector = #should:raise:description: ifTrue: [ 
-				enclouse := true ].
-			assrt selector = #should:notTakeMoreThan:description: ifTrue: [ 
-				enclouse := true ].
-			assrt selector = #should:takeMoreThan:description: ifTrue: [ 
-				enclouse := true ].
+			(assrt arguments at: 1) isVariable ifTrue: [ 
+				(assrt arguments at: 1) name = SAAssertGenerator blockPlaceHolder ifTrue: [ enclouse := true ] ].
 			enclouse
 				ifTrue: [ 
 					| msg block |
