@@ -16,11 +16,26 @@ SAAssertTransform class >> transformAllAsserts: aParseTree [
 
 { #category : #running }
 SAAssertTransform >> addLoggerToAllAsserts: aParseTree [
-	| rewriter parser tree |
+	| id rewriter parser tree |
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
+	id := 0.
 	self getAllPatterns do: [ :each | 
-		rewriter replace: each key with: each key ].
+		rewriter addRule:
+			(RBBlockReplaceRule searchFor: each key replaceWith: [ :node | 
+				 | template |
+				 template := String streamContents: [ :s | 
+					             s
+						             nextPutAll: '[ ';
+						             nextPutAll: node formattedCode;
+						             nextPutAll:
+							             ' ] on: Error do: [ self smallamp_logs: ''';
+						             nextPutAll: aParseTree selector asString;
+						             nextPutAll: '.';
+						             nextPutAll: id asString;
+						             nextPutAll: ''' ]' ].
+				id:=id+1.
+				 RBParser parseExpression: template ]) ].
 	rewriter executeTree: parser.
 	tree := rewriter tree.
 	^ tree
@@ -37,6 +52,28 @@ SAAssertTransform >> getAllPatterns [
 			result
 				addAll: (self perform: item);
 				yourself ]
+]
+
+{ #category : #running }
+SAAssertTransform >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
+	| searchFor rewriter parser tree empty |
+	rewriter := RBParseTreeRewriter new.
+	parser := aParseTree copy.
+	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id ] '.
+	empty := RBParser parseExpression: ''.
+	rewriter addRule:
+		(RBBlockReplaceRule searchFor: searchFor replaceWith: [ :node | 
+			 | thisId theAssertion |
+			 thisId := (((node arguments at: 2) body statements at: 1)
+				            arguments at: 1) value.
+			 theAssertion := node receiver body statements at: 1.
+			self halt. 
+			(listOfIds includes: thisId)
+				 ifTrue: [ theAssertion ]
+				 ifFalse: [ empty ] ]).
+	rewriter executeTree: parser.
+	tree := rewriter tree.
+	^ tree
 ]
 
 { #category : #running }

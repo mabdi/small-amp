@@ -9,6 +9,12 @@ SAMutationCoverageSelection >> astHelper [
 	^ SAASTHelper new
 ]
 
+{ #category : #cleanup }
+SAMutationCoverageSelection >> cleanUp: generatedClass [
+	config debug ifFalse: [ 
+		self astHelper removeClass: generatedClass source: self class name ]
+]
+
 { #category : #testing }
 SAMutationCoverageSelection >> isMutationResult: mutatedSelector betterThan: parentSelector basedOn: analysis [
 	| pkilled mkilled |
@@ -90,7 +96,7 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 		             with:
 		             AllTestsMethodsRunningMutantEvaluationStrategy new.
 	analysis1 run.
-	self astHelper removeClass: newTestClass source: self class name.
+	self cleanUp:  newTestClass.
 	^ analysis1
 ]
 

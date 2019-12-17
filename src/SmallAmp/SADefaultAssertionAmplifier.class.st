@@ -75,7 +75,7 @@ SADefaultAssertionAmplifier >> cleanUp: generatedClass [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> flackyTestRepeat [
-	^ 3
+	^ 10
 ]
 
 { #category : #'as yet unclassified' }

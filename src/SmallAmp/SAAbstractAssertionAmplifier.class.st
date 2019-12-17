@@ -9,13 +9,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAAbstractAssertionAmplifier class >> assertionAmplify: aTestMethodModel [
-	^ self new
-		  with: aTestMethodModel;
-		  amplifyAssertions
-]
-
-{ #category : #'as yet unclassified' }
 SAAbstractAssertionAmplifier class >> initializeWith: aConfig [
 	^ self new
 		  with: aConfig

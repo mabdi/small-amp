@@ -33,19 +33,40 @@ SAMuTalkTestCaseMinifier >> cleanAndMinifyMethod: methodast [
 ]
 
 { #category : #'as yet unclassified' }
+SAMuTalkTestCaseMinifier >> createDuplicateClass [
+	| l methods |
+	l := [ :cls | 
+	     cls testSelectors collect: [ :s | 
+		     (cls methodNamed: s) sourceCode ] ].
+	methods := l value: newTestClass.
+	^ self astHelper
+		                          buildTestClassWith: methods
+		                          using: testClass
+		                          final: true
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkTestCaseMinifier >> getAssertTransformer [
+	^ SAAssertTransform new
+]
+
+{ #category : #'as yet unclassified' }
 SAMuTalkTestCaseMinifier >> installLoggers [
-	self loggersAreInstalled ifTrue: [ ^ self ].
-	newTestClass class addInstVarNamed: 'smallamp_logs'.
-	newTestClass class compile:
+	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
+	minifiedTestClass class compile:
 		'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
-	newTestClass compile:
-		'logFailure: aString self class logs add: aString'.
-	newTestClass compile: 'isLogging ^true'.
-	newTestClass compile:
-		'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean 
-	 aBooleanOrBlock value ifFalse: [ self halt ]
-		  
-	'
+	minifiedTestClass compile:
+		'smallamp_logs: aString self class logs add: aString'.
+	minifiedTestClass compile:
+		'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
+	 aBooleanOrBlock value ifFalse: [ TestFailure signal ]'.
+	minifiedTestClass methods
+		select: #isTestMethod
+		thenDo: [ :theMethod | 
+			| newTree |
+			newTree := self getAssertTransformer addLoggerToAllAsserts:
+				           theMethod ast.
+			minifiedTestClass compile: newTree formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -84,28 +105,12 @@ SAMuTalkTestCaseMinifier >> makeMinifiedAddedClass [
 
 { #category : #actions }
 SAMuTalkTestCaseMinifier >> makeMinifiedClass [
-	| logs methods |
+	| logs |
+	minifiedTestClass := self createDuplicateClass.
 	self installLoggers.
-	self mutalkRun: newTestClass.
-	methods := Dictionary new.
-	logs := newTestClass logs.
-	logs sort collect: [ :item | item splitOn: ':' ] thenDo: [ :item | 
-		methods
-			at: (item at: 1) asSymbol
-			put: (newTestClass methodNamed: (item at: 1) asSymbol) ast ].
-	logs sort collect: [ :item | item splitOn: ':' ] thenDo: [ :item | 
-		self
-			makeAssertImportant: (item at: 2)
-			atMethod: (methods at: (item at: 1) asSymbol) ].
-	newTestClass logs removeAll.
-	methods values do: [ :m | self cleanAndMinifyMethod: m ].
-	minifiedTestClass := self astHelper
-		                     buildTestClassWith:
-		                     (methods values collect: [ :m | 
-			                      m formattedCode ])
-		                     using: testClass
-		                     final: true.
-	self uninstallLoggers.
+	self mutalkRun: minifiedTestClass.
+	logs := minifiedTestClass logs.
+	self uninstallLoggersBut: logs
 ]
 
 { #category : #'as yet unclassified' }
@@ -122,10 +127,19 @@ SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> uninstallLoggers [
-	self loggersAreInstalled ifFalse: [ ^ self ].
+SAMuTalkTestCaseMinifier >> uninstallLoggersBut: listOfIds [
 	"newTestClass class addInstVarNamed: 'smallamp_logs'."
-	newTestClass class removeSelector: #logs.
-	newTestClass class removeSelector: #logFailure:.
-	newTestClass class removeSelector: #isLogging
+
+	minifiedTestClass class removeSelector: #logs.
+	minifiedTestClass removeSelector: #smallamp_logs:.
+	minifiedTestClass removeSelector:
+		#assert:description:resumable:.
+	minifiedTestClass methods
+		select: #isTestMethod
+		thenDo: [ :theMethod | 
+			| newTree |
+			newTree := self getAssertTransformer
+				           removeAllAssertsAndTransformImportants: listOfIds
+				           in: theMethod ast.
+			minifiedTestClass compile: newTree formattedCode ]
 ]

@@ -96,8 +96,7 @@ SAMainLoop >> initialAssertionAmplify [
 				tcase assertionAmplifyBy: amplifier ].
 			tcase cleanUp ]
 		displayingProgress: 'Assertion Amplification'.
-	self addPopulationToResult
-	
+	resultPeople addAll: aPopulation 
 ]
 
 { #category : #initialization }
@@ -131,14 +130,15 @@ SAMainLoop >> makeResult [
 			 buildTestClassWith:
 			 (resultPeople collect: [ :tcase | tcase testMethod ])
 			 using: testClass).
-	"minifier := SAMuTalkTestCaseMinifier
+	minifier := SAMuTalkTestCaseMinifier
 		            with: finalResult generatedTestClass
 		            from: testClass
 		            target: targetClasses.
 	minifier makeMinifiedClass.
 	minifier makeMinifiedAddedClass.
 	finalResult minifiedTestClass: minifier minifiedTestClass.
-	finalResult minifiedAddedTestClass: minifier minifiedAddedTestClass."
+	finalResult minifiedAddedTestClass: minifier minifiedAddedTestClass.
+	self halt.
 	^ finalResult
 ]
 
@@ -161,7 +161,8 @@ SAMainLoop >> selectionAlreadySelected [
 
 { #category : #accessing }
 SAMainLoop >> selections [
-	^ config selections
+	^ config selections collect: [ :selection | 
+		  selection initializeWith: config ]
 ]
 
 { #category : #'as yet unclassified' }
