@@ -31,30 +31,28 @@ SAAssertTransformTest >> testGetAllPatterns [
 
 { #category : #tests }
 SAAssertTransformTest >> testRemoveAllAsserts [
-	| methodAST sourceCode expectingCode expectingAST |
-	sourceCode := 'foo
+	| methodAST sourceCode expectingCode |
+	sourceCode := 'fooMethod
 	| tmp1 |
 	a := foo bar.
 	tmp1 := Array
 		with: 1;
 		with: 2.
 	self assert: tmp1 isNotEmpty'.
-	expectingCode := 'foo
+	expectingCode := 'fooMethod
 	| tmp1 |
 	a := foo bar.
 	tmp1 := Array
 		with: 1;
 		with: 2.'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
-	expectingAST := self astHelper parsedMethodFrom: expectingCode.
 	methodAST := SAAssertTransform removeAllAsserts: methodAST.
-	methodAST := self astHelper parsedMethodFrom: methodAST formattedCode.
-	self assert: methodAST dump equals: expectingAST dump
+	self assertMethodSourceCode: methodAST formattedCode equals: expectingCode
 ]
 
 { #category : #tests }
 SAAssertTransformTest >> testTransformAllAsserts [
-	| methodAST sourceCode expectingCode expectingAST |
+	| methodAST sourceCode expectingCode  |
 	sourceCode := 'foo
 	| tmp1 |
 	a := foo bar.
@@ -70,8 +68,8 @@ SAAssertTransformTest >> testTransformAllAsserts [
 		with: 2.
 	tmp1 isNotEmpty value'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
-	expectingAST := self astHelper parsedMethodFrom: expectingCode.
 	methodAST := SAAssertTransform transformAllAsserts: methodAST.
-	methodAST := self astHelper parsedMethodFrom: methodAST formattedCode.
-	self assert: methodAST dump equals: expectingAST dump
+	self
+		assertMethodSourceCode: methodAST formattedCode
+		equals: expectingCode
 ]

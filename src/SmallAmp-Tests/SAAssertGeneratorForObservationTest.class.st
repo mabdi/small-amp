@@ -31,10 +31,10 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionEmpty [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
+		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assertEmpty: foo'
 ]
 
@@ -49,16 +49,14 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionSize [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 3.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: Array'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo size equals: 3'.
 	self
-		assert: (assertions at: 3) formattedCode
-		equals:
-		'self assert: foo equals: #( 10 20 30 )'
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: foo equals: #( 10 20 30 )'
 ]
 
 { #category : #test }
@@ -72,13 +70,11 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesMax [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: Array'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
-		equals:
-		'self assert: foo size equals: 100'
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo size equals: 100'
 ]
 
 { #category : #test }
@@ -92,39 +88,46 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionCollectionValuesNonPrim
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 14.
 	self
-		assert: (assertions at: 1) formattedCode
+		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo size equals: 3'.
-	self assert: (assertions at: 3) formattedCode equals: 'self assert: (foo at: 1) class equals: SmallInteger'.
 	self
-		assert: (assertions at: 4) formattedCode
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: (foo at: 1) class equals: SmallInteger'.
+	self
+		assertSourceCode: (assertions at: 4) formattedCode
 		equals: 'self assert: foo at: 1 equals: 10'.
-	self assert: (assertions at: 5) formattedCode equals: 'self assert: (foo at: 2) class equals: SmallInteger'.
 	self
-		assert: (assertions at: 6) formattedCode
+		assertSourceCode: (assertions at: 5) formattedCode
+		equals: 'self assert: (foo at: 2) class equals: SmallInteger'.
+	self
+		assertSourceCode: (assertions at: 6) formattedCode
 		equals: 'self assert: foo at: 2 equals: 20'.
 	self
-		assert: (assertions at: 7) formattedCode
+		assertSourceCode: (assertions at: 7) formattedCode
 		equals: 'self deny: (foo at: 3) isZero'.
-	self assert: (assertions at: 8) formattedCode equals: 'self assert: (foo at: 3) y class equals: SmallInteger'.
 	self
-		assert: (assertions at: 9) formattedCode
+		assertSourceCode: (assertions at: 8) formattedCode
+		equals: 'self assert: (foo at: 3) y class equals: SmallInteger'.
+	self
+		assertSourceCode: (assertions at: 9) formattedCode
 		equals: 'self assert: (foo at: 3) y equals: 1'.
 	self
-		assert: (assertions at: 10) formattedCode
+		assertSourceCode: (assertions at: 10) formattedCode
 		equals: 'self deny: (foo at: 3) isFloatPoint'.
 	self
-		assert: (assertions at: 11) formattedCode
+		assertSourceCode: (assertions at: 11) formattedCode
 		equals: 'self assert: (foo at: 3) isIntegerPoint'.
-	self assert: (assertions at: 12) formattedCode equals: 'self assert: (foo at: 3) x class equals: SmallInteger'.
 	self
-		assert: (assertions at: 13) formattedCode
-		equals:
-		'self assert: (foo at: 3) x equals: 30'.
+		assertSourceCode: (assertions at: 12) formattedCode
+		equals: 'self assert: (foo at: 3) x class equals: SmallInteger'.
 	self
-		assert: (assertions at: 14) formattedCode
+		assertSourceCode: (assertions at: 13) formattedCode
+		equals: 'self assert: (foo at: 3) x equals: 30'.
+	self
+		assertSourceCode: (assertions at: 14) formattedCode
 		equals: 'self assert: (foo at: 3) isPoint'
 ]
 
@@ -134,9 +137,8 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionForError [
 	item := SAObservationError forError: OutOfMemory.
 	assertions := item buildAssertions: assertGenerator.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self should: fake raise: OutOfMemory'
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self should: fake raise: OutOfMemory'
 ]
 
 { #category : #tests }
@@ -144,7 +146,10 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionForTimeout [
 	| item assertions |
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: (assertions at: 1) formattedCode equals: 'self should: fake takeMoreThan: (Duration milliSeconds: 125)'
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals:
+		'self should: fake takeMoreThan: (Duration milliSeconds: 125)'
 ]
 
 { #category : #test }
@@ -158,16 +163,14 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionPrimitiveCollectionValu
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 3.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: Array'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo size equals: 3'.
 	self
-		assert: (assertions at: 3) formattedCode
-		equals:
-		'self assert: foo equals: #( 10 20 30 )'
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: foo equals: #( 10 20 30 )'
 ]
 
 { #category : #test }
@@ -181,16 +184,14 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionSize [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 3.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: Array'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo size equals: 3'.
 	self
-		assert: (assertions at: 3) formattedCode
-		equals:
-		'self assert: foo equals: #( 10 20 30 )'
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: foo equals: #( 10 20 30 )'
 ]
 
 { #category : #tests }
@@ -203,9 +204,8 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionType [
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: SmallInteger'
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: SmallInteger'
 ]
 
 { #category : #test }
@@ -216,11 +216,10 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValue [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: SmallInteger'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: SmallInteger'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo equals: 10'
 ]
 
@@ -232,7 +231,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFalse [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 1.
 	self
-		assert: (assertions at: 1) formattedCode
+		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self deny: foo'
 ]
 
@@ -245,9 +244,8 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFlaky [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 1.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: SmallInteger'
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: SmallInteger'
 ]
 
 { #category : #test }
@@ -258,11 +256,10 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFloat [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: SmallFloat64'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: SmallFloat64'.
 	self
-		assert: (assertions at: 2) formattedCode
+		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo equals: 3.14'
 ]
 
@@ -274,13 +271,11 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueFraction [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: Fraction'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Fraction'.
 	self
-		assert: (assertions at: 2) formattedCode
-		equals:
-		'self assert: foo asString equals: ''(1/2)'''
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo asString equals: ''(1/2)'''
 ]
 
 { #category : #test }
@@ -291,13 +286,11 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueString [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 2.
 	self
-		assert: (assertions at: 1) formattedCode
-		equals:
-		'self assert: foo class equals: ByteString'.
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: ByteString'.
 	self
-		assert: (assertions at: 2) formattedCode
-		equals:
-		'self assert: foo equals: ''Hello World!'''
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo equals: ''Hello World!'''
 ]
 
 { #category : #test }
@@ -308,7 +301,7 @@ SAAssertGeneratorForObservationTest >> testBuildAssertionValueTrue [
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 1.
 	self
-		assert: (assertions at: 1) formattedCode
+		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo'
 ]
 

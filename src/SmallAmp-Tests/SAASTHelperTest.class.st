@@ -37,7 +37,7 @@ SAASTHelperTest >> testCleanUp [
 	tmp_9nbUP3optD2 := b withdraw: 30.
 	self assert: b balance equals: 72'.
 	r := SAASTHelper new cleanUp: s.
-	self assert: r equals: 'testWithdraw_1_1
+	self assertMethodSourceCode: r equals: 'testWithdraw_1_1
 	| b tmp_ZISDO00DGz1 |
 	b := SmallBank new.
 	self assert: b balance equals: 0.
