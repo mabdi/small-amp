@@ -44,15 +44,16 @@ Class {
 SmallAmp class >> example [
 	| config result |
 	config := SAConfig new
-		          iterations: 3;
-		          assertionAmplifiers: { SADefaultAssertionAmplifier };
-		          inputAmplifiers: { SALiteralInputAmplifier };
-		          selections: { SAMutationCoverageSelection };
-		          "debug: true;"yourself.
-	result := (SmallAmp initializeWith: config)
-		          "testCase: SmallBankTest targets: { SmallBank };"
-		          testCase: SmallBank2Test targets: { SmallBank2 };
-		          amplifyAll
+		iterations: 3;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		inputAmplifiers: {SALiteralInputAmplifier};
+		selections: {SAMutationCoverageSelection};
+		"debug: true;"
+			yourself.
+	result := (self initializeWith: config)
+		testCase: SmallBankTest targets: {SmallBank};
+		testCase: SmallBank2Test targets: {SmallBank2};
+		amplifyAll
 ]
 
 { #category : #initialization }
