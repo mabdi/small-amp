@@ -1,16 +1,16 @@
 Class {
-	#name : #SAMuTalkTestCaseMinifier,
+	#name : #SAMuTalkFirstFailMinifier,
 	#superclass : #SAAbstractTestCaseMinifier,
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #accessing }
-SAMuTalkTestCaseMinifier >> astHelper [
+SAMuTalkFirstFailMinifier >> astHelper [
 	^ SAASTHelper new
 ]
 
 { #category : #private }
-SAMuTalkTestCaseMinifier >> cleanAndMinifyMethod: methodast [
+SAMuTalkFirstFailMinifier >> cleanAndMinifyMethod: methodast [
 	| tobecleaned |
 	tobecleaned := OrderedCollection new.
 	methodast statements
@@ -33,7 +33,7 @@ SAMuTalkTestCaseMinifier >> cleanAndMinifyMethod: methodast [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> createDuplicateClass [
+SAMuTalkFirstFailMinifier >> createDuplicateClass [
 	| l methods |
 	l := [ :cls | 
 	     cls testSelectors collect: [ :s | 
@@ -46,12 +46,12 @@ SAMuTalkTestCaseMinifier >> createDuplicateClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> getAssertTransformer [
+SAMuTalkFirstFailMinifier >> getAssertTransformer [
 	^ SAAssertTransform new
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> installLoggers [
+SAMuTalkFirstFailMinifier >> installLoggers [
 	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class
 		compile:
@@ -72,12 +72,12 @@ SAMuTalkTestCaseMinifier >> installLoggers [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> loggersAreInstalled [
+SAMuTalkFirstFailMinifier >> loggersAreInstalled [
 	^ newTestClass methodDict includesKey: #logFailure:
 ]
 
 { #category : #private }
-SAMuTalkTestCaseMinifier >> makeAssertImportant: id atMethod: methodast [
+SAMuTalkFirstFailMinifier >> makeAssertImportant: id atMethod: methodast [
 	methodast statements
 		do:
 			[ :node | 
@@ -92,7 +92,7 @@ SAMuTalkTestCaseMinifier >> makeAssertImportant: id atMethod: methodast [
 ]
 
 { #category : #actions }
-SAMuTalkTestCaseMinifier >> makeMinifiedAddedClass [
+SAMuTalkFirstFailMinifier >> makeMinifiedAddedClass [
 	| l methods |
 	l := [ :cls | 
 	     cls testSelectors collect: [ :s | 
@@ -106,7 +106,7 @@ SAMuTalkTestCaseMinifier >> makeMinifiedAddedClass [
 ]
 
 { #category : #actions }
-SAMuTalkTestCaseMinifier >> makeMinifiedClass [
+SAMuTalkFirstFailMinifier >> makeMinifiedClass [
 	| logs |
 	minifiedTestClass := self createDuplicateClass.
 	self installLoggers.
@@ -116,7 +116,7 @@ SAMuTalkTestCaseMinifier >> makeMinifiedClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
+SAMuTalkFirstFailMinifier >> mutalkRun: aClass [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		             testCasesFrom: { aClass }
@@ -130,7 +130,7 @@ SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkTestCaseMinifier >> uninstallLoggersBut: listOfIds [
+SAMuTalkFirstFailMinifier >> uninstallLoggersBut: listOfIds [
 
 	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class removeSelector: #logs.

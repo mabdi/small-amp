@@ -130,7 +130,7 @@ SAMainLoop >> makeResult [
 			 buildTestClassWith:
 			 (resultPeople collect: [ :tcase | tcase testMethod ])
 			 using: testClass).
-	minifier := SAMuTalkTestCaseMinifier
+	minifier := SAMuTalkFirstFailMinifier
 		            with: finalResult generatedTestClass
 		            from: testClass
 		            target: targetClasses.
