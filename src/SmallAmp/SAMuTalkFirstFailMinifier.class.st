@@ -4,6 +4,27 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #running }
+SAMuTalkFirstFailMinifier >> addLoggerToAllAsserts: aParseTree [
+	| id b |
+	id := 0.
+	b := [ :node | 
+	| template |
+	template := String
+		streamContents: [ :s | 
+			s
+				nextPutAll: '[ ';
+				nextPutAll: node formattedCode;
+				nextPutAll: ' ] on: Error do: [ self smallamp_logs: ''';
+				nextPutAll: aParseTree selector asString;
+				nextPutAll: '.';
+				nextPutAll: id asString;
+				nextPutAll: '''. self assert: false ]' ].
+	id := id + 1.
+	RBParser parseExpression: template ].
+	^ self getAssertTransformer rewriteAllAssertsIn: aParseTree replaceBlock: b
+]
+
 { #category : #accessing }
 SAMuTalkFirstFailMinifier >> astHelper [
 	^ SAASTHelper new
@@ -66,7 +87,7 @@ SAMuTalkFirstFailMinifier >> installLoggers [
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
-			newTree := self getAssertTransformer
+			newTree := self
 				addLoggerToAllAsserts: theMethod ast.
 			minifiedTestClass compile: newTree formattedCode ]
 ]
@@ -129,9 +150,32 @@ SAMuTalkFirstFailMinifier >> mutalkRun: aClass [
 	^ analysis1
 ]
 
+{ #category : #running }
+SAMuTalkFirstFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
+	| searchFor rewriter parser tree empty |
+	rewriter := RBParseTreeRewriter new.
+	parser := aParseTree copy.
+	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
+	empty := RBParser parseExpression: ''.
+	rewriter
+		addRule:
+			(RBBlockReplaceRule
+				searchFor: searchFor
+				replaceWith: [ :node | 
+					| thisId theAssertion |
+					thisId := (((node arguments at: 2) body statements at: 1)
+						arguments at: 1) value.
+					theAssertion := node receiver body statements at: 1.
+					(listOfIds includes: thisId)
+						ifTrue: [ theAssertion ]
+						ifFalse: [ empty ] ]).
+	rewriter executeTree: parser.
+	tree := rewriter tree.
+	^ tree
+]
+
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailMinifier >> uninstallLoggersBut: listOfIds [
-
 	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class removeSelector: #logs.
 	minifiedTestClass removeSelector: #smallamp_logs:.
@@ -140,7 +184,7 @@ SAMuTalkFirstFailMinifier >> uninstallLoggersBut: listOfIds [
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
-			newTree := self getAssertTransformer
+			newTree := self
 				removeAllAssertsAndTransformImportants: listOfIds
 				in: theMethod ast.
 			minifiedTestClass compile: newTree formattedCode ]
