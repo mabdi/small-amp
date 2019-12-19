@@ -53,19 +53,21 @@ SAMuTalkTestCaseMinifier >> getAssertTransformer [
 { #category : #'as yet unclassified' }
 SAMuTalkTestCaseMinifier >> installLoggers [
 	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
-	minifiedTestClass class compile:
-		'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
-	minifiedTestClass compile:
-		'smallamp_logs: aString self class logs add: aString'.
-	minifiedTestClass compile:
-		'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
-	 aBooleanOrBlock value ifFalse: [ TestFailure signal ]'.
+	minifiedTestClass class
+		compile:
+			'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
+	minifiedTestClass
+		compile: 'smallamp_logs: aString self class logs add: aString'.
+	minifiedTestClass
+		compile:
+			'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
+	 aBooleanOrBlock value ifFalse: [ self error: ''assert failed'' ]'.
 	minifiedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
-			newTree := self getAssertTransformer addLoggerToAllAsserts:
-				           theMethod ast.
+			newTree := self getAssertTransformer
+				addLoggerToAllAsserts: theMethod ast.
 			minifiedTestClass compile: newTree formattedCode ]
 ]
 
@@ -129,18 +131,17 @@ SAMuTalkTestCaseMinifier >> mutalkRun: aClass [
 
 { #category : #'as yet unclassified' }
 SAMuTalkTestCaseMinifier >> uninstallLoggersBut: listOfIds [
-	"newTestClass class addInstVarNamed: 'smallamp_logs'."
 
+	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class removeSelector: #logs.
 	minifiedTestClass removeSelector: #smallamp_logs:.
-	minifiedTestClass removeSelector:
-		#assert:description:resumable:.
+	minifiedTestClass removeSelector: #assert:description:resumable:.
 	minifiedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self getAssertTransformer
-				           removeAllAssertsAndTransformImportants: listOfIds
-				           in: theMethod ast.
+				removeAllAssertsAndTransformImportants: listOfIds
+				in: theMethod ast.
 			minifiedTestClass compile: newTree formattedCode ]
 ]
