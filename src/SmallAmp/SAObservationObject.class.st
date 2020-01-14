@@ -11,7 +11,10 @@ SAObservationObject >> buildAssertions: aGenerator [
 
 { #category : #adding }
 SAObservationObject >> checkFlaky: anItem [
-	self theValue keysDo: [ :key | 
-		(self theValue at: key) checkFlaky: (anItem theValue at: key) 
-		 ]
+	self theValue
+		keysDo: [ :key | 
+			| v |
+			v := self theValue at: key.
+			v ifNotNil: [ v checkFlaky: (anItem theValue at: key) ]
+			 ]
 ]

@@ -28,3 +28,60 @@ SAObservationCollectionTest >> testCheckFlaky [
 	self deny: (item1 theValue at: 2) isFlaky.
 	self deny: (item1 theValue at: 3) isFlaky
 ]
+
+{ #category : #test }
+SAObservationCollectionTest >> testCheckFlakyDeep [
+	| item1 item2 obj1 obj2 |
+	obj1 := {1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{}}}}}}}}.
+	obj2 := {1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{5.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{1.
+	2.
+	3.
+	{}}}}}}}}.
+	item1 := obj1
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 0.
+	item2 := obj2
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 0.
+	item1 checkFlaky: item2.
+	self halt
+]
