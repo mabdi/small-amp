@@ -83,5 +83,5 @@ SAObservationCollectionTest >> testCheckFlakyDeep [
 		smallAmpAcceptSerializerVisitor: SAStateSerializer new
 		atDepth: 0.
 	item1 checkFlaky: item2.
-	self halt
+	
 ]
