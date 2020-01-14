@@ -79,6 +79,12 @@ SAMuTalkNeverFailMinifier >> cleanAndMinifyMethod: methodast [
 	methodast statements removeAll: tobecleaned
 ]
 
+{ #category : #cleanup }
+SAMuTalkNeverFailMinifier >> cleanUp: generatedClass [
+	config debug ifFalse: [ 
+		self astHelper removeClass: generatedClass source: self class name ]
+]
+
 { #category : #'as yet unclassified' }
 SAMuTalkNeverFailMinifier >> createDuplicateClass [
 	| l methods |
@@ -168,6 +174,7 @@ SAMuTalkNeverFailMinifier >> makeMinifiedResult [
 	res minifier: self class.
 	res minifiedClass: self minifiedAddedTestClass.
 	res analysis: (self mutalkRun: self minifiedAddedTestClass).
+	self cleanUp: minifiedTestClass.
 	^ res
 ]
 

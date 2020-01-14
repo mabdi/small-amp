@@ -2,6 +2,7 @@ Class {
 	#name : #SAAbstractTestCaseMinifier,
 	#superclass : #Object,
 	#instVars : [
+		'config',
 		'newTestClass',
 		'testClass',
 		'targetClasses',
@@ -12,8 +13,9 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAAbstractTestCaseMinifier class >> with: newClass from: originalTestClass target: listTtargetClasses [
-	^ self new with: newClass from: originalTestClass target: listTtargetClasses; yourself 
+SAAbstractTestCaseMinifier class >> initializeWith: aConfig [
+	^ self new
+		  with: aConfig
 ]
 
 { #category : #'as yet unclassified' }
@@ -29,6 +31,12 @@ SAAbstractTestCaseMinifier >> minifiedAddedTestClass [
 { #category : #accessing }
 SAAbstractTestCaseMinifier >> minifiedTestClass [
 	^ minifiedTestClass
+]
+
+{ #category : #'instance creation' }
+SAAbstractTestCaseMinifier >> with: aConfig [
+	self initialize.
+	config := aConfig
 ]
 
 { #category : #'as yet unclassified' }

@@ -6,10 +6,18 @@ Class {
 
 { #category : #'as yet unclassified' }
 SANoMinification >> makeMinifiedResult [
-	| res |
+	| res newClass l methods |
 	res := SAResultMinifiedItem new.
+	l := [ :cls | 
+	     cls testSelectors collect: [ :s | 
+		     (cls methodNamed: s) sourceCode ] ].
+	methods := l value: newTestClass.
+	newClass := SAASTHelper new
+		                          buildTestClassWith: methods
+		                          using: testClass
+		                          final: true.
 	res minifier: self class.
-	res minifiedClass: testClass.
+	res minifiedClass: newClass.
 	res analysis: (self mutalkRun: testClass).
 	^ res
 ]

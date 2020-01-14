@@ -148,7 +148,7 @@ SAMainLoop >> methodProfiling [
 SAMainLoop >> minifierFor: aClass [
 	^ config minifiers
 		collect: [ :minifier | 
-			minifier
+			(minifier initializeWith: config)
 				with: aClass
 				from: testClass
 				target: targetClasses ]
