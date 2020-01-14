@@ -46,14 +46,21 @@ SAStateSerializer >> visitChar: theObject atDepth: anInteger [
 { #category : #visiting }
 SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 	| aCollection |
-	anInteger > self maxDepth ifTrue: [ ^ nil ].
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
 	aCollection := OrderedCollection new.
-	theObject do: [ :item | 
-		aCollection add:
-			(item smallAmpAcceptSerializerVisitor: self atDepth: anInteger + 1) ].
+	theObject
+		do: [ :item | 
+			| v |
+			v := item
+				smallAmpAcceptSerializerVisitor: self
+				atDepth: anInteger + 1.
+			v ifNotNil: [ aCollection add: v ]
+			 ].
 	^ SAObservationCollection
-		  newForClass: theObject class
-		  values: aCollection atDepth: anInteger
+		newForClass: theObject class
+		values: aCollection
+		atDepth: anInteger
 ]
 
 { #category : #visiting }
