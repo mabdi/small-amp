@@ -18,7 +18,6 @@ Metacello new
 ## How to use
 
 ```smalltalk
-example
 	| config result |
 	config := SAConfig new
 		iterations: 3;
