@@ -10,7 +10,31 @@ Test Amplification for Pharo
 ## How to load
 ```smalltalk
 Metacello new
-  baseline: 'Amplification';
+  baseline: 'SmallAmp';
   repository: 'github://mabdi/small-amp/src';
   load.
 ```
+
+## How to use
+
+```smalltalk
+example
+	| config result |
+	config := SAConfig new
+		iterations: 3;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		inputAmplifiers: {SALiteralInputAmplifier};
+		selections: {SAMutationCoverageSelection};
+		minifiers:
+			{SANoMinification.
+			SAMuTalkFirstFailMinifier.
+			SAMuTalkNeverFailMinifier};
+		"debug: true;"
+			yourself.
+	result := (self initializeWith: config)
+		testCase: SmallBankTest targets: {SmallBank};
+		testCase: SmallBank2Test targets: {SmallBank2};
+		amplifyAll.
+ ```
+ 
+ You can find the generated testcases in `SmallAmpTempClasses` package. 
