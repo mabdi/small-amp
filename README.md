@@ -31,7 +31,7 @@ example
 			SAMuTalkNeverFailMinifier};
 		"debug: true;"
 			yourself.
-	result := (self initializeWith: config)
+	result := (SmallAmp initializeWith: config)
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};
 		amplifyAll.
