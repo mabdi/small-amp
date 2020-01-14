@@ -16,6 +16,11 @@ SAAbstractTestCaseMinifier class >> with: newClass from: originalTestClass targe
 	^ self new with: newClass from: originalTestClass target: listTtargetClasses; yourself 
 ]
 
+{ #category : #'as yet unclassified' }
+SAAbstractTestCaseMinifier >> makeMinifiedResult [
+	^ self subclassResponsibility 
+]
+
 { #category : #accessing }
 SAAbstractTestCaseMinifier >> minifiedAddedTestClass [
 	^ minifiedAddedTestClass

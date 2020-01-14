@@ -1,6 +1,9 @@
 Class {
 	#name : #SAResult,
 	#superclass : #Object,
+	#instVars : [
+		'results'
+	],
 	#category : #'SmallAmp-Model'
 }
 
@@ -18,13 +21,12 @@ SAResult class >> mutalkTarget: aClass testSuite: aTestSuite [
 
 { #category : #adding }
 SAResult >> addResult: aResultItem for: aTestClass [
+	results at: aTestClass name put: aResultItem 
 ]
 
 { #category : #'as yet unclassified' }
-SAResult >> createMdTable: runs [
+SAResult >> createMarkdownTable [
 	| head row detail |
-	self flag: #TODO. "Rename method #createMarkdownTable:."
-	self flag: #TODO. "Rename argument to be more understandable."
 	head := [ :s | 
 	s
 		nextPutAll: '| Test case | Test target | Original | Amp | AmpMin | AmpMinAdd |';
@@ -67,7 +69,17 @@ SAResult >> createMdTable: runs [
 	^ String
 		streamContents: [ :stream | 
 			head value: stream.
-			runs do: [ :item | row value: stream value: item ] ]
+			results do: [ :item | row value: stream value: item ] ]
+]
+
+{ #category : #adding }
+SAResult >> initialize [ 
+	results := Dictionary new
+]
+
+{ #category : #adding }
+SAResult >> results [
+	^ results
 ]
 
 { #category : #'as yet unclassified' }

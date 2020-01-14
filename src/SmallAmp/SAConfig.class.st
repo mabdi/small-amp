@@ -8,7 +8,8 @@ Class {
 		'debug',
 		'lite',
 		'logger',
-		'selections'
+		'selections',
+		'minifiers'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -71,6 +72,16 @@ SAConfig >> logger [
 { #category : #accessing }
 SAConfig >> logger: anObject [
 	logger := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> minifiers [
+	^ minifiers
+]
+
+{ #category : #accessing }
+SAConfig >> minifiers: list [
+	minifiers := list
 ]
 
 { #category : #accessing }

@@ -48,12 +48,19 @@ SmallAmp class >> example [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		inputAmplifiers: {SALiteralInputAmplifier};
 		selections: {SAMutationCoverageSelection};
+		minifiers:
+			{SANoMinification.
+			SAMuTalkFirstFailMinifier.
+			SAMuTalkNeverFailMinifier};
 		"debug: true;"
 			yourself.
 	result := (self initializeWith: config)
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};
-		amplifyAll
+		amplifyAll.
+		self halt.
+	result createMarkdownTable.
+	
 ]
 
 { #category : #initialization }

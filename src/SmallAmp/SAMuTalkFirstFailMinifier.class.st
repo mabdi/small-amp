@@ -112,18 +112,16 @@ SAMuTalkFirstFailMinifier >> makeAssertImportant: id atMethod: methodast [
 						stop: -1 ] ].
 ]
 
-{ #category : #actions }
+{ #category : #'as yet unclassified' }
 SAMuTalkFirstFailMinifier >> makeMinifiedAddedClass [
 	| l methods |
-	l := [ :cls | 
-	     cls testSelectors collect: [ :s | 
-		     (cls methodNamed: s) sourceCode ] ].
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
 	methods := methods , (l value: minifiedTestClass).
-	minifiedAddedTestClass:=  self astHelper
-		  buildTestClassWith: methods
-		  using: testClass
-		  final: true
+	minifiedAddedTestClass := self astHelper
+		buildTestClassWith: methods
+		using: testClass
+		final: true
 ]
 
 { #category : #actions }
@@ -134,6 +132,18 @@ SAMuTalkFirstFailMinifier >> makeMinifiedClass [
 	self mutalkRun: minifiedTestClass.
 	logs := minifiedTestClass logs.
 	self uninstallLoggersBut: logs
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailMinifier >> makeMinifiedResult [
+	| res |
+	res := SAResultMinifiedItem new.
+	self makeMinifiedClass.
+	self makeMinifiedAddedClass.
+	res minifier: self class.
+	res minifiedClass: self minifiedAddedTestClass.
+	res analysis: (self mutalkRun: self minifiedAddedTestClass).
+	^ res
 ]
 
 { #category : #'as yet unclassified' }

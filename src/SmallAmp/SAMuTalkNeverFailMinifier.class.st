@@ -23,13 +23,13 @@ Internal Representation and Key Implementation Points.
     Implementation Points
 "
 Class {
-	#name : #SAMuTalkNoFailMinifier,
+	#name : #SAMuTalkNeverFailMinifier,
 	#superclass : #SAAbstractTestCaseMinifier,
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #running }
-SAMuTalkNoFailMinifier >> addLoggerToAllAsserts: aParseTree [
+SAMuTalkNeverFailMinifier >> addLoggerToAllAsserts: aParseTree [
 	| id b |
 	id := 0.
 	b := [ :node | 
@@ -52,12 +52,12 @@ SAMuTalkNoFailMinifier >> addLoggerToAllAsserts: aParseTree [
 ]
 
 { #category : #accessing }
-SAMuTalkNoFailMinifier >> astHelper [
+SAMuTalkNeverFailMinifier >> astHelper [
 	^ SAASTHelper new
 ]
 
 { #category : #private }
-SAMuTalkNoFailMinifier >> cleanAndMinifyMethod: methodast [
+SAMuTalkNeverFailMinifier >> cleanAndMinifyMethod: methodast [
 	| tobecleaned |
 	tobecleaned := OrderedCollection new.
 	methodast statements
@@ -80,7 +80,7 @@ SAMuTalkNoFailMinifier >> cleanAndMinifyMethod: methodast [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> createDuplicateClass [
+SAMuTalkNeverFailMinifier >> createDuplicateClass [
 	| l methods |
 	l := [ :cls | 
 	     cls testSelectors collect: [ :s | 
@@ -93,38 +93,37 @@ SAMuTalkNoFailMinifier >> createDuplicateClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> getAssertTransformer [
+SAMuTalkNeverFailMinifier >> getAssertTransformer [
 	^ SAAssertTransform new
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> installLoggers [
+SAMuTalkNeverFailMinifier >> installLoggers [
 	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class
 		compile:
 			'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
 	minifiedTestClass
-		compile: 'smallamp_logs: aString self class logs add: aString'.
+		compile: 'smallamp_logs: aString self class logs add: aString'.	
 	minifiedTestClass
 		compile:
 			'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
-	 aBooleanOrBlock value ifFalse: [ self error: ''assert failed'' ]'.
+	 aBooleanOrBlock value ifFalse: [ self error: ''assert failed'' ]'. "TODO: if method exists, first rename it then install this version. in unisitall restore renamed method. "
 	minifiedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
-			newTree := self
-				addLoggerToAllAsserts: theMethod ast.
+			newTree := self addLoggerToAllAsserts: theMethod ast.
 			minifiedTestClass compile: newTree formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> loggersAreInstalled [
+SAMuTalkNeverFailMinifier >> loggersAreInstalled [
 	^ newTestClass methodDict includesKey: #logFailure:
 ]
 
 { #category : #private }
-SAMuTalkNoFailMinifier >> makeAssertImportant: id atMethod: methodast [
+SAMuTalkNeverFailMinifier >> makeAssertImportant: id atMethod: methodast [
 	methodast statements
 		do:
 			[ :node | 
@@ -138,22 +137,20 @@ SAMuTalkNoFailMinifier >> makeAssertImportant: id atMethod: methodast [
 						stop: -1 ] ].
 ]
 
-{ #category : #actions }
-SAMuTalkNoFailMinifier >> makeMinifiedAddedClass [
+{ #category : #'as yet unclassified' }
+SAMuTalkNeverFailMinifier >> makeMinifiedAddedClass [
 	| l methods |
-	l := [ :cls | 
-	     cls testSelectors collect: [ :s | 
-		     (cls methodNamed: s) sourceCode ] ].
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
 	methods := methods , (l value: minifiedTestClass).
-	minifiedAddedTestClass:=  self astHelper
-		  buildTestClassWith: methods
-		  using: testClass
-		  final: true
+	minifiedAddedTestClass := self astHelper
+		buildTestClassWith: methods
+		using: testClass
+		final: true
 ]
 
 { #category : #actions }
-SAMuTalkNoFailMinifier >> makeMinifiedClass [
+SAMuTalkNeverFailMinifier >> makeMinifiedClass [
 	| logs |
 	minifiedTestClass := self createDuplicateClass.
 	self installLoggers.
@@ -163,7 +160,19 @@ SAMuTalkNoFailMinifier >> makeMinifiedClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> mutalkRun: aClass [
+SAMuTalkNeverFailMinifier >> makeMinifiedResult [
+	| res |
+	res := SAResultMinifiedItem new.
+	self makeMinifiedClass.
+	self makeMinifiedAddedClass.
+	res minifier: self class.
+	res minifiedClass: self minifiedAddedTestClass.
+	res analysis: (self mutalkRun: self minifiedAddedTestClass).
+	^ res
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkNeverFailMinifier >> mutalkRun: aClass [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		             testCasesFrom: { aClass }
@@ -177,7 +186,7 @@ SAMuTalkNoFailMinifier >> mutalkRun: aClass [
 ]
 
 { #category : #running }
-SAMuTalkNoFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
+SAMuTalkNeverFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
 	| searchFor rewriter parser tree empty |
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
@@ -201,7 +210,7 @@ SAMuTalkNoFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds in: 
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkNoFailMinifier >> uninstallLoggersBut: listOfIds [
+SAMuTalkNeverFailMinifier >> uninstallLoggersBut: listOfIds [
 	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class removeSelector: #logs.
 	minifiedTestClass removeSelector: #smallamp_logs:.

@@ -34,7 +34,7 @@ SAMainLoop >> amplify [
 				self strip.
 				self inputAmplification.
 				self assertionAmplification.
-				self selectionAlreadySelected.
+				self selection.
 				self cleanUpAndAddToResult ]
 			displayingProgress: 'Main loop' ].
 	^ self makeResult
@@ -76,7 +76,7 @@ SAMainLoop >> discardFailingTests [
 	result := testClass suite run.
 	testMethods := result passed collect: [ :passed | 
 		               (testClass methodNamed: passed selector) sourceCode ].
-	finalResult addFailedSelectorInOriginal: result failures.
+	finalResult failedSelectorInOriginal: result failures.
 	population := testMethods collect: [ :tcase | 
 		              SATestMethod
 			              with: tcase
@@ -125,19 +125,15 @@ SAMainLoop >> inputAmplifiers [
 
 { #category : #private }
 SAMainLoop >> makeResult [
-	| minifier |
-	finalResult generatedTestClass: (self astHelper
-			 buildTestClassWith:
-			 (resultPeople collect: [ :tcase | tcase testMethod ])
-			 using: testClass).
-	minifier := SAMuTalkFirstFailMinifier
-		            with: finalResult generatedTestClass
-		            from: testClass
-		            target: targetClasses.
-	minifier makeMinifiedClass.
-	minifier makeMinifiedAddedClass.
-	finalResult minifiedTestClass: minifier minifiedTestClass.
-	finalResult minifiedAddedTestClass: minifier minifiedAddedTestClass.
+	| minifiers generatedClass |
+	
+		generatedClass :=
+			(self astHelper
+				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
+				using: testClass).
+	minifiers := self minifierFor: generatedClass.
+	finalResult
+		minifiedVersions: (minifiers collect: [ :minifier | minifier makeMinifiedResult ]).
 	^ finalResult
 ]
 
@@ -148,8 +144,18 @@ SAMainLoop >> methodProfiling [
 		SAMethodProfiler classifyClass: anObjectUnderTest ]"
 ]
 
+{ #category : #private }
+SAMainLoop >> minifierFor: aClass [
+	^ config minifiers
+		collect: [ :minifier | 
+			minifier
+				with: aClass
+				from: testClass
+				target: targetClasses ]
+]
+
 { #category : #actions }
-SAMainLoop >> selectionAlreadySelected [ 
+SAMainLoop >> selection [ 
 	| selectedTests |
 	population ifEmpty: [ ^ self ].
 	selectedTests := OrderedCollection new.

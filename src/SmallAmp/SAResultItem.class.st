@@ -2,47 +2,28 @@ Class {
 	#name : #SAResultItem,
 	#superclass : #Object,
 	#instVars : [
-		'generatedTestClass',
-		'minifiedTestClass',
-		'minifiedAddedTestClass'
+		'failedSelectorInOriginal',
+		'minifiedVersions'
 	],
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #adding }
-SAResultItem >> addFailedSelectorInOriginal: aListOfFaileds [
+SAResultItem >> failedSelectorInOriginal [
+	^ failedSelectorInOriginal
 ]
 
 { #category : #adding }
-SAResultItem >> addNewTestClass: aGeneratedTestClass [
-	
+SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
+	failedSelectorInOriginal := aListOfFaileds 
 ]
 
 { #category : #accessing }
-SAResultItem >> generatedTestClass [
-	^ generatedTestClass
+SAResultItem >> minifiedVersions [
+	^ minifiedVersions
 ]
 
 { #category : #accessing }
-SAResultItem >> generatedTestClass: anObject [
-	generatedTestClass := anObject
-]
-
-{ #category : #accessing }
-SAResultItem >> minifiedAddedTestClass [ ^ minifiedAddedTestClass
-]
-
-{ #category : #accessing }
-SAResultItem >> minifiedAddedTestClass: aMinifiedAddedTestClass [	
-minifiedAddedTestClass:= aMinifiedAddedTestClass 
-]
-
-{ #category : #accessing }
-SAResultItem >> minifiedTestClass [
-	^ minifiedTestClass
-]
-
-{ #category : #accessing }
-SAResultItem >> minifiedTestClass: anObject [
-	minifiedTestClass := anObject
+SAResultItem >> minifiedVersions: item [
+	minifiedVersions := item
 ]
