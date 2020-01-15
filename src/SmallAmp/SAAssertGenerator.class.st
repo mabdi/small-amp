@@ -41,9 +41,8 @@ SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
-	
 	(observation theValue allSatisfy: [ :item | item isNil ])
-		ifTrue: [ ^ nil ].
+		ifTrue: [ ^ assertStatements ].
 	(observation theValue allSatisfy: [ :item | item isPrimitive ])
 		ifTrue: [ ^ assertStatements ].
 	observation theValue size > self maxCollectionSize
