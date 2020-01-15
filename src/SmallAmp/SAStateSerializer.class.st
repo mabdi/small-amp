@@ -55,8 +55,7 @@ SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 			v := item
 				smallAmpAcceptSerializerVisitor: self
 				atDepth: anInteger + 1.
-			v ifNotNil: [ aCollection add: v ]
-			 ].
+			aCollection add: v].
 	^ SAObservationCollection
 		newForClass: theObject class
 		values: aCollection

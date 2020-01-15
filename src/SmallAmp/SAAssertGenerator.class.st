@@ -26,7 +26,14 @@ SAAssertGenerator >> appendCollectionMyName: name ToAssert: aRBMessageNode [
 SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 	| tmp msgNode |
 	tmp := aRBMessageNode arguments at: 1.
-	msgNode := RBParser parseExpression: name , ' ' , tmp formattedCode.
+	(tmp formattedCode prefixMatchesRegex: '\(+')
+		ifTrue: [ msgNode := RBParser
+				parseExpression:
+					(tmp formattedCode
+						copyWithRegex: '^\(+'
+						matchesTranslatedUsing: [ :b | b , name , ' ' ]) ]
+		ifFalse:
+			[ msgNode := RBParser parseExpression: name , ' ' , tmp formattedCode ].
 	aRBMessageNode arguments at: 1 put: msgNode
 ]
 
@@ -34,39 +41,46 @@ SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
-	(observation theValue allSatisfy: [ :item | item isPrimitive ]) 
-		ifTrue: [ ^ assertStatements ].
-	observation theValue size > self maxCollectionSize ifTrue: [ 
-		^ assertStatements ].
 	
-	observation theValue withIndexDo: [ :item :index | 
-		(observation theValue at: index) name:
-			self temp_arrayElementNamePrefix , index asString.
-		assertStatements addAll:
-			((observation theValue at: index) buildAssertions: self) ].
+	(observation theValue allSatisfy: [ :item | item isNil ])
+		ifTrue: [ ^ nil ].
+	(observation theValue allSatisfy: [ :item | item isPrimitive ])
+		ifTrue: [ ^ assertStatements ].
+	observation theValue size > self maxCollectionSize
+		ifTrue: [ ^ assertStatements ].
+	observation theValue
+		withIndexDo: [ :item :index | 
+			(observation theValue at: index)
+				name: self temp_arrayElementNamePrefix , index asString.
+			assertStatements
+				addAll: ((observation theValue at: index) buildAssertions: self) ].
 	assertStatements := assertStatements reject: #isNil.
-	assertStatements do: [ :assertion | 
-		self appendCollectionMyName: observation name ToAssert: assertion ].
+	assertStatements
+		do:
+			[ :assertion | self appendCollectionMyName: observation name ToAssert: assertion ].
 	^ assertStatements
 ]
 
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> assertCollectionPrimitiveValues: observation [
 	| assertStatement theObject theValueNode array |
-	(observation theValue allSatisfy: [ :item | item isPrimitive ]) 
+	(observation theValue allSatisfy: [ :item | item isNil ])
+		ifTrue: [ ^ nil ].
+	(observation theValue allSatisfy: [ :item | item isPrimitive ])
 		ifFalse: [ ^ nil ].
-	observation theValue size > self maxCollectionSize ifTrue: [ ^ nil ].
+	observation theValue size > self maxCollectionSize
+		ifTrue: [ ^ nil ].
 	observation theValue ifEmpty: [ ^ nil ].
 	array := (observation theValue collect: [ :item | item theValue ])
-		         asArray.
+		asArray.
 	theObject := RBVariableNode named: observation name.
 	theValueNode := RBLiteralArrayNode value: array.
 	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:
-		                   arguments: { 
-				                   theObject.
-				                   theValueNode}.
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
 	^ assertStatement
 ]
 

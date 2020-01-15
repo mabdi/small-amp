@@ -8,14 +8,13 @@ Class {
 SANoMinification >> makeMinifiedResult [
 	| res newClass l methods |
 	res := SAResultMinifiedItem new.
-	l := [ :cls | 
-	     cls testSelectors collect: [ :s | 
-		     (cls methodNamed: s) sourceCode ] ].
-	methods := l value: newTestClass.
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
+	methods := l value: testClass.
+	methods := methods , (l value: newTestClass).
 	newClass := SAASTHelper new
-		                          buildTestClassWith: methods
-		                          using: testClass
-		                          final: true.
+		buildTestClassWith: methods
+		using: testClass
+		final: true.
 	res minifier: self class.
 	res minifiedClass: newClass.
 	res analysis: (self mutalkRun: testClass).
