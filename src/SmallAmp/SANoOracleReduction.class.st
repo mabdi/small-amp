@@ -1,11 +1,11 @@
 Class {
-	#name : #SANoMinification,
-	#superclass : #SAAbstractTestCaseMinifier,
+	#name : #SANoOracleReduction,
+	#superclass : #SAAbstractOracleReduction,
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #'as yet unclassified' }
-SANoMinification >> makeMinifiedResult [
+SANoOracleReduction >> makeMinifiedResult [
 	| res newClass l methods |
 	res := SAResultMinifiedItem new.
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
@@ -22,7 +22,7 @@ SANoMinification >> makeMinifiedResult [
 ]
 
 { #category : #'as yet unclassified' }
-SANoMinification >> mutalkRun: aClass [
+SANoOracleReduction >> mutalkRun: aClass [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {aClass}

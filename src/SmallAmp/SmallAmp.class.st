@@ -49,9 +49,9 @@ SmallAmp class >> example [
 		inputAmplifiers: {SALiteralInputAmplifier};
 		selections: {SAMutationCoverageSelection};
 		minifiers:
-			{SANoMinification.
-			SAMuTalkFirstFailMinifier.
-			SAMuTalkNeverFailMinifier};
+			{SANoOracleReduction.
+			SAMuTalkFirstFailOracleReduction.
+			SAMuTalkNeverFailOracleReduction};
 		"debug: true;"
 			yourself.
 	result := (self initializeWith: config)

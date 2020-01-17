@@ -1,5 +1,5 @@
 Class {
-	#name : #SAAbstractTestCaseMinifier,
+	#name : #SAAbstractOracleReduction,
 	#superclass : #Object,
 	#instVars : [
 		'config',
@@ -13,34 +13,34 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAAbstractTestCaseMinifier class >> initializeWith: aConfig [
+SAAbstractOracleReduction class >> initializeWith: aConfig [
 	^ self new
 		  with: aConfig
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractTestCaseMinifier >> makeMinifiedResult [
+SAAbstractOracleReduction >> makeMinifiedResult [
 	^ self subclassResponsibility 
 ]
 
 { #category : #accessing }
-SAAbstractTestCaseMinifier >> minifiedAddedTestClass [
+SAAbstractOracleReduction >> minifiedAddedTestClass [
 	^ minifiedAddedTestClass
 ]
 
 { #category : #accessing }
-SAAbstractTestCaseMinifier >> minifiedTestClass [
+SAAbstractOracleReduction >> minifiedTestClass [
 	^ minifiedTestClass
 ]
 
 { #category : #'instance creation' }
-SAAbstractTestCaseMinifier >> with: aConfig [
+SAAbstractOracleReduction >> with: aConfig [
 	self initialize.
 	config := aConfig
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractTestCaseMinifier >> with: newClass from: originalTestClass target: listTtargetClasses [
+SAAbstractOracleReduction >> with: newClass from: originalTestClass target: listTtargetClasses [
 	newTestClass := newClass.
 	 testClass := originalTestClass.
 	 targetClasses := listTtargetClasses.

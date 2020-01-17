@@ -1,11 +1,11 @@
 Class {
-	#name : #SAMuTalkFirstFailMinifier,
-	#superclass : #SAAbstractTestCaseMinifier,
+	#name : #SAMuTalkFirstFailOracleReduction,
+	#superclass : #SAAbstractOracleReduction,
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #running }
-SAMuTalkFirstFailMinifier >> addLoggerToAllAsserts: aParseTree [
+SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 	| id b |
 	id := 0.
 	b := [ :node | 
@@ -26,12 +26,12 @@ SAMuTalkFirstFailMinifier >> addLoggerToAllAsserts: aParseTree [
 ]
 
 { #category : #accessing }
-SAMuTalkFirstFailMinifier >> astHelper [
+SAMuTalkFirstFailOracleReduction >> astHelper [
 	^ SAASTHelper new
 ]
 
 { #category : #private }
-SAMuTalkFirstFailMinifier >> cleanAndMinifyMethod: methodast [
+SAMuTalkFirstFailOracleReduction >> cleanAndMinifyMethod: methodast [
 	| tobecleaned |
 	tobecleaned := OrderedCollection new.
 	methodast statements
@@ -54,13 +54,13 @@ SAMuTalkFirstFailMinifier >> cleanAndMinifyMethod: methodast [
 ]
 
 { #category : #cleanup }
-SAMuTalkFirstFailMinifier >> cleanUp: generatedClass [
+SAMuTalkFirstFailOracleReduction >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
 		self astHelper removeClass: generatedClass source: self class name ]
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> createDuplicateClass [
+SAMuTalkFirstFailOracleReduction >> createDuplicateClass [
 	| l methods |
 	l := [ :cls | 
 	     cls testSelectors collect: [ :s | 
@@ -73,12 +73,12 @@ SAMuTalkFirstFailMinifier >> createDuplicateClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> getAssertTransformer [
+SAMuTalkFirstFailOracleReduction >> getAssertTransformer [
 	^ SAAssertTransform new
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> installLoggers [
+SAMuTalkFirstFailOracleReduction >> installLoggers [
 	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class
 		compile:
@@ -99,12 +99,12 @@ SAMuTalkFirstFailMinifier >> installLoggers [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> loggersAreInstalled [
+SAMuTalkFirstFailOracleReduction >> loggersAreInstalled [
 	^ newTestClass methodDict includesKey: #logFailure:
 ]
 
 { #category : #private }
-SAMuTalkFirstFailMinifier >> makeAssertImportant: id atMethod: methodast [
+SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast [
 	methodast statements
 		do:
 			[ :node | 
@@ -119,7 +119,7 @@ SAMuTalkFirstFailMinifier >> makeAssertImportant: id atMethod: methodast [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> makeMinifiedAddedClass [
+SAMuTalkFirstFailOracleReduction >> makeMinifiedAddedClass [
 	| l methods |
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
@@ -131,7 +131,7 @@ SAMuTalkFirstFailMinifier >> makeMinifiedAddedClass [
 ]
 
 { #category : #actions }
-SAMuTalkFirstFailMinifier >> makeMinifiedClass [
+SAMuTalkFirstFailOracleReduction >> makeMinifiedClass [
 	| logs |
 	minifiedTestClass := self createDuplicateClass.
 	self installLoggers.
@@ -141,7 +141,7 @@ SAMuTalkFirstFailMinifier >> makeMinifiedClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> makeMinifiedResult [
+SAMuTalkFirstFailOracleReduction >> makeMinifiedResult [
 	| res |
 	res := SAResultMinifiedItem new.
 	self makeMinifiedClass.
@@ -154,7 +154,7 @@ SAMuTalkFirstFailMinifier >> makeMinifiedResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> mutalkRun: aClass [
+SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		             testCasesFrom: { aClass }
@@ -168,7 +168,7 @@ SAMuTalkFirstFailMinifier >> mutalkRun: aClass [
 ]
 
 { #category : #running }
-SAMuTalkFirstFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
+SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
 	| searchFor rewriter parser tree empty |
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
@@ -192,7 +192,7 @@ SAMuTalkFirstFailMinifier >> removeAllAssertsAndTransformImportants: listOfIds i
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailMinifier >> uninstallLoggersBut: listOfIds [
+SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
 	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	minifiedTestClass class removeSelector: #logs.
 	minifiedTestClass removeSelector: #smallamp_logs:.
