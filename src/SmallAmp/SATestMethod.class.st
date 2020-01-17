@@ -68,14 +68,17 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 	| idx versions |
 	versions := anAmplifier amplifyInputsFor: self.
 	idx := 0.
-	^ versions collect: [ :mtd | 
-		  | cp |
-		  cp := self renamedCopy: '_' , idx asString.
-		  cp testMethod:
-			  (self astHelper renameMethodName: mtd append: '_' , idx asString)
-				  formattedCode.
-		  idx := idx + 1.
-		  cp ]
+	^ versions
+		collect: [ :mtd | 
+			| cp |
+			cp := self
+				renamedCopy: '_' , anAmplifier namingPrefix , idx asString.
+			cp
+				testMethod:
+					(self astHelper renameMethodName: mtd append: '_' , anAmplifier namingPrefix , idx asString)
+						formattedCode.
+			idx := idx + 1.
+			cp ]
 ]
 
 { #category : #printing }

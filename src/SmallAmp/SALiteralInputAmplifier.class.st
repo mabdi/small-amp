@@ -8,3 +8,8 @@ Class {
 SALiteralInputAmplifier >> amplifyInputs [
 	^ SALiteralMutationRewriter runWith: testMethodModel testMethod
 ]
+
+{ #category : #'as yet unclassified' }
+SALiteralInputAmplifier >> namingPrefix [
+	^ 'L'
+]

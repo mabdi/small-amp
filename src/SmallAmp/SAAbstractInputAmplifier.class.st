@@ -25,6 +25,11 @@ SAAbstractInputAmplifier >> amplifyInputsFor: aTestMethodModel [
 	^ self amplifyInputs
 ]
 
+{ #category : #'as yet unclassified' }
+SAAbstractInputAmplifier >> namingPrefix [
+	^ self class name
+]
+
 { #category : #removing }
 SAAbstractInputAmplifier >> with: aConfig [
 	config := aConfig
