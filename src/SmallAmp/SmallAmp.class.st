@@ -48,7 +48,7 @@ SmallAmp class >> example [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		inputAmplifiers: {SALiteralInputAmplifier};
 		selections: {SAMutationCoverageSelection};
-		minifiers:
+		oracleReducions:
 			{SANoOracleReduction.
 			SAMuTalkFirstFailOracleReduction.
 			SAMuTalkNeverFailOracleReduction};

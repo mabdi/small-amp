@@ -139,14 +139,12 @@ SAMainLoop >> makeResult [
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
-	self flag: #TODO. "experiment"
-	"targetClasses do: [ :anObjectUnderTest | 
-		SAMethodProfiler classifyClass: anObjectUnderTest ]"
+	config profiler ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ]
 ]
 
 { #category : #private }
 SAMainLoop >> minifierFor: aClass [
-	^ config minifiers
+	^ config oracleReducions
 		collect: [ :minifier | 
 			(minifier initializeWith: config)
 				with: aClass

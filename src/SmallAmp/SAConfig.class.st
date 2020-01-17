@@ -9,7 +9,8 @@ Class {
 		'lite',
 		'logger',
 		'selections',
-		'minifiers'
+		'oracleReducions',
+		'profiler'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -75,13 +76,23 @@ SAConfig >> logger: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> minifiers [
-	^ minifiers
+SAConfig >> oracleReducions [
+	^ oracleReducions
 ]
 
 { #category : #accessing }
-SAConfig >> minifiers: list [
-	minifiers := list
+SAConfig >> oracleReducions: list [
+	oracleReducions := list
+]
+
+{ #category : #accessing }
+SAConfig >> profiler [
+	^ profiler
+]
+
+{ #category : #accessing }
+SAConfig >> profiler: anObject [
+	profiler := anObject
 ]
 
 { #category : #accessing }
