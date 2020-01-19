@@ -139,7 +139,8 @@ SAMainLoop >> makeResult [
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
-	config profiler ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ]
+	config profiler
+		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ]
 ]
 
 { #category : #private }

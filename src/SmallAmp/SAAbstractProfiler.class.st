@@ -16,7 +16,9 @@ SAAbstractProfiler class >> initializeWith: aConfig [
 
 { #category : #accessing }
 SAAbstractProfiler >> initialize [
-	profile:= Dictionary new
+	profile := Dictionary new.
+	samples := Dictionary new.
+	
 ]
 
 { #category : #accessing }

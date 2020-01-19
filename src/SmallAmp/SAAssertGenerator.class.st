@@ -300,9 +300,10 @@ SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	asserts add: (self assertType: observation).
-	observation isFlaky ifFalse: [ 
-		asserts add: (self assertPrimitiveValue: observation) ].
+	
+	observation isFlaky
+	ifTrue: [ asserts add: (self assertType: observation). ]
+		ifFalse: [ asserts add: (self assertPrimitiveValue: observation) ].
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]
