@@ -18,18 +18,20 @@ SAMutationCoverageSelection >> cleanUp: generatedClass [
 { #category : #testing }
 SAMutationCoverageSelection >> isMutationResult: mutatedSelector betterThan: parentSelector basedOn: analysis [
 	| pkilled mkilled |
-	"TODO I forget terminated result. have a look to mutalk sourcecode to see why terminated results dont have any result"
+	"TODO I ignore terminated result. have a look to mutalk sourcecode to see why terminated results dont have any result"
 	pkilled := (analysis particularResults
 		select: [ :res | 
-			res result isNotNil ifTrue: [
-				res result failures
-					anySatisfy: [ :meth | meth selector = parentSelector ] ]
-				 ifFalse: [false] ])
+			res result isNotNil
+				ifTrue: [ res result failures
+						anySatisfy: [ :meth | meth selector = parentSelector ] ]
+				ifFalse: [ false ] ])
 		collect: [ :item | item mutant modifiedSource ].
 	mkilled := (analysis particularResults
 		select: [ :res | 
-			res result isNotNil ifTrue:[res result failures
-				anySatisfy: [ :meth | meth selector = mutatedSelector ] ] ifFalse: [ false ] ])
+			res result isNotNil
+				ifTrue: [ res result failures
+						anySatisfy: [ :meth | meth selector = mutatedSelector ] ]
+				ifFalse: [ false ] ])
 		collect: [ :item | item mutant modifiedSource ].
 	^ (pkilled allSatisfy: [ :item | mkilled includes: item ])
 		and: [ mkilled anySatisfy: [ :item | (pkilled includes: item) not ] ]
@@ -104,32 +106,37 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 	| selectedTests analysis groups result analysis2 survives |
 	selectedTests := OrderedCollection new.
 	analysis := self mutalkRun: aPopulation.
-	groups := aPopulation inject: Dictionary new into: [ :gr :tcase | 
-		          gr
-			          at: tcase selectorOriginal
-			          ifAbsentPut: [ OrderedCollection new ].
-		          (gr at: tcase selectorOriginal) add: tcase selector.
-		          gr ].
-	groups keysDo: [ :parentSelector | 
-		(groups at: parentSelector) do: [ :mutatedSelector | 
-			(self
-				 isMutationResult: mutatedSelector
-				 betterThan: parentSelector
-				 basedOn: analysis) ifTrue: [ selectedTests add: mutatedSelector ] ] ].
-	result := aPopulation select: [ :item | 
-		          selectedTests includes: item selector ].
-	analysis2 := self mutalkRun: alreadySelectedPopulation , result.
-	survives := (analysis2 particularResults select: [ :res | 
-		             res result isNotNil and: [ res result failures isEmpty ] ]) 
-		            collect: [ :item | item mutant modifiedSource ].
-	analysis particularResults do: [ :item | 
-		survives
-			detect: [ :s | s = item mutant modifiedSource ]
-			ifFound: [ :s | 
-				item result ifNotNil: [ 
-					item result failures ifNotEmpty: [ 
-						selectedTests add: item result failures atRandom selector ] ] ] ].
-	result := aPopulation select: [ :item | 
-		          selectedTests includes: item selector ].
+	groups := aPopulation
+		inject: Dictionary new
+		into: [ :gr :tcase | 
+			gr at: tcase selectorOriginal ifAbsentPut: [ OrderedCollection new ].
+			(gr at: tcase selectorOriginal) add: tcase selector.
+			gr ].
+	groups
+		keysDo: [ :parentSelector | 
+			(groups at: parentSelector)
+				do: [ :mutatedSelector | 
+					(self
+						isMutationResult: mutatedSelector
+						betterThan: parentSelector
+						basedOn: analysis)
+						ifTrue: [ selectedTests add: mutatedSelector ] ] ].
+	result := aPopulation
+		select: [ :item | selectedTests includes: item selector ].
+	analysis2 := self mutalkRun: alreadySelectedPopulation.
+	survives := (analysis2 particularResults
+		select:
+			[ :res | res result isNotNil and: [ res result failures isEmpty ] ])
+		collect: [ :item | item mutant modifiedSource ].
+	analysis particularResults
+		do: [ :item | 
+			survives
+				detect: [ :s | s = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ selectedTests add: item result failures atRandom selector ] ] ] ].
+	result := aPopulation
+		select: [ :item | selectedTests includes: item selector ].
 	^ result
 ]
