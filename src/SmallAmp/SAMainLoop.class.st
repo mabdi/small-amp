@@ -126,12 +126,11 @@ SAMainLoop >> inputAmplifiers [
 { #category : #private }
 SAMainLoop >> makeResult [
 	| reducers generatedClass |
-	
-		generatedClass :=
-			(self astHelper
-				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
-				using: testClass).
+	generatedClass := self astHelper
+		buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
+		using: testClass.
 	reducers := self reducerFor: generatedClass.
+	finalResult mutalkRunOriginal.
 	finalResult
 		reducedVersions: (reducers collect: [ :reducer | reducer makeReducedResult ]).
 	^ finalResult
@@ -193,6 +192,8 @@ SAMainLoop >> with: aConfig for: aTestClass targets: listofTargetClasses [
 	config := aConfig.
 	targetClasses := listofTargetClasses.
 	testClass := aTestClass.
+	finalResult targetClasses: targetClasses.
+	finalResult testClass: testClass.
 	
 	self discardFailingTests
 ]
