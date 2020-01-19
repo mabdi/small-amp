@@ -15,7 +15,7 @@ SAResult class >> mutalkTarget: aClass testSuite: aTestSuite [
 		mutating: aClass
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
-	analysis1 run.
+	analysis1 runSmallAmp.
 	^ analysis1
 ]
 

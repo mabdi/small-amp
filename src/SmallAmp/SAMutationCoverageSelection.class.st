@@ -86,17 +86,16 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := self astHelper
-		                buildTestClassWith:
-		                (aPopulation collect: [ :tcase | tcase testMethod ])
-		                using: testClass.
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass.
 	analysis1 := MutationTestingAnalysis
-		             testCasesFrom: { newTestClass }
-		             mutating: targetClasses
-		             using: MutantOperator contents
-		             with:
-		             AllTestsMethodsRunningMutantEvaluationStrategy new.
-	result := analysis1 run.
-	result ifTrue: [self cleanUp: newTestClass].
+		testCasesFrom: {newTestClass}
+		mutating: targetClasses
+		using: MutantOperator contents
+		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
+	result := analysis1 runSmallAmp.
+	result
+		ifTrue: [ self cleanUp: newTestClass ].
 	^ analysis1
 ]
 

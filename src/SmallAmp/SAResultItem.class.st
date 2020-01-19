@@ -56,7 +56,7 @@ SAResultItem >> mutalkRunOriginal [
 		mutating: targetClasses
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
-	analysis1 run.
+	analysis1 runSmallAmp.
 	originalAnalysis := analysis1
 ]
 
