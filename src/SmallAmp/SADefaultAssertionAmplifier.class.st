@@ -80,10 +80,15 @@ SADefaultAssertionAmplifier >> flackyTestRepeat [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> ignoreFlakyValuesIn: generatedClass [
-	self flackyTestRepeat timesRepeat: [ 
-		generatedClass observer resetFlakyDetection.
-		generatedClass suite run.
-		generatedClass observer checkFlaky ] "Flaky detection"
+	| x |
+	x := OrderedCollection new.
+	x add: generatedClass observer history.
+	self flackyTestRepeat
+		timesRepeat: [ "Flaky detection"
+			generatedClass observer resetFlakyDetection.
+			generatedClass suite run.
+			x add: generatedClass observer flakyMem.
+			generatedClass observer checkFlaky ]
 ]
 
 { #category : #'as yet unclassified' }

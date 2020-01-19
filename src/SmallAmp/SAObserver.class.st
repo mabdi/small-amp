@@ -55,6 +55,11 @@ SAObserver >> checkFlaky: oldOne with: newOne [
 	oldOne checkFlaky: newOne
 ]
 
+{ #category : #accessing }
+SAObserver >> flakyMem [
+^flakyMem
+]
+
 { #category : #'as yet unclassified' }
 SAObserver >> getASerializer [
 	^ SAStateSerializer new
@@ -136,5 +141,6 @@ SAObserver >> observeTimeOut: duarationInMilliSeconds id: idx [
 { #category : #'as yet unclassified' }
 SAObserver >> resetFlakyDetection [
 	chekingFlaky := true.
-	flankyIdx := 0
+	flankyIdx := 0.
+	flakyMem removeAll
 ]

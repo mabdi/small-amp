@@ -106,7 +106,7 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 	| selectedTests analysis groups result analysis2 survives |
 	selectedTests := OrderedCollection new.
 	analysis := self mutalkRun: aPopulation.
-	groups := aPopulation
+	"groups := aPopulation
 		inject: Dictionary new
 		into: [ :gr :tcase | 
 			gr at: tcase selectorOriginal ifAbsentPut: [ OrderedCollection new ].
@@ -122,11 +122,10 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 						basedOn: analysis)
 						ifTrue: [ selectedTests add: mutatedSelector ] ] ].
 	result := aPopulation
-		select: [ :item | selectedTests includes: item selector ].
+		select: [ :item | selectedTests includes: item selector ]."
 	analysis2 := self mutalkRun: alreadySelectedPopulation.
 	survives := (analysis2 particularResults
-		select:
-			[ :res | res result isNotNil and: [ res result failures isEmpty ] ])
+		select: [ :res | res result isNotNil and: [ res result failures isEmpty ] ])
 		collect: [ :item | item mutant modifiedSource ].
 	analysis particularResults
 		do: [ :item | 
@@ -135,7 +134,7 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 				ifFound: [ :s | 
 					item result
 						ifNotNil: [ item result failures
-								ifNotEmpty: [ selectedTests add: item result failures atRandom selector ] ] ] ].
+								ifNotEmpty: [ selectedTests addAll: (item result failures collect: #selector) ] ] ] ].
 	result := aPopulation
 		select: [ :item | selectedTests includes: item selector ].
 	^ result
