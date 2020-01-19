@@ -78,6 +78,14 @@ SAMuTalkFirstFailOracleReduction >> getAssertTransformer [
 ]
 
 { #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> hasAnySelfCall: newTree [
+	"keep if has any msg call to self"
+
+	^ newTree allChildren
+		anySatisfy: [ :node | node isMessage and: [ node receiver isSelf ] ]
+]
+
+{ #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> installLoggers [
 	reducedTestClass class addInstVarNamed: 'smallamp_logs'.
 	reducedTestClass class
@@ -137,7 +145,7 @@ SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 	self installLoggers.
 	self mutalkRun: reducedTestClass.
 	logs := reducedTestClass logs.
-	self uninstallLoggersBut: logs
+	self uninstallLoggersBut: logs.
 ]
 
 { #category : #'as yet unclassified' }
@@ -161,7 +169,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 		mutating: targetClasses
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
-	analysis1 runSmallAmp.
+	analysis1 run.
 	^ analysis1
 ]
 
@@ -190,6 +198,20 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 ]
 
 { #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
+	| last |
+	last := 0.
+	newTree statements
+		withIndexDo: [ :stmt :idx | 
+			(stmt allChildren
+				anySatisfy: [ :s | s isMessage and: [ s receiver isSelf ] ])
+				ifTrue: [ last := idx ] ].
+	[ newTree statements size > last ]
+		whileTrue: [ newTree statements removeLast ].
+	^ newTree formattedCode 
+]
+
+{ #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
 	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	reducedTestClass class removeSelector: #logs.
@@ -202,5 +224,8 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
 			newTree := self
 				removeAllAssertsAndTransformImportants: listOfIds
 				in: theMethod ast.
-			reducedTestClass compile: newTree formattedCode ]
+			(self hasAnySelfCall: newTree)
+				ifTrue: [ reducedTestClass compile: (self stripMethod: newTree) ] 
+				ifFalse: [ reducedTestClass removeSelector: newTree selector  ]
+				]
 ]

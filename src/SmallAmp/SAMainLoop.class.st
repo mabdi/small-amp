@@ -28,15 +28,15 @@ SAMainLoop >> addPopulationToResult [
 SAMainLoop >> amplify [
 	self methodProfiling.
 	self initialAssertionAmplify.
-	config lite ifFalse: [ 
-		(1 to: config iterations)
-			do: [ :gen | 
-				self strip.
-				self inputAmplification.
-				self assertionAmplification.
-				self selection.
-				self cleanUpAndAddToResult ]
-			displayingProgress: 'Main loop' ].
+	config lite
+		ifFalse: [ (1 to: config iterations)
+				do: [ :gen |
+					self strip.
+					self inputAmplification.
+					self assertionAmplification.
+					self selection.
+					self cleanUpAndAddToResult ]
+				displayingProgress: 'Main loop' ].
 	^ self makeResult
 ]
 
