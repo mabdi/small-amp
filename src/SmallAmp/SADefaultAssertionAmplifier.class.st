@@ -7,21 +7,21 @@ Class {
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
 	| generatedClass aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
-	aMethodAST := self astHelper parsedMethodFrom:
-		              testMethodModel testMethod.
+	aMethodAST := self astHelper
+		parsedMethodFrom: testMethodModel testMethod.
+	
 	self normalizeMethod: aMethodAST.
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
 	self insertObservers: aMethodAST.
 	generatedClass := self
-		                  buildANewClassFor: aMethodAST
-		                  basedOn: testMethodModel testClass.
+		buildANewClassFor: aMethodAST
+		basedOn: testMethodModel testClass.
 	generatedClass suite run.
 	self ignoreFlakyValuesIn: generatedClass.
 	sourceCodeWithAssertions := self
-		                            insertAsserts:
-		                            sourceCodeWithoutObservers
-		                            using: generatedClass observer.
-		self cleanUp: generatedClass.
+		insertAsserts: sourceCodeWithoutObservers
+		using: generatedClass observer.
+	self cleanUp: generatedClass.
 	^ sourceCodeWithAssertions
 ]
 

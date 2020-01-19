@@ -155,6 +155,7 @@ SAAssertGenerator >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
 	theValueNode := RBLiteralValueNode value: observation theValue.
+	(theValueNode asString includesSubstring: '<an unprintable nonliteral value>') ifTrue: [SAUnprintableNonliteralValue new signal].
 	assertStatement := RBMessageNode
 		                   receiver: (RBSelfNode named: 'self')
 		                   selector: #assert:equals:
@@ -300,10 +301,13 @@ SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	
 	observation isFlaky
-	ifTrue: [ asserts add: (self assertType: observation). ]
-		ifFalse: [ asserts add: (self assertPrimitiveValue: observation) ].
+		ifTrue: [ asserts add: (self assertType: observation) ]
+		ifFalse: [ asserts
+				add:
+					([ self assertPrimitiveValue: observation ]
+						on: SAUnprintableNonliteralValue
+						do: [ self assertPrimitiveValueAsString: observation ]) ].
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]

@@ -118,16 +118,24 @@ SAMethodNormalizingRewriter >> transformMessage: aMessageNode assignsTo: aVariab
 	| result |
 	result := OrderedCollection new.
 	aMessageNode receiver isVariable
-		ifTrue: [ result add: (RBAssignmentNode variable: aVariable value: aMessageNode) ].
+		ifTrue: [ result
+				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
 	aMessageNode receiver isCascade
 		ifTrue: [  ].
 	aMessageNode receiver isMessage
-		ifTrue: [ 
-			| tmp |
+		ifTrue: [ | tmp |
 			tmp := self generateATemp.
-			result addAll: (self transformMessage: aMessageNode receiver assignsTo: tmp).
-			result add: (RBAssignmentNode variable: aVariable value: (RBMessageNode receiver: tmp selector: aMessageNode selector arguments: aMessageNode arguments))
-			 ].
+			result
+				addAll: (self transformMessage: aMessageNode receiver assignsTo: tmp).
+			result
+				add:
+					(RBAssignmentNode
+						variable: aVariable
+						value:
+							(RBMessageNode
+								receiver: tmp
+								selector: aMessageNode selector
+								arguments: aMessageNode arguments)) ].
 	^ result
 ]
 
