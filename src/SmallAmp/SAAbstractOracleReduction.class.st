@@ -6,8 +6,8 @@ Class {
 		'newTestClass',
 		'testClass',
 		'targetClasses',
-		'minifiedTestClass',
-		'minifiedAddedTestClass'
+		'reducedTestClass',
+		'reducedAddedTestClass'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -19,18 +19,18 @@ SAAbstractOracleReduction class >> initializeWith: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractOracleReduction >> makeMinifiedResult [
+SAAbstractOracleReduction >> makeReducedResult [
 	^ self subclassResponsibility 
 ]
 
 { #category : #accessing }
-SAAbstractOracleReduction >> minifiedAddedTestClass [
-	^ minifiedAddedTestClass
+SAAbstractOracleReduction >> reducedAddedTestClass [
+	^ reducedAddedTestClass
 ]
 
 { #category : #accessing }
-SAAbstractOracleReduction >> minifiedTestClass [
-	^ minifiedTestClass
+SAAbstractOracleReduction >> reducedTestClass [
+	^ reducedTestClass
 ]
 
 { #category : #'instance creation' }

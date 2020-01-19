@@ -46,21 +46,18 @@ SmallAmp class >> example [
 	config := SAConfig new
 		iterations: 3;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		inputAmplifiers: {SALiteralInputAmplifier};
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier};
+		profiler: 	SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		minifiers:
-			{SANoOracleReduction.
-			SAMuTalkFirstFailOracleReduction.
-			SAMuTalkNeverFailOracleReduction};
+		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		"debug: true;"
 			yourself.
 	result := (self initializeWith: config)
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};
-		amplifyAll.
-		self halt.
-	result createMarkdownTable.
-	
+		amplifyAll
 ]
 
 { #category : #initialization }

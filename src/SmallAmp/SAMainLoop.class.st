@@ -125,30 +125,29 @@ SAMainLoop >> inputAmplifiers [
 
 { #category : #private }
 SAMainLoop >> makeResult [
-	| minifiers generatedClass |
+	| reducers generatedClass |
 	
 		generatedClass :=
 			(self astHelper
 				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
 				using: testClass).
-	minifiers := self minifierFor: generatedClass.
+	reducers := self reducerFor: generatedClass.
 	finalResult
-		minifiedVersions: (minifiers collect: [ :minifier | minifier makeMinifiedResult ]).
+		reducedVersions: (reducers collect: [ :reducer | reducer makeReducedResult ]).
 	^ finalResult
 ]
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
-	self flag: #TODO. "experiment"
-	"targetClasses do: [ :anObjectUnderTest | 
-		SAMethodProfiler classifyClass: anObjectUnderTest ]"
+	config profiler
+		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ]
 ]
 
 { #category : #private }
-SAMainLoop >> minifierFor: aClass [
-	^ config minifiers
-		collect: [ :minifier | 
-			(minifier initializeWith: config)
+SAMainLoop >> reducerFor: aClass [
+	^ config oracleReducions
+		collect: [ :reducer | 
+			(reducer initializeWith: config)
 				with: aClass
 				from: testClass
 				target: targetClasses ]

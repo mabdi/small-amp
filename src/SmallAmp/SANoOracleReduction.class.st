@@ -5,9 +5,9 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SANoOracleReduction >> makeMinifiedResult [
+SANoOracleReduction >> makeReducedResult [
 	| res newClass l methods |
-	res := SAResultMinifiedItem new.
+	res := SAResultReducedItem new.
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
 	methods := methods , (l value: newTestClass).
@@ -15,8 +15,8 @@ SANoOracleReduction >> makeMinifiedResult [
 		buildTestClassWith: methods
 		using: testClass
 		final: true.
-	res minifier: self class.
-	res minifiedClass: newClass.
+	res reducer: self class.
+	res reducedClass: newClass.
 	res analysis: (self mutalkRun: testClass).
 	^ res
 ]

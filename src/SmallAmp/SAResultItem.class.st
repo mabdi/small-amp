@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'failedSelectorInOriginal',
-		'minifiedVersions'
+		'reducedVersions'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -19,11 +19,11 @@ SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 ]
 
 { #category : #accessing }
-SAResultItem >> minifiedVersions [
-	^ minifiedVersions
+SAResultItem >> reducedVersions [
+	^ reducedVersions
 ]
 
 { #category : #accessing }
-SAResultItem >> minifiedVersions: item [
-	minifiedVersions := item
+SAResultItem >> reducedVersions: item [
+	reducedVersions := item
 ]

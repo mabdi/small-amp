@@ -86,7 +86,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		        atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 14.
+	self assert: assertions size equals: 10.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
@@ -95,39 +95,27 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		equals: 'self assert: foo size equals: 3'.
 	self
 		assertSourceCode: (assertions at: 3) formattedCode
-		equals: 'self assert: (foo at: 1) class equals: SmallInteger'.
-	self
-		assertSourceCode: (assertions at: 4) formattedCode
 		equals: 'self assert: foo at: 1 equals: 10'.
 	self
-		assertSourceCode: (assertions at: 5) formattedCode
-		equals: 'self assert: (foo at: 2) class equals: SmallInteger'.
-	self
-		assertSourceCode: (assertions at: 6) formattedCode
+		assertSourceCode: (assertions at: 4) formattedCode
 		equals: 'self assert: foo at: 2 equals: 20'.
 	self
-		assertSourceCode: (assertions at: 7) formattedCode
+		assertSourceCode: (assertions at: 5) formattedCode
 		equals: 'self deny: (foo at: 3) isZero'.
 	self
-		assertSourceCode: (assertions at: 8) formattedCode
-		equals: 'self assert: (foo at: 3) y class equals: SmallInteger'.
-	self
-		assertSourceCode: (assertions at: 9) formattedCode
+		assertSourceCode: (assertions at: 6) formattedCode
 		equals: 'self assert: (foo at: 3) y equals: 1'.
 	self
-		assertSourceCode: (assertions at: 10) formattedCode
+		assertSourceCode: (assertions at: 7) formattedCode
 		equals: 'self deny: (foo at: 3) isFloatPoint'.
 	self
-		assertSourceCode: (assertions at: 11) formattedCode
+		assertSourceCode: (assertions at: 8) formattedCode
 		equals: 'self assert: (foo at: 3) isIntegerPoint'.
 	self
-		assertSourceCode: (assertions at: 12) formattedCode
-		equals: 'self assert: (foo at: 3) x class equals: SmallInteger'.
-	self
-		assertSourceCode: (assertions at: 13) formattedCode
+		assertSourceCode: (assertions at: 9) formattedCode
 		equals: 'self assert: (foo at: 3) x equals: 30'.
 	self
-		assertSourceCode: (assertions at: 14) formattedCode
+		assertSourceCode: (assertions at: 10) formattedCode
 		equals: 'self assert: (foo at: 3) isPoint'
 ]
 
@@ -202,6 +190,7 @@ SAAssertGeneratorTest >> testBuildAssertionType [
 		        values: 1
 		        atDepth: 1.
 	item name: 'foo'.
+	item isFlaky: true.
 	assertions := item buildAssertions: assertGenerator.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
@@ -214,12 +203,9 @@ SAAssertGeneratorTest >> testBuildAssertionValue [
 	item := SAObservationPrimitive newFor: 10 atDepth: 1.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 2.
+	self assert: assertions size equals: 1.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo class equals: SmallInteger'.
-	self
-		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo equals: 10'
 ]
 
@@ -254,12 +240,9 @@ SAAssertGeneratorTest >> testBuildAssertionValueFloat [
 	item := SAObservationPrimitive newFor: 3.14 atDepth: 1.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 2.
+	self assert: assertions size equals: 1.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo class equals: SmallFloat64'.
-	self
-		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo equals: 3.14'
 ]
 
@@ -284,12 +267,9 @@ SAAssertGeneratorTest >> testBuildAssertionValueString [
 	item := SAObservationPrimitive newFor: 'Hello World!' atDepth: 1.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 2.
+	self assert: assertions size equals: 1.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo class equals: ByteString'.
-	self
-		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo equals: ''Hello World!'''
 ]
 

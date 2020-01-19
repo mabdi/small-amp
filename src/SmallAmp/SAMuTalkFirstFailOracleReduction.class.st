@@ -31,7 +31,7 @@ SAMuTalkFirstFailOracleReduction >> astHelper [
 ]
 
 { #category : #private }
-SAMuTalkFirstFailOracleReduction >> cleanAndMinifyMethod: methodast [
+SAMuTalkFirstFailOracleReduction >> cleanAndReduceMethod: methodast [
 	| tobecleaned |
 	tobecleaned := OrderedCollection new.
 	methodast statements
@@ -79,23 +79,23 @@ SAMuTalkFirstFailOracleReduction >> getAssertTransformer [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> installLoggers [
-	minifiedTestClass class addInstVarNamed: 'smallamp_logs'.
-	minifiedTestClass class
+	reducedTestClass class addInstVarNamed: 'smallamp_logs'.
+	reducedTestClass class
 		compile:
 			'logs ^ smallamp_logs ifNil: [ smallamp_logs := OrderedCollection new ]  '.
-	minifiedTestClass
+	reducedTestClass
 		compile: 'smallamp_logs: aString self class logs add: aString'.
-	minifiedTestClass
+	reducedTestClass
 		compile:
 			'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
 	 aBooleanOrBlock value ifFalse: [ self error: ''assert failed'' ]'.
-	minifiedTestClass methods
+	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self
 				addLoggerToAllAsserts: theMethod ast.
-			minifiedTestClass compile: newTree formattedCode ]
+			reducedTestClass compile: newTree formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -119,37 +119,37 @@ SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast 
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> makeMinifiedAddedClass [
+SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
 	| l methods |
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
-	methods := methods , (l value: minifiedTestClass).
-	minifiedAddedTestClass := self astHelper
+	methods := methods , (l value: reducedTestClass).
+	reducedAddedTestClass := self astHelper
 		buildTestClassWith: methods
 		using: testClass
 		final: true
 ]
 
 { #category : #actions }
-SAMuTalkFirstFailOracleReduction >> makeMinifiedClass [
+SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 	| logs |
-	minifiedTestClass := self createDuplicateClass.
+	reducedTestClass := self createDuplicateClass.
 	self installLoggers.
-	self mutalkRun: minifiedTestClass.
-	logs := minifiedTestClass logs.
+	self mutalkRun: reducedTestClass.
+	logs := reducedTestClass logs.
 	self uninstallLoggersBut: logs
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> makeMinifiedResult [
+SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	| res |
-	res := SAResultMinifiedItem new.
-	self makeMinifiedClass.
-	self makeMinifiedAddedClass.
-	res minifier: self class.
-	res minifiedClass: self minifiedAddedTestClass.
-	res analysis: (self mutalkRun: self minifiedAddedTestClass).
-	self cleanUp: minifiedTestClass.
+	res := SAResultReducedItem new.
+	self makeReducedClass.
+	self makeReducedAddedClass.
+	res reducer: self class.
+	res reducedClass: self reducedAddedTestClass.
+	res analysis: (self mutalkRun: self reducedAddedTestClass).
+	self cleanUp: reducedTestClass.
 	^ res
 ]
 
@@ -193,16 +193,16 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
-	minifiedTestClass class removeInstVarNamed: 'smallamp_logs'.
-	minifiedTestClass class removeSelector: #logs.
-	minifiedTestClass removeSelector: #smallamp_logs:.
-	minifiedTestClass removeSelector: #assert:description:resumable:.
-	minifiedTestClass methods
+	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
+	reducedTestClass class removeSelector: #logs.
+	reducedTestClass removeSelector: #smallamp_logs:.
+	reducedTestClass removeSelector: #assert:description:resumable:.
+	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self
 				removeAllAssertsAndTransformImportants: listOfIds
 				in: theMethod ast.
-			minifiedTestClass compile: newTree formattedCode ]
+			reducedTestClass compile: newTree formattedCode ]
 ]
