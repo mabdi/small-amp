@@ -143,15 +143,18 @@ SAMethodNormalizingRewriter >> transformMessage: aMessageNode assignsTo: aVariab
 SAMethodNormalizingRewriter >> transformNewNodes: transformedNodes insteadOf: st [
 	| index steps |
 	steps := OrderedCollection new.
-	index := aMethodAST statements indexOf: st.
-	transformedNodes reverseDo: [ :nd | 
-		steps add: { 
-				(#op -> #add).
-				(#node -> nd).
-				(#afterIndex -> index) } asDictionary ].
-	steps add: { 
-			(#op -> #remove).
-			(#atIndex -> index) } asDictionary.
+	index := aMethodAST statements identityIndexOf: st.
+	transformedNodes
+		reverseDo: [ :nd | 
+			steps
+				add:
+					{(#op -> #add).
+					(#node -> nd).
+					(#afterIndex -> index)} asDictionary ].
+	steps
+		add:
+			{(#op -> #remove).
+			(#atIndex -> index)} asDictionary.
 	^ steps
 ]
 

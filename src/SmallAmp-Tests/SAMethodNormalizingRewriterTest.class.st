@@ -43,6 +43,33 @@ SAMethodNormalizingRewriterTest >> testChain [
 ]
 
 { #category : #tests }
+SAMethodNormalizingRewriterTest >> testDuplicateMessages [
+	| astBefore astAfter |
+	astBefore := self astHelper
+		parsedMethodFrom: 'foo | c |
+	c := PolishCalculator new.
+	c one.
+	c two.
+	c sub.
+	c add.
+	c add.'.
+	astAfter := self astHelper
+		parsedMethodFrom:
+			'foo
+	| c tmp_4i9DOj2lF61 tmp_NqD683Ca6d2 tmp_QzSdLqXCVx3 tmp_MAHhbR3cR04 tmp_cXmrihy6UX5 |
+	c := PolishCalculator new.
+	tmp_4i9DOj2lF61 := c one.
+	tmp_NqD683Ca6d2 := c two.
+	tmp_QzSdLqXCVx3 := c sub.
+	tmp_MAHhbR3cR04 := c add.
+	tmp_cXmrihy6UX5 := c add'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assert: (SAASTHelper new renameTempVars: astBefore dump)
+		equals: (SAASTHelper new renameTempVars: astAfter dump)
+]
+
+{ #category : #tests }
 SAMethodNormalizingRewriterTest >> testNoNormalize [
 	| astBefore astAfter |
 	astBefore := self astHelper parsedMethodFrom:
