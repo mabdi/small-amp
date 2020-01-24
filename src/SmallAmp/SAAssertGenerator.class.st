@@ -72,9 +72,11 @@ SAAssertGenerator >> assertCollectionPrimitiveValues: observation [
 	observation theValue ifEmpty: [ ^ nil ].
 	array := (observation theValue collect: [ :item | item theValue ])
 		asArray.
-	theObject := RBMessageNode
-		receiver: (RBVariableNode named: observation name)
-		selector: #asArray.
+	theObject := observation theClass = Array
+		ifFalse: [ RBMessageNode
+				receiver: (RBVariableNode named: observation name)
+				selector: #asArray ]
+		ifTrue: [ RBVariableNode named: observation name ].
 	theValueNode := RBLiteralArrayNode value: array.
 	(theValueNode asString
 		includesSubstring: '<an unprintable nonliteral value>')
@@ -98,13 +100,15 @@ SAAssertGenerator >> assertCollectionPrimitiveValuesAsString: observation [
 	observation theValue size > self maxCollectionSize
 		ifTrue: [ ^ nil ].
 	observation theValue ifEmpty: [ ^ nil ].
-	array := (observation theValue collect: [ :item | item theValue ])
+	array := (observation theValue collect: [ :item | item theValue asString ])
 		asArray.
-	theObject := RBMessageNode
-		receiver:
-			(RBMessageNode
+	theObject := observation theClass = Array
+		ifFalse: [ RBMessageNode
 				receiver: (RBVariableNode named: observation name)
-				selector: #asArray)
+				selector: #asArray ]
+		ifTrue: [ RBVariableNode named: observation name ].
+	theObject := RBMessageNode
+		receiver: theObject
 		selector: #collect:
 		arguments: {(RBLiteralValueNode value: #asString)}.
 	theValueNode := RBLiteralArrayNode value: array.

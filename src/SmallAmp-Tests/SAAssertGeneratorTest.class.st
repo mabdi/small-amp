@@ -43,8 +43,8 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionSize [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
-		        smallAmpAcceptSerializerVisitor: self getASerializer
-		        atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 3.
@@ -158,7 +158,53 @@ SAAssertGeneratorTest >> testBuildAssertionPrimitiveCollectionValues [
 		equals: 'self assert: foo size equals: 3'.
 	self
 		assertSourceCode: (assertions at: 3) formattedCode
-		equals: 'self assert: foo equals: #( 10 20 30 )'
+		equals: 'self assert: foo  equals: #( 10 20 30 )'
+]
+
+{ #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionPrimitiveCollectionValuesAsString [
+	| arr item assertions |
+	arr := Array with: 10 / 3 with: 20 / 3 with: 30 / 3.
+	item := arr
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 3.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
+	self
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo size equals: 3'.
+	self
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: (foo collect: #asString) equals: #(''(10/3)'' ''(20/3)'' ''10'')'
+]
+
+{ #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionPrimitiveOrderCollection [
+	| arr item assertions |
+	arr := OrderedCollection new.
+	arr
+		add: 10;
+		add: 20;
+		add: 30.
+	item := arr
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 3.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: OrderedCollection'.
+	self
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo size equals: 3'.
+	self
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: foo asArray equals: #( 10 20 30 )'
 ]
 
 { #category : #test }
@@ -166,8 +212,8 @@ SAAssertGeneratorTest >> testBuildAssertionSize [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.
 	item := arr
-		        smallAmpAcceptSerializerVisitor: self getASerializer
-		        atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 3.

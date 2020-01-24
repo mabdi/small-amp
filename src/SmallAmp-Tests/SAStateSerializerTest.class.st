@@ -44,20 +44,18 @@ SAStateSerializerTest >> testArray2D [
 	matrix23 at: 3 at: 1 put: 13.
 	matrix23 at: 3 at: 2 put: 23.
 	item := matrix23
-		        smallAmpAcceptSerializerVisitor: self getASerializer
-		        atDepth: 0.
-	self assert: item class equals: SAObservationCollection.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: item class equals: SAObservationObject.
 	self assert: item theClass equals: Array2D.
 	self assert: item theValue isNotEmpty.
-	self assert: item theValue size equals: 6.
+	self assert: item theValue size equals: 14.
 	s1 := 12
-		      smallAmpAcceptSerializerVisitor:
-		      self getASerializer
-		      atDepth: 0.
-	self assert: (item theValue at: 3) theClass equals: s1 theClass.
-	self assert: (item theValue at: 3) theValue equals: s1 theValue.
-	self assert: (item theValue at: 4) theValue equals: 22.
-	self assert: (item theValue at: 4) theClass equals: SmallInteger
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: (item theValue at: #rowCount) theValue equals: 3.
+	self assert: (item theValue at: #isCollection) theValue. 
+		
 ]
 
 { #category : #tests }

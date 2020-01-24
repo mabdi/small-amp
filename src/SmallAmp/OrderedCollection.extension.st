@@ -7,3 +7,8 @@ OrderedCollection >> collect: aBlock displayingProgress: aStringOrBlock [
 	self do: [ :each | newCollection add: (aBlock value: each) ] displayingProgress: aStringOrBlock.
 	^ newCollection
 ]
+
+{ #category : #'*SmallAmp' }
+OrderedCollection >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
+	^ aVisitor visitCollection: self atDepth: anInteger
+]
