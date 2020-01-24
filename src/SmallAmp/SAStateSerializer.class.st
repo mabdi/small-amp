@@ -56,10 +56,12 @@ SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 	theObject
 		do: [ :item | 
 			| v |
-			v := item
+			v := [ item
 				smallAmpAcceptSerializerVisitor: self
-				atDepth: anInteger + 1.
-			aCollection add: v].
+				atDepth: anInteger + 1 ]
+				on: Error
+				do: [ :ex | nil ].
+			aCollection add: v ].
 	^ SAObservationCollection
 		newForClass: theObject class
 		values: aCollection

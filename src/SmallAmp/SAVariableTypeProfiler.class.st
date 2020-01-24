@@ -49,8 +49,8 @@ SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 	method ast allChildren
 		select: #isVariable
 		thenDo: [ :node | 
-			(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
-				ifTrue: [ self error: 'Sth is wrong' ].
+			"(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
+				ifTrue: [ self error: 'Sth is wrong' ]."
 			node link: self buildMetalink ]
 ]
 
@@ -61,7 +61,7 @@ SAVariableTypeProfiler >> run [
 		buildTestClassWith: testMethods
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
-		do: [ :method | self installMetaLinksOnMethod: method ].
+		do: [ :method | self uninstallMetaLinksOnMethod: method .self installMetaLinksOnMethod: method ].
 	generatedClass suite run.
 	self cleanUp: generatedClass
 ]
@@ -84,6 +84,16 @@ SAVariableTypeProfiler >> testMethods [
 { #category : #accessing }
 SAVariableTypeProfiler >> testMethods: anObject [
 	testMethods := anObject
+]
+
+{ #category : #removing }
+SAVariableTypeProfiler >> uninstallMetaLinksOnMethod: method [
+	method ast allChildren
+		select: #isVariable
+		thenDo: [ :node | 
+			node links
+				select: [ :metalink | metalink metaObject == self ]
+				thenDo: [ :metalink | node removeLink: metalink ] ]
 ]
 
 { #category : #accessing }
