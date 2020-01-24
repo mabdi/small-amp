@@ -72,7 +72,41 @@ SAAssertGenerator >> assertCollectionPrimitiveValues: observation [
 	observation theValue ifEmpty: [ ^ nil ].
 	array := (observation theValue collect: [ :item | item theValue ])
 		asArray.
-	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: (RBVariableNode named: observation name)
+		selector: #asArray.
+	theValueNode := RBLiteralArrayNode value: array.
+	(theValueNode asString
+		includesSubstring: '<an unprintable nonliteral value>')
+		ifTrue: [ SAUnprintableNonliteralValue new signal ].
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> assertCollectionPrimitiveValuesAsString: observation [
+	| assertStatement theObject theValueNode array |
+	(observation theValue allSatisfy: [ :item | item isNil ])
+		ifTrue: [ ^ nil ].
+	(observation theValue allSatisfy: [ :item | item isPrimitive ])
+		ifFalse: [ ^ nil ].
+	observation theValue size > self maxCollectionSize
+		ifTrue: [ ^ nil ].
+	observation theValue ifEmpty: [ ^ nil ].
+	array := (observation theValue collect: [ :item | item theValue ])
+		asArray.
+	theObject := RBMessageNode
+		receiver:
+			(RBMessageNode
+				receiver: (RBVariableNode named: observation name)
+				selector: #asArray)
+		selector: #collect:
+		arguments: {(RBLiteralValueNode value: #asString)}.
 	theValueNode := RBLiteralArrayNode value: array.
 	assertStatement := RBMessageNode
 		receiver: (RBSelfNode named: 'self')
@@ -233,13 +267,17 @@ SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
 	assertStatements add: (self assertType: observation).
-	assertStatements add: (observation theValue isEmpty
-			 ifTrue: [ self assertEmpty: observation ]
-			 ifFalse: [ self assertCollectionSize: observation ]).
-	assertStatements add:
-		(self assertCollectionPrimitiveValues: observation).
-	assertStatements addAll:
-		(self assertCollectionIncludeValues: observation).
+	assertStatements
+		add:
+			(observation theValue isEmpty
+				ifTrue: [ self assertEmpty: observation ]
+				ifFalse: [ self assertCollectionSize: observation ]).
+	assertStatements
+		add: ([ self assertCollectionPrimitiveValues: observation ]
+		on: SAUnprintableNonliteralValue
+		do: [ self assertCollectionPrimitiveValuesAsString: observation ]).
+	assertStatements
+		addAll: (self assertCollectionIncludeValues: observation).
 	"assertStatements add:
 		(self buildAssertionsObjectObservation: observation)."
 	assertStatements := assertStatements reject: #isNil.
