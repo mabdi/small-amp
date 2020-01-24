@@ -65,7 +65,7 @@ SADrTestsPlugin >> makeTreeResult: smallAmpResult [
 
 { #category : #accessing }
 SADrTestsPlugin >> pragmaForResultTrees [
-	^ #'dtTestCoverageResultTreeNamed:order:'
+	^ #dtSmallAmpResultTreeNamed:order:
 ]
 
 { #category : #api }

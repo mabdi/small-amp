@@ -42,11 +42,18 @@ SADrTestsResult >> amplifiedClasses [
 
 { #category : #accessing }
 SADrTestsResult >> buildTreeForUI [
-	<dtTestCoverageResultTreeNamed: 'Output of SmallAmp' order: 1>
+	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
 			{self mutationScores.
-			self amplifiedClasses}	
+			self amplifiedClasses}
+]
+
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> buildTreeInspectResult [
+	<dtSmallAmpResultTreeNamed: 'Inspect the result' order: 2>
+	self smallAmpResult ifNotNil: [ :a | a inspect ].
+	^ DTTreeNode new subResults: {}
 ]
 
 { #category : #accessing }
