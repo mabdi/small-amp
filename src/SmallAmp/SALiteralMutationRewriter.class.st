@@ -29,6 +29,11 @@ SALiteralMutationRewriter >> initialize [
 	mutator := self mutator
 ]
 
+{ #category : #visiting }
+SALiteralMutationRewriter >> mutationsOfArrayNode: anArrayNode [
+	^ mutator mutateArrayNode: anArrayNode
+]
+
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> mutationsOfLiteralNode: aLiteralNode [
 	^ mutator mutateNode: aLiteralNode
@@ -65,6 +70,14 @@ SALiteralMutationRewriter >> run [
 	mappings do: [ :map | 
 		results addAll: (self replaceMappings: map on: aMethodAST) ].
 	^ results
+]
+
+{ #category : #visiting }
+SALiteralMutationRewriter >> visitArrayNode: anArrayNode [
+	| mutants |
+	mutants := self mutationsOfArrayNode: anArrayNode.
+	mappings add: anArrayNode -> mutants.
+	super visitArrayNode: anArrayNode
 ]
 
 { #category : #visiting }

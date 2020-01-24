@@ -26,6 +26,29 @@ SALiteralMutator >> insertRandom: aStr [
 ]
 
 { #category : #'as yet unclassified' }
+SALiteralMutator >> mutateArrayNode: aNode [
+	| nodes toRepeat ns |
+	nodes := OrderedCollection new.
+	nodes add: (RBArrayNode statements: {}).
+	toRepeat := aNode statements first copy.
+	nodes
+		add:
+			(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ])).
+	nodes
+		add:
+			(RBArrayNode
+				statements: (aNode statements collect: [ :s | RBLiteralValueNode value: nil ])).
+	ns := aNode statements collect: [ :s | s copy ].
+	ns add: (RBLiteralValueNode value: nil).
+	nodes
+		add:
+			(RBArrayNode
+				statements:
+					ns).
+	^ nodes
+]
+
+{ #category : #'as yet unclassified' }
 SALiteralMutator >> mutateCharacter: aValue [
 	|nodes|
 	nodes := OrderedCollection new.
