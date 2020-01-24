@@ -17,7 +17,8 @@ Class {
 
 { #category : #accessing }
 SADrTestsResult >> amplifiedClasses [
-	^ smallAmpResult results values
+	| subs |
+	subs := smallAmpResult results values
 		collect: [ :x | 
 			DTTreeNode new
 				name: x testClass name;
@@ -28,9 +29,15 @@ SADrTestsResult >> amplifiedClasses [
 						yourself).
 					(DTTreeNode new
 						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
-						subResults: (x reducedVersions first reducedClass methods collect: #asResultForDrTest);
+						subResults:
+							(x reducedVersions first reducedClass methods
+								collect: #asResultForDrTest);
 						yourself)};
-				yourself ]
+				yourself ].
+			^(DTTreeNode new
+				name: 'Amplified TestCase';
+				subResults: subs;
+				yourself)
 ]
 
 { #category : #accessing }
@@ -38,52 +45,52 @@ SADrTestsResult >> buildTreeForUI [
 	<dtTestCoverageResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
-			{(DTTreeNode new
-				name: 'Skipped test methods';
-				subResults: self skippedTestMethods;
-				yourself).
-			(DTTreeNode new
-				name: 'Mutation scores';
-				subResults: self mutationScores;
-				yourself).
-			(DTTreeNode new
-				name: 'Amplified TestCase';
-				subResults: self amplifiedClasses;
-				yourself)}
+			{self mutationScores.
+			self amplifiedClasses}	
 ]
 
 { #category : #accessing }
 SADrTestsResult >> mutationScores [
-	^ smallAmpResult results values
+	| subs |
+	subs := smallAmpResult results values
 		collect: [ :x | 
 			DTTreeNode new
 				name: x testClass name;
 				subResults:
 					{(DTTreeNode new
 						name:
-							x testClass name, ': %'
+							x testClass name , ': %'
 								, x originalAnalysis generalResult mutationScore asString;
 						subResults: {};
 						yourself).
 					(DTTreeNode new
 						name:
-							x reducedVersions first reducedClass name, ': %'
+							x reducedVersions first reducedClass name , ': %'
 								, x reducedVersions first analysis generalResult mutationScore asString;
 						subResults: {};
 						yourself)};
-				yourself ]
+				yourself ].
+	^ DTTreeNode new
+		name: 'Mutation scores';
+		subResults: subs;
+		yourself
 ]
 
 { #category : #accessing }
 SADrTestsResult >> skippedTestMethods [
-	^ smallAmpResult results values
+	| subs |
+	subs := smallAmpResult results values
 		collect: [ :x | 
 			DTTreeNode new
 				name: x testClass name;
 				subResults:
 					(x failedSelectorInOriginal asOrderedCollection
 						collect: #asResultForDrTest);
-				yourself ]
+				yourself ].
+			^ DTTreeNode new
+				name: 'Skipped test methods';
+				subResults: subs;
+				yourself
 ]
 
 { #category : #accessing }
