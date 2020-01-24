@@ -22,7 +22,7 @@ SADrTestsPlugin class >> pluginName [
 
 { #category : #'api - accessing' }
 SADrTestsPlugin class >> pluginResultClass [
-	^ DTTestCoverageResult
+	^ SADrTestsResult 
 ]
 
 { #category : #'api - accessing' }
@@ -46,10 +46,6 @@ SADrTestsPlugin >> firstListLabel [
 ]
 
 { #category : #api }
-SADrTestsPlugin >> hasTestTarget: testClass [
-]
-
-{ #category : #api }
 SADrTestsPlugin >> itemsToBeAnalysedFor: packagesSelected [
 	"This method returns the items to be analysed by the plugin.
 	For most plugins it will be TestCases but some plugins will return other objects like comments."
@@ -63,7 +59,7 @@ SADrTestsPlugin >> itemsToBeAnalysedFor: packagesSelected [
 SADrTestsPlugin >> makeTreeResult: smallAmpResult [
 	| result |
 	result := self pluginResultClass new.
-	self halt.
+	result smallAmpResult: smallAmpResult.
 	^ result
 ]
 
@@ -79,14 +75,13 @@ SADrTestsPlugin >> resultButtonHelp [
 
 { #category : #api }
 SADrTestsPlugin >> runForConfiguration: aDTpluginConfiguration [
-	| result smallAmp smallAmpResult |
-	
+	|  smallAmp smallAmpResult |
 	smallAmp := SmallAmp initializeWith: self smallAmpDefaultConfig.
 	aDTpluginConfiguration items
 		do:
 			[ :i | smallAmp testCase: i targets: (SADrTestsRunInput from: i) testTarget ].
 	smallAmpResult := smallAmp amplifyAll.
-	^ self makeTreeResult: smallAmpResult .
+	^ self makeTreeResult: smallAmpResult
 ]
 
 { #category : #api }
@@ -94,17 +89,10 @@ SADrTestsPlugin >> secondListLabel [
 	^ 'Test classes with targets'
 ]
 
-{ #category : #api }
-SADrTestsPlugin >> setSelectionModeOfItemsList: aListPresenter [
-	aListPresenter
-		beSingleSelection;
-		unselectAll
-]
-
 { #category : #'as yet unclassified' }
 SADrTestsPlugin >> smallAmpDefaultConfig [
 	^ SAConfig new
-		iterations: 3;
+		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
@@ -112,8 +100,9 @@ SADrTestsPlugin >> smallAmpDefaultConfig [
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		"debug: true;"
-			yourself.
+		debug: false;
+		lite: false;
+		yourself
 ]
 
 { #category : #api }

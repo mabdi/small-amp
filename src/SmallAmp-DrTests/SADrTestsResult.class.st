@@ -10,45 +10,90 @@ Class {
 	#name : #SADrTestsResult,
 	#superclass : #DTPluginResult,
 	#instVars : [
-		'methodList',
-		'percent'
+		'smallAmpResult'
 	],
 	#category : #'SmallAmp-DrTests'
 }
 
 { #category : #accessing }
+SADrTestsResult >> amplifiedClasses [
+	^ smallAmpResult results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					{(DTTreeNode new
+						name: 'Original (' , x testClass name , '):';
+						subResults: (x testClass methods collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
+						subResults: (x reducedVersions first reducedClass methods collect: #asResultForDrTest);
+						yourself)};
+				yourself ]
+]
+
+{ #category : #accessing }
 SADrTestsResult >> buildTreeForUI [
-	<dtTestCoverageResultTreeNamed: 'List of uncovered methods' order: 1>
+	<dtTestCoverageResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
 			{(DTTreeNode new
-				name: (percent * 100 printShowingDecimalPlaces: 2) , ' % Code Coverage';
-				subResults: {};
+				name: 'Skipped test methods';
+				subResults: self skippedTestMethods;
 				yourself).
 			(DTTreeNode new
-				name: 'Uncovered methods';
-				subResults: (self methodList collect: #asResultForDrTest);
+				name: 'Mutation scores';
+				subResults: self mutationScores;
+				yourself).
+			(DTTreeNode new
+				name: 'Amplified TestCase';
+				subResults: self amplifiedClasses;
 				yourself)}
 ]
 
 { #category : #accessing }
-SADrTestsResult >> methodList [
-	^methodList
+SADrTestsResult >> mutationScores [
+	^ smallAmpResult results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					{(DTTreeNode new
+						name:
+							x testClass name, ': %'
+								, x originalAnalysis generalResult mutationScore asString;
+						subResults: {};
+						yourself).
+					(DTTreeNode new
+						name:
+							x reducedVersions first reducedClass name, ': %'
+								, x reducedVersions first analysis generalResult mutationScore asString;
+						subResults: {};
+						yourself)};
+				yourself ]
 ]
 
 { #category : #accessing }
-SADrTestsResult >> methodList: aCollectionOfMethods [
-	methodList := aCollectionOfMethods
+SADrTestsResult >> skippedTestMethods [
+	^ smallAmpResult results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					(x failedSelectorInOriginal asOrderedCollection
+						collect: #asResultForDrTest);
+				yourself ]
 ]
 
 { #category : #accessing }
-SADrTestsResult >> percent [
-	^ percent
+SADrTestsResult >> smallAmpResult [
+	^ smallAmpResult
 ]
 
 { #category : #accessing }
-SADrTestsResult >> percent: anObject [
-	percent := anObject
+SADrTestsResult >> smallAmpResult: obj [
+	smallAmpResult:= obj
 ]
 
 { #category : #accessing }
@@ -58,7 +103,7 @@ SADrTestsResult >> summarizeInfo [
 	^ String
 		streamContents: [ :s | 
 			s
-				<< (percent*100 printShowingDecimalPlaces: 2);
+				<< (30 printShowingDecimalPlaces: 2);
 				<< ' % Code Coverage';
 				<< String cr;
 				<< 'Uncovered methods:';
