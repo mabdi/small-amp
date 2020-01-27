@@ -36,7 +36,7 @@ SAMainLoop >> amplify [
 					self assertionAmplification.
 					self selection.
 					self cleanUpAndAddToResult ]
-				displayingProgress: 'Main loop' ].
+				displayingProgress: 'Main loop',' (', config iterations asString , ')' ].
 	^ self makeResult
 ]
 
@@ -46,7 +46,7 @@ SAMainLoop >> assertionAmplification [
 		do: [ :tcase | 
 			self assertionAmplifiers do: [ :amplifier | 
 				tcase assertionAmplifyBy: (amplifier ) ] ]
-		displayingProgress: 'Assertion Amplification'
+		displayingProgress: 'Assertion Amplification',' (', population size asString , ')'
 ]
 
 { #category : #asserting }
@@ -95,7 +95,7 @@ SAMainLoop >> initialAssertionAmplify [
 			self assertionAmplifiers do: [ :amplifier | 
 				tcase assertionAmplifyBy: amplifier ].
 			tcase cleanUp ]
-		displayingProgress: 'Assertion Amplification'.
+		displayingProgress: 'Assertion Amplification',' (', aPopulation size asString , ')'.
 	resultPeople addAll: aPopulation 
 ]
 
@@ -113,7 +113,7 @@ SAMainLoop >> inputAmplification [
 		do: [ :tcase | 
 			self inputAmplifiers do: [ :amplifier | 
 				newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification'.
+		displayingProgress: 'Input Amplification',' (', population size asString , ')'.
 	population addAll: newcodes
 ]
 
