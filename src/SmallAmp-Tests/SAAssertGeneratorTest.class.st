@@ -21,6 +21,48 @@ SAAssertGeneratorTest >> setUp [
 ]
 
 { #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
+	| arr item assertions |
+	arr := Array with: 10 with: 20 @ 10 with: 30.
+	item := arr
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 10.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: Array'.
+	self
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo size equals: 3'.
+	self
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self assert: (foo at: 1) equals: 10'.
+	self
+		assertSourceCode: (assertions at: 4) formattedCode
+		equals: 'self deny: (foo at: 2) isZero'.
+	self
+		assertSourceCode: (assertions at: 5) formattedCode
+		equals: 'self assert: (foo at: 2) y equals: 10'.
+	self
+		assertSourceCode: (assertions at: 6) formattedCode
+		equals: 'self deny: (foo at: 2) isFloatPoint'.
+	self
+		assertSourceCode: (assertions at: 7) formattedCode
+		equals: 'self assert: (foo at: 2) isIntegerPoint'.
+	self
+		assertSourceCode: (assertions at: 8) formattedCode
+		equals: 'self assert: (foo at: 2) x equals: 20'.
+	self
+		assertSourceCode: (assertions at: 9) formattedCode
+		equals: 'self assert: (foo at: 2) isPoint'.
+	self
+		assertSourceCode: (assertions at: 10) formattedCode
+		equals: 'self assert: (foo at: 3) equals: 30'
+]
+
+{ #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 	| arr item assertions |
 	arr := Array new.
@@ -95,10 +137,10 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		equals: 'self assert: foo size equals: 3'.
 	self
 		assertSourceCode: (assertions at: 3) formattedCode
-		equals: 'self assert: foo at: 1 equals: 10'.
+		equals: 'self assert: (foo at: 1) equals: 10'.
 	self
 		assertSourceCode: (assertions at: 4) formattedCode
-		equals: 'self assert: foo at: 2 equals: 20'.
+		equals: 'self assert: (foo at: 2) equals: 20'.
 	self
 		assertSourceCode: (assertions at: 5) formattedCode
 		equals: 'self deny: (foo at: 3) isZero'.

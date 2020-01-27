@@ -12,6 +12,7 @@ SAAssertGenerator class >> blockPlaceHolder [
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> appendCollectionMyName: name ToAssert: aRBMessageNode [
 	| newNode newName |
+	
 	newName := (aRBMessageNode arguments at: 1) formattedCode
 		       copyWithRegex: self temp_arrayElementNamePrefix , '(\d+)'
 		       matchesTranslatedUsing: [ :each | 
@@ -19,12 +20,14 @@ SAAssertGenerator >> appendCollectionMyName: name ToAssert: aRBMessageNode [
 			       , (each allButFirst: self temp_arrayElementNamePrefix size)
 			       , ')' ].
 		newNode := RBParser parseExpression: newName.
+		newNode parent: aRBMessageNode.
 	aRBMessageNode arguments at: 1 put: newNode
 ]
 
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 	| tmp msgNode |
+	
 	tmp := aRBMessageNode arguments at: 1.
 	(tmp formattedCode prefixMatchesRegex: '\(+')
 		ifTrue: [ msgNode := RBParser
@@ -54,6 +57,7 @@ SAAssertGenerator >> assertCollectionIncludeValues: observation [
 			assertStatements
 				addAll: ((observation theValue at: index) buildAssertions: self) ].
 	assertStatements := assertStatements reject: #isNil.
+	
 	assertStatements
 		do:
 			[ :assertion | self appendCollectionMyName: observation name ToAssert: assertion ].
