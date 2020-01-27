@@ -76,6 +76,7 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
+	self preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
@@ -94,6 +95,14 @@ SmallAmp >> initializeWith: aConfig [
 	self initialize. 
 	config := aConfig.
 	
+]
+
+{ #category : #actions }
+SmallAmp >> preRunChecks [
+	CompiledMethod compilerClass compiler compilationContext encoderClass
+		= EncoderForSistaV1
+		ifFalse:
+			[ Warning new signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ]
 ]
 
 { #category : #adding }
