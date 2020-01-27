@@ -63,6 +63,14 @@ SADrTestsPlugin >> makeTreeResult: smallAmpResult [
 	^ result
 ]
 
+{ #category : #'as yet unclassified' }
+SADrTestsPlugin >> oldPragmaForResultTrees [
+	"My subclasses implement this method to return the old pragma that was used to declare tree views.
+	 I will be removed once the migration will be achieved.
+	"
+	^ #olddtSmallAmpResultTreeNamed:order:
+]
+
 { #category : #accessing }
 SADrTestsPlugin >> pragmaForResultTrees [
 	^ #dtSmallAmpResultTreeNamed:order:

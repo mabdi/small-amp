@@ -16,7 +16,7 @@ BaselineOfSmallAmp >> baseline: spec [
 			package: 'SmallAmp-Tests'
 			with: [ spec requires: #( 'SmallAmp' ) ].
 		spec
-			package: 'DrTests-SmallAmp'
+			package: 'SmallAmp-DrTests'
 			with: [ spec requires: #( 'SmallAmp' ) ].
 		spec
 			package: 'SmallAmp-Spec'
