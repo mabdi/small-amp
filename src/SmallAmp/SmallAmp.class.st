@@ -46,6 +46,7 @@ SmallAmp class >> example [
 	config := SAConfig new
 		iterations: 3;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 3;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};

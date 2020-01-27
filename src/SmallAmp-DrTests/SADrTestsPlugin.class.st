@@ -102,6 +102,7 @@ SADrTestsPlugin >> smallAmpDefaultConfig [
 	^ SAConfig new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 3;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};

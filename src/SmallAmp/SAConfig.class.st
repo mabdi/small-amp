@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'inputAmplifiers',
+		'flackyTestRepeat',
 		'assertionAmplifiers',
 		'iterations',
 		'debug',
@@ -33,6 +34,16 @@ SAConfig >> debug [
 { #category : #accessing }
 SAConfig >> debug: anObject [
 	debug := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> flackyTestRepeat [
+	^ flackyTestRepeat
+]
+
+{ #category : #accessing }
+SAConfig >> flackyTestRepeat: anObject [
+	flackyTestRepeat := anObject
 ]
 
 { #category : #accessing }
