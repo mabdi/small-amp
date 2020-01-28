@@ -23,39 +23,58 @@ SAObserverInsertingRewriter >> initialize [
 
 { #category : #'as yet unclassified' }
 SAObserverInsertingRewriter >> insertObservers: aMethod [
-	targetNodes do: [ :aNode | 
-		| idx theReceiver theSelector a b |
-		idx := aMethod body statements indexOf: aNode.
-		theReceiver := nil.
-		theSelector := nil.
-		aNode value class = RBCascadeNode ifTrue: [ 
-			theReceiver := (aNode value messages at: 1) receiver.
-			theSelector := aNode value messages last selector ].
-		aNode value class = RBMessageNode ifTrue: [ 
-			theReceiver := aNode value receiver.
-			theSelector := aNode value selector ].
-		theReceiver ifNotNil: [ 
-			theReceiver isVariable ifTrue: [ 
-				a := RBParser parseExpression: '[]
+	targetNodes
+		do: [ :aNode | 
+			| idx theReceiver theSelector a b |
+			idx := aMethod body statements indexOf: aNode.
+			theReceiver := nil.
+			theSelector := nil.
+			aNode value class = RBCascadeNode
+				ifTrue: [ theReceiver := (aNode value messages at: 1) receiver.
+					theSelector := aNode value messages last selector ].
+			aNode value class = RBMessageNode
+				ifTrue: [ theReceiver := aNode value receiver.
+					theSelector := aNode value selector ].
+			theReceiver
+				ifNotNil: [ theReceiver isVariable
+						ifTrue: [ a := RBParser
+								parseExpression:
+									'[]
 		on: Error
 		do: [ :ex | 
 			self class observer observeException: ex id: ' , idx asString , ']'.
-				b := RBParser parseExpression:
-					     '[|smallamp_elapsedTime noObserve| noObserve:=false. smallamp_elapsedTime := Time
-		millisecondsToRun: [ [ ' , aNode formattedCode , ' ]
+							b := RBParser
+								parseExpression:
+									'[|smallamp_elapsedTime noObserve| noObserve:=false. smallamp_elapsedTime := Time
+		millisecondsToRun: [ [ ' , aNode formattedCode
+										,
+											' ]
 		valueWithin: 999 milliSeconds
 		onTimeout: [ self class observer observeTimeOut: 1000 id: '
-					     , idx asString , '. noObserve:=true  ] ].
+										, idx asString
+										,
+											'. noObserve:=true  ] ].
 	noObserve ifFalse: [ [self class observer observe: '
-					     , theReceiver formattedCode , ' name: ''' , theReceiver formattedCode
-					     , ''' id: ' , idx asString , '.
-	self class observer observeResult: ' , aNode variable name , '
-		receiver: ' , theReceiver formattedCode , '
-		selector: #' , theSelector asString , '
-		name: #' , aNode variable name , '
-		id: ' , idx asString , ' ] on: Exception do: [ self halt ] ] ]'.
-				a receiver: b.
-				aMethod body statements at: idx put: a ] ] ]
+										, theReceiver formattedCode , ' name: '''
+										, theReceiver formattedCode , ''' id: ' , idx asString
+										,
+											'.
+	self class observer observeResult: ' , aNode variable name
+										,
+											'
+		receiver: ' , theReceiver formattedCode
+										,
+											'
+		selector: #' , theSelector asString
+										,
+											'
+		name: #' , aNode variable name
+										,
+											'
+		id: ' , idx asString
+										, ' ] on: Error do: [ :saERR | self halt ] ] ]'.
+							a receiver: b.
+							aMethod body statements at: idx put: a ] ] ]
 ]
 
 { #category : #'as yet unclassified' }

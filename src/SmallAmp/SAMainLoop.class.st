@@ -30,13 +30,13 @@ SAMainLoop >> amplify [
 	self initialAssertionAmplify.
 	config lite
 		ifFalse: [ (1 to: config iterations)
-				do: [ :gen |
+				do: [ :gen | 
 					self strip.
 					self inputAmplification.
 					self assertionAmplification.
 					self selection.
 					self cleanUpAndAddToResult ]
-				displayingProgress: 'Main loop',' (', config iterations asString , ')' ].
+				displayingProgress: 'Main loop' , ' (' , config iterations asString , ')' ].
 	^ self makeResult
 ]
 
