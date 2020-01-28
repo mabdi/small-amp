@@ -48,6 +48,11 @@ SAStateSerializer >> visitByteString: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitByteSymbol: theObject atDepth: anInteger [
+^ self visitPrimitive: theObject atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitChar: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]
@@ -74,6 +79,12 @@ SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitCompiledCode: object atDepth: anInteger [
+self flag: #TODO. ""
+^ nil
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitFalse: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationFalse newAtDepth: anInteger
@@ -86,25 +97,28 @@ SAStateSerializer >> visitNumber: theObject atDepth: anInteger [
 
 { #category : #visiting }
 SAStateSerializer >> visitObject: theObject atDepth: anInteger [
-	| result methods |
-	anInteger > self maxDepth ifTrue: [ ^ nil ].
-	result := Dictionary new.
-	methods := self filterObserversOn: theObject .
-	methods do: [ :l | 
-		| retVal v |
-		[ "anInteger = 0 ifTrue: [self halt]."
-		retVal := theObject perform: l selector.
-		retVal == theObject ifFalse: [ 
-			v := retVal
-				     smallAmpAcceptSerializerVisitor: self
-				     atDepth: anInteger + 1 ] ]
-			on: Error
-			do: [ :ex | nil ].
-		v ifNotNil: [ result at: l selector put: v ] ].
-	^ SAObservationObject
-		  newForClass: theObject class
-		  values: result
-		  atDepth: anInteger
+| result methods |
+anInteger > self maxDepth
+ifTrue: [ ^ nil ].
+result := Dictionary new.
+methods := self filterObserversOn: theObject.
+methods
+do: [ :l | 
+| retVal v |
+
+[ "anInteger = 0 ifTrue: [self halt]."
+retVal := theObject perform: l selector.
+retVal == theObject
+ifFalse: [ v := retVal
+smallAmpAcceptSerializerVisitor: self
+atDepth: anInteger + 1 ] ]
+on: Error
+do: [ :ex | nil ].
+v ifNotNil: [ result at: l selector put: v ] ].
+^ SAObservationObject
+newForClass: theObject class
+values: result
+atDepth: anInteger
 ]
 
 { #category : #visiting }
