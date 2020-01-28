@@ -303,6 +303,14 @@ SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 ]
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsCompiledCode: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	asserts add: (self assertType: observation).
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> buildAssertionsErrorObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.

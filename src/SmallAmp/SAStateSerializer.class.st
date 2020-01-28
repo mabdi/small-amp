@@ -38,8 +38,12 @@ SAStateSerializer >> maxSuperClass [
 ]
 
 { #category : #visiting }
-SAStateSerializer >> visitBlockClosure: object atDepth: anInteger [
-	^ self visitBlockClosure: object atDepth: anInteger
+SAStateSerializer >> visitBlockClosure: theObject atDepth: anInteger [
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	^ SAObservationBlockClosure
+		newFor: theObject 
+		atDepth: anInteger
 ]
 
 { #category : #visiting }
@@ -79,9 +83,10 @@ SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
-SAStateSerializer >> visitCompiledCode: object atDepth: anInteger [
-self flag: #TODO. ""
-^ nil
+SAStateSerializer >> visitCompiledCode: theObject atDepth: anInteger [
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	^ SAObservationCompiledCode newFor: theObject atDepth: anInteger
 ]
 
 { #category : #visiting }
