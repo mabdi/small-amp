@@ -46,6 +46,7 @@ SADrTestsResult >> buildTreeForUI [
 	^ DTTreeNode new
 		subResults:
 			{self mutationScores.
+			self skippedTestMethods.
 			self amplifiedClasses}
 ]
 

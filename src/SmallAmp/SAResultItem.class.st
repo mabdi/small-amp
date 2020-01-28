@@ -55,7 +55,7 @@ SAResultItem >> mutalkRunOriginal [
 		testCasesFrom: {testClass}
 		mutating: targetClasses
 		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
+		with: (IgnoreFailingTestsMethodsEvaluationStrategy newWith: self failedSelectorInOriginal).
 	analysis1 runSmallAmp.
 	originalAnalysis := analysis1
 ]

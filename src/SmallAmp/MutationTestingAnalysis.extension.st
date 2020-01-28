@@ -24,7 +24,7 @@ MutationTestingAnalysis >> runSmallAmp [
 	those classes) and execute all mutants in the set of testClases.
 	We obtain a result for each mutant generated"
 
-	^ [ testCases do: [ :aTestCase | aTestCase run ].
+	^ [ (mutantsEvaluationStrategy testCasesToEvaluate: testCases for: self) do: [ :aTestCase | aTestCase run ].
 	logger logAnalysisStartFor: self.
 	elapsedTime := Time
 		millisecondsToRun: [ self generateCoverageAnalysis.

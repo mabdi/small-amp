@@ -81,6 +81,34 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 ]
 
 { #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
+	|  item assertions obj |
+	obj := TestObject new field1: (Array with: 10 with: 20 /3 with: 30).
+	
+	item := obj
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 4.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo field1 class equals: Array'.
+	self
+		assertSourceCode: (assertions at: 2) formattedCode
+		equals: 'self assert: foo field1 size equals: 3'.
+	self
+		assertSourceCode: (assertions at: 3) formattedCode
+		equals: 'self
+	assert: (foo field1 collect: #asString)
+	equals: #(''10'' ''(20/3)'' ''30'')'.
+	self
+		assertSourceCode: (assertions at: 4) formattedCode
+		equals: 'self assert: foo field2 isNil'.
+	
+]
+
+{ #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionSize [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30.

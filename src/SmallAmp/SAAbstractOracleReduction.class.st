@@ -7,7 +7,8 @@ Class {
 		'testClass',
 		'targetClasses',
 		'reducedTestClass',
-		'reducedAddedTestClass'
+		'reducedAddedTestClass',
+		'ignoredTestMethods'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -16,6 +17,16 @@ Class {
 SAAbstractOracleReduction class >> initializeWith: aConfig [
 	^ self new
 		  with: aConfig
+]
+
+{ #category : #accessing }
+SAAbstractOracleReduction >> ignoredTestMethods [
+	^ ignoredTestMethods
+]
+
+{ #category : #accessing }
+SAAbstractOracleReduction >> ignoredTestMethods: anObject [
+	ignoredTestMethods := anObject
 ]
 
 { #category : #'as yet unclassified' }

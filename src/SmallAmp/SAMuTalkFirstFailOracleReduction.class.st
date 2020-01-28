@@ -130,7 +130,10 @@ SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast 
 SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
 	| l methods |
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
-	methods := l value: testClass.
+	
+	methods := (testClass testSelectors
+		reject: [ :s | (self ignoredTestMethods collect: #selector) includes: s ])
+		collect: [ :s | (testClass methodNamed: s) sourceCode ].
 	methods := methods , (l value: reducedTestClass).
 	reducedAddedTestClass := self astHelper
 		buildTestClassWith: methods

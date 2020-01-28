@@ -132,7 +132,7 @@ SAMainLoop >> makeResult [
 	reducers := self reducerFor: generatedClass.
 	finalResult mutalkRunOriginal.
 	finalResult
-		reducedVersions: (reducers collect: [ :reducer | reducer makeReducedResult ]).
+		reducedVersions: (reducers collect: [ :reducer | reducer ignoredTestMethods: finalResult failedSelectorInOriginal. reducer makeReducedResult ]).
 	^ finalResult
 ]
 

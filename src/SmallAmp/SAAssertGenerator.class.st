@@ -37,6 +37,7 @@ SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 						matchesTranslatedUsing: [ :b | b , name , ' ' ]) ]
 		ifFalse:
 			[ msgNode := RBParser parseExpression: name , ' ' , tmp formattedCode ].
+		msgNode parent: aRBMessageNode .
 	aRBMessageNode arguments at: 1 put: msgNode
 ]
 
