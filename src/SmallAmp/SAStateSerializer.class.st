@@ -38,6 +38,11 @@ SAStateSerializer >> maxSuperClass [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitBlockClosure: object atDepth: anInteger [
+	^ self visitBlockClosure: object atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitByteString: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]

@@ -272,6 +272,15 @@ SAAssertGenerator >> assertType: observation [
 ]
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	asserts add: (self assertType: observation).
+	asserts add: (self assertPrimitiveValueAsString: observation).
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
