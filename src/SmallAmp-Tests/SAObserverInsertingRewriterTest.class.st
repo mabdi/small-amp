@@ -45,8 +45,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			selector: #bar
 			name: #a
 			id: 1 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [ :saERR| self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 1 ].
 	[ 
@@ -72,8 +72,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			selector: #with:
 			name: #tmp1
 			id: 2 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [ :saERR | self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
@@ -115,8 +115,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			selector: #bar
 			name: #tmp1
 			id: 1 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [ :saERR | self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 1 ].
 	[ 
@@ -142,8 +142,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			selector: #with:
 			name: #tmp2
 			id: 2 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [ :saERR | self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
@@ -168,6 +168,7 @@ SAObserverInsertingRewriterTest >> testNoMessageCall [
 { #category : #tests }
 SAObserverInsertingRewriterTest >> testWithCascade [
 	" Observer Inserter will not break a cascade to multiple message calls. You should use a Normalizer "
+
 	| methodAST sourceCode expectingCode expectingAST |
 	sourceCode := 'foo
 	| tmp1 |
@@ -201,8 +202,8 @@ SAObserverInsertingRewriterTest >> testWithCascade [
 			selector: #with:
 			name: #tmp1
 			id: 2 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [ :saERR | self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
@@ -241,8 +242,8 @@ SAObserverInsertingRewriterTest >> testWithMessageCall [
 			selector: #with:
 			name: #tmp1
 			id: 2 ]
-			on: Exception
-			do: [ self halt ] ] ]
+			on: Error
+			do: [:saERR | self halt ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
