@@ -43,6 +43,22 @@ SAMethodNormalizingRewriterTest >> testChain [
 ]
 
 { #category : #tests }
+SAMethodNormalizingRewriterTest >> testChain3NonArg [
+	| astBefore codeAfter |
+	astBefore := self astHelper parsedMethodFrom: 'foo a b c. d:= e f g'.
+	codeAfter := 'foo
+	| tmp_ga4aLsDFHd1 tmp_l1bQQaOaUi2 tmp_Nx36B1jZZ43 |
+	tmp_l1bQQaOaUi2 := a b.
+	tmp_ga4aLsDFHd1 := tmp_l1bQQaOaUi2 c.
+	tmp_Nx36B1jZZ43 := e f.
+	d := tmp_Nx36B1jZZ43 g'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
+		equals: (SAASTHelper new renameTempVars: codeAfter)
+]
+
+{ #category : #tests }
 SAMethodNormalizingRewriterTest >> testDuplicateMessages [
 	| astBefore astAfter |
 	astBefore := self astHelper

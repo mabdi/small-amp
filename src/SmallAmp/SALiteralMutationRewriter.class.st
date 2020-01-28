@@ -52,7 +52,7 @@ SALiteralMutationRewriter >> replaceMappings: map on: aMethod [
 		| rewriter mClone theCode |
 		mClone := aMethod copy.
 		rewriter := RBParseTreeRewriter new.
-		rewriter replaceTree: map key withTree: change.
+		rewriter replaceTree: map key withTree: change when: [:n | n start = map key start].
 		rewriter executeTree: mClone.
 		theCode := mClone formattedCode.
 		(theCode includesSubstring: '<an unprintable nonliteral value>') 
@@ -64,11 +64,13 @@ SALiteralMutationRewriter >> replaceMappings: map on: aMethod [
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> run [
 	| results aMethodAST |
+	
 	aMethodAST := SAASTHelper new parsedMethodFrom: testBody.
 	self visitNode: aMethodAST.
 	results := OrderedCollection new.
-	mappings do: [ :map | 
-		results addAll: (self replaceMappings: map on: aMethodAST) ].
+	mappings
+		do:
+			[ :map | results addAll: (self replaceMappings: map on: aMethodAST) ].
 	^ results
 ]
 

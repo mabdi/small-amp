@@ -8,6 +8,16 @@ Class {
 }
 
 { #category : #tests }
+SALiteralMutationRewriterTest >> testArrayDouble [
+	| res |
+	res := SALiteralMutationRewriter
+		runWith: 'foo |a| a set:{x}.b set:{x}'.
+	self
+		assertMethodSourceCode: (res at: 1) asString
+		equals: 'foo |a| a set:{}.b set:{x}'
+]
+
+{ #category : #tests }
 SALiteralMutationRewriterTest >> testBoolean [
 	| res |
 	res := SALiteralMutationRewriter runWith: 'foo |a| a:=false'.
@@ -23,6 +33,13 @@ SALiteralMutationRewriterTest >> testInteger [
 	self assert: (res at: 1) asString equals: 'foo
 	| a |
 	a := 11'
+]
+
+{ #category : #tests }
+SALiteralMutationRewriterTest >> testIntegerDouble [
+	| res |
+	res := SALiteralMutationRewriter runWith: 'foo |a| a:=10. b:=10'.
+	self assertMethodSourceCode: (res at: 1) asString equals: 'foo |a| a:=11. b:=10'
 ]
 
 { #category : #tests }

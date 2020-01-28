@@ -38,14 +38,19 @@ SAMethodNormalizingRewriter >> generateATemp [
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> performSteps: changes [
-	changes do: [ :aChange | 
-		(aChange at: #op) = #add ifTrue: [ 
-			(aChange at: #node) parent: aMethodAST body.
-			aMethodAST statements
-				add: (aChange at: #node)
-				afterIndex: (aChange at: #afterIndex) ].
-		(aChange at: #op) = #remove ifTrue: [ 
-			aMethodAST statements removeAt: (aChange at: #atIndex) ] ]
+	changes
+		reverseDo: [ :aChangeList |
+			
+			aChangeList
+				do: [ :aChange | 
+					
+					(aChange at: #op) = #add
+						ifTrue: [ (aChange at: #node) parent: aMethodAST body.
+							aMethodAST statements
+								add: (aChange at: #node)
+								afterIndex: (aChange at: #afterIndex) ].
+					(aChange at: #op) = #remove
+						ifTrue: [ aMethodAST statements removeAt: (aChange at: #atIndex) ] ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -62,18 +67,20 @@ SAMethodNormalizingRewriter >> randomString [
 SAMethodNormalizingRewriter >> run [
 	| toBeChanged |
 	toBeChanged := OrderedCollection new.
-	aMethodAST statements do: [ :aStatement | 
-		| transformedNodes |
-		transformedNodes := OrderedCollection new.
-		aStatement isCascade ifTrue: [ 
-			transformedNodes := self transformCascade: aStatement ].
-		aStatement isMessage ifTrue: [ 
-			transformedNodes := self transformMessage: aStatement ].
-		aStatement isAssignment ifTrue: [ 
-			transformedNodes := self transformAssignment: aStatement ].
-		transformedNodes ifNotEmpty: [ 
-			toBeChanged addAll:
-				(self transformNewNodes: transformedNodes insteadOf: aStatement) ] ].
+	aMethodAST statements
+		do: [ :aStatement | 
+			| transformedNodes |
+			transformedNodes := OrderedCollection new.
+			aStatement isCascade
+				ifTrue: [ transformedNodes := self transformCascade: aStatement ].
+			aStatement isMessage
+				ifTrue: [ transformedNodes := self transformMessage: aStatement ].
+			aStatement isAssignment
+				ifTrue: [ transformedNodes := self transformAssignment: aStatement ].
+			transformedNodes
+				ifNotEmpty: [ toBeChanged
+						add: (self transformNewNodes: transformedNodes insteadOf: aStatement) ] ].
+	
 	self performSteps: toBeChanged.
 	self addTemporaryVariables
 ]
@@ -83,9 +90,9 @@ SAMethodNormalizingRewriter >> transformAssignment: anAssignmentNode [
 	| result |
 	result := OrderedCollection new.
 	anAssignmentNode value isMessage
-		ifTrue: [ self transformMessage: anAssignmentNode value assignsTo: anAssignmentNode variable ].
+		ifTrue: [ result addAll: (self transformMessage: anAssignmentNode value assignsTo: anAssignmentNode variable) ].
 	anAssignmentNode value isCascade
-		ifTrue: [ self transformCascade: anAssignmentNode value assignsTo: anAssignmentNode variable ].
+		ifTrue: [ result addAll: (self transformCascade: anAssignmentNode value assignsTo: anAssignmentNode variable) ].
 		^ result
 ]
 
