@@ -9,14 +9,13 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	| generatedClass aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
-	
 	self normalizeMethod: aMethodAST.
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
 	self insertObservers: aMethodAST.
 	generatedClass := self
 		buildANewClassFor: aMethodAST
 		basedOn: testMethodModel testClass.
-	generatedClass suite run.
+	(self runTestClass: generatedClass) ifNil: [ ^ nil ].
 	self ignoreFlakyValuesIn: generatedClass.
 	sourceCodeWithAssertions := self
 		insertAsserts: sourceCodeWithoutObservers
@@ -86,7 +85,7 @@ SADefaultAssertionAmplifier >> ignoreFlakyValuesIn: generatedClass [
 	self flackyTestRepeat
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
-			generatedClass suite run.
+			(self runTestClass: generatedClass) ifNil: [self halt].
 			x add: generatedClass observer flakyMem.
 			generatedClass observer checkFlaky ]
 ]
@@ -124,4 +123,11 @@ SADefaultAssertionAmplifier >> insertObservers: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 	SAMethodNormalizingRewriter runWith: aMethodAST
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> runTestClass: aClass [
+	^ [ aClass suite run ]
+		valueWithin: 1000 milliSeconds
+		onTimeout: [ nil ]
 ]

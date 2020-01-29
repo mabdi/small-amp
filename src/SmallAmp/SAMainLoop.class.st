@@ -44,9 +44,10 @@ SAMainLoop >> amplify [
 SAMainLoop >> assertionAmplification [
 	population
 		do: [ :tcase | 
-			self assertionAmplifiers do: [ :amplifier | 
-				tcase assertionAmplifyBy: (amplifier ) ] ]
-		displayingProgress: 'Assertion Amplification',' (', population size asString , ')'
+			self assertionAmplifiers
+				do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
+		displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
+	population := population reject: [ :tcase | tcase testMethod isNil]
 ]
 
 { #category : #asserting }

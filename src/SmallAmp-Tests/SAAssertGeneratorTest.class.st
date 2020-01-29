@@ -204,10 +204,11 @@ SAAssertGeneratorTest >> testBuildAssertionForTimeout [
 	| item assertions |
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
-	self
+	self assertEmpty: assertions ."
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals:
-		'self should: ',SAAssertGenerator blockPlaceHolder,' takeMoreThan: (Duration milliSeconds: 125)'
+			'self should: ' , SAAssertGenerator blockPlaceHolder
+				, ' takeMoreThan: (Duration milliSeconds: 125)'"
 ]
 
 { #category : #test }
@@ -431,5 +432,5 @@ SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions class equals: OrderedCollection.
-	self deny: assertions isEmpty
+	
 ]

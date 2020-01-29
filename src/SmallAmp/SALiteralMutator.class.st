@@ -30,10 +30,11 @@ SALiteralMutator >> mutateArrayNode: aNode [
 	| nodes toRepeat ns |
 	nodes := OrderedCollection new.
 	nodes add: (RBArrayNode statements: {}).
+	aNode statements ifNotEmpty: [ 
 	toRepeat := aNode statements first copy.
 	nodes
 		add:
-			(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ])).
+			(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ]))].
 	nodes
 		add:
 			(RBArrayNode
