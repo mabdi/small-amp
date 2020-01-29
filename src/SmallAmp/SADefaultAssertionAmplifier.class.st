@@ -128,6 +128,6 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass: aClass [
 	^ [ aClass suite run ]
-		valueWithin: 1000 milliSeconds
+		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ nil ]
 ]

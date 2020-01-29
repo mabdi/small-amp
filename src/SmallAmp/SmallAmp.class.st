@@ -53,8 +53,10 @@ SmallAmp class >> example [
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		"debug: true;"
-			yourself.
+		testRunTimeOut: 1000;
+		debug: false;
+		lite: false;
+		yourself.
 	result := (SmallAmp initializeWith: config)
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};

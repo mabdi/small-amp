@@ -95,8 +95,10 @@ SAMainLoop >> initialAssertionAmplify [
 		do: [ :tcase | 
 			self assertionAmplifiers do: [ :amplifier | 
 				tcase assertionAmplifyBy: amplifier ].
-			tcase cleanUp ]
+			 ]
 		displayingProgress: 'Assertion Amplification',' (', aPopulation size asString , ')'.
+	aPopulation := aPopulation reject: [ :x | x testMethod isNil ].
+	aPopulation do: [ :tcase | tcase cleanUp ].
 	resultPeople addAll: aPopulation 
 ]
 

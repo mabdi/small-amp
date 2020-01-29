@@ -110,6 +110,7 @@ SADrTestsPlugin >> smallAmpDefaultConfig [
 		selections: {SAMutationCoverageSelection};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		debug: false;
+		testRunTimeOut: 3000;
 		lite: false;
 		yourself
 ]

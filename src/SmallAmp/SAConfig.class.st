@@ -11,7 +11,8 @@ Class {
 		'logger',
 		'selections',
 		'oracleReducions',
-		'profiler'
+		'profiler',
+		'testRunTimeOut'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -114,4 +115,14 @@ SAConfig >> selections [
 { #category : #accessing }
 SAConfig >> selections: aListOfSelections [
 	selections := aListOfSelections
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOut [
+	^ testRunTimeOut
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOut: anObject [
+	testRunTimeOut := anObject
 ]
