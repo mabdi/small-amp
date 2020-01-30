@@ -12,7 +12,8 @@ Class {
 		'oracleReducions',
 		'profiler',
 		'testRunTimeOut',
-		'serializationMaxDepth'
+		'serializationMaxDepth',
+		'methodReductions'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -75,6 +76,16 @@ SAConfig >> lite [
 { #category : #accessing }
 SAConfig >> lite: anObject [
 	lite := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> methodReductions [
+	^ methodReductions
+]
+
+{ #category : #accessing }
+SAConfig >> methodReductions: anObject [
+	methodReductions := anObject
 ]
 
 { #category : #accessing }

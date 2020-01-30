@@ -7,7 +7,8 @@ Class {
 		'population',
 		'config',
 		'finalResult',
-		'resultPeople'
+		'resultPeople',
+		'uncovered'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -26,14 +27,14 @@ SAMainLoop >> addPopulationToResult [
 
 { #category : #actions }
 SAMainLoop >> amplify [
-	self methodProfiling.
+	self initialSteps.
 	self initialAssertionAmplify.
 	config lite
 		ifFalse: [ (1 to: config iterations)
-				do: [ :gen |
-					
+				do: [ :gen | 
 					self strip.
 					self inputAmplification.
+					self methodReduction.
 					self assertionAmplification.
 					self selection.
 					self cleanUpAndAddToResult ]
@@ -109,6 +110,16 @@ SAMainLoop >> initialAssertionAmplify [
 	self recordLog: #initialAssertionAmplify
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoop >> initialSteps [
+	self recordLog: #initialSteps.
+	self discardFailingTests.
+	finalResult mutalkRunOriginal.
+	uncovered := finalResult originalAnalysis generalResult aliveMutants.
+	self methodProfiling.
+	self recordLog: #initialSteps
+]
+
 { #category : #initialization }
 SAMainLoop >> initialize [
 	finalResult := SAResultItem new.
@@ -143,7 +154,6 @@ SAMainLoop >> makeResult [
 		buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
 		using: testClass.
 	reducers := self reducerFor: generatedClass.
-	finalResult mutalkRunOriginal.
 	finalResult
 		reducedVersions:
 			(reducers asOrderedCollection
@@ -157,10 +167,27 @@ SAMainLoop >> makeResult [
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
-	self recordLog: #methodProfiling.
 	config profiler
 		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ].
-	self recordLog: #methodProfiling
+	
+]
+
+{ #category : #accessing }
+SAMainLoop >> methodReduction [
+	| p |
+	self recordLog: #methodReduction.
+	p := population.
+	self methodReductions
+		do: [ :reducer | reducer uncovered: uncovered  .p := reducer reduceMethods: p testClass: testClass ]
+		displayingProgress: 'Method Reduction' , ' (' , self methodReductions size asString , ')'.
+	population := p.
+	self recordLog: #methodReduction
+]
+
+{ #category : #accessing }
+SAMainLoop >> methodReductions [
+	^ config methodReductions
+				collect: [ :reducer | reducer initializeWith: config ] 
 ]
 
 { #category : #private }
@@ -187,9 +214,11 @@ SAMainLoop >> selection [
 	self selections
 		do: [ :sel | 
 			selectedTests
-				addAll: (sel select: population alreadySelected: resultPeople) ].
+				addAll: (sel select: population alreadySelected: resultPeople).
+			uncovered := uncovered select: [ :u | sel uncovered includes: u ] ]
+		displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
 	population := selectedTests.
-	self recordLog: #selection.
+	self recordLog: #selection
 ]
 
 { #category : #accessing }
@@ -226,5 +255,4 @@ SAMainLoop >> with: aConfig for: aTestClass targets: listofTargetClasses [
 	finalResult targetClasses: targetClasses.
 	finalResult testClass: testClass.
 	
-	self discardFailingTests
 ]

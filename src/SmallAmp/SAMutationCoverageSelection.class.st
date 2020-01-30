@@ -1,6 +1,9 @@
 Class {
 	#name : #SAMutationCoverageSelection,
 	#superclass : #SAAbstractSelection,
+	#instVars : [
+		'uncovered'
+	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -126,16 +129,22 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 	analysis2 := self mutalkRun: alreadySelectedPopulation.
 	survives := (analysis2 particularResults
 		select: [ :res | res result isNotNil and: [ res result failures isEmpty ] ])
-		collect: [ :item | item mutant modifiedSource ].
+		collect: [ :item | item mutant ].
 	analysis particularResults
 		do: [ :item | 
 			survives
-				detect: [ :s | s = item mutant modifiedSource ]
+				detect: [ :s | s modifiedSource = item mutant modifiedSource ]
 				ifFound: [ :s | 
 					item result
 						ifNotNil: [ item result failures
 								ifNotEmpty: [ selectedTests addAll: (item result failures collect: #selector) ] ] ] ].
+	uncovered := survives.
 	result := aPopulation
 		select: [ :item | selectedTests includes: item selector ].
 	^ result
+]
+
+{ #category : #accessing }
+SAMutationCoverageSelection >> uncovered [
+	^ uncovered
 ]

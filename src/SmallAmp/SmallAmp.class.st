@@ -52,6 +52,7 @@ SmallAmp class >> example [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
+		methodReductions: {SANoMethodReduction};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		testRunTimeOut: 1000;
 		debug: false;

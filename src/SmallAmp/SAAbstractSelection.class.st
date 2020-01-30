@@ -22,6 +22,11 @@ SAAbstractSelection >> select: aPopulation alreadySelected: aPopulationAll [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+SAAbstractSelection >> uncovered [
+	^ self subclassResponsibility 
+]
+
 { #category : #'instance creation' }
 SAAbstractSelection >> with: aConfig [
 	self initialize.
