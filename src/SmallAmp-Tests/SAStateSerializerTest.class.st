@@ -210,18 +210,8 @@ SAStateSerializerTest >> testMaxDepth [
 		equals: 2.
 	self
 		assert:
-		(((item theValue at: #value) theValue at: 1) theValue at: 1) depth
-		equals: 3.
-	self
-		assert:
-			(((item theValue at: #value) theValue at: 1) theValue at: 1)
-				theValue class
-		equals: Dictionary.
-	self
-		assert:
-			(((item theValue at: #value) theValue at: 1) theValue at: 1)
-				theValue size
-		equals: 0
+		(((item theValue at: #value) theValue at: 1) theValue at: 1) isNil.
+	
 ]
 
 { #category : #tests }

@@ -25,8 +25,9 @@ SAAssertTransformTest >> testGetAllPatterns [
 	anAssertTransform := SAAssertTransform new.
 	allPatterns := anAssertTransform getAllPatterns.
 	self assert: allPatterns class equals: OrderedCollection.
-	self assert: allPatterns size equals: 26.
-	allPatterns do: [ :item | self assert: item class equals: Association ]
+	self assert: allPatterns size equals: 27.
+	allPatterns
+		do: [ :item | self assert: item class equals: Association ]
 ]
 
 { #category : #tests }

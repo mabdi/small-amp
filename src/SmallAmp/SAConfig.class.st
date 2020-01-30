@@ -12,7 +12,8 @@ Class {
 		'selections',
 		'oracleReducions',
 		'profiler',
-		'testRunTimeOut'
+		'testRunTimeOut',
+		'serializationMaxDepth'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -115,6 +116,16 @@ SAConfig >> selections [
 { #category : #accessing }
 SAConfig >> selections: aListOfSelections [
 	selections := aListOfSelections
+]
+
+{ #category : #accessing }
+SAConfig >> serializationMaxDepth [
+	^ serializationMaxDepth
+]
+
+{ #category : #accessing }
+SAConfig >> serializationMaxDepth: anObject [
+	serializationMaxDepth := anObject
 ]
 
 { #category : #accessing }

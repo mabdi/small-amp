@@ -20,6 +20,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	sourceCodeWithAssertions := self
 		insertAsserts: sourceCodeWithoutObservers
 		using: generatedClass observer.
+	(self checkPassing: sourceCodeWithAssertions) ifFalse: [ ^ nil ].
 	self cleanUp: generatedClass.
 	^ sourceCodeWithAssertions
 ]
@@ -64,6 +65,20 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 						  start: 0
 						  stop: -1 ] ].
 		  observation id -> asserts ]
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
+	| r c |
+	c := self astHelper
+		buildTestClassWith: {sourceCodeWithAssertions}
+		using: testMethodModel testClass.
+	r := c suite run hasPassed.
+	
+	r
+	ifFalse: [ self halt. ]
+		ifTrue: [ self cleanUp: c ].
+	^ r
 ]
 
 { #category : #cleanup }

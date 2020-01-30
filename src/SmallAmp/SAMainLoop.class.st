@@ -30,7 +30,8 @@ SAMainLoop >> amplify [
 	self initialAssertionAmplify.
 	config lite
 		ifFalse: [ (1 to: config iterations)
-				do: [ :gen | 
+				do: [ :gen |
+					
 					self strip.
 					self inputAmplification.
 					self assertionAmplification.
@@ -135,7 +136,12 @@ SAMainLoop >> makeResult [
 	reducers := self reducerFor: generatedClass.
 	finalResult mutalkRunOriginal.
 	finalResult
-		reducedVersions: (reducers collect: [ :reducer | reducer ignoredTestMethods: finalResult failedSelectorInOriginal. reducer makeReducedResult ]).
+		reducedVersions:
+			(reducers asOrderedCollection
+				collect: [ :reducer | 
+					reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
+					reducer makeReducedResult ]
+				displayingProgress: 'Reducing oracles (' , reducers size asString , ')').
 	^ finalResult
 ]
 

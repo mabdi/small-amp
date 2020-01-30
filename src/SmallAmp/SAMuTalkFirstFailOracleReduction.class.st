@@ -228,7 +228,6 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
 				removeAllAssertsAndTransformImportants: listOfIds
 				in: theMethod ast.
 			(self hasAnySelfCall: newTree)
-				ifTrue: [ reducedTestClass compile: (self stripMethod: newTree) ] 
-				ifFalse: [ reducedTestClass removeSelector: newTree selector  ]
-				]
+				ifTrue: [ reducedTestClass compile: (newTree formattedCode) ]
+				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
