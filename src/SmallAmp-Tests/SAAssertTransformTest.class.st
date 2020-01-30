@@ -51,6 +51,25 @@ SAAssertTransformTest >> testRemoveAllAsserts [
 ]
 
 { #category : #tests }
+SAAssertTransformTest >> testRemoveAssertEmpty [
+	| methodAST sourceCode expectingCode |
+	sourceCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array new.
+	self assertEmpty: tmp1'.
+	expectingCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array new.'.
+	methodAST := self astHelper parsedMethodFrom: sourceCode.
+	methodAST := SAAssertTransform removeAllAsserts: methodAST.
+	self
+		assertMethodSourceCode: methodAST formattedCode
+		equals: expectingCode
+]
+
+{ #category : #tests }
 SAAssertTransformTest >> testTransformAllAsserts [
 	| methodAST sourceCode expectingCode  |
 	sourceCode := 'foo

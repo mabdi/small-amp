@@ -101,6 +101,11 @@ SAAssertTransform >> transformAssertCollectionIncludesAll [
 ]
 
 { #category : #'transform pattern' }
+SAAssertTransform >> transformAssertEmpty [
+	^ {('self assertEmpty: ``@aCollection' -> '``@aCollection isEmpty')}
+]
+
+{ #category : #'transform pattern' }
 SAAssertTransform >> transformAssertEquals [
 	^ { 'self assert: ``@actual equals: ``@expected' -> '``@actual = ``@expected'.
 	  'self assert: ``@actual equals: ``@expected description: ``@description' -> '``@actual = ``@expected' }
