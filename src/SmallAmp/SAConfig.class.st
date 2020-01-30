@@ -8,7 +8,6 @@ Class {
 		'iterations',
 		'debug',
 		'lite',
-		'logger',
 		'selections',
 		'oracleReducions',
 		'profiler',
@@ -76,16 +75,6 @@ SAConfig >> lite [
 { #category : #accessing }
 SAConfig >> lite: anObject [
 	lite := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> logger [
-	^ logger
-]
-
-{ #category : #accessing }
-SAConfig >> logger: anObject [
-	logger := anObject
 ]
 
 { #category : #accessing }

@@ -73,10 +73,11 @@ SADrTestsResult >> buildTreeForUI [
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
-			{self mutationScores.
+			{self amplifiedClasses.self mutationScores.
 			self aliveMutants.
 			self skippedTestMethods.
-			self amplifiedClasses}
+			
+			self timeInformations}
 ]
 
 { #category : #'as yet unclassified' }
@@ -163,4 +164,32 @@ SADrTestsResult >> summarizeInfo [
 				<< 'Uncovered methods:';
 				<< String cr;
 				<< self methodList size asString ]
+]
+
+{ #category : #accessing }
+SADrTestsResult >> timeInformations [
+	| subs |
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			| sums sum |
+			sum := (x logs sums collect: #value) sum.
+			sums := x logs sums
+				collect: [ :s | 
+					DTTreeNode new
+						name:
+							s key asString , ': % '
+								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
+								, (s value / 1000 printShowingDecimalPlaces: 3) , ' sec)';
+						subResults: {};
+						yourself ].
+			DTTreeNode new
+				name:
+					x testClass name , ' (' , (sum / 1000 printShowingDecimalPlaces: 3)
+						, ' sec)';
+				subResults: sums;
+				yourself ].
+	^ DTTreeNode new
+		name: 'Running time: ';
+		subResults: subs;
+		yourself
 ]

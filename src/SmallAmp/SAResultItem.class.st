@@ -6,7 +6,8 @@ Class {
 		'reducedVersions',
 		'targetClasses',
 		'testClass',
-		'originalAnalysis'
+		'originalAnalysis',
+		'logs'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -19,6 +20,16 @@ SAResultItem >> failedSelectorInOriginal [
 { #category : #adding }
 SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 	failedSelectorInOriginal := aListOfFaileds 
+]
+
+{ #category : #initialization }
+SAResultItem >> initialize [ 
+	logs := SALogger new
+]
+
+{ #category : #initialization }
+SAResultItem >> logs [
+	^ logs
 ]
 
 { #category : #'as yet unclassified' }

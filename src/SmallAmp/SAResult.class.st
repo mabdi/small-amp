@@ -25,8 +25,9 @@ SAResult >> addResult: aResultItem for: aTestClass [
 ]
 
 { #category : #adding }
-SAResult >> initialize [ 
-	results := Dictionary new
+SAResult >> initialize [
+	results := Dictionary new.
+	
 ]
 
 { #category : #adding }

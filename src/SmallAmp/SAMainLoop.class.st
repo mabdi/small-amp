@@ -43,12 +43,14 @@ SAMainLoop >> amplify [
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
+	self recordLog: #assertionAmplification.
 	population
 		do: [ :tcase | 
 			self assertionAmplifiers
 				do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
 		displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
-	population := population reject: [ :tcase | tcase testMethod isNil]
+	population := population reject: [ :tcase | tcase testMethod isNil ].
+	self recordLog: #assertionAmplification
 ]
 
 { #category : #asserting }
@@ -68,8 +70,11 @@ SAMainLoop >> cleanUp [
 
 { #category : #cleanup }
 SAMainLoop >> cleanUpAndAddToResult [
+	
+	self recordLog: #cleanUpAndAddToResult.
 	population := population collect: [ :obj | obj cleanedUpCopy ].
-	self addPopulationToResult 
+	self addPopulationToResult.
+	self recordLog: #cleanUpAndAddToResult.
 ]
 
 { #category : #actions }
@@ -89,18 +94,19 @@ SAMainLoop >> discardFailingTests [
 { #category : #private }
 SAMainLoop >> initialAssertionAmplify [
 	| aPopulation |
-	aPopulation := population collect: [ :tcase | 
-		               tcase renamedCopy: '_amp' ].
+	self recordLog: #initialAssertionAmplify.
+	aPopulation := population
+		collect: [ :tcase | tcase renamedCopy: '_amp' ].
 	aPopulation do: [ :tcase | tcase strip ].
 	aPopulation
 		do: [ :tcase | 
-			self assertionAmplifiers do: [ :amplifier | 
-				tcase assertionAmplifyBy: amplifier ].
-			 ]
-		displayingProgress: 'Assertion Amplification',' (', aPopulation size asString , ')'.
+			self assertionAmplifiers
+				do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
+		displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
 	aPopulation := aPopulation reject: [ :x | x testMethod isNil ].
 	aPopulation do: [ :tcase | tcase cleanUp ].
-	resultPeople addAll: aPopulation 
+	resultPeople addAll: aPopulation.
+	self recordLog: #initialAssertionAmplify
 ]
 
 { #category : #initialization }
@@ -112,13 +118,15 @@ SAMainLoop >> initialize [
 { #category : #private }
 SAMainLoop >> inputAmplification [
 	| newcodes |
+	self recordLog: #inputAmplification.
 	newcodes := OrderedCollection new.
 	population
 		do: [ :tcase | 
-			self inputAmplifiers do: [ :amplifier | 
-				newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification',' (', population size asString , ')'.
-	population addAll: newcodes
+			self inputAmplifiers
+				do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+		displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
+	population addAll: newcodes.
+	self recordLog: #inputAmplification.
 ]
 
 { #category : #accessing }
@@ -130,6 +138,7 @@ SAMainLoop >> inputAmplifiers [
 { #category : #private }
 SAMainLoop >> makeResult [
 	| reducers generatedClass |
+	self recordLog: #makeResult.
 	generatedClass := self astHelper
 		buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
 		using: testClass.
@@ -142,13 +151,21 @@ SAMainLoop >> makeResult [
 					reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 					reducer makeReducedResult ]
 				displayingProgress: 'Reducing oracles (' , reducers size asString , ')').
+	self recordLog: #makeResult.
 	^ finalResult
 ]
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
+	self recordLog: #methodProfiling.
 	config profiler
-		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ]
+		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ].
+	self recordLog: #methodProfiling
+]
+
+{ #category : #private }
+SAMainLoop >> recordLog: aTag [
+	finalResult logs timeTickFor: aTag
 ]
 
 { #category : #private }
@@ -162,14 +179,17 @@ SAMainLoop >> reducerFor: aClass [
 ]
 
 { #category : #actions }
-SAMainLoop >> selection [ 
+SAMainLoop >> selection [
 	| selectedTests |
+	self recordLog: #selection.
 	population ifEmpty: [ ^ self ].
 	selectedTests := OrderedCollection new.
-	self selections do: [ :sel | 
-		selectedTests addAll:
-			(sel select: population alreadySelected: resultPeople) ].
-	population := selectedTests
+	self selections
+		do: [ :sel | 
+			selectedTests
+				addAll: (sel select: population alreadySelected: resultPeople) ].
+	population := selectedTests.
+	self recordLog: #selection.
 ]
 
 { #category : #accessing }
@@ -180,9 +200,11 @@ SAMainLoop >> selections [
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> strip [
+	self recordLog: #strip.
 	population
 		do: [ :tcase | tcase strip ]
-		displayingProgress: 'Strip Test Methods'
+		displayingProgress: 'Strip Test Methods'.
+	self recordLog: #strip
 ]
 
 { #category : #accessing }
