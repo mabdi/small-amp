@@ -16,6 +16,33 @@ Class {
 }
 
 { #category : #accessing }
+SADrTestsResult >> aliveMutants [
+	| subs |
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					{(DTTreeNode new
+						name: 'Alive mutants in original:';
+						subResults:
+							(x originalAnalysis generalResult aliveMutants
+								collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Killed mutants in amplified';
+						subResults:
+							((self filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants basedOn: x originalAnalysis generalResult killedMutants)
+								collect: #asResultForDrTest);
+						yourself)};
+				yourself ].
+	^ DTTreeNode new
+		name: 'Mutants';
+		subResults: subs;
+		yourself
+]
+
+{ #category : #accessing }
 SADrTestsResult >> amplifiedClasses [
 	| subs |
 	subs := smallAmpResult results values
@@ -30,14 +57,15 @@ SADrTestsResult >> amplifiedClasses [
 					(DTTreeNode new
 						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
 						subResults:
-							(x reducedVersions first reducedClass methods
-								collect: #asResultForDrTest);
+							((self
+								filterJustAddedMethods: x reducedVersions first reducedClass
+								basedOn: x testClass) collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
-			^(DTTreeNode new
-				name: 'Amplified TestCase';
-				subResults: subs;
-				yourself)
+	^ DTTreeNode new
+		name: 'Amplified TestCase';
+		subResults: subs;
+		yourself
 ]
 
 { #category : #accessing }
@@ -46,6 +74,7 @@ SADrTestsResult >> buildTreeForUI [
 	^ DTTreeNode new
 		subResults:
 			{self mutationScores.
+			self aliveMutants.
 			self skippedTestMethods.
 			self amplifiedClasses}
 ]
@@ -55,6 +84,16 @@ SADrTestsResult >> buildTreeInspectResult [
 	<dtSmallAmpResultTreeNamed: 'Inspect the result' order: 2>
 	self smallAmpResult ifNotNil: [ :a | a inspect ].
 	^ DTTreeNode new subResults: {}
+]
+
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> filterJustAddedMethods: newClass basedOn: originalClass [
+	^ newClass methods reject: [ :m | originalClass selectors includes: m selector ]
+]
+
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> filterJustKilledMutants: newKilledMutants basedOn: originalKilledMutants [
+	^ newKilledMutants reject: [ :m | (originalKilledMutants collect: [ :x | x mutant modifiedSource ]) includes: m mutant modifiedSource  ]
 ]
 
 { #category : #accessing }
