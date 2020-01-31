@@ -32,7 +32,17 @@ SADrTestsResult >> aliveMutants [
 					(DTTreeNode new
 						name: 'Killed mutants in amplified';
 						subResults:
-							((self filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants basedOn: x originalAnalysis generalResult killedMutants)
+							((self
+								filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants
+								basedOn: x originalAnalysis generalResult killedMutants)
+								collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Still alive mutants in amplified';
+						subResults:
+							((
+								 x reducedVersions first analysis generalResult aliveMutants
+								)
 								collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
