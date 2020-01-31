@@ -14,8 +14,8 @@ SAAbstractMethodReduction class >> initializeWith: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractMethodReduction >> reduceMethods: aListOfMethods testClass: aClass [
-	^ self subclassResponsibility 
+SAAbstractMethodReduction >> reduceMethods: aListOfMethods [
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }

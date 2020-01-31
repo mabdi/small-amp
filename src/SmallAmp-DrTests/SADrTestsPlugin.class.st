@@ -108,7 +108,7 @@ SADrTestsPlugin >> smallAmpDefaultConfig [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: { SANoMethodReduction };
+		methodReductions: {SAAliveMutationMethodReduction};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		debug: false;
 		testRunTimeOut: 3000;

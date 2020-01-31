@@ -178,7 +178,7 @@ SAMainLoop >> methodReduction [
 	self recordLog: #methodReduction.
 	p := population.
 	self methodReductions
-		do: [ :reducer | reducer uncovered: uncovered  .p := reducer reduceMethods: p testClass: testClass ]
+		do: [ :reducer | reducer uncovered: uncovered  .p := reducer reduceMethods: p ]
 		displayingProgress: 'Method Reduction' , ' (' , self methodReductions size asString , ')'.
 	population := p.
 	self recordLog: #methodReduction
