@@ -213,9 +213,8 @@ SAMainLoop >> selection [
 	selectedTests := OrderedCollection new.
 	self selections
 		do: [ :sel | 
-			selectedTests
-				addAll: (sel select: population alreadySelected: resultPeople).
-			uncovered := uncovered select: [ :u | sel uncovered includes: u ] ]
+			selectedTests addAll: (sel select: population uncovered: uncovered).
+			uncovered :=  sel uncovered ]
 		displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
 	population := selectedTests.
 	self recordLog: #selection

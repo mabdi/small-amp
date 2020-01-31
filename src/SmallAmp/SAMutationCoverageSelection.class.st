@@ -144,6 +144,31 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 	^ result
 ]
 
+{ #category : #enumerating }
+SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
+	| selectedTests analysis alives result newKills |
+	result := OrderedCollection new.
+	selectedTests := OrderedCollection new.
+	analysis := self mutalkRun: aPopulation.
+	alives := analysis generalResult aliveMutants.
+	newKills := uncoveredList reject: [:s | alives anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource  ] ].
+	uncovered := uncoveredList select: [:s | alives anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource  ] ].
+	
+	analysis particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ selectedTests addAll: (item result failures collect: #selector) ] ] ] ].
+	
+	result := aPopulation
+		select: [ :item | selectedTests includes: item selector ].
+
+	^ result
+]
+
 { #category : #accessing }
 SAMutationCoverageSelection >> uncovered [
 	^ uncovered
