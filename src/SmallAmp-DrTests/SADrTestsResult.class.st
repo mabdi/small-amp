@@ -67,9 +67,8 @@ SADrTestsResult >> amplifiedClasses [
 					(DTTreeNode new
 						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
 						subResults:
-							((self
-								filterJustAddedMethods: x reducedVersions first reducedClass
-								basedOn: x testClass) collect: #asResultForDrTest);
+							((x reducedVersions first reducedClass methods
+								) collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
 	^ DTTreeNode new
@@ -182,8 +181,8 @@ SADrTestsResult >> timeInformations [
 	subs := smallAmpResult results values
 		collect: [ :x | 
 			| sums sum |
-			sum := (x logs sums collect: #value) sum.
-			sums := x logs sums
+			sum := (x logs summary collect: #value) sum.
+			sums := x logs summary
 				collect: [ :s | 
 					DTTreeNode new
 						name:

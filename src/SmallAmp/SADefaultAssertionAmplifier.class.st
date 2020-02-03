@@ -1,27 +1,62 @@
 Class {
 	#name : #SADefaultAssertionAmplifier,
 	#superclass : #SAAbstractAssertionAmplifier,
+	#instVars : [
+		'generatedClass',
+		'passingCheckClass'
+	],
+	#classInstVars : [
+		'timing'
+	],
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #accessing }
+SADefaultAssertionAmplifier class >> timing [
+	^ timing
+]
+
+{ #category : #accessing }
+SADefaultAssertionAmplifier class >> timing: anObject [ 
+	timing:= anObject 
+]
+
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
-	| generatedClass aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
+	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
+	
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
-	self normalizeMethod: aMethodAST.
+	self class timing
+		recoredTag: #normalizeMethod
+		toRun: [ self normalizeMethod: aMethodAST ].
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
-	self insertObservers: aMethodAST.
-	generatedClass := self
-		buildANewClassFor: aMethodAST
-		basedOn: testMethodModel testClass.
-	(self runTestClass: generatedClass) ifNil: [ ^ nil ].
-	self ignoreFlakyValuesIn: generatedClass.
-	sourceCodeWithAssertions := self
-		insertAsserts: sourceCodeWithoutObservers
-		using: generatedClass observer.
-	(self checkPassing: sourceCodeWithAssertions) ifFalse: [ ^ nil ].
-	self cleanUp: generatedClass.
+	self class timing
+		recoredTag: #insertObservers
+		toRun: [ self insertObservers: aMethodAST ].
+	self class timing
+		recoredTag: #buildANewClassFor
+		toRun: [ self
+				buildANewClassFor: aMethodAST
+				basedOn: testMethodModel testClass ].
+	self class timing
+		recoredTag: #runTestClass
+		toRun: [ self runTestClass ifNil: [ ^ nil ] ].
+	self class timing
+		recoredTag: #ignoreFlakyValues
+		toRun: [ self ignoreFlakyValues ].
+	self class timing
+		recoredTag: #insertAsserts
+		toRun: [ sourceCodeWithAssertions := self
+				insertAsserts: sourceCodeWithoutObservers
+				using: generatedClass observer ].
+	"self class timing
+		recoredTag: #checkPassing
+		toRun: [ (self checkPassing: sourceCodeWithAssertions)
+				ifFalse: [ ^ nil ] ]."
+	"self class timing
+		recoredTag: #cleanUp
+		toRun: [ self cleanUp: generatedClass ]."
 	^ sourceCodeWithAssertions
 ]
 
@@ -37,13 +72,19 @@ SADefaultAssertionAmplifier >> astHelper [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
-	| generatedClass |
-	generatedClass := self astHelper
-		                  buildTestClassWith: {  }
-		                  using: aClass.
-	generatedClass class addInstVarNamed: 'observer'.
-	generatedClass class compile:
-		'observer ^ observer ifNil: [ observer := SAObserver newForTarget: ', testMethodModel testTargets asString ,' ]'.
+	generatedClass
+		ifNil: [ generatedClass := self astHelper
+				buildTestClassWith: {}
+				using: aClass.
+			generatedClass class addInstVarNamed: 'observer'.
+			generatedClass class
+				compile:
+					'observer ^ observer ifNil: [ observer := SAObserver newForTarget: '
+						, testMethodModel testTargets asString , ' ]'.
+					generatedClass class
+				compile:
+					'observerReset  observer := nil ' ].
+	generatedClass observerReset.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass
 ]
@@ -69,15 +110,15 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r c |
-	c := self astHelper
-		buildTestClassWith: {sourceCodeWithAssertions}
-		using: testMethodModel testClass.
-	r := c suite run hasPassed.
-	
+	| r |
+	passingCheckClass
+		ifNil: [ passingCheckClass := self astHelper
+				buildTestClassWith: {sourceCodeWithAssertions}
+				using: testMethodModel testClass ].
+	r := (passingCheckClass run: testMethodModel selector) hasPassed.
 	r
-	ifFalse: [ self halt. ]
-		ifTrue: [ self cleanUp: c ].
+		ifFalse: [ self error: 'check me' ]
+		.
 	^ r
 ]
 
@@ -93,14 +134,14 @@ SADefaultAssertionAmplifier >> flackyTestRepeat [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> ignoreFlakyValuesIn: generatedClass [
+SADefaultAssertionAmplifier >> ignoreFlakyValues [
 	| x |
 	x := OrderedCollection new.
 	x add: generatedClass observer history.
 	self flackyTestRepeat
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
-			(self runTestClass: generatedClass) ifNil: [self halt].
+			self runTestClass ifNil: [ self error: 'You shouldnt be here' ].
 			x add: generatedClass observer flakyMem.
 			generatedClass observer checkFlaky ]
 ]
@@ -141,8 +182,8 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> runTestClass: aClass [
-	^ [ aClass suite run ]
+SADefaultAssertionAmplifier >> runTestClass [
+	^ [ generatedClass run: testMethodModel selector ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ nil ]
 ]

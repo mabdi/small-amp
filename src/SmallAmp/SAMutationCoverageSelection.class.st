@@ -12,6 +12,22 @@ SAMutationCoverageSelection >> astHelper [
 	^ SAASTHelper new
 ]
 
+{ #category : #enumerating }
+SAMutationCoverageSelection >> chooseBestFrom: aList [
+	"first select shortest methods
+	Then, select minimum change,"
+
+	| shortestLen shorts |
+	shortestLen := (aList collect: [ :s | s testMethod lines size ]) min.
+	shorts := aList
+		select: [ :s | s testMethod lines size = shortestLen ].
+	
+	^ (shorts
+		sort: [ :a :b | 
+			(a selector count: [ :x | x = $_ ])
+				< (b selector count: [ :x | x = $_ ]) ]) first
+]
+
 { #category : #cleanup }
 SAMutationCoverageSelection >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
@@ -146,14 +162,18 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 
 { #category : #enumerating }
 SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
-	| selectedTests analysis alives result newKills |
+	| analysis alives result newKills |
 	result := OrderedCollection new.
-	selectedTests := OrderedCollection new.
 	analysis := self mutalkRun: aPopulation.
 	alives := analysis generalResult aliveMutants.
-	newKills := uncoveredList reject: [:s | alives anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource  ] ].
-	uncovered := uncoveredList select: [:s | alives anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource  ] ].
-	
+	newKills := uncoveredList
+		reject: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	uncovered := uncoveredList
+		select: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
 	analysis particularResults
 		do: [ :item | 
 			newKills
@@ -161,11 +181,13 @@ SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 				ifFound: [ :s | 
 					item result
 						ifNotNil: [ item result failures
-								ifNotEmpty: [ selectedTests addAll: (item result failures collect: #selector) ] ] ] ].
-	
-	result := aPopulation
-		select: [ :item | selectedTests includes: item selector ].
-
+								ifNotEmpty: [ | sels |
+									
+									sels := item result failures collect: #selector.
+									result
+										add:
+											(self
+												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])) ] ] ] ].
 	^ result
 ]
 

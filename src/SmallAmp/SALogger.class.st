@@ -7,6 +7,11 @@ Class {
 	#category : #'SmallAmp-Helpers'
 }
 
+{ #category : #'accessing structure variables' }
+SALogger class >> timestamp [
+	^ (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
+]
+
 { #category : #initialization }
 SALogger >> initialize [
 	logs := OrderedCollection new.
@@ -23,28 +28,20 @@ SALogger >> logs [
 ]
 
 { #category : #initialization }
+SALogger >> recoredTag: aTag toRun: aBlock [ 
+	logs add:
+			aTag
+				-> (Time millisecondsToRun: aBlock  )
+]
+
+{ #category : #initialization }
 SALogger >> sumDuration: aTag [
-	| s |
-	s := 0.
-	(logs select: [ :x | x key = aTag ])
-		doWithIndex: [ :item :index | 
-			s := index odd
-				ifTrue: [ s - item value]
-				ifFalse: [ s + item value] ].
-			^ s
-]
-
-{ #category : #accessing }
-SALogger >> sums [
-	^ self keys collect: [ :k | k -> (self sumDuration: k) ]
+	^ self summary at: aTag
 ]
 
 { #category : #initialization }
-SALogger >> timeTickFor: aTag [
-	logs add: aTag -> self timestamp
-]
-
-{ #category : #initialization }
-SALogger >> timestamp [
-	^ (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
+SALogger >> summary [
+	^ self keys
+		collect:
+			[ :x | x -> ((logs select: [ :y | y key = x ]) collect: #value) sum ]
 ]

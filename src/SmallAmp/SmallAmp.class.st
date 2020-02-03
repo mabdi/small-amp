@@ -90,7 +90,8 @@ SmallAmp >> amplifyAll [
 
 { #category : #initialization }
 SmallAmp >> initialize [
-	amplifyList := OrderedCollection  new
+	amplifyList := OrderedCollection new.
+	SADefaultAssertionAmplifier timing: SALogger new.
 ]
 
 { #category : #accessing }
