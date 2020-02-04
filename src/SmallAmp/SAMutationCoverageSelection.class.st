@@ -113,7 +113,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 		testCasesFrom: {newTestClass}
 		mutating: targetClasses
 		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
+		with: AllTestsMethodsRunningMutantEvaluationStrategy new
+		with: SmallAmpMutationsGenerationStrategy new.
 	result := analysis1 runSmallAmp.
 	result
 		ifTrue: [ self cleanUp: newTestClass ].
