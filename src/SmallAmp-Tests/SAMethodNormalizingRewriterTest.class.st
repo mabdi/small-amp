@@ -17,13 +17,41 @@ SAMethodNormalizingRewriterTest >> testCascade [
 	| astBefore astAfter |
 	astBefore := self astHelper parsedMethodFrom:
 		             'foo a:=1. Array with:1;with:2'.
-	astAfter := self astHelper parsedMethodFrom: 'foo
+	astAfter := 'foo
 	| tmp_5XhFNhuDPT1 tmp_J5Gm96O7yf2 |
 	a := 1.
-	tmp_J5Gm96O7yf2 := Array with: 1.
-	tmp_5XhFNhuDPT1 := Array with: 2'.
+	tmp_J5Gm96O7yf1 := Array with: 1.
+	tmp_5XhFNhuDPT2 := Array with: 2'.
 	SAMethodNormalizingRewriter runWith: astBefore.
-	self assert: (SAASTHelper new renameTempVars: astBefore dump) equals: (SAASTHelper new renameTempVars:astAfter dump)
+	self assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode) equals: (SAASTHelper new renameTempVars:astAfter)
+]
+
+{ #category : #tests }
+SAMethodNormalizingRewriterTest >> testCascade2 [
+	| astBefore astAfter |
+	astBefore := self astHelper
+		parsedMethodFrom: 'foo RSChart new
+		addPlot: (RSScatterPlot new x: x y: (x raisedTo: 3));
+		addPlot: (RSLinePlot new x: x y: (x raisedTo: 2));
+		addDecoration: RSHorizontalTick new;
+		addDecoration: RSVerticalTick new;
+		build'.
+	astAfter := 
+			'foo
+	| tmp_ptzTVYJYPV1 tmp_XxP3938g3N2 tmp_zJnj14bJ4E3 tmp_v3lizTRMDU4 tmp_nwcUHmj7te5 tmp_hoFXZ6VOFL6 |
+	tmp_ptzTVYJYPV1 := RSChart new.
+	tmp_XxP3938g3N2 := tmp_ptzTVYJYPV1
+		addPlot: (RSScatterPlot new x: x y: (x raisedTo: 3)).
+	tmp_zJnj14bJ4E3 := tmp_ptzTVYJYPV1
+		addPlot: (RSLinePlot new x: x y: (x raisedTo: 2)).
+	tmp_v3lizTRMDU4 := tmp_ptzTVYJYPV1
+		addDecoration: RSHorizontalTick new.
+	tmp_nwcUHmj7te5 := tmp_ptzTVYJYPV1 addDecoration: RSVerticalTick new.
+	tmp_hoFXZ6VOFL6 := tmp_ptzTVYJYPV1 build'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
+		equals: (SAASTHelper new renameTempVars: astAfter)
 ]
 
 { #category : #tests }

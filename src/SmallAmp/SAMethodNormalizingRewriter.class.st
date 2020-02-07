@@ -98,18 +98,27 @@ SAMethodNormalizingRewriter >> transformAssignment: anAssignmentNode [
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> transformCascade: aCascadeNode [
-	| tmp |
-	tmp := self generateATemp.
-	^ self transformCascade: aCascadeNode assignsTo: tmp
+	| var receiver |
+	receiver := aCascadeNode messages anyOne receiver.
+	var := receiver isVariable
+		ifTrue: [ receiver ]
+		ifFalse: [self generateATemp].
+	^ self transformCascade: aCascadeNode assignsTo: var
 ]
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> transformCascade: aCascadeNode assignsTo: aVariable [
-	| result |
+	| result receiver |
 	result := OrderedCollection new.
-	aCascadeNode messages doWithIndex: [ :amsg :idx | idx = aCascadeNode messages size ifFalse: [result addAll: (self transformMessage: amsg)] ].
-	result
-		addAll: (self transformMessage: aCascadeNode messages last assignsTo: aVariable).
+	receiver := aCascadeNode messages anyOne receiver.
+	receiver isCascade
+		ifTrue: [ result
+				addAll: (self transformCascade: receiver assignsTo: aVariable) ].
+	receiver isMessage
+		ifTrue: [ result
+				addAll: (self transformMessage: receiver assignsTo: aVariable) ].
+	aCascadeNode messages
+		doWithIndex: [ :amsg :i | |tmp| tmp := amsg copy. tmp receiver: aVariable. result addAll: (self transformMessage: tmp) ].
 	^ result
 ]
 
