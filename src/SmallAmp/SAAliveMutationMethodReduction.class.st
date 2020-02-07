@@ -46,11 +46,10 @@ SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	| nodesToMutate |
 	aListOfMethods ifEmpty: [ ^ aListOfMethods ].
 	nodesToMutate := uncovered collect: [ :u | u mutant originalMethod ].
-	self installMetaLinkTo: nodesToMutate .
+	[self installMetaLinkTo: nodesToMutate.
 	self makeTestClassWith: aListOfMethods.
-	self runTestClassAndObserve.
-	self uninstallMetaLinkTo: nodesToMutate.
-	
+	self runTestClassAndObserve]ensure: [self uninstallMetaLinkTo: nodesToMutate].
+	.
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]
@@ -68,7 +67,9 @@ SAAliveMutationMethodReduction >> runTestClassAndObserve [
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> uninstallMetaLinkTo: nodeToMutate [
-	nodeToMutate do: [ :node | node ast links
+	nodeToMutate
+		do: [ :node | 
+			node ast links
 				select: [ :metalink | metalink metaObject == self ]
-				thenDo: [ :metalink | node removeLink: metalink ] ] 
+				thenDo: [ :metalink |  node removeLink: metalink ] ]
 ]

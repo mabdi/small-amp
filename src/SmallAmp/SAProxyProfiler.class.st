@@ -47,12 +47,14 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
-	listOfTargetClass
+	[ listOfTargetClass
 		do:
 			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
-	aTestSuite suite run.
+	aTestSuite suite run. ] ensure: 
+	
+	[
 	listOfTargetClass
-		do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ]
+		do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ]]
 ]
 
 { #category : #'as yet unclassified' }

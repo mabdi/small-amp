@@ -171,7 +171,8 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 		testCasesFrom: {aClass}
 		mutating: targetClasses
 		using: MutantOperator contents
-		with: SortedTestsMethodsRunningMutantEvaluationStrategy new.
+		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
+		with: SmallAmpMutationsGenerationStrategy new.
 	analysis1 run.
 	^ analysis1
 ]
