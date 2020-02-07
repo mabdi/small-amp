@@ -42,12 +42,17 @@ SADrTestsRunInput >> name [
 
 { #category : #accessing }
 SADrTestsRunInput >> suggestTargetClassName [
-	| c |
+	| c t |
 	(self testClass class methodDict includesKey: #targetClasses)
-		ifTrue: [ testTarget := self testClass targetClasses. ^ self ].
+		ifTrue: [ testTarget := self testClass targetClasses.
+			^ self ].
 	c := self testClass name allButLast: 'Test' size.
 	(SmalltalkImage current hasClassNamed: c)
-		ifTrue: [ testTarget := {(SmalltalkImage current classNamed: c)} ]
+		ifTrue: [ t := SmalltalkImage current classNamed: c ]
+		ifFalse: [ ^ self ].
+	(t methods anySatisfy: #isAbstract )
+		ifTrue: [ t := nil ].
+	t ifNotNil: [ testTarget := {t} ]
 ]
 
 { #category : #displaying }

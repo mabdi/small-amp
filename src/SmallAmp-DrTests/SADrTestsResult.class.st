@@ -67,8 +67,9 @@ SADrTestsResult >> amplifiedClasses [
 					(DTTreeNode new
 						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
 						subResults:
-							((x reducedVersions first reducedClass methods
-								) collect: #asResultForDrTest);
+							(x reducedVersions first reducedClass methods
+								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
+								thenCollect: #asResultForDrTest);
 						yourself)};
 				yourself ].
 	^ DTTreeNode new

@@ -119,6 +119,11 @@ SATestMethod >> selectorOriginal [
 	^ selectorOriginal
 ]
 
+{ #category : #accessing }
+SATestMethod >> signAsSmallAmp [
+	testMethod := self astHelper signAsSmallAmp: testMethod 
+]
+
 { #category : #removing }
 SATestMethod >> strip [
 	testMethod := self astHelper removeAssertions: testMethod

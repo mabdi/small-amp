@@ -23,22 +23,18 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 SAASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 	| tempClass |
 	tempClass := testClass superclass
-		             subclass:
-		             (testClass name asString , self getId asString)
-			             asSymbol
-		             instanceVariableNames:
-		             testClass instanceVariablesString
-		             classVariableNames: ''
-		             package: self defaultTempPackage.
-	(testClass methods reject: #isTestMethod) do: [ :item | 
-		tempClass compile: item sourceCode ].
-	aCollection do: [ :item | 
-		| ast |
-		ast := self parsedMethodFrom: item.
-		(ast hasPragmaNamed: self defaultPragma) ifFalse: [ 
-			ast addPragma:
-				(RBPragmaNode selector: self defaultPragma arguments: {  }) ].
-		tempClass compile: ast formattedCode ].
+		subclass: (testClass name asString , self getId asString) asSymbol
+		instanceVariableNames: testClass instanceVariablesString
+		classVariableNames: ''
+		package: self defaultTempPackage.
+	(testClass methods reject: #isTestMethod)
+		do: [ :item | tempClass compile: item sourceCode ].
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			
+			tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
@@ -151,6 +147,16 @@ SAASTHelper >> renameTempVars: anStr [
 	^ anStr
 		copyWithRegex: 'tmp_([a-z0-9A-Z]+)\d+'
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> signAsSmallAmp: src [
+	| ast |
+	ast := self parsedMethodFrom: src.
+	(ast hasPragmaNamed: self defaultPragma)
+		ifFalse: [ ast
+				addPragma: (RBPragmaNode selector: self defaultPragma arguments: {}) ].
+			^ ast formattedCode 
 ]
 
 { #category : #'as yet unclassified' }

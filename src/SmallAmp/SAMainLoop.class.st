@@ -24,17 +24,23 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 
 { #category : #adding }
 SAMainLoop >> addPopulationToResult [
-	population do: [ :item |  resultPeople add: item clone ]
+	resultPeople
+		addAll:
+			(population
+				collect: [ :item | 
+					| c |
+					c := item clone.
+					c signAsSmallAmp.
+					c ])
 ]
 
 { #category : #actions }
 SAMainLoop >> amplify [
 	self initialSteps.
-	"self initialAssertionAmplify."
+	self liteAmplification.
 	config lite
 		ifFalse: [ (1 to: config iterations)
 				do: [ :gen | 
-					
 					self strip.
 					self inputAmplification.
 					self methodReduction.
@@ -98,24 +104,6 @@ SAMainLoop >> discardFailingTests [
 			              targets: targetClasses ]
 ]
 
-{ #category : #private }
-SAMainLoop >> initialAssertionAmplify [
-	| aPopulation |
-	self recordLog: #initialAssertionAmplify.
-	aPopulation := population
-		collect: [ :tcase | tcase renamedCopy: '_amp' ].
-	aPopulation do: [ :tcase | tcase strip ].
-	aPopulation
-		do: [ :tcase | 
-			self assertionAmplifiers
-				do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
-		displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
-	aPopulation := aPopulation reject: [ :x | x testMethod isNil ].
-	aPopulation do: [ :tcase | tcase cleanUp ].
-	resultPeople addAll: aPopulation.
-	self recordLog: #initialAssertionAmplify
-]
-
 { #category : #'as yet unclassified' }
 SAMainLoop >> initialSteps [
 finalResult logs
@@ -152,6 +140,25 @@ SAMainLoop >> inputAmplification [
 SAMainLoop >> inputAmplifiers [
 	^  config inputAmplifiers
 				collect: [ :amplifier | amplifier initializeWith: config ] 
+]
+
+{ #category : #private }
+SAMainLoop >> liteAmplification [
+	| aPopulation |
+	finalResult logs
+		recoredTag: #liteAmplification
+		toRun: [ self methodReduction.
+			aPopulation := population
+				collect: [ :tcase | tcase renamedCopy: '_amp' ].
+			aPopulation do: [ :tcase | tcase strip ].
+			aPopulation
+				do: [ :tcase | 
+					self assertionAmplifiers
+						do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
+				displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
+			population := aPopulation reject: [ :x | x testMethod isNil ].
+			self selection.
+			self cleanUpAndAddToResult ]
 ]
 
 { #category : #private }
