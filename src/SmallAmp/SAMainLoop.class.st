@@ -29,11 +29,12 @@ SAMainLoop >> addPopulationToResult [
 
 { #category : #actions }
 SAMainLoop >> amplify [
-	self initialSteps .
+	self initialSteps.
 	"self initialAssertionAmplify."
 	config lite
 		ifFalse: [ (1 to: config iterations)
 				do: [ :gen | 
+					
 					self strip.
 					self inputAmplification.
 					self methodReduction.
