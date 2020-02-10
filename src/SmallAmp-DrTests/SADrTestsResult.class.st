@@ -97,6 +97,25 @@ SADrTestsResult >> buildTreeInspectResult [
 	^ DTTreeNode new subResults: {}
 ]
 
+{ #category : #accessing }
+SADrTestsResult >> color [
+	| score_new score_old |
+	smallAmpResult results values size = 1
+		ifTrue: [ score_old := smallAmpResult results values first originalAnalysis
+				generalResult mutationScore.
+			score_new := smallAmpResult results values first reducedVersions
+				first analysis generalResult mutationScore.
+			score_new = 0
+				ifTrue: [ ^ Color named: 'red' ].
+			score_new - score_old = 0
+				ifTrue: [ ^ Color named: 'yellow' ].
+			score_new - score_old < 10
+				ifTrue: [ ^ Color named: 'lightGreen' ].
+			score_new - score_old > 10
+				ifTrue: [ ^ Color named: 'green' ] ].
+	^ Color named: 'gray'
+]
+
 { #category : #'as yet unclassified' }
 SADrTestsResult >> filterJustAddedMethods: newClass basedOn: originalClass [
 	^ newClass methods reject: [ :m | originalClass selectors includes: m selector ]
