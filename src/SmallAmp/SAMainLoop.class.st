@@ -161,7 +161,8 @@ SAMainLoop >> liteAmplification [
 			population := aPopulation reject: [ :x | x testMethod isNil ].
 			self selection.
 			self cleanUpAndAddToResult.
-			population addAll: old_Pop ]
+			"population addAll: old_Pop ???"
+			population := old_Pop ]
 ]
 
 { #category : #private }
