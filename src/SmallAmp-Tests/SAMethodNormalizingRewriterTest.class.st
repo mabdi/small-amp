@@ -114,6 +114,32 @@ SAMethodNormalizingRewriterTest >> testDuplicateMessages [
 ]
 
 { #category : #tests }
+SAMethodNormalizingRewriterTest >> testIntNormalizer [
+	| astBefore astAfter |
+	astBefore := self astHelper
+		parsedMethodFrom:
+			'testFromBottom
+	| es |
+	es := (10 to: 100 by: 10)
+		collect: [ :n | 
+			RSBox new
+				size: n;
+				yourself ]'.
+	astAfter := 'testFromBottom
+	| es tmp_XU7VULfHBa1 |
+	tmp_XU7VULfHBa1 := 10 to: 100 by: 10.
+	es := tmp_XU7VULfHBa1
+		collect: [ :n | 
+			RSBox new
+				size: n;
+				yourself ]'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
+		equals: (SAASTHelper new renameTempVars: astAfter)
+]
+
+{ #category : #tests }
 SAMethodNormalizingRewriterTest >> testNoNormalize [
 	| astBefore astAfter |
 	astBefore := self astHelper parsedMethodFrom:

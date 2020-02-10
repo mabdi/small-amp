@@ -40,8 +40,7 @@ SAMainLoop >> amplify [
 	self liteAmplification.
 	config lite
 		ifFalse: [ (1 to: config iterations)
-				do: [ :gen | 
-					self halt.
+				do: [ :gen |
 					self normalize.
 					self inputAmplification.
 					self methodReduction.

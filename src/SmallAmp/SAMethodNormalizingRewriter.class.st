@@ -136,6 +136,9 @@ SAMethodNormalizingRewriter >> transformMessage: aMessageNode assignsTo: aVariab
 	aMessageNode receiver isVariable
 		ifTrue: [ result
 				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
+	aMessageNode receiver isLiteralNode ifTrue: [ result
+				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
+	
 	aMessageNode receiver isCascade
 		ifTrue: [  ].
 	aMessageNode receiver isMessage
