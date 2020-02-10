@@ -24,12 +24,11 @@ SADefaultAssertionAmplifier class >> timing: anObject [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
 	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
-	
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
-	self class timing
+	"self class timing
 		recoredTag: #normalizeMethod
-		toRun: [ self normalizeMethod: aMethodAST ].
+		toRun: [ self normalizeMethod: aMethodAST ]."
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
 	self class timing
 		recoredTag: #insertObservers

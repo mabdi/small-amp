@@ -41,7 +41,8 @@ SAMainLoop >> amplify [
 	config lite
 		ifFalse: [ (1 to: config iterations)
 				do: [ :gen | 
-					self strip.
+					self halt.
+					self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.
@@ -159,7 +160,8 @@ SAMainLoop >> liteAmplification [
 			old_Pop := population.
 			population := aPopulation reject: [ :x | x testMethod isNil ].
 			self selection.
-			self cleanUpAndAddToResult. population := old_Pop . ]
+			self cleanUpAndAddToResult.
+			population addAll: old_Pop ]
 ]
 
 { #category : #private }
@@ -208,6 +210,17 @@ SAMainLoop >> methodReductions [
 				collect: [ :reducer | reducer initializeWith: config ] 
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoop >> normalize [
+	finalResult logs
+		recoredTag: #strip
+		toRun: [ population
+				do: [ :tcase | 
+					tcase strip.
+					tcase normalize ]
+				displayingProgress: 'Strip Test Methods' ]
+]
+
 { #category : #private }
 SAMainLoop >> recordLog: aTag [
 	finalResult logs timeTickFor: aTag
@@ -244,16 +257,6 @@ SAMainLoop >> selection [
 SAMainLoop >> selections [
 	^ config selections collect: [ :selection | 
 		  selection initializeWith: config ]
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoop >> strip [
-	finalResult logs
-		recoredTag: #strip
-		toRun: [population
-		do: [ :tcase | tcase strip ]
-		displayingProgress: 'Strip Test Methods'.
-	]
 ]
 
 { #category : #accessing }

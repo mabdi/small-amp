@@ -34,8 +34,8 @@ SAAliveMutationMethodReduction >> genMetaLink [
 ]
 
 { #category : #'as yet unclassified' }
-SAAliveMutationMethodReduction >> initialize [ 
-links := OrderedCollection new
+SAAliveMutationMethodReduction >> initialize [
+	
 ]
 
 { #category : #'as yet unclassified' }
@@ -58,13 +58,16 @@ SAAliveMutationMethodReduction >> makeTestClassWith: aListOfMethods [
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	| nodesToMutate |
+	
 	aListOfMethods ifEmpty: [ ^ aListOfMethods ].
 	nodesToMutate := (uncovered collect: [ :u | u mutant originalMethod ])
 		removeDuplicates.
-	[ self installMetaLinkTo: nodesToMutate.
-	self makeTestClassWith: aListOfMethods.
+	links := OrderedCollection new.
+	[ self makeTestClassWith: aListOfMethods.
+	self installMetaLinkTo: nodesToMutate.
 	self runTestClassAndObserve ]
 		ensure: [ links do: #uninstall ].
+	
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]
