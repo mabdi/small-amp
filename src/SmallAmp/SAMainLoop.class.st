@@ -144,7 +144,7 @@ SAMainLoop >> inputAmplifiers [
 
 { #category : #private }
 SAMainLoop >> liteAmplification [
-	| aPopulation |
+	| aPopulation old_Pop |
 	finalResult logs
 		recoredTag: #liteAmplification
 		toRun: [ self methodReduction.
@@ -156,9 +156,10 @@ SAMainLoop >> liteAmplification [
 					self assertionAmplifiers
 						do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
 				displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
+			old_Pop := population.
 			population := aPopulation reject: [ :x | x testMethod isNil ].
 			self selection.
-			self cleanUpAndAddToResult ]
+			self cleanUpAndAddToResult. population := old_Pop . ]
 ]
 
 { #category : #private }

@@ -5,7 +5,8 @@ Class {
 		'testMethods',
 		'testClass',
 		'config',
-		'variablesTypes'
+		'variablesTypes',
+		'links'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -22,12 +23,15 @@ SAVariableTypeProfiler >> astHelper [
 
 { #category : #removing }
 SAVariableTypeProfiler >> buildMetalink [
-	^ MetaLink new
+	| l |
+	l := MetaLink new
 		metaObject: self;
 		control: #before;
 		selector: #executeBeforeNode:value:;
 		arguments: #(node value);
-		yourself
+		yourself.
+	links add: l.
+	^ l
 ]
 
 { #category : #cleanup }
@@ -45,6 +49,11 @@ SAVariableTypeProfiler >> executeBeforeNode: node value: val [
 ]
 
 { #category : #removing }
+SAVariableTypeProfiler >> initialize [ 
+	links := OrderedCollection new
+]
+
+{ #category : #removing }
 SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 	method ast allChildren
 		select: #isVariable
@@ -57,13 +66,15 @@ SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 { #category : #running }
 SAVariableTypeProfiler >> run [
 	| generatedClass |
-	generatedClass := self astHelper
+	[ generatedClass := self astHelper
 		buildTestClassWith: testMethods
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
-		do: [ :method | self uninstallMetaLinksOnMethod: method .self installMetaLinksOnMethod: method ].
-	generatedClass suite run.
-	self cleanUp: generatedClass
+		do: [ :method | self installMetaLinksOnMethod: method ].
+	generatedClass suite run ]
+		ensure: [ links do: #uninstall.
+			self cleanUp: generatedClass ].
+		
 ]
 
 { #category : #accessing }
@@ -91,9 +102,14 @@ SAVariableTypeProfiler >> uninstallMetaLinksOnMethod: method [
 	method ast allChildren
 		select: #isVariable
 		thenDo: [ :node | 
-			node links
-				select: [ :metalink | metalink metaObject == self ]
-				thenDo: [ :metalink | node removeLink: metalink ] ]
+			(node links select: [ :metalink | metalink metaObject == self ])
+				do: [ :metalink | node removeLink: metalink ] ].
+	"(self values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ])
+		"
+	self
+		assert:
+			((method ast allChildren) flatCollect: #links)
+				isEmpty
 ]
 
 { #category : #accessing }

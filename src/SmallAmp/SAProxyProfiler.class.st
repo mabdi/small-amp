@@ -49,17 +49,15 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 	[ listOfTargetClass
 		do:
-			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
-	aTestSuite suite run. ] ensure: 
-	
-	[
-	listOfTargetClass
-		do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ]]
+			[ :aTargetClass | . aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
+	aTestSuite suite run ]
+		ensure: [ listOfTargetClass
+				do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ] ]
 ]
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> uninstallProxyFor: aClass [
 	"aClass removeSelector: #smallGenCallRecords:."
-
+	Transcript show: aClass name, ' removed metalinks'.
 	SAProfilingProxy cureClass: aClass
 ]

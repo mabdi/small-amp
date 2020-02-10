@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'testClass',
 		'selectedMethods',
-		'covered'
+		'covered',
+		'links'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -20,17 +21,30 @@ SAAliveMutationMethodReduction >> executeBeforeNode [
 ]
 
 { #category : #'as yet unclassified' }
+SAAliveMutationMethodReduction >> genMetaLink [
+	| l |
+	l := MetaLink new
+		metaObject: self;
+		control: #before;
+		selector: #executeBeforeNode;
+		arguments: #();
+		yourself.
+		links add: l.
+		^ l
+]
+
+{ #category : #'as yet unclassified' }
+SAAliveMutationMethodReduction >> initialize [ 
+links := OrderedCollection new
+]
+
+{ #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> installMetaLinkTo: nodeToMutate [
 	nodeToMutate
 		do: [ :node | 
 			node ast
-				link:
-					(MetaLink new
-						metaObject: self;
-						control: #before;
-						selector: #executeBeforeNode;
-						arguments: #();
-						yourself) ]
+				link: self genMetaLink
+					 ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -45,11 +59,12 @@ SAAliveMutationMethodReduction >> makeTestClassWith: aListOfMethods [
 SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	| nodesToMutate |
 	aListOfMethods ifEmpty: [ ^ aListOfMethods ].
-	nodesToMutate := uncovered collect: [ :u | u mutant originalMethod ].
-	[self installMetaLinkTo: nodesToMutate.
+	nodesToMutate := (uncovered collect: [ :u | u mutant originalMethod ])
+		removeDuplicates.
+	[ self installMetaLinkTo: nodesToMutate.
 	self makeTestClassWith: aListOfMethods.
-	self runTestClassAndObserve]ensure: [self uninstallMetaLinkTo: nodesToMutate].
-	.
+	self runTestClassAndObserve ]
+		ensure: [ links do: #uninstall ].
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]

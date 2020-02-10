@@ -111,7 +111,7 @@ SADrTestsResult >> color [
 				ifTrue: [ ^ Color named: 'yellow' ].
 			score_new - score_old < 10
 				ifTrue: [ ^ Color named: 'lightGreen' ].
-			score_new - score_old > 10
+			score_new - score_old >= 10
 				ifTrue: [ ^ Color named: 'green' ] ].
 	^ Color named: 'gray'
 ]
