@@ -14,6 +14,11 @@ SAAbstractProfiler class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
+{ #category : #'instance creation' }
+SAAbstractProfiler >> config: aConfig [
+	config := aConfig
+]
+
 { #category : #accessing }
 SAAbstractProfiler >> initialize [
 	profile := Dictionary new.

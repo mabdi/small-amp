@@ -105,7 +105,8 @@ SAConfig >> profiler [
 
 { #category : #accessing }
 SAConfig >> profiler: anObject [
-	profiler := anObject
+	profiler := anObject.
+	profiler config: self
 ]
 
 { #category : #accessing }
