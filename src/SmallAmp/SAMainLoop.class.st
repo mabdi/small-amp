@@ -93,15 +93,15 @@ SAMainLoop >> cleanUpAndAddToResult [
 
 { #category : #actions }
 SAMainLoop >> discardFailingTests [
-	| result testMethods |
-	result := testClass suite run.
-	testMethods := result passed
-		collect:
-			[ :passed | (testClass lookupSelector: passed selector) sourceCode ].
-	finalResult failedSelectorInOriginal: result failures.
-	population := testMethods
-		collect:
-			[ :tcase | SATestMethod with: tcase class: testClass targets: targetClasses ]
+| result testMethods |
+result := testClass suite run.
+testMethods := result expectedPasses
+collect: [ :passed | (testClass lookupSelector: passed selector) sourceCode ].
+finalResult failedSelectorInOriginal: result failures, result expectedDefects.
+population := testMethods
+collect:
+[ :tcase | SATestMethod with: tcase class: testClass targets: targetClasses ]
+
 ]
 
 { #category : #'as yet unclassified' }
