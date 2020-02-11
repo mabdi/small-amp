@@ -80,6 +80,12 @@ SAASTHelper >> getId [
 	^ self class instanceId
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> killAllMetalinksOn: aClass [ 
+	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
+
+]
+
 { #category : #'method operations' }
 SAASTHelper >> parsedMethodFrom: aSourceCode [
 	^ self parserClass parseMethod: aSourceCode
