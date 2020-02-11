@@ -109,16 +109,18 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r |
-	passingCheckClass
-		ifNil: [ passingCheckClass := self astHelper
-				buildTestClassWith: {sourceCodeWithAssertions}
-				using: testMethodModel testClass ].
-	r := (passingCheckClass run: testMethodModel selector) hasPassed.
-	r
-		ifFalse: [ self error: 'check me' ]
-		.
-	^ r
+| r |
+passingCheckClass
+ifNil: [ passingCheckClass := self astHelper
+buildTestClassWith: {sourceCodeWithAssertions}
+using: testMethodModel testClass ].
+r := [(passingCheckClass run: testMethodModel selector) hasPassed]
+valueWithin: config testRunTimeOut milliSeconds
+onTimeout: [ false ]..
+r
+ifFalse: [ self error: 'check me' ].
+^ r
+
 ]
 
 { #category : #cleanup }
