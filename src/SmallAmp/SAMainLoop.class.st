@@ -147,7 +147,7 @@ SAMainLoop >> liteAmplification [
 	| aPopulation old_Pop |
 	finalResult logs
 		recoredTag: #liteAmplification
-		toRun: [ self methodReduction.
+		toRun: [ 
 			aPopulation := population
 				collect: [ :tcase | tcase renamedCopy: '_amp' ].
 			aPopulation do: [ :tcase | tcase strip ].

@@ -82,7 +82,7 @@ SAAliveMutationMethodReduction >> runTestClassAndObserve [
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> runTestClassAndObserve: aListOfMethods [
-	selectedMethods := (testClass testSelectors select: [ :m | aListOfMethods includes: m ])
+	selectedMethods := (testClass testSelectors select: [ :m | aListOfMethods anySatisfy: [:z | z selector = m] ])
 		select: [ :sel | 
 			covered := false.
 			testClass run: sel.
