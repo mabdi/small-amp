@@ -49,8 +49,10 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 	[ listOfTargetClass
 		do:
-			[ :aTargetClass | . aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
-	aTestSuite suite run ]
+			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
+	 [ aTestSuite suite run ]
+		valueWithin: config testRunTimeOut milliSeconds
+		onTimeout: [ self error: 'check me' ] ]
 		ensure: [ listOfTargetClass
 				do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ] ]
 ]

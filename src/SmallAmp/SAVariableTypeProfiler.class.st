@@ -67,26 +67,14 @@ SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 { #category : #running }
 SAVariableTypeProfiler >> run [
 	| generatedClass |
-	
-	generatedClass := self astHelper
-		buildTestClassWith: testMethods
-		using: testClass.
-	(generatedClass methods select: #isTestMethod)
-		do: [ :method | self installMetaLinksOnMethod: method ].
-	generatedClass suite run.
-	links do: #uninstall.
-	self cleanUp: generatedClass
-]
-
-{ #category : #running }
-SAVariableTypeProfiler >> run_old [
-	| generatedClass |
 	[ generatedClass := self astHelper
 		buildTestClassWith: testMethods
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
-	generatedClass suite run ]
+	[ generatedClass suite run ]
+		valueWithin: config testRunTimeOut milliSeconds
+		onTimeout: [ self error: 'check me' ] ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]
