@@ -11,8 +11,8 @@ SABrowseTestTargetCommand >> canBeExecuted [
 
 { #category : #testing }
 SABrowseTestTargetCommand >> execute [
-	(SADrTestsRunInput from: self drTest selectedItems first) testTarget first
-		drTestsBrowse
+	(self drTest selectedItems first) smallAmpTargetClasses
+		first drTestsBrowse
 ]
 
 { #category : #testing }

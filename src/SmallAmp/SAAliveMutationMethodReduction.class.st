@@ -49,38 +49,44 @@ SAAliveMutationMethodReduction >> installMetaLinkTo: nodeToMutate [
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> makeTestClassWith: aListOfMethods [
-	
-	testClass := self astHelper
-		buildTestClassWith: (aListOfMethods collect: #testMethod)
-		using: aListOfMethods first testClass
+	testClass
+		ifNil: [ testClass := self astHelper
+				buildTestClassWith: (aListOfMethods collect: #testMethod)
+				using: aListOfMethods first testClass ]
+		ifNotNil: [ (aListOfMethods collect: #testMethod) do: [ :src | testClass compile: src ]  ]
 ]
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	| nodesToMutate |
-	
 	aListOfMethods ifEmpty: [ ^ aListOfMethods ].
 	nodesToMutate := (uncovered collect: [ :u | u mutant originalMethod ])
 		removeDuplicates.
 	links := OrderedCollection new.
 	[ self makeTestClassWith: aListOfMethods.
 	self installMetaLinkTo: nodesToMutate.
-	self runTestClassAndObserve ]
+	self runTestClassAndObserve: aListOfMethods ]
 		ensure: [ links do: #uninstall ].
-	
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> runTestClassAndObserve [
-	selectedMethods := 
-	testClass testSelectors
+	selectedMethods := (testClass testSelectors select: [ :m |  ])
 		select: [ :sel | 
 			covered := false.
 			testClass run: sel.
-			covered
-				]
+			covered ]
+]
+
+{ #category : #'as yet unclassified' }
+SAAliveMutationMethodReduction >> runTestClassAndObserve: aListOfMethods [
+	selectedMethods := (testClass testSelectors select: [ :m | aListOfMethods includes: m ])
+		select: [ :sel | 
+			covered := false.
+			testClass run: sel.
+			covered ]
 ]
 
 { #category : #'as yet unclassified' }

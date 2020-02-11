@@ -16,11 +16,6 @@ SAASTHelper class >> instanceId [
 
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
-	 ^ self buildTestClassWith: aCollection using: testClass final: false
-]
-
-{ #category : #'method operations' }
-SAASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 	| tempClass |
 	tempClass := testClass superclass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -33,7 +28,6 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 		do: [ :item | 
 			| ast |
 			ast := self parsedMethodFrom: item.
-			
 			tempClass compile: ast formattedCode ].
 	^ tempClass
 ]

@@ -10,7 +10,8 @@ Class {
 		'resultPeople',
 		'uncovered',
 		'inputAmplifiers',
-		'assertionAmplifiers'
+		'assertionAmplifiers',
+		'methodReductions'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -94,14 +95,13 @@ SAMainLoop >> cleanUpAndAddToResult [
 SAMainLoop >> discardFailingTests [
 	| result testMethods |
 	result := testClass suite run.
-	testMethods := result passed collect: [ :passed | 
-		               (testClass methodNamed: passed selector) sourceCode ].
+	testMethods := result passed
+		collect:
+			[ :passed | (testClass lookupSelector: passed selector) sourceCode ].
 	finalResult failedSelectorInOriginal: result failures.
-	population := testMethods collect: [ :tcase | 
-		              SATestMethod
-			              with: tcase
-			              class: testClass
-			              targets: targetClasses ]
+	population := testMethods
+		collect:
+			[ :tcase | SATestMethod with: tcase class: testClass targets: targetClasses ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -206,8 +206,8 @@ SAMainLoop >> methodReduction [
 
 { #category : #accessing }
 SAMainLoop >> methodReductions [
-	^ config methodReductions
-				collect: [ :reducer | reducer initializeWith: config ] 
+	^ methodReductions ifNil: [ methodReductions := config methodReductions
+		collect: [ :reducer | reducer initializeWith: config ]]
 ]
 
 { #category : #'as yet unclassified' }
