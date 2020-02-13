@@ -83,7 +83,11 @@ SmallAmp >> amplifyAll [
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
-			res addResult: (self amplify: item key target: item value) for: item ]
+			| instance |
+			[ instance := self amplify: item key target: item value.
+			res addResult: instance for: item ]
+				on: Error
+				do: [ :ex | self halt ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
