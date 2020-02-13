@@ -11,6 +11,7 @@ Class {
 		'selections',
 		'oracleReducions',
 		'profiler',
+		'statementTimeOut',
 		'testRunTimeOut',
 		'serializationMaxDepth',
 		'methodReductions'
@@ -127,6 +128,16 @@ SAConfig >> serializationMaxDepth [
 { #category : #accessing }
 SAConfig >> serializationMaxDepth: anObject [
 	serializationMaxDepth := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> statementTimeOut [
+	^ statementTimeOut
+]
+
+{ #category : #accessing }
+SAConfig >> statementTimeOut: anInt [
+	statementTimeOut:= anInt
 ]
 
 { #category : #accessing }

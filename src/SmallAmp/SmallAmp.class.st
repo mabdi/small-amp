@@ -55,6 +55,7 @@ SmallAmp class >> example [
 		methodReductions: {SANoMethodReduction};
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		testRunTimeOut: 1000;
+		statementTimeOut: 1000;
 		debug: false;
 		lite: false;
 		yourself.

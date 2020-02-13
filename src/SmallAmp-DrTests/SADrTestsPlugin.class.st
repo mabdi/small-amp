@@ -115,6 +115,7 @@ SADrTestsPlugin >> smallAmpDefaultConfig [
 		oracleReducions: {SAMuTalkFirstFailOracleReduction};
 		debug: false;
 		testRunTimeOut: 10000;
+		statementTimeOut: 1000;
 		lite: false;
 		yourself
 ]

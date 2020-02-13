@@ -181,7 +181,7 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> insertObservers: aMethodAST [
-	SAObserverInsertingRewriter runWith: aMethodAST
+	SAObserverInsertingRewriter new config: config; methodAST: aMethodAST; run
 ]
 
 { #category : #'as yet unclassified' }
