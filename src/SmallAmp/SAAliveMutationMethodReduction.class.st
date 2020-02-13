@@ -70,36 +70,46 @@ SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	nodesToMutate := (uncovered collect: [ :u | u mutant originalMethod ])
 		removeDuplicates.
 	links := OrderedCollection new.
-	[ self makeTestClassWith: aListOfMethods.
 	self installMetaLinkTo: nodesToMutate.
-	self runTestClassAndObserve: aListOfMethods ]
-		ensure: [ links do: #uninstall. self cleanUp: aListOfMethods ].
+	selectedMethods := OrderedCollection new.
+	aListOfMethods
+		do: [ :m | 
+			self makeTestClassWith: {m}.
+			self runTestClassAndObserve: {m}.
+			self cleanUp: {m} ]
+		displayingProgress: 'Reducing inputs (' , aListOfMethods size asString , ')'.
+	links do: #uninstall.
+	
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]
 
 { #category : #'as yet unclassified' }
-SAAliveMutationMethodReduction >> runTestClassAndObserve [
-selectedMethods := (testClass testSelectors select: [ :m |  ])
-select: [ :sel | 
-covered := false.
-[ testClass run: sel ]
-valueWithin: config testRunTimeOut milliSeconds
-onTimeout: [ covered := false ].
-covered ]
-
+SAAliveMutationMethodReduction >> reduceMethodsOld: aListOfMethods [
+	| nodesToMutate |
+	aListOfMethods ifEmpty: [ ^ aListOfMethods ].
+	nodesToMutate := (uncovered collect: [ :u | u mutant originalMethod ])
+		removeDuplicates.
+	links := OrderedCollection new.
+	[ self makeTestClassWith: aListOfMethods.
+	self installMetaLinkTo: nodesToMutate.
+	self runTestClassAndObserve: aListOfMethods ]
+		ensure: [ links do: #uninstall.
+			self cleanUp: aListOfMethods ].
+	^ aListOfMethods
+		select: [ :s | selectedMethods includes: s selector ]
 ]
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> runTestClassAndObserve: aListOfMethods [
-selectedMethods := (testClass testSelectors
-select: [ :m | aListOfMethods anySatisfy: [ :z | z selector = m ] ])
-select: [ :sel | 
-covered := false.
-[ testClass run: sel ]
-valueWithin: config testRunTimeOut milliSeconds
-onTimeout: [ covered := false ].
-covered ]
+	selectedMethods addAll: ((testClass testSelectors
+		select: [ :m | aListOfMethods anySatisfy: [ :z | z selector = m ] ])
+		select: [ :sel | 
+			covered := false.
+			[ testClass run: sel ]
+				valueWithin: config testRunTimeOut milliSeconds
+				onTimeout: [ covered := false ].
+			covered ])
 ]
 
 { #category : #'as yet unclassified' }

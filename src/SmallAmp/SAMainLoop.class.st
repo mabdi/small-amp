@@ -194,22 +194,26 @@ SAMainLoop >> methodProfiling [
 
 { #category : #accessing }
 SAMainLoop >> methodReduction [
-	| p |
+	| p size |
+	size := self methodReductions size asString.
 	finalResult logs
 		recoredTag: #methodReduction
 		toRun: [ p := population.
 			self methodReductions
 				do: [ :reducer | 
+					
 					reducer uncovered: uncovered.
 					p := reducer reduceMethods: p ]
-				displayingProgress: 'Method Reduction' , ' (' , self methodReductions size asString , ')'.
+				displayingProgress: 'Method Reduction' , ' (' , size , ')'.
 			population := p ]
 ]
 
 { #category : #accessing }
 SAMainLoop >> methodReductions [
-	^ methodReductions ifNil: [ methodReductions := config methodReductions
-		collect: [ :reducer | reducer initializeWith: config ]]
+	methodReductions
+		ifNil: [ methodReductions := config methodReductions
+				collect: [ :reducer | reducer initializeWith: config ] ].
+			^ methodReductions
 ]
 
 { #category : #'as yet unclassified' }
