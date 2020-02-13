@@ -53,9 +53,9 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		recoredTag: #checkPassing
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ]."
-	"self class timing
+	self class timing
 		recoredTag: #cleanUp
-		toRun: [ self cleanUp: generatedClass ]."
+		toRun: [ self cleanUp ].
 	^ sourceCodeWithAssertions
 ]
 
@@ -121,6 +121,13 @@ r
 ifFalse: [ self error: 'check me' ].
 ^ r
 
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> cleanUp [
+	config debug
+		ifTrue: [ ^ self ].
+	generatedClass removeSelector: testMethodModel selector.	"self astHelper removeClass: generatedClass source: self class name"
 ]
 
 { #category : #cleanup }

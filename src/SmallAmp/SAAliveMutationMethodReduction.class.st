@@ -15,6 +15,13 @@ SAAliveMutationMethodReduction >> astHelper [
 	^ SAASTHelper new
 ]
 
+{ #category : #cleanup }
+SAAliveMutationMethodReduction >> cleanUp: aListOfMethods [
+	config debug
+		ifTrue: [ ^ self ].
+	aListOfMethods do: [ :mtd | testClass removeSelector: mtd selector ]
+]
+
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> executeBeforeNode [
 	covered := true
@@ -66,7 +73,7 @@ SAAliveMutationMethodReduction >> reduceMethods: aListOfMethods [
 	[ self makeTestClassWith: aListOfMethods.
 	self installMetaLinkTo: nodesToMutate.
 	self runTestClassAndObserve: aListOfMethods ]
-		ensure: [ links do: #uninstall ].
+		ensure: [ links do: #uninstall. self cleanUp: aListOfMethods ].
 	^ aListOfMethods
 		select: [ :s | selectedMethods includes: s selector ]
 ]
