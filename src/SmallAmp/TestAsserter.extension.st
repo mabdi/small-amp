@@ -15,3 +15,18 @@ TestAsserter >> assertSourceCode: aSrc1 equals: aSrc2 [
 	ast2 := RBParser parseExpression: aSrc2.
 	self assert: ast1 dump equals: ast2 dump
 ]
+
+{ #category : #'*SmallAmp' }
+TestAsserter >> should: aBlock takeMoreThan: aDuration [
+	"Evaluate aBlock and if it takes more than given duration
+    to run we report a test failure. "
+
+	<debuggerCompleteToSender>
+	^ [aBlock value.
+		self
+				assert: false
+				description: [ 'Block evaluation finished earlier than the expected <1p>'
+						expandMacrosWith: aDuration ]]
+		valueWithin: aDuration
+		onTimeout: [  ]
+]
