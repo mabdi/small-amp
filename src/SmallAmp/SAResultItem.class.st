@@ -40,13 +40,15 @@ SAResultItem >> markDownOn: stream [
 		nextPutAll: '|';
 		nextPutAll: (', ' join: (targetClasses collect: #name));
 		nextPutAll: '|';
-		nextPutAll: (((self logs summary collect: #value) sum / 1000) printShowingDecimalPlaces: 2) , ' Seconds';
+		nextPutAll:
+			((self logs summary collect: #value) sum / 1000
+				printShowingDecimalPlaces: 2) , ' Seconds';
 		nextPutAll: '|'.
 	stream nextPutAll: '#TestMethods: '.
 	stream
 		nextPutAll:
 			(testClass methods
-				select: [ :m | m hasPragmaNamed: SAASTHelper defaultPragma ]) size
+				) size
 				asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#AllMutations: '.

@@ -4,8 +4,16 @@ Class {
 	#instVars : [
 		'logs'
 	],
+	#classInstVars : [
+		'debugWatchings'
+	],
 	#category : #'SmallAmp-Helpers'
 }
+
+{ #category : #accessing }
+SALogger class >> debugWatchings [
+	^ debugWatchings ifNil: [ debugWatchings := OrderedCollection new ]
+]
 
 { #category : #'accessing structure variables' }
 SALogger class >> timestamp [
@@ -14,7 +22,8 @@ SALogger class >> timestamp [
 
 { #category : #initialization }
 SALogger >> initialize [
-	logs := OrderedCollection new.
+	
+	logs := OrderedCollection new
 ]
 
 { #category : #accessing }

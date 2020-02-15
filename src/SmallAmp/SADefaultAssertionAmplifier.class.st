@@ -49,10 +49,10 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		toRun: [ sourceCodeWithAssertions := self
 				insertAsserts: sourceCodeWithoutObservers
 				using: generatedClass observer ].
-	"self class timing
+	self class timing
 		recoredTag: #checkPassing
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
-				ifFalse: [ ^ nil ] ]."
+				ifFalse: [ ^ nil ] ].
 	self class timing
 		recoredTag: #cleanUp
 		toRun: [ self cleanUp ].
@@ -109,18 +109,18 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-| r |
-passingCheckClass
-ifNil: [ passingCheckClass := self astHelper
-buildTestClassWith: {sourceCodeWithAssertions}
-using: testMethodModel testClass ].
-r := [(passingCheckClass run: testMethodModel selector) hasPassed]
-valueWithin: config testRunTimeOut milliSeconds
-onTimeout: [ false ]..
-r
-ifFalse: [ self error: 'check me' ].
-^ r
-
+	| r |
+	passingCheckClass
+		ifNil: [ passingCheckClass := self astHelper
+				buildTestClassWith: {sourceCodeWithAssertions}
+				using: testMethodModel testClass ]
+		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ].
+	r := [ (passingCheckClass run: testMethodModel selector) hasPassed ]
+		valueWithin: config testRunTimeOut milliSeconds
+		onTimeout: [ false ].
+	r
+		ifFalse: [ self log4debug: #AssertAmplifyCheckPassing what: sourceCodeWithAssertions ].
+	^ r
 ]
 
 { #category : #'as yet unclassified' }
@@ -149,7 +149,10 @@ SADefaultAssertionAmplifier >> ignoreFlakyValues [
 	self flackyTestRepeat
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
-			self runTestClass ifNil: [ self error: 'You shouldnt be here' ].
+			self runTestClass
+				ifNil: [ self
+						log4debug: #ignoreFlakyValues
+						what: (generatedClass methodNamed: testMethodModel selector) sourceCode. ^ self ].
 			x add: generatedClass observer flakyMem.
 			generatedClass observer checkFlaky ]
 ]
@@ -182,6 +185,12 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> insertObservers: aMethodAST [
 	SAObserverInsertingRewriter new config: config; methodAST: aMethodAST; run
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> log4debug: tag what: obj [
+	SALogger debugWatchings
+				add: tag -> obj
 ]
 
 { #category : #'as yet unclassified' }

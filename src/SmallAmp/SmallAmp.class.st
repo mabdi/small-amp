@@ -96,7 +96,8 @@ SmallAmp >> amplifyAll [
 { #category : #initialization }
 SmallAmp >> initialize [
 	amplifyList := OrderedCollection new.
-	SADefaultAssertionAmplifier timing: SALogger new.
+	SALogger debugWatchings removeAll.
+	SADefaultAssertionAmplifier timing: SALogger new
 ]
 
 { #category : #accessing }
