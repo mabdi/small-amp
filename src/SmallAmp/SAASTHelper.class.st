@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAASTHelper class >> defaultPragma [
+	^ #madeBySmallAmp
+]
+
+{ #category : #'as yet unclassified' }
 SAASTHelper class >> instanceId [
 	instanceId ifNil: [ instanceId:=0 ].
 	instanceId := instanceId + 1.
@@ -60,9 +65,9 @@ SAASTHelper >> clearTempClasses [
 		displayingProgress: 'Clear temp classes.'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 SAASTHelper >> defaultPragma [
-	^ #madeBySmallAmp
+	^ self class defaultPragma
 ]
 
 { #category : #'as yet unclassified' }

@@ -23,7 +23,7 @@ SAResultReducedItem >> analysis: anObject [
 { #category : #'as yet unclassified' }
 SAResultReducedItem >> markDownOn: stream [
 	stream nextPutAll: '#TestMethods: '.
-	stream nextPutAll: reducedClass testSelectors size asString.
+	stream nextPutAll: (reducedClass methods select: [:m | m hasPragmaNamed: SAASTHelper defaultPragma  ]) size asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#AllMutations: '.
 	stream
@@ -31,9 +31,7 @@ SAResultReducedItem >> markDownOn: stream [
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#KilledMutants: '.
 	stream
-		nextPutAll:
-			analysis generalResult numberOfKilledOrTerminatedMutants
-				asString.
+		nextPutAll: analysis generalResult numberOfKilledOrTerminatedMutants asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: 'Score: %'.
 	stream nextPutAll: analysis generalResult mutationScore asString
