@@ -157,6 +157,7 @@ SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	res reducer: self class.
 	res reducedClass: self reducedAddedTestClass.
 	res analysis: (self mutalkRun: self reducedAddedTestClass).
+	res presentationName: self presentationName.
 	self cleanUp: reducedTestClass.
 	^ res
 ]
@@ -172,6 +173,11 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 		with: SmallAmpMutationsGenerationStrategy new.
 	analysis1 run.
 	^ analysis1
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> presentationName [
+	^ 'First Mutation Failed'
 ]
 
 { #category : #running }

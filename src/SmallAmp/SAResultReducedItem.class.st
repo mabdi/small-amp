@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'analysis',
 		'reducer',
-		'reducedClass'
+		'reducedClass',
+		'presentationName'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -36,6 +37,16 @@ SAResultReducedItem >> markDownOn: stream [
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: 'Score: %'.
 	stream nextPutAll: analysis generalResult mutationScore asString
+]
+
+{ #category : #'as yet unclassified' }
+SAResultReducedItem >> presentationName [
+	^ presentationName
+]
+
+{ #category : #'as yet unclassified' }
+SAResultReducedItem >> presentationName: aName [
+	presentationName:= aName
 ]
 
 { #category : #accessing }

@@ -33,7 +33,12 @@ SAResult >> initialize [
 { #category : #adding }
 SAResult >> markDown [
 	^ String
-		streamContents: [ :stream | results do: [ :rItem | rItem markDownOn: stream. stream cr ] ]
+		streamContents: [ :stream | 
+			results anyOne markDownTitleOn: stream.
+			results
+				do: [ :rItem | 
+					rItem markDownOn: stream.
+					stream cr ] ]
 ]
 
 { #category : #adding }

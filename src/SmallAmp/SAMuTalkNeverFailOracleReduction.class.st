@@ -172,6 +172,7 @@ SAMuTalkNeverFailOracleReduction >> makeReducedResult [
 	res reducer: self class.
 	res reducedClass: self reducedAddedTestClass.
 	res analysis: (self mutalkRun: self reducedAddedTestClass).
+	res presentationName: self presentationName.
 	self cleanUp: reducedTestClass.
 	^ res
 ]
