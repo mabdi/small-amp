@@ -13,7 +13,7 @@ Class {
 
 { #category : #accessing }
 SADefaultAssertionAmplifier class >> timing [
-	^ timing
+	^ timing ifNil: [ timing := SALogger new ]
 ]
 
 { #category : #accessing }
