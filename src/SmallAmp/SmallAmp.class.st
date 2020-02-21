@@ -42,28 +42,17 @@ Class {
 
 { #category : #example }
 SmallAmp class >> example [
-	| config result |
-	config := SAConfig new
-		iterations: 3;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier};
-		profiler: SAProxyProfiler new;
-		selections: {SAMutationCoverageSelection};
-		methodReductions: {SANoMethodReduction};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		testRunTimeOut: 1000;
-		statementTimeOut: 1000;
-		debug: false;
-		lite: false;
-		yourself.
-	result := (SmallAmp initializeWith: config)
+	| result |
+	result := SmallAmp initializeDefault
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};
 		amplifyAll.
 	^ result
+]
+
+{ #category : #initialization }
+SmallAmp class >> initializeDefault [
+	^ self new initializeWith: SAConfig default
 ]
 
 { #category : #initialization }

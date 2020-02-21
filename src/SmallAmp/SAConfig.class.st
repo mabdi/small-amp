@@ -20,6 +20,26 @@ Class {
 }
 
 { #category : #accessing }
+SAConfig class >> default [
+	^ SAConfig new
+		iterations: 3;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 3;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier};
+		profiler: SAProxyProfiler new;
+		selections: {SAMutationCoverageSelection};
+		methodReductions: {SANoMethodReduction};
+		oracleReducions: {SAMuTalkFirstFailOracleReduction};
+		testRunTimeOut: 10000;
+		statementTimeOut: 2000;
+		debug: false;
+		lite: false;
+		yourself.
+]
+
+{ #category : #accessing }
 SAConfig >> assertionAmplifiers [
 	^ assertionAmplifiers
 ]

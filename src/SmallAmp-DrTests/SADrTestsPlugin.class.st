@@ -102,22 +102,10 @@ SADrTestsPlugin >> secondListLabel [
 
 { #category : #'as yet unclassified' }
 SADrTestsPlugin >> smallAmpDefaultConfig [
-	^ SAConfig new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier};
-		profiler: SAProxyProfiler new;
-		selections: {SAMutationCoverageSelection};
-		methodReductions: {SANoMethodReduction};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		debug: false;
-		testRunTimeOut: 10000;
-		statementTimeOut: 1000;
-		lite: false;
-		yourself
+	| c |
+	c := SAConfig default.
+	c iterations: 5.
+	^ c
 ]
 
 { #category : #api }
