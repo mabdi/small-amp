@@ -95,6 +95,8 @@ SAResultItem >> markDownTitleOn: stream [
 		nextPutAll: '|';
 		nextPutAll: '---';
 		nextPutAll: '|';
+		nextPutAll: '---';
+		nextPutAll: '|';
 		nextPutAll: '----';
 		nextPutAll: '|'.
 	reducedVersions
