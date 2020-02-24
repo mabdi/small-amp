@@ -41,15 +41,11 @@ SAResultItem >> markDownOn: stream [
 		nextPutAll: (', ' join: (targetClasses collect: #name));
 		nextPutAll: '|';
 		nextPutAll:
-			((self logs summary collect: #value) sum / 1000
-				printShowingDecimalPlaces: 2) , ' Seconds';
+			(Duration seconds: ((self logs summary collect: #value) sum / 1000) asInteger)
+				humanReadablePrintString;
 		nextPutAll: '|'.
 	stream nextPutAll: '#TestMethods: '.
-	stream
-		nextPutAll:
-			(testClass methods
-				) size
-				asString.
+	stream nextPutAll: testClass methods size asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#AllMutations: '.
 	stream

@@ -62,8 +62,11 @@ SmallAmp class >> initializeWith: aConfig [
 
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
-	^ (SAMainLoop with: config for: aTestClass targets: targetClasses)
-		  amplify
+	| sa |
+	sa := SAMainLoop with: config for: aTestClass targets: targetClasses.
+	^ config lite
+		ifTrue: [ sa amplifyLite  ]
+		ifFalse: [ sa amplify ]
 ]
 
 { #category : #actions }

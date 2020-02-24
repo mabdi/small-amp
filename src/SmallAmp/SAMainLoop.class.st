@@ -38,17 +38,22 @@ SAMainLoop >> addPopulationToResult [
 { #category : #actions }
 SAMainLoop >> amplify [
 	self initialSteps.
-	self liteAmplification.
-	config lite
-		ifFalse: [ (1 to: config iterations)
-				do: [ :gen |
+	 (1 to: config iterations)
+				do: [ :gen | 
 					self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.
 					self selection.
 					self cleanUpAndAddToResult ]
-				displayingProgress: 'Main loop' , ' (' , config iterations asString , ')' ].
+				displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
+	^ self makeResult
+]
+
+{ #category : #actions }
+SAMainLoop >> amplifyLite [
+	self initialSteps.
+	self liteAmplification.
 	^ self makeResult
 ]
 

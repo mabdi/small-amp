@@ -208,13 +208,14 @@ SADrTestsResult >> timeInformations [
 						name:
 							s key asString , ': % '
 								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
-								, (s value / 1000 printShowingDecimalPlaces: 3) , ' sec)';
+								, (Duration milliSeconds: s value) humanReadablePrintString
+								, ')';
 						subResults: {};
 						yourself ].
 			DTTreeNode new
 				name:
-					x testClass name , ' (' , (sum / 1000 printShowingDecimalPlaces: 3)
-						, ' sec)';
+					x testClass name , ' (' , (Duration milliSeconds: sum) humanReadablePrintString 
+						, ')';
 				subResults: sums;
 				yourself ].
 	^ DTTreeNode new
