@@ -119,7 +119,7 @@ methods
 do: [ :l | 
 | retVal v |
 
-[ "anInteger = 0 ifTrue: [self halt]."
+[ 
 retVal := theObject perform: l selector.
 retVal == theObject
 ifFalse: [ v := retVal

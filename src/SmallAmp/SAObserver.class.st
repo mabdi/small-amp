@@ -116,12 +116,19 @@ SAObserver >> observeException: exception id: idx [
 
 { #category : #'as yet unclassified' }
 SAObserver >> observeResult: aResult receiver: aReceiver selector: aSelector name: aString id: anInt [
-	| serialized |
-	aReceiver == aResult ifTrue: [ ^ self ]. "the method is not an observer. it returns itself (Java alternative: void returning methods). "
+	| serialized skipMe |
+	skipMe := true.
+	(self isInObservationScope: aReceiver)
+		ifTrue: [ skipMe := false ].
+	(self isInObservationScope: aResult)
+		ifTrue: [ skipMe := false ].
+	aReceiver == aResult
+		ifTrue: [ skipMe := true ].	"the method is not an observer. it returns itself (Java alternative: void returning methods). "
+	skipMe
+		ifTrue: [ ^ false ].
 	serialized := aResult
-		              smallAmpAcceptSerializerVisitor:
-		              self getASerializer
-		              atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	serialized
 		name: aString;
 		id: anInt;
