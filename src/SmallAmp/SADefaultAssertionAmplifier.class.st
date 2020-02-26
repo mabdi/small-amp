@@ -143,18 +143,17 @@ SADefaultAssertionAmplifier >> flackyTestRepeat [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> ignoreFlakyValues [
-	| x |
-	x := OrderedCollection new.
-	x add: generatedClass observer history.
 	self flackyTestRepeat
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
 			self runTestClass
 				ifNil: [ self
 						log4debug: #ignoreFlakyValues
-						what: (generatedClass methodNamed: testMethodModel selector) sourceCode. ^ self ].
-			x add: generatedClass observer flakyMem.
-			generatedClass observer checkFlaky ]
+						what: (generatedClass methodNamed: testMethodModel selector) sourceCode.
+					^ self ].
+			self validFlakyMem ifTrue: [generatedClass observer checkFlaky].
+			
+			 ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -203,4 +202,16 @@ SADefaultAssertionAmplifier >> runTestClass [
 	^ [ generatedClass run: testMethodModel selector ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+SADefaultAssertionAmplifier >> validFlakyMem [
+	[ generatedClass observer history
+		with: generatedClass observer flakyMem
+		do: [ :a :b | 
+			a class = b class
+				ifFalse: [ ^ false ] ] ]
+		on: Error
+		do: [ ^ false ].
+		^ true
 ]
