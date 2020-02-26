@@ -9,13 +9,11 @@ Class {
 
 { #category : #accessing }
 SmallBank >> balance [
-<SmallAmpAccessing>
 	^ balance
 ]
 
 { #category : #accessing }
 SmallBank >> deposit: amount [
-	<SmallAmpAction>
 	balance := balance + amount
 ]
 
@@ -33,7 +31,6 @@ SmallBank >> rand [
 
 { #category : #accessing }
 SmallBank >> withdraw: amount [
-<SmallAmpAction>
 	balance >= amount
 		ifTrue: [ balance := balance - amount ]
 ]
