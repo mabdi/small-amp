@@ -3,17 +3,15 @@ Class {
 	#superclass : #RBProgramNodeVisitor,
 	#instVars : [
 		'targetNodes',
-		'methodAST'
+		'methodAST',
+		'config'
 	],
 	#category : #'SmallAmp-Helpers'
 }
 
-{ #category : #'instance creation' }
-SAObserverInsertingRewriter class >> runWith: aMethodAST [
-	^ self new
-		  with: aMethodAST;
-		  run;
-		yourself 
+{ #category : #initialization }
+SAObserverInsertingRewriter >> config: aConfig [
+	config:= aConfig
 ]
 
 { #category : #initialization }
@@ -49,8 +47,10 @@ SAObserverInsertingRewriter >> insertObservers: aMethod [
 		millisecondsToRun: [ [ ' , aNode formattedCode
 										,
 											' ]
-		valueWithin: 999 milliSeconds
-		onTimeout: [ self class observer observeTimeOut: 1000 id: '
+		valueWithin: ' , config statementTimeOut asString
+										,
+											' milliSeconds
+		onTimeout: [ self class observer observeTimeOut: ',config statementTimeOut asString,' id: '
 										, idx asString
 										,
 											'. noObserve:=true  ] ].
@@ -72,9 +72,14 @@ SAObserverInsertingRewriter >> insertObservers: aMethod [
 										,
 											'
 		id: ' , idx asString
-										, ' ] on: Error do: [ :saERR | self halt ] ] ]'.
+										, ' ] on: Error do: [ :saERR | self error: ''checkMe'' ] ] ]'.
 							a receiver: b.
 							aMethod body statements at: idx put: a ] ] ]
+]
+
+{ #category : #initialization }
+SAObserverInsertingRewriter >> methodAST: aMethodAST [
+	methodAST := aMethodAST
 ]
 
 { #category : #'as yet unclassified' }
@@ -93,10 +98,4 @@ SAObserverInsertingRewriter >> visitAssignmentNode: anAssignmentNode [
 	
 	anAssignmentNode parent parent class = RBMethodNode
 		ifTrue: [ targetNodes add: anAssignmentNode ]
-]
-
-{ #category : #initialization }
-SAObserverInsertingRewriter >> with: aMethodAST [
-	self initialize.
-	methodAST := aMethodAST.
 ]

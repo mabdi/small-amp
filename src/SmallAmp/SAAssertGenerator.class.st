@@ -380,7 +380,7 @@ SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 SAAssertGenerator >> buildAssertionsTimeoutObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	"asserts add: (self assertTimeout: observation)."
+	asserts add: (self assertTimeout: observation).
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]

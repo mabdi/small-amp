@@ -199,18 +199,6 @@ SAAssertGeneratorTest >> testBuildAssertionForError [
 		equals: 'self should: ', SAAssertGenerator blockPlaceHolder , ' raise: OutOfMemory'
 ]
 
-{ #category : #tests }
-SAAssertGeneratorTest >> testBuildAssertionForTimeout [
-	| item assertions |
-	item := SAObservationTimeout forTimeout: 125.
-	assertions := item buildAssertions: assertGenerator.
-	self assertEmpty: assertions ."
-		assertSourceCode: (assertions at: 1) formattedCode
-		equals:
-			'self should: ' , SAAssertGenerator blockPlaceHolder
-				, ' takeMoreThan: (Duration milliSeconds: 125)'"
-]
-
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionPrimitiveCollectionValues [
 	| arr item assertions |
@@ -432,5 +420,7 @@ SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions class equals: OrderedCollection.
+	self deny: assertions isEmpty.
+	self assert: (assertions first selector) equals: #should:takeMoreThan: 
 	
 ]

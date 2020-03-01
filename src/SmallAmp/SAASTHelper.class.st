@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAASTHelper class >> defaultPragma [
+	^ #madeBySmallAmp
+]
+
+{ #category : #'as yet unclassified' }
 SAASTHelper class >> instanceId [
 	instanceId ifNil: [ instanceId:=0 ].
 	instanceId := instanceId + 1.
@@ -16,29 +21,19 @@ SAASTHelper class >> instanceId [
 
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
-	 ^ self buildTestClassWith: aCollection using: testClass final: false
-]
-
-{ #category : #'method operations' }
-SAASTHelper >> buildTestClassWith: aCollection using: testClass final: isFinal [
 	| tempClass |
 	tempClass := testClass superclass
-		             subclass:
-		             (testClass name asString , self getId asString)
-			             asSymbol
-		             instanceVariableNames:
-		             testClass instanceVariablesString
-		             classVariableNames: ''
-		             package: self defaultTempPackage.
-	(testClass methods reject: #isTestMethod) do: [ :item | 
-		tempClass compile: item sourceCode ].
-	aCollection do: [ :item | 
-		| ast |
-		ast := self parsedMethodFrom: item.
-		(ast hasPragmaNamed: self defaultPragma) ifFalse: [ 
-			ast addPragma:
-				(RBPragmaNode selector: self defaultPragma arguments: {  }) ].
-		tempClass compile: ast formattedCode ].
+		subclass: (testClass name asString , self getId asString) asSymbol
+		instanceVariableNames: testClass instanceVariablesString
+		classVariableNames: ''
+		package: self defaultTempPackage.
+	(testClass methods reject: #isTestMethod)
+		do: [ :item | tempClass compile: item sourceCode ].
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
@@ -70,9 +65,9 @@ SAASTHelper >> clearTempClasses [
 		displayingProgress: 'Clear temp classes.'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'method operations' }
 SAASTHelper >> defaultPragma [
-	^ #madeBySmallAmp
+	^ self class defaultPragma
 ]
 
 { #category : #'as yet unclassified' }
@@ -88,6 +83,12 @@ SAASTHelper >> extractMethodName: aSourceCode [
 { #category : #private }
 SAASTHelper >> getId [
 	^ self class instanceId
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> killAllMetalinksOn: aClass [ 
+	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
+
 ]
 
 { #category : #'method operations' }
@@ -151,6 +152,16 @@ SAASTHelper >> renameTempVars: anStr [
 	^ anStr
 		copyWithRegex: 'tmp_([a-z0-9A-Z]+)\d+'
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> signAsSmallAmp: src [
+	| ast |
+	ast := self parsedMethodFrom: src.
+	(ast hasPragmaNamed: self defaultPragma)
+		ifFalse: [ ast
+				addPragma: (RBPragmaNode selector: self defaultPragma arguments: {}) ].
+			^ ast formattedCode 
 ]
 
 { #category : #'as yet unclassified' }

@@ -4,12 +4,25 @@ A SAObserverInsertingRewriterTest is a test class for testing the behavior of SA
 Class {
 	#name : #SAObserverInsertingRewriterTest,
 	#superclass : #TestCase,
+	#instVars : [
+		'config'
+	],
 	#category : #'SmallAmp-Tests-Helpers'
 }
 
 { #category : #accessing }
 SAObserverInsertingRewriterTest >> astHelper [
 	^ SAASTHelper new
+]
+
+{ #category : #running }
+SAObserverInsertingRewriterTest >> setUp [
+	"Hooks that subclasses may override to define the fixture of test."
+
+	config := SAConfig new
+		statementTimeOut: 1000;
+		yourself.
+	
 ]
 
 { #category : #tests }
@@ -30,7 +43,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 	noObserve := false.
 	smallamp_elapsedTime := Time millisecondsToRun: [ 
 		                        [ a := foo bar ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -46,7 +59,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			name: #a
 			id: 1 ]
 			on: Error
-			do: [ :saERR| self halt ] ] ]
+			do: [ :saERR| self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 1 ].
 	[ 
@@ -57,7 +70,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 		                        tmp1 := Array
 			                                with: 1;
 			                                with: 2 ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -73,13 +86,17 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			name: #tmp1
 			id: 2 ]
 			on: Error
-			do: [ :saERR | self halt ] ] ]
+			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
-	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter runWith: methodAST.
-	self assert: methodAST dump equals: expectingAST dump
+	SAObserverInsertingRewriter new
+		config: config;
+		methodAST: methodAST;
+		run.
+	self
+		assertMethodSourceCode: methodAST formattedCode
+		equals: expectingCode
 ]
 
 { #category : #tests }
@@ -100,7 +117,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 	noObserve := false.
 	smallamp_elapsedTime := Time millisecondsToRun: [ 
 		                        [ tmp1 := foo bar ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -116,7 +133,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			name: #tmp1
 			id: 1 ]
 			on: Error
-			do: [ :saERR | self halt ] ] ]
+			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 1 ].
 	[ 
@@ -127,7 +144,7 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 		                        tmp2 := Array
 			                                with: 1;
 			                                with: 2 ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -143,12 +160,12 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			name: #tmp2
 			id: 2 ]
 			on: Error
-			do: [ :saERR | self halt ] ] ]
+			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter runWith: methodAST.
+	SAObserverInsertingRewriter new config: config; methodAST: methodAST; run.
 	self assert: methodAST dump equals: expectingAST dump
 ]
 
@@ -161,7 +178,7 @@ SAObserverInsertingRewriterTest >> testNoMessageCall [
 	a := 1'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter runWith: methodAST.
+	SAObserverInsertingRewriter new config: config; methodAST: methodAST; run.
 	self assert: methodAST dump equals: expectingAST dump
 ]
 
@@ -187,7 +204,7 @@ SAObserverInsertingRewriterTest >> testWithCascade [
 		                        tmp1 := Array
 			                                with: 1;
 			                                with: 2 ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -203,12 +220,15 @@ SAObserverInsertingRewriterTest >> testWithCascade [
 			name: #tmp1
 			id: 2 ]
 			on: Error
-			do: [ :saERR | self halt ] ] ]
+			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter runWith: methodAST.
+	SAObserverInsertingRewriter new
+		config: config;
+		methodAST: methodAST;
+		run.
 	self assert: methodAST dump equals: expectingAST dump
 ]
 
@@ -227,7 +247,7 @@ SAObserverInsertingRewriterTest >> testWithMessageCall [
 	noObserve := false.
 	smallamp_elapsedTime := Time millisecondsToRun: [ 
 		                        [ tmp1 := Array with: 1 ]
-			                        valueWithin: 999 milliSeconds
+			                        valueWithin: 1000 milliSeconds
 			                        onTimeout: [ 
 				                        self class observer
 					                        observeTimeOut: 1000
@@ -243,11 +263,13 @@ SAObserverInsertingRewriterTest >> testWithMessageCall [
 			name: #tmp1
 			id: 2 ]
 			on: Error
-			do: [:saERR | self halt ] ] ]
+			do: [:saERR | self error: ''checkMe'' ] ] ]
 		on: Error
 		do: [ :ex | self class observer observeException: ex id: 2 ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter runWith: methodAST.
+	SAObserverInsertingRewriter new
+		config: config;
+		methodAST: methodAST; run.
 	self assert: methodAST dump equals: expectingAST dump
 ]

@@ -42,24 +42,17 @@ Class {
 
 { #category : #example }
 SmallAmp class >> example [
-	| config result |
-	config := SAConfig new
-		iterations: 3;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier};
-		profiler: SAProxyProfiler new;
-		selections: {SAMutationCoverageSelection};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		"debug: true;"
-			yourself.
-	result := (SmallAmp initializeWith: config)
+	| result |
+	result := SmallAmp initializeDefault
 		testCase: SmallBankTest targets: {SmallBank};
 		testCase: SmallBank2Test targets: {SmallBank2};
 		amplifyAll.
 	^ result
+]
+
+{ #category : #initialization }
+SmallAmp class >> initializeDefault [
+	^ self new initializeWith: SAConfig default
 ]
 
 { #category : #initialization }
@@ -69,8 +62,11 @@ SmallAmp class >> initializeWith: aConfig [
 
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
-	^ (SAMainLoop with: config for: aTestClass targets: targetClasses)
-		  amplify
+	| sa |
+	sa := SAMainLoop with: config for: aTestClass targets: targetClasses.
+	^ config lite
+		ifTrue: [ sa amplifyLite  ]
+		ifFalse: [ sa amplify ]
 ]
 
 { #category : #actions }
@@ -80,14 +76,20 @@ SmallAmp >> amplifyAll [
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
-			res addResult: (self amplify: item key target: item value) for: item ]
+			| instance |
+			[ instance := self amplify: item key target: item value.
+			res addResult: instance for: item ]
+				on: Error
+				do: [ :ex | self halt ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
 
 { #category : #initialization }
 SmallAmp >> initialize [
-	amplifyList := OrderedCollection  new
+	amplifyList := OrderedCollection new.
+	SALogger debugWatchings removeAll.
+	SADefaultAssertionAmplifier timing: SALogger new
 ]
 
 { #category : #accessing }

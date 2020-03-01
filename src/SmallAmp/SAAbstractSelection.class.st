@@ -18,8 +18,13 @@ SAAbstractSelection class >> select: aPopulation alreadySelected: aPopulationAll
 ]
 
 { #category : #enumerating }
-SAAbstractSelection >> select: aPopulation alreadySelected: aPopulationAll [
+SAAbstractSelection >> select: aPopulation uncovered: uncoveredList [
 	self subclassResponsibility
+]
+
+{ #category : #accessing }
+SAAbstractSelection >> uncovered [
+	^ self subclassResponsibility 
 ]
 
 { #category : #'instance creation' }

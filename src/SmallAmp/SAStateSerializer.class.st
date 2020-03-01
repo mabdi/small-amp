@@ -1,6 +1,9 @@
 Class {
 	#name : #SAStateSerializer,
 	#superclass : #Object,
+	#instVars : [
+		'maxDepth'
+	],
 	#category : #'SmallAmp-Helpers'
 }
 
@@ -28,8 +31,13 @@ SAStateSerializer >> filterObserversOn: theObject [
 ]
 
 { #category : #accessing }
-SAStateSerializer >> maxDepth [ 
-	^ 3
+SAStateSerializer >> maxDepth [
+	^ maxDepth ifNil: [ maxDepth := 2 ]
+]
+
+{ #category : #accessing }
+SAStateSerializer >> maxDepth: anInt [
+	maxDepth := anInt
 ]
 
 { #category : #accessing }
@@ -111,7 +119,7 @@ methods
 do: [ :l | 
 | retVal v |
 
-[ "anInteger = 0 ifTrue: [self halt]."
+[ 
 retVal := theObject perform: l selector.
 retVal == theObject
 ifFalse: [ v := retVal

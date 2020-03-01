@@ -1,12 +1,31 @@
 Class {
 	#name : #SAMutationCoverageSelection,
 	#superclass : #SAAbstractSelection,
+	#instVars : [
+		'uncovered'
+	],
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #accessing }
 SAMutationCoverageSelection >> astHelper [
 	^ SAASTHelper new
+]
+
+{ #category : #enumerating }
+SAMutationCoverageSelection >> chooseBestFrom: aList [
+	"first select shortest methods
+	Then, select minimum change,"
+
+	| shortestLen shorts |
+	shortestLen := (aList collect: [ :s | s testMethod lines size ]) min.
+	shorts := aList
+		select: [ :s | s testMethod lines size = shortestLen ].
+	
+	^ (shorts
+		sort: [ :a :b | 
+			(a selector count: [ :x | x = $_ ])
+				< (b selector count: [ :x | x = $_ ]) ]) first
 ]
 
 { #category : #cleanup }
@@ -94,7 +113,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 		testCasesFrom: {newTestClass}
 		mutating: targetClasses
 		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
+		with: AllTestsMethodsRunningMutantEvaluationStrategy new
+		with: SmallAmpMutationsGenerationStrategy new.
 	result := analysis1 runSmallAmp.
 	result
 		ifTrue: [ self cleanUp: newTestClass ].
@@ -126,16 +146,53 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 	analysis2 := self mutalkRun: alreadySelectedPopulation.
 	survives := (analysis2 particularResults
 		select: [ :res | res result isNotNil and: [ res result failures isEmpty ] ])
-		collect: [ :item | item mutant modifiedSource ].
+		collect: [ :item | item mutant ].
 	analysis particularResults
 		do: [ :item | 
 			survives
-				detect: [ :s | s = item mutant modifiedSource ]
+				detect: [ :s | s modifiedSource = item mutant modifiedSource ]
 				ifFound: [ :s | 
 					item result
 						ifNotNil: [ item result failures
 								ifNotEmpty: [ selectedTests addAll: (item result failures collect: #selector) ] ] ] ].
+	uncovered := survives.
 	result := aPopulation
 		select: [ :item | selectedTests includes: item selector ].
 	^ result
+]
+
+{ #category : #enumerating }
+SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
+	| analysis alives result newKills |
+	result := OrderedCollection new.
+	analysis := self mutalkRun: aPopulation.
+	alives := analysis generalResult aliveMutants.
+	newKills := uncoveredList
+		reject: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	uncovered := uncoveredList
+		select: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	analysis particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels |
+									
+									sels := item result failures collect: #selector.
+									result
+										add:
+											(self
+												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])) ] ] ] ].
+	^ result
+]
+
+{ #category : #accessing }
+SAMutationCoverageSelection >> uncovered [
+	^ uncovered
 ]

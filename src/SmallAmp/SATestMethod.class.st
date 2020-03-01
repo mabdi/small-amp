@@ -81,6 +81,14 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 			cp ]
 ]
 
+{ #category : #removing }
+SATestMethod >> normalize [
+	| ast |
+	ast := self astHelper parsedMethodFrom: testMethod.
+	SAMethodNormalizingRewriter runWith: ast.
+	testMethod := ast formattedCode
+]
+
 { #category : #printing }
 SATestMethod >> printOn: aStream [
 	"Append to the argument, aStream, a sequence of characters that  
@@ -117,6 +125,11 @@ SATestMethod >> selectorAppend: postfix [
 { #category : #accessing }
 SATestMethod >> selectorOriginal [
 	^ selectorOriginal
+]
+
+{ #category : #accessing }
+SATestMethod >> signAsSmallAmp [
+	testMethod := self astHelper signAsSmallAmp: testMethod 
 ]
 
 { #category : #removing }

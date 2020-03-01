@@ -62,14 +62,12 @@ SAMuTalkFirstFailOracleReduction >> cleanUp: generatedClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> createDuplicateClass [
 	| l methods |
-	l := [ :cls | 
-	     cls testSelectors collect: [ :s | 
-		     (cls methodNamed: s) sourceCode ] ].
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: newTestClass.
 	^ self astHelper
-		                          buildTestClassWith: methods
-		                          using: testClass
-		                          final: true
+		buildTestClassWith: methods
+		using: testClass
+		
 ]
 
 { #category : #'as yet unclassified' }
@@ -130,7 +128,6 @@ SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast 
 SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
 	| l methods |
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
-	
 	methods := (testClass testSelectors
 		reject: [ :s | (self ignoredTestMethods collect: #selector) includes: s ])
 		collect: [ :s | (testClass methodNamed: s) sourceCode ].
@@ -138,7 +135,7 @@ SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
 	reducedAddedTestClass := self astHelper
 		buildTestClassWith: methods
 		using: testClass
-		final: true
+		
 ]
 
 { #category : #actions }
@@ -160,6 +157,7 @@ SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	res reducer: self class.
 	res reducedClass: self reducedAddedTestClass.
 	res analysis: (self mutalkRun: self reducedAddedTestClass).
+	res presentationName: self presentationName.
 	self cleanUp: reducedTestClass.
 	^ res
 ]
@@ -171,9 +169,15 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 		testCasesFrom: {aClass}
 		mutating: targetClasses
 		using: MutantOperator contents
-		with: SortedTestsMethodsRunningMutantEvaluationStrategy new.
+		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
+		with: SmallAmpMutationsGenerationStrategy new.
 	analysis1 run.
 	^ analysis1
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> presentationName [
+	^ 'First Mutation Failed'
 ]
 
 { #category : #running }
@@ -228,7 +232,6 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
 				removeAllAssertsAndTransformImportants: listOfIds
 				in: theMethod ast.
 			(self hasAnySelfCall: newTree)
-				ifTrue: [ reducedTestClass compile: (self stripMethod: newTree) ] 
-				ifFalse: [ reducedTestClass removeSelector: newTree selector  ]
-				]
+				ifTrue: [ reducedTestClass compile: (newTree formattedCode) ]
+				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]

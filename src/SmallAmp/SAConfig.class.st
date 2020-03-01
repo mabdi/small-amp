@@ -8,13 +8,36 @@ Class {
 		'iterations',
 		'debug',
 		'lite',
-		'logger',
 		'selections',
 		'oracleReducions',
-		'profiler'
+		'profiler',
+		'statementTimeOut',
+		'testRunTimeOut',
+		'serializationMaxDepth',
+		'methodReductions'
 	],
 	#category : #'SmallAmp-Model'
 }
+
+{ #category : #accessing }
+SAConfig class >> default [
+	^ SAConfig new
+		iterations: 3;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 3;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier};
+		profiler: SAProxyProfiler new;
+		selections: {SAMutationCoverageSelection};
+		methodReductions: {SANoMethodReduction};
+		oracleReducions: {SAMuTalkFirstFailOracleReduction};
+		testRunTimeOut: 10000;
+		statementTimeOut: 2000;
+		debug: false;
+		lite: false;
+		yourself.
+]
 
 { #category : #accessing }
 SAConfig >> assertionAmplifiers [
@@ -77,13 +100,13 @@ SAConfig >> lite: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> logger [
-	^ logger
+SAConfig >> methodReductions [
+	^ methodReductions
 ]
 
 { #category : #accessing }
-SAConfig >> logger: anObject [
-	logger := anObject
+SAConfig >> methodReductions: anObject [
+	methodReductions := anObject
 ]
 
 { #category : #accessing }
@@ -103,7 +126,8 @@ SAConfig >> profiler [
 
 { #category : #accessing }
 SAConfig >> profiler: anObject [
-	profiler := anObject
+	profiler := anObject.
+	profiler config: self
 ]
 
 { #category : #accessing }
@@ -114,4 +138,34 @@ SAConfig >> selections [
 { #category : #accessing }
 SAConfig >> selections: aListOfSelections [
 	selections := aListOfSelections
+]
+
+{ #category : #accessing }
+SAConfig >> serializationMaxDepth [
+	^ serializationMaxDepth
+]
+
+{ #category : #accessing }
+SAConfig >> serializationMaxDepth: anObject [
+	serializationMaxDepth := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> statementTimeOut [
+	^ statementTimeOut
+]
+
+{ #category : #accessing }
+SAConfig >> statementTimeOut: anInt [
+	statementTimeOut:= anInt
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOut [
+	^ testRunTimeOut
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOut: anObject [
+	testRunTimeOut := anObject
 ]

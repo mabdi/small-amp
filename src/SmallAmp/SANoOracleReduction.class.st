@@ -13,11 +13,11 @@ SANoOracleReduction >> makeReducedResult [
 	methods := methods , (l value: newTestClass).
 	newClass := SAASTHelper new
 		buildTestClassWith: methods
-		using: testClass
-		final: true.
+		using: testClass.
 	res reducer: self class.
 	res reducedClass: newClass.
 	res analysis: (self mutalkRun: testClass).
+	res presentationName: self presentationName.
 	^ res
 ]
 

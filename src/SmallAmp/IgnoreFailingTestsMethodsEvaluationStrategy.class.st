@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'toIgnore'
 	],
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-MuTalk Extension'
 }
 
 { #category : #'instance creation' }

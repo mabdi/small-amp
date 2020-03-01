@@ -25,8 +25,9 @@ SAAssertTransformTest >> testGetAllPatterns [
 	anAssertTransform := SAAssertTransform new.
 	allPatterns := anAssertTransform getAllPatterns.
 	self assert: allPatterns class equals: OrderedCollection.
-	self assert: allPatterns size equals: 26.
-	allPatterns do: [ :item | self assert: item class equals: Association ]
+	self assert: allPatterns size equals: 27.
+	allPatterns
+		do: [ :item | self assert: item class equals: Association ]
 ]
 
 { #category : #tests }
@@ -48,6 +49,25 @@ SAAssertTransformTest >> testRemoveAllAsserts [
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	methodAST := SAAssertTransform removeAllAsserts: methodAST.
 	self assertMethodSourceCode: methodAST formattedCode equals: expectingCode
+]
+
+{ #category : #tests }
+SAAssertTransformTest >> testRemoveAssertEmpty [
+	| methodAST sourceCode expectingCode |
+	sourceCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array new.
+	self assertEmpty: tmp1'.
+	expectingCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array new.'.
+	methodAST := self astHelper parsedMethodFrom: sourceCode.
+	methodAST := SAAssertTransform removeAllAsserts: methodAST.
+	self
+		assertMethodSourceCode: methodAST formattedCode
+		equals: expectingCode
 ]
 
 { #category : #tests }

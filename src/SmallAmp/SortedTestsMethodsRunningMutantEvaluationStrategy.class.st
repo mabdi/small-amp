@@ -1,7 +1,7 @@
 Class {
 	#name : #SortedTestsMethodsRunningMutantEvaluationStrategy,
 	#superclass : #MutantEvaluationStrategy,
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-MuTalk Extension'
 }
 
 { #category : #evaluating }

@@ -51,8 +51,11 @@ SADrTestsPlugin >> itemsToBeAnalysedFor: packagesSelected [
 	For most plugins it will be TestCases but some plugins will return other objects like comments."
 
 	^ packagesSelected
-		flatCollect:
-			[ :p | p definedClasses select: [ :c | (c allSuperclasses includes: TestCase) and: [ (SADrTestsRunInput from: c) testTarget isNotNil ] ] ]
+		flatCollect: [ :p | 
+			p definedClasses
+				select: [ :c | 
+					(c allSuperclasses includes: TestCase)
+						and: [ c smallAmpTargetClasses isNotNil ] ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -83,11 +86,11 @@ SADrTestsPlugin >> resultButtonHelp [
 
 { #category : #api }
 SADrTestsPlugin >> runForConfiguration: aDTpluginConfiguration [
-	|  smallAmp smallAmpResult |
+	| smallAmp smallAmpResult |
 	smallAmp := SmallAmp initializeWith: self smallAmpDefaultConfig.
 	aDTpluginConfiguration items
 		do:
-			[ :i | smallAmp testCase: i targets: (SADrTestsRunInput from: i) testTarget ].
+			[ :i | smallAmp testCase: i targets: i smallAmpTargetClasses ].
 	smallAmpResult := smallAmp amplifyAll.
 	^ self makeTreeResult: smallAmpResult
 ]
@@ -99,19 +102,10 @@ SADrTestsPlugin >> secondListLabel [
 
 { #category : #'as yet unclassified' }
 SADrTestsPlugin >> smallAmpDefaultConfig [
-	^ SAConfig new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier};
-		profiler: SAProxyProfiler new;
-		selections: {SAMutationCoverageSelection};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
-		debug: false;
-		lite: false;
-		yourself
+	| c |
+	c := SAConfig default.
+	c iterations: 5.
+	^ c
 ]
 
 { #category : #api }

@@ -88,14 +88,12 @@ SAMuTalkNeverFailOracleReduction >> cleanUp: generatedClass [
 { #category : #'as yet unclassified' }
 SAMuTalkNeverFailOracleReduction >> createDuplicateClass [
 	| l methods |
-	l := [ :cls | 
-	     cls testSelectors collect: [ :s | 
-		     (cls methodNamed: s) sourceCode ] ].
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: newTestClass.
 	^ self astHelper
-		                          buildTestClassWith: methods
-		                          using: testClass
-		                          final: true
+		buildTestClassWith: methods
+		using: testClass
+		
 ]
 
 { #category : #'as yet unclassified' }
@@ -152,7 +150,7 @@ SAMuTalkNeverFailOracleReduction >> makeReducedAddedClass [
 	reducedAddedTestClass := self astHelper
 		buildTestClassWith: methods
 		using: testClass
-		final: true
+		
 ]
 
 { #category : #actions }
@@ -174,6 +172,7 @@ SAMuTalkNeverFailOracleReduction >> makeReducedResult [
 	res reducer: self class.
 	res reducedClass: self reducedAddedTestClass.
 	res analysis: (self mutalkRun: self reducedAddedTestClass).
+	res presentationName: self presentationName.
 	self cleanUp: reducedTestClass.
 	^ res
 ]

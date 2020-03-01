@@ -165,7 +165,7 @@ SAStateSerializerTest >> testFloat [
 		        self getASerializer
 		        atDepth: 0.
 	self assert: item class equals: SAObservationPrimitive.
-	self assert: item theClass equals: SmallFloat64.
+	self assert: item theClass equals: 3.14 class.
 	self assert: item theValue equals: 3.14
 ]
 
@@ -210,18 +210,8 @@ SAStateSerializerTest >> testMaxDepth [
 		equals: 2.
 	self
 		assert:
-		(((item theValue at: #value) theValue at: 1) theValue at: 1) depth
-		equals: 3.
-	self
-		assert:
-			(((item theValue at: #value) theValue at: 1) theValue at: 1)
-				theValue class
-		equals: Dictionary.
-	self
-		assert:
-			(((item theValue at: #value) theValue at: 1) theValue at: 1)
-				theValue size
-		equals: 0
+		(((item theValue at: #value) theValue at: 1) theValue at: 1) isNil.
+	
 ]
 
 { #category : #tests }

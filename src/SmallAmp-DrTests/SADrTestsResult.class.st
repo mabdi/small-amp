@@ -16,6 +16,43 @@ Class {
 }
 
 { #category : #accessing }
+SADrTestsResult >> aliveMutants [
+	| subs |
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					{(DTTreeNode new
+						name: 'Alive mutants in original:';
+						subResults:
+							(x originalAnalysis generalResult aliveMutants
+								collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Killed mutants in amplified';
+						subResults:
+							((self
+								filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants
+								basedOn: x originalAnalysis generalResult killedMutants)
+								collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Still alive mutants in amplified';
+						subResults:
+							((
+								 x reducedVersions first analysis generalResult aliveMutants
+								)
+								collect: #asResultForDrTest);
+						yourself)};
+				yourself ].
+	^ DTTreeNode new
+		name: 'Mutants';
+		subResults: subs;
+		yourself
+]
+
+{ #category : #accessing }
 SADrTestsResult >> amplifiedClasses [
 	| subs |
 	subs := smallAmpResult results values
@@ -31,13 +68,14 @@ SADrTestsResult >> amplifiedClasses [
 						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
 						subResults:
 							(x reducedVersions first reducedClass methods
-								collect: #asResultForDrTest);
+								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
+								thenCollect: #asResultForDrTest);
 						yourself)};
 				yourself ].
-			^(DTTreeNode new
-				name: 'Amplified TestCase';
-				subResults: subs;
-				yourself)
+	^ DTTreeNode new
+		name: 'Amplified TestCase';
+		subResults: subs;
+		yourself
 ]
 
 { #category : #accessing }
@@ -45,9 +83,11 @@ SADrTestsResult >> buildTreeForUI [
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
-			{self mutationScores.
+			{self amplifiedClasses.self mutationScores.
+			self aliveMutants.
 			self skippedTestMethods.
-			self amplifiedClasses}
+			
+			self timeInformations}
 ]
 
 { #category : #'as yet unclassified' }
@@ -55,6 +95,35 @@ SADrTestsResult >> buildTreeInspectResult [
 	<dtSmallAmpResultTreeNamed: 'Inspect the result' order: 2>
 	self smallAmpResult ifNotNil: [ :a | a inspect ].
 	^ DTTreeNode new subResults: {}
+]
+
+{ #category : #accessing }
+SADrTestsResult >> color [
+	| score_new score_old |
+	smallAmpResult results values size = 1
+		ifTrue: [ score_old := smallAmpResult results values first originalAnalysis
+				generalResult mutationScore.
+			score_new := smallAmpResult results values first reducedVersions
+				first analysis generalResult mutationScore.
+			score_new = 0
+				ifTrue: [ ^ Color named: 'red' ].
+			score_new - score_old = 0
+				ifTrue: [ ^ Color named: 'yellow' ].
+			score_new - score_old < 10
+				ifTrue: [ ^ Color named: 'lightGreen' ].
+			score_new - score_old >= 10
+				ifTrue: [ ^ Color named: 'green' ] ].
+	^ Color named: 'gray'
+]
+
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> filterJustAddedMethods: newClass basedOn: originalClass [
+	^ newClass methods reject: [ :m | originalClass selectors includes: m selector ]
+]
+
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> filterJustKilledMutants: newKilledMutants basedOn: originalKilledMutants [
+	^ newKilledMutants reject: [ :m | (originalKilledMutants collect: [ :x | x mutant modifiedSource ]) includes: m mutant modifiedSource  ]
 ]
 
 { #category : #accessing }
@@ -124,4 +193,33 @@ SADrTestsResult >> summarizeInfo [
 				<< 'Uncovered methods:';
 				<< String cr;
 				<< self methodList size asString ]
+]
+
+{ #category : #accessing }
+SADrTestsResult >> timeInformations [
+	| subs |
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			| sums sum |
+			sum := (x logs summary collect: #value) sum.
+			sums := x logs summary
+				collect: [ :s | 
+					DTTreeNode new
+						name:
+							s key asString , ': % '
+								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
+								, (Duration milliSeconds: s value) humanReadablePrintString
+								, ')';
+						subResults: {};
+						yourself ].
+			DTTreeNode new
+				name:
+					x testClass name , ' (' , (Duration milliSeconds: sum) humanReadablePrintString 
+						, ')';
+				subResults: sums;
+				yourself ].
+	^ DTTreeNode new
+		name: 'Running time: ';
+		subResults: subs;
+		yourself
 ]
