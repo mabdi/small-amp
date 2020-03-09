@@ -231,28 +231,15 @@ SAMainLoop >> oracleReduction [
 				target: targetClasses.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 			finalResult reducedVersion: reducer makeReducedResult ].
-	^ finalResult
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> prettifying [
-	| a |
-	self flag: #TODO.	"pack statements"
-	self flag: #TODO.	"rename variables"
-	
-]
-
-{ #category : #private }
-SAMainLoop >> recordLog: aTag [
-	finalResult logs timeTickFor: aTag
-]
-
-{ #category : #private }
-SAMainLoop >> reducerFor: aClass [
-	^ (config oracleReducion initializeWith: config)
-				with: aClass
-				from: testClass
-				target: targetClasses
+	| prettifier |
+	finalResult logs
+		recoredTag: #prettifying
+		toRun: [ prettifier := config prettifier initializeWith: config.
+			prettifier prettify: finalResult reducedVersion ]
 ]
 
 { #category : #actions }
@@ -280,7 +267,11 @@ SAMainLoop >> selections [
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> simplification [
-	self flag: #TODO	
+	| simplifier |
+	finalResult logs
+		recoredTag: #simplification
+		toRun: [ simplifier := config simplifier initializeWith: config.
+			simplifier simplify: finalResult reducedVersion ]
 ]
 
 { #category : #accessing }

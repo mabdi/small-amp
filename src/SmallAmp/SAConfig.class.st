@@ -14,7 +14,9 @@ Class {
 		'statementTimeOut',
 		'testRunTimeOut',
 		'serializationMaxDepth',
-		'methodReductions'
+		'methodReductions',
+		'prettifier',
+		'simplifier'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -32,6 +34,8 @@ SAConfig class >> default [
 		selections: {SAMutationCoverageSelection};
 		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
 		testRunTimeOut: 10000;
 		statementTimeOut: 2000;
 		debug: false;
@@ -120,6 +124,16 @@ SAConfig >> oracleReducion: list [
 ]
 
 { #category : #accessing }
+SAConfig >> prettifier [
+	^ prettifier
+]
+
+{ #category : #accessing }
+SAConfig >> prettifier: anObject [
+	prettifier := anObject
+]
+
+{ #category : #accessing }
 SAConfig >> profiler [
 	^ profiler
 ]
@@ -148,6 +162,16 @@ SAConfig >> serializationMaxDepth [
 { #category : #accessing }
 SAConfig >> serializationMaxDepth: anObject [
 	serializationMaxDepth := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> simplifier [
+	^ simplifier
+]
+
+{ #category : #accessing }
+SAConfig >> simplifier: anObject [
+	simplifier := anObject
 ]
 
 { #category : #accessing }
