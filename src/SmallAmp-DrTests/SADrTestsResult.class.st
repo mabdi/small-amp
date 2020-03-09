@@ -33,16 +33,14 @@ SADrTestsResult >> aliveMutants [
 						name: 'Killed mutants in amplified';
 						subResults:
 							((self
-								filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants
+								filterJustKilledMutants: x reducedVersion analysis generalResult killedMutants
 								basedOn: x originalAnalysis generalResult killedMutants)
 								collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
 						name: 'Still alive mutants in amplified';
 						subResults:
-							((
-								 x reducedVersions first analysis generalResult aliveMutants
-								)
+							(x reducedVersion analysis generalResult aliveMutants
 								collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
@@ -65,9 +63,9 @@ SADrTestsResult >> amplifiedClasses [
 						subResults: (x testClass methods collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
-						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
+						name: 'Amplified (' , x reducedVersion reducedClass name , '):';
 						subResults:
-							(x reducedVersions first reducedClass methods
+							(x reducedVersion reducedClass methods
 								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
 								thenCollect: #asResultForDrTest);
 						yourself)};
@@ -103,8 +101,7 @@ SADrTestsResult >> color [
 	smallAmpResult results values size = 1
 		ifTrue: [ score_old := smallAmpResult results values first originalAnalysis
 				generalResult mutationScore.
-			score_new := smallAmpResult results values first reducedVersions
-				first analysis generalResult mutationScore.
+			score_new := smallAmpResult results values first reducedVersion analysis generalResult mutationScore.
 			score_new = 0
 				ifTrue: [ ^ Color named: 'red' ].
 			score_new - score_old = 0
@@ -142,8 +139,8 @@ SADrTestsResult >> mutationScores [
 						yourself).
 					(DTTreeNode new
 						name:
-							x reducedVersions first reducedClass name , ': %'
-								, x reducedVersions first analysis generalResult mutationScore asString;
+							x reducedVersion  reducedClass name , ': %'
+								, x reducedVersion analysis generalResult mutationScore asString;
 						subResults: {};
 						yourself)};
 				yourself ].

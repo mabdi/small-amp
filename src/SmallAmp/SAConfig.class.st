@@ -9,7 +9,7 @@ Class {
 		'debug',
 		'lite',
 		'selections',
-		'oracleReducions',
+		'oracleReducion',
 		'profiler',
 		'statementTimeOut',
 		'testRunTimeOut',
@@ -31,12 +31,12 @@ SAConfig class >> default [
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
 		methodReductions: {SANoMethodReduction};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		testRunTimeOut: 10000;
 		statementTimeOut: 2000;
 		debug: false;
 		lite: false;
-		yourself.
+		yourself
 ]
 
 { #category : #accessing }
@@ -110,13 +110,13 @@ SAConfig >> methodReductions: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> oracleReducions [
-	^ oracleReducions
+SAConfig >> oracleReducion [
+	^ oracleReducion
 ]
 
 { #category : #accessing }
-SAConfig >> oracleReducions: list [
-	oracleReducions := list
+SAConfig >> oracleReducion: list [
+	oracleReducion := list
 ]
 
 { #category : #accessing }

@@ -38,23 +38,27 @@ SAMainLoop >> addPopulationToResult [
 { #category : #actions }
 SAMainLoop >> amplify [
 	self initialSteps.
-	 (1 to: config iterations)
-				do: [ :gen | 
-					self normalize.
-					self inputAmplification.
-					self methodReduction.
-					self assertionAmplification.
-					self selection.
-					self cleanUpAndAddToResult ]
-				displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	^ self makeResult
+	(1 to: config iterations)
+		do: [ :gen | 
+			self normalize.
+			self inputAmplification.
+			self methodReduction.
+			self assertionAmplification.
+			self selection.
+			self cleanUpAndAddToResult ]
+		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
+	self oracleReduction.
+	self simplification.
+	self prettifying.
+	^ finalResult
 ]
 
 { #category : #actions }
 SAMainLoop >> amplifyLite [
 	self initialSteps.
 	self liteAmplification.
-	^ self makeResult
+	self oracleReduction.
+	^ finalResult
 ]
 
 { #category : #private }
@@ -172,25 +176,6 @@ SAMainLoop >> liteAmplification [
 ]
 
 { #category : #private }
-SAMainLoop >> makeResult [
-	| reducers generatedClass |
-	finalResult logs
-		recoredTag: #makeResult
-		toRun: [ generatedClass := self astHelper
-				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
-				using: testClass.
-			reducers := self reducerFor: generatedClass.
-			finalResult
-				reducedVersions:
-					(reducers asOrderedCollection
-						collect: [ :reducer | 
-							reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-							reducer makeReducedResult ]
-						displayingProgress: 'Reducing oracles (' , reducers size asString , ')') ].
-	^ finalResult
-]
-
-{ #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
 		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ].
@@ -233,18 +218,41 @@ SAMainLoop >> normalize [
 ]
 
 { #category : #private }
+SAMainLoop >> oracleReduction [
+	| reducer generatedClass |
+	finalResult logs
+		recoredTag: #oracleReduction
+		toRun: [ generatedClass := self astHelper
+				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
+				using: testClass.
+			reducer := (config oracleReducion initializeWith: config)
+				with: generatedClass
+				from: testClass
+				target: targetClasses.
+			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
+			finalResult reducedVersion: reducer makeReducedResult ].
+	^ finalResult
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> prettifying [
+	| a |
+	self flag: #TODO.	"pack statements"
+	self flag: #TODO.	"rename variables"
+	
+]
+
+{ #category : #private }
 SAMainLoop >> recordLog: aTag [
 	finalResult logs timeTickFor: aTag
 ]
 
 { #category : #private }
 SAMainLoop >> reducerFor: aClass [
-	^ config oracleReducions
-		collect: [ :reducer | 
-			(reducer initializeWith: config)
+	^ (config oracleReducion initializeWith: config)
 				with: aClass
 				from: testClass
-				target: targetClasses ]
+				target: targetClasses
 ]
 
 { #category : #actions }
@@ -268,6 +276,11 @@ SAMainLoop >> selection [
 SAMainLoop >> selections [
 	^ config selections collect: [ :selection | 
 		  selection initializeWith: config ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> simplification [
+	self flag: #TODO	
 ]
 
 { #category : #accessing }

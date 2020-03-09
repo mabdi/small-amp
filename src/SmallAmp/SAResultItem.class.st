@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'failedSelectorInOriginal',
-		'reducedVersions',
+		'reducedVersion',
 		'targetClasses',
 		'testClass',
 		'originalAnalysis',
@@ -41,7 +41,8 @@ SAResultItem >> markDownOn: stream [
 		nextPutAll: (', ' join: (targetClasses collect: #name));
 		nextPutAll: '|';
 		nextPutAll:
-			(Duration seconds: ((self logs summary collect: #value) sum / 1000) asInteger)
+			(Duration
+				seconds: ((self logs summary collect: #value) sum / 1000) asInteger)
 				humanReadablePrintString;
 		nextPutAll: '|'.
 	stream nextPutAll: '#TestMethods: '.
@@ -61,10 +62,9 @@ SAResultItem >> markDownOn: stream [
 	stream
 		nextPutAll: originalAnalysis generalResult mutationScore asString.
 	stream nextPutAll: '|'.
-	reducedVersions
-		do: [ :rVer | 
-			rVer markDownOn: stream.
-			stream nextPutAll: '|' ]
+	reducedVersion markDownOn: stream.
+			stream nextPutAll: '|'
+	
 ]
 
 { #category : #'as yet unclassified' }
@@ -79,12 +79,11 @@ SAResultItem >> markDownTitleOn: stream [
 		nextPutAll: '|';
 		nextPutAll: 'Originial';
 		nextPutAll: '|'.
-	reducedVersions
-		do: [ :rVer | 
-			stream
-				nextPutAll: rVer presentationName;
+	stream
+				nextPutAll: reducedVersion presentationName;
 				nextPutAll: '|';
-				cr ].
+				cr	
+	.
 	stream
 		nextPutAll: '|';
 		nextPutAll: '---';
@@ -95,12 +94,10 @@ SAResultItem >> markDownTitleOn: stream [
 		nextPutAll: '|';
 		nextPutAll: '----';
 		nextPutAll: '|'.
-	reducedVersions
-		do: [ :rVer | 
-			stream
+	stream
 				nextPutAll: '----';
 				nextPutAll: '|';
-				cr ]
+				cr 
 ]
 
 { #category : #'as yet unclassified' }
@@ -129,13 +126,13 @@ SAResultItem >> originalAnalysis: anObject [
 ]
 
 { #category : #accessing }
-SAResultItem >> reducedVersions [
-	^ reducedVersions
+SAResultItem >> reducedVersion [
+	^ reducedVersion
 ]
 
 { #category : #accessing }
-SAResultItem >> reducedVersions: item [
-	reducedVersions := item
+SAResultItem >> reducedVersion: item [
+	reducedVersion := item
 ]
 
 { #category : #accessing }
