@@ -12,14 +12,9 @@ SAStateSerializer >> filterObserversOn: theObject [
 	| methods theClass |
 	theClass := theObject class.
 	methods := OrderedCollection new.
-	self flag: #TODO. "Challenge: which method is a observer."
 	self maxSuperClass
 		timesRepeat: [ theClass == Object
-				ifFalse: [ methods
-						addAll:
-							(theClass methodsInProtocol: #accessing)
-								, (theClass methodsInProtocol: #testing)
-								, (theClass methodsInProtocol: #evaluating).	"the value method"
+				ifFalse: [ methods addAll: (theClass methods select: #smallAmpIsAccessor).
 					theClass := theClass superclass ] ].
 	methods := methods
 		select: [ :method | 
