@@ -16,7 +16,8 @@ Class {
 		'serializationMaxDepth',
 		'methodReductions',
 		'prettifier',
-		'simplifier'
+		'simplifier',
+		'maxPop'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -32,12 +33,13 @@ SAConfig class >> default [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: {SANoMethodReduction};
+		methodReductions: {SAMaxPopMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 10000;
 		statementTimeOut: 2000;
+		maxPop: 200;
 		debug: false;
 		lite: false;
 		yourself
@@ -101,6 +103,16 @@ SAConfig >> lite [
 { #category : #accessing }
 SAConfig >> lite: anObject [
 	lite := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> maxPop [
+	^ maxPop
+]
+
+{ #category : #accessing }
+SAConfig >> maxPop: anObject [
+	maxPop := anObject
 ]
 
 { #category : #accessing }
