@@ -11,8 +11,8 @@ Class {
 SAMaxPopMethodReduction >> addPopFromPoolTo: aListOfMethods limit: aLimit [
 	| newPop |
 	pool := pool shuffle.
-	newPop := aListOfMethods , (pool first: aLimit - aListOfMethods size).
-	pool := pool copyFrom: aLimit - aListOfMethods size + 1 to: pool size.
+	newPop := aListOfMethods
+		, (self popPool: aLimit - aListOfMethods size).
 	^ newPop
 ]
 
@@ -24,6 +24,16 @@ SAMaxPopMethodReduction >> initialize [
 { #category : #accessing }
 SAMaxPopMethodReduction >> pool [
 	^ pool
+]
+
+{ #category : #'as yet unclassified' }
+SAMaxPopMethodReduction >> popPool: anInt [
+	| res limit |
+	limit := { anInt . pool size} min.
+	res := pool first: limit.
+	limit + 1 < pool size
+		ifTrue: [ pool := pool copyFrom: limit + 1 to: pool size ].
+	^ res
 ]
 
 { #category : #'as yet unclassified' }

@@ -97,20 +97,33 @@ SADrTestsResult >> buildTreeInspectResult [
 
 { #category : #accessing }
 SADrTestsResult >> color [
-	| score_new score_old |
-	smallAmpResult results values size = 1
-		ifTrue: [ score_old := smallAmpResult results values first originalAnalysis
-				generalResult mutationScore.
-			score_new := smallAmpResult results values first reducedVersion analysis generalResult mutationScore.
-			score_new = 0
-				ifTrue: [ ^ Color named: 'red' ].
-			score_new - score_old = 0
-				ifTrue: [ ^ Color named: 'yellow' ].
-			score_new - score_old < 10
-				ifTrue: [ ^ Color named: 'lightGreen' ].
-			score_new - score_old >= 10
-				ifTrue: [ ^ Color named: 'green' ] ].
-	^ Color named: 'gray'
+	| getColor getDegree |
+	getColor := {(0 -> (Color named: 'red')).
+	(1 -> (Color named: 'gray')).
+	(2 -> (Color named: 'yellow')).
+	(3 -> (Color named: 'lightGreen')).
+	(4 -> (Color named: 'green'))} asDictionary.
+	getDegree := [ :score_old :score_new | 
+	| res |
+	res := nil.
+	score_new = 0
+		ifTrue: [ res := 0 ].
+	score_new - score_old = 0
+		ifTrue: [ res := 2 ].
+	score_new - score_old < 10
+		ifTrue: [ res := 3 ].
+	score_new - score_old >= 10
+		ifTrue: [ res := 4 ].
+	res ifNil: [ res := 1 ].
+	res ].
+	^ getColor
+		at:
+			(smallAmpResult results values
+				collect: [ :r | 
+					getDegree
+						value: r originalAnalysis generalResult mutationScore
+						value: r reducedVersion analysis generalResult mutationScore ])
+				min
 ]
 
 { #category : #'as yet unclassified' }
