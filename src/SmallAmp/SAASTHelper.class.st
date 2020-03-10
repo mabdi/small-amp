@@ -19,6 +19,11 @@ SAASTHelper class >> instanceId [
 	^ instanceId
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper class >> tempPattern [
+	^ 'tmp_([a-z0-9A-Z]+)\d+'
+]
+
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	| tempClass |
@@ -150,7 +155,7 @@ SAASTHelper >> renameMethodName: aSourceCode append: aText [
 { #category : #'as yet unclassified' }
 SAASTHelper >> renameTempVars: anStr [
 	^ anStr
-		copyWithRegex: 'tmp_([a-z0-9A-Z]+)\d+'
+		copyWithRegex: self class tempPattern
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
 ]
 

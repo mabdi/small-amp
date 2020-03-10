@@ -2,7 +2,8 @@ Class {
 	#name : #SAAbstractPrettification,
 	#superclass : #Object,
 	#instVars : [
-		'config'
+		'config',
+		'theClass'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -18,8 +19,14 @@ SAAbstractPrettification class >> select: aPopulation alreadySelected: aPopulati
 ]
 
 { #category : #'as yet unclassified' }
+SAAbstractPrettification >> prettify [
+	self subclassResponsibility 
+]
+
+{ #category : #'as yet unclassified' }
 SAAbstractPrettification >> prettify: aClass [
-	self subclassResponsibility
+	theClass := aClass.
+	self prettify
 ]
 
 { #category : #'instance creation' }

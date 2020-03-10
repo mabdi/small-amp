@@ -43,10 +43,11 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 
 { #category : #removing }
 SAVariableTypeProfiler >> executeBeforeNode: node value: val [
-	
 	node isRead
 		ifFalse: [ ^ self ].
-	self variablesTypes at: node name put: val class
+	self variablesTypes
+		at: node methodNode selector , ':' , node name
+		put: val class
 ]
 
 { #category : #removing }

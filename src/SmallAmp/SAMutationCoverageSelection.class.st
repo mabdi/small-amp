@@ -102,7 +102,7 @@ SAMutationCoverageSelection >> matrixFromMutalk: aResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection >> mutalkRun: aPopulation [
+SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 	| testClass targetClasses newTestClass analysis1 result |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
@@ -114,7 +114,7 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 		mutating: targetClasses
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new
-		with: SmallAmpMutationsGenerationStrategy new.
+		with: (SmallAmpMutationsGenerationStrategy new mutants: (uncoveredList collect: #mutant)).
 	result := analysis1 runSmallAmp.
 	result
 		ifTrue: [ self cleanUp: newTestClass ].
@@ -165,7 +165,7 @@ SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelec
 SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 	| analysis alives result newKills |
 	result := OrderedCollection new.
-	analysis := self mutalkRun: aPopulation.
+	analysis := self mutalkRun: aPopulation mutants: uncoveredList.
 	alives := analysis generalResult aliveMutants.
 	newKills := uncoveredList
 		reject: [ :s | 
@@ -183,7 +183,6 @@ SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 					item result
 						ifNotNil: [ item result failures
 								ifNotEmpty: [ | sels |
-									
 									sels := item result failures collect: #selector.
 									result
 										add:

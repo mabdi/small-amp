@@ -112,7 +112,7 @@ SAMainLoop >> discardFailingTests [
 		failedSelectorInOriginal: result failures , result expectedDefects.
 	population := testMethods
 		collect:
-			[ :tcase | SATestMethod with: tcase class: testClass targets: targetClasses ]
+			[ :tcase | (SATestMethod with: tcase class: testClass targets: targetClasses) selectorAppend: '_amp'; yourself ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -239,7 +239,7 @@ SAMainLoop >> prettifying [
 	finalResult logs
 		recoredTag: #prettifying
 		toRun: [ prettifier := config prettifier initializeWith: config.
-			prettifier prettify: finalResult reducedVersion ]
+			prettifier prettify: finalResult reducedVersion reducedClass ]
 ]
 
 { #category : #actions }
@@ -271,7 +271,7 @@ SAMainLoop >> simplification [
 	finalResult logs
 		recoredTag: #simplification
 		toRun: [ simplifier := config simplifier initializeWith: config.
-			simplifier simplify: finalResult reducedVersion ]
+			simplifier simplify: finalResult reducedVersion reducedClass ]
 ]
 
 { #category : #accessing }

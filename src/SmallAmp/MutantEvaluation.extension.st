@@ -10,7 +10,7 @@ MutantEvaluation >> runTestsSmallAmp [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ suite run ]
+	^ [ "run or runStoppingOnFirstFailOrError" suite run ]
 		on: Error
 		do: [ :ex | nil ]
 ]

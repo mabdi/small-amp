@@ -17,3 +17,8 @@ CompiledMethod >> smallAmpIsAccessor [
 		ifTrue: [ ^ true ].
 	^ false
 ]
+
+{ #category : #'*SmallAmp' }
+CompiledMethod >> smallAmpIsAssertion [
+	^ self protocol = #asserting
+]

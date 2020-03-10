@@ -2,7 +2,8 @@ Class {
 	#name : #SAAbstractSimplification,
 	#superclass : #Object,
 	#instVars : [
-		'config'
+		'config',
+		'theClass'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -18,8 +19,14 @@ SAAbstractSimplification class >> select: aPopulation alreadySelected: aPopulati
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractSimplification >> simplify: aClass [ 
-	self subclassResponsibility 
+SAAbstractSimplification >> simplify [ 
+	self subclassResponsibility
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractSimplification >> simplify: aClass [
+	theClass := aClass.
+	self simplify 
 ]
 
 { #category : #'instance creation' }
