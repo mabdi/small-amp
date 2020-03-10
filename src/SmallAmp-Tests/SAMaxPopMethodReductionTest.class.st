@@ -8,6 +8,23 @@ Class {
 }
 
 { #category : #test }
+SAMaxPopMethodReductionTest >> testPopPool [
+	| x ins y config |
+	config := SAConfig new.
+	config maxPop: 30.
+	ins := SAMaxPopMethodReduction initializeWith: config.
+	x := (1 to: 100) asOrderedCollection.
+	y := ins reduceMethods: x.
+	self assert: ins pool size equals: 70.
+	y := ins reduceMethods: {}.
+	self assert: ins pool size equals: 40.
+	y := ins reduceMethods: {}.
+	self assert: ins pool size equals: 10.
+	y := ins reduceMethods: {}.
+	self assert: ins pool size equals: 0
+]
+
+{ #category : #test }
 SAMaxPopMethodReductionTest >> testSetThePopSizeLimit [
 	| x ins y x2 y2 |
 	x := (1 to: 100) asOrderedCollection.

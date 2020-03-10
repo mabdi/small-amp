@@ -28,6 +28,24 @@ SAMutationCoverageSelection >> chooseBestFrom: aList [
 				< (b selector count: [ :x | x = $_ ]) ]) first
 ]
 
+{ #category : #enumerating }
+SAMutationCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
+	"first select shortest methods
+	Then, select minimum change,"
+
+	| shortestLen shorts aList |
+	
+	aList := theList
+		reject: [ :s | result anySatisfy: [ :s2 | s2 testMethod = s testMethod ] ].
+	shortestLen := (aList collect: [ :s | s testMethod lines size ]) min.
+	shorts := aList
+		select: [ :s | s testMethod lines size = shortestLen ].
+	^ (shorts
+		sort: [ :a :b | 
+			(a selector count: [ :x | x = $_ ])
+				< (b selector count: [ :x | x = $_ ]) ]) first
+]
+
 { #category : #cleanup }
 SAMutationCoverageSelection >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
@@ -189,7 +207,7 @@ SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 									result
 										add:
 											(self
-												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])) ] ] ] ].
+												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ]) notIncludedIn: result) ] ] ] ].
 	^ result
 ]
 

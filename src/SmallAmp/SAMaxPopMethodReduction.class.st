@@ -29,9 +29,10 @@ SAMaxPopMethodReduction >> pool [
 { #category : #'as yet unclassified' }
 SAMaxPopMethodReduction >> popPool: anInt [
 	| res limit |
-	limit := { anInt . pool size} min.
+	limit := {anInt.
+	pool size} min.
 	res := pool first: limit.
-	limit + 1 < pool size
+	limit <= pool size
 		ifTrue: [ pool := pool copyFrom: limit + 1 to: pool size ].
 	^ res
 ]
