@@ -34,7 +34,7 @@ SAMutationCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
 	Then, select minimum change,"
 
 	| shortestLen shorts aList |
-	
+	self flag: #todo. "whatif aList is empty"
 	aList := theList
 		reject: [ :s | result anySatisfy: [ :s2 | s2 testMethod = s testMethod ] ].
 	shortestLen := (aList collect: [ :s | s testMethod lines size ]) min.
@@ -142,6 +142,37 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 ]
 
 { #category : #enumerating }
+SAMutationCoverageSelection >> oldselect: aPopulation uncovered: uncoveredList [
+	| analysis alives result newKills |
+	result := OrderedCollection new.
+	analysis := self mutalkRun: aPopulation mutants: uncoveredList.
+	alives := analysis generalResult aliveMutants.
+	newKills := uncoveredList
+		reject: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	uncovered := uncoveredList
+		select: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	analysis particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels |
+									sels := item result failures collect: #selector.
+									result
+										add:
+											(self
+												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+												notIncludedIn: result) ] ] ] ].
+	^ result
+]
+
+{ #category : #enumerating }
 SAMutationCoverageSelection >> select: aPopulation alreadySelected: alreadySelectedPopulation [
 	| selectedTests analysis groups result analysis2 survives |
 	selectedTests := OrderedCollection new.
@@ -205,9 +236,9 @@ SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 								ifNotEmpty: [ | sels |
 									sels := item result failures collect: #selector.
 									result
-										add:
-											(self
-												chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ]) notIncludedIn: result) ] ] ] ].
+										addAll:
+											((aPopulation select: [ :p | sels includes: p selector ])
+												reject: [ :s2 | result anySatisfy: [ :s3 | s3 testMethod = s2 testMethod ] ]) ] ] ] ].
 	^ result
 ]
 
