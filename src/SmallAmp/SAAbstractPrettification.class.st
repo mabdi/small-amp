@@ -13,11 +13,6 @@ SAAbstractPrettification class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
-{ #category : #enumerating }
-SAAbstractPrettification class >> select: aPopulation alreadySelected: aPopulationAll [
-	^ self new select: aPopulation alreadySelected: aPopulationAll
-]
-
 { #category : #'as yet unclassified' }
 SAAbstractPrettification >> prettify [
 	self subclassResponsibility 

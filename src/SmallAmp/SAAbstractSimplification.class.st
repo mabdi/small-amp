@@ -13,11 +13,6 @@ SAAbstractSimplification class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
-{ #category : #enumerating }
-SAAbstractSimplification class >> select: aPopulation alreadySelected: aPopulationAll [
-	^ self new select: aPopulation alreadySelected: aPopulationAll
-]
-
 { #category : #'as yet unclassified' }
 SAAbstractSimplification >> simplify [ 
 	self subclassResponsibility

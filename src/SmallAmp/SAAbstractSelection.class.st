@@ -13,11 +13,6 @@ SAAbstractSelection class >> initializeWith: aConfig [
 ]
 
 { #category : #enumerating }
-SAAbstractSelection class >> select: aPopulation alreadySelected: aPopulationAll [
-	^ self new select: aPopulation alreadySelected: aPopulationAll
-]
-
-{ #category : #enumerating }
 SAAbstractSelection >> select: aPopulation uncovered: uncoveredList [
 	self subclassResponsibility
 ]
