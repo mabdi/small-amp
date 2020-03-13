@@ -7,6 +7,36 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #enumerating }
+SAMutationCoverageSelection >> allselect: aPopulation uncovered: uncoveredList [
+	| analysis alives result newKills |
+	result := OrderedCollection new.
+	analysis := self mutalkRun: aPopulation mutants: uncoveredList.
+	alives := analysis generalResult aliveMutants.
+	newKills := uncoveredList
+		reject: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	uncovered := uncoveredList
+		select: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	analysis particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels |
+									sels := item result failures collect: #selector.
+									result
+										addAll:
+											((aPopulation select: [ :p | sels includes: p selector ])
+												reject: [ :s2 | result anySatisfy: [ :s3 | s3 testMethod = s2 testMethod ] ]) ] ] ] ].
+	^ result
+]
+
 { #category : #accessing }
 SAMutationCoverageSelection >> astHelper [
 	^ SAASTHelper new
@@ -18,9 +48,9 @@ SAMutationCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
 	Then, select minimum change,"
 
 	| shortestLen shorts aList |
-	self flag: #todo. "whatif aList is empty"
 	aList := theList
 		reject: [ :s | result anySatisfy: [ :s2 | s2 testMethod = s testMethod ] ].
+	aList ifEmpty: [ ^ nil ].
 	shortestLen := (aList collect: [ :s | s testMethod lines size ]) min.
 	shorts := aList
 		select: [ :s | s testMethod lines size = shortestLen ].
@@ -155,13 +185,13 @@ SAMutationCoverageSelection >> select: aPopulation uncovered: uncoveredList [
 				ifFound: [ :s | 
 					item result
 						ifNotNil: [ item result failures
-								ifNotEmpty: [ | sels |
+								ifNotEmpty: [ | sels selected |
 									sels := item result failures collect: #selector.
-									result
-										addAll:
-											((aPopulation select: [ :p | sels includes: p selector ])
-												reject: [ :s2 | result anySatisfy: [ :s3 | s3 testMethod = s2 testMethod ] ]) ] ] ] ].
-	^ result
+									selected := self
+										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+										notIncludedIn: result.
+									selected ifNotNil: [result add: selected] ] ] ] ].
+	^ result reject: #isNil
 ]
 
 { #category : #accessing }
