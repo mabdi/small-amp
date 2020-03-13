@@ -59,14 +59,6 @@ SADrTestsPlugin >> itemsToBeAnalysedFor: packagesSelected [
 ]
 
 { #category : #'as yet unclassified' }
-SADrTestsPlugin >> makeTreeResult: smallAmpResult [
-	| result |
-	result := self pluginResultClass new.
-	result smallAmpResult: smallAmpResult.
-	^ result
-]
-
-{ #category : #'as yet unclassified' }
 SADrTestsPlugin >> oldPragmaForResultTrees [
 	"My subclasses implement this method to return the old pragma that was used to declare tree views.
 	 I will be removed once the migration will be achieved.
@@ -86,13 +78,16 @@ SADrTestsPlugin >> resultButtonHelp [
 
 { #category : #api }
 SADrTestsPlugin >> runForConfiguration: aDTpluginConfiguration [
-	| smallAmp smallAmpResult |
-	smallAmp := SmallAmp initializeWith: self smallAmpDefaultConfig.
+	| smallAmp smallAmpResult config result |
+	config := self smallAmpDefaultConfig.
+	smallAmp := SmallAmp initializeWith: config.
 	aDTpluginConfiguration items
-		do:
-			[ :i | smallAmp testCase: i targets: i smallAmpTargetClasses ].
+		do: [ :i | smallAmp testCase: i targets: i smallAmpTargetClasses ].
 	smallAmpResult := smallAmp amplifyAll.
-	^ self makeTreeResult: smallAmpResult
+	result := self pluginResultClass new.
+	result smallAmpResult: smallAmpResult.
+	result runConfig: config.
+	^ result
 ]
 
 { #category : #api }

@@ -10,7 +10,8 @@ Class {
 	#name : #SADrTestsResult,
 	#superclass : #DTPluginResult,
 	#instVars : [
-		'smallAmpResult'
+		'smallAmpResult',
+		'runConfig'
 	],
 	#category : #'SmallAmp-DrTests'
 }
@@ -81,10 +82,11 @@ SADrTestsResult >> buildTreeForUI [
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
-			{self amplifiedClasses.self mutationScores.
+			{self amplifiedClasses.
+			self mutationScores.
 			self aliveMutants.
 			self skippedTestMethods.
-			
+			self notProfiledMethods.
 			self timeInformations}
 ]
 
@@ -146,13 +148,13 @@ SADrTestsResult >> mutationScores [
 				subResults:
 					{(DTTreeNode new
 						name:
-							x testClass name , ': %'
+							'Original: ' , x testClass name , ': %'
 								, x originalAnalysis generalResult mutationScore asString;
 						subResults: {};
 						yourself).
 					(DTTreeNode new
 						name:
-							x reducedVersion  reducedClass name , ': %'
+							'Amplified: ', x reducedVersion reducedClass name , ': %'
 								, x reducedVersion analysis generalResult mutationScore asString;
 						subResults: {};
 						yourself)};
@@ -161,6 +163,40 @@ SADrTestsResult >> mutationScores [
 		name: 'Mutation scores';
 		subResults: subs;
 		yourself
+]
+
+{ #category : #accessing }
+SADrTestsResult >> notProfiledMethods [
+	| subs keys |
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			keys := runConfig profiler profile keys
+				select:
+					[ :p | x targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					((x targetClasses
+						flatCollect: [ :c | 
+							(c methods select: [ :m | m selector includes: ':' ])
+								reject: [ :m | 
+									keys
+										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
+						collect: #asResultForDrTest);
+				yourself ].
+	^ DTTreeNode new
+		name: 'Methods failed to be profiled:';
+		subResults: subs;
+		yourself
+]
+
+{ #category : #accessing }
+SADrTestsResult >> runConfig [ ^ runConfig
+]
+
+{ #category : #accessing }
+SADrTestsResult >> runConfig: config [
+	runConfig := config
 ]
 
 { #category : #accessing }
