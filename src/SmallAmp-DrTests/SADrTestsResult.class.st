@@ -110,12 +110,13 @@ SADrTestsResult >> color [
 	res := nil.
 	score_new = 0
 		ifTrue: [ res := 0 ].
-	score_new - score_old = 0
-		ifTrue: [ res := 2 ].
+	
 	score_new - score_old < 10
 		ifTrue: [ res := 3 ].
 	score_new - score_old >= 10
 		ifTrue: [ res := 4 ].
+	score_new - score_old = 0
+		ifTrue: [ res := 2 ].
 	res ifNil: [ res := 1 ].
 	res ].
 	^ getColor
@@ -168,6 +169,7 @@ SADrTestsResult >> mutationScores [
 { #category : #accessing }
 SADrTestsResult >> notProfiledMethods [
 	| subs keys |
+	
 	subs := smallAmpResult results values
 		collect: [ :x | 
 			keys := runConfig profiler profile keys
@@ -178,7 +180,7 @@ SADrTestsResult >> notProfiledMethods [
 				subResults:
 					((x targetClasses
 						flatCollect: [ :c | 
-							(c methods select: [ :m | m selector includes: ':' ])
+							(c methods select: [ :m | m selector includesSubstring: ':' ])
 								reject: [ :m | 
 									keys
 										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
