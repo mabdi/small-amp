@@ -108,15 +108,15 @@ SADrTestsResult >> color [
 	getDegree := [ :score_old :score_new | 
 	| res |
 	res := nil.
-	score_new = 0
-		ifTrue: [ res := 0 ].
-	
 	score_new - score_old < 10
 		ifTrue: [ res := 3 ].
 	score_new - score_old >= 10
 		ifTrue: [ res := 4 ].
 	score_new - score_old = 0
 		ifTrue: [ res := 2 ].
+	
+	score_new = 0
+		ifTrue: [ res := 0 ].
 	res ifNil: [ res := 1 ].
 	res ].
 	^ getColor
