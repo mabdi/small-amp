@@ -220,10 +220,10 @@ SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfIds [
-	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	reducedTestClass class removeSelector: #logs.
 	reducedTestClass removeSelector: #smallamp_logs:.
 	reducedTestClass removeSelector: #assert:description:resumable:.
+	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 

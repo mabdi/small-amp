@@ -66,6 +66,12 @@ SADrTestsPlugin >> oldPragmaForResultTrees [
 	^ #olddtSmallAmpResultTreeNamed:order:
 ]
 
+{ #category : #api }
+SADrTestsPlugin >> packagesAvailableForAnalysis [
+	^ RPackage organizer packages
+		select: [ :p | p definedClasses anySatisfy: [ :c | c isTestCase and: [ c smallAmpTargetClasses isNotNil  ] ] ]
+]
+
 { #category : #accessing }
 SADrTestsPlugin >> pragmaForResultTrees [
 	^ #dtSmallAmpResultTreeNamed:order:
