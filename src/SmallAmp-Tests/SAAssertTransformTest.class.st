@@ -30,6 +30,17 @@ SAAssertTransformTest >> testGetAllPatterns [
 		do: [ :item | self assert: item class equals: Association ]
 ]
 
+{ #category : #test }
+SAAssertTransformTest >> testGetReduceOraclePatterns [
+	| anAssertTransform allPatterns |
+	anAssertTransform := SAAssertTransform new.
+	allPatterns := anAssertTransform getReduceOraclePatterns.
+	self assert: allPatterns class equals: OrderedCollection.
+	self assert: allPatterns size equals: 21.
+	allPatterns
+		do: [ :item | self assert: item class equals: Association ]
+]
+
 { #category : #tests }
 SAAssertTransformTest >> testRemoveAllAsserts [
 	| methodAST sourceCode expectingCode |

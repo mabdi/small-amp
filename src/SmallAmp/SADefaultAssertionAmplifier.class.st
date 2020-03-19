@@ -53,9 +53,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		recoredTag: #checkPassing
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ].
-	self class timing
-		recoredTag: #cleanUp
-		toRun: [ self cleanUp ].
+	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
 	^ sourceCodeWithAssertions
 ]
 
