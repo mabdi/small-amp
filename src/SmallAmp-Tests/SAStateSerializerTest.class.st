@@ -140,7 +140,7 @@ SAStateSerializerTest >> testFilterObserversOn [
 	self assert: res size equals: 2.
 	obj := SAObservationObject new.
 	res := serializer filterObserversOn: obj.
-	self assert: res size equals: 7.
+	self assert: res size equals: 6.
 	"an OrderedCollection(SAObservationValue>>#depth SAObservationValue>>#isFlaky SAObservationValue>>#isValueObservation SAObservationValue>>#name SAObservationValue>>#observedBy SAObservationValue>>#theClass SAObservationValue>>#theValue)"
 	obj := SAObservationPrimitive new.
 	res := serializer filterObserversOn: obj.

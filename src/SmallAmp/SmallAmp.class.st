@@ -110,6 +110,11 @@ SmallAmp >> preRunChecks [
 ]
 
 { #category : #adding }
+SmallAmp >> testCase: aTestClass [ 
+	self testCase: aTestClass targets: aTestClass smallAmpTargetClasses 
+]
+
+{ #category : #adding }
 SmallAmp >> testCase: aTestClass targets: targetClasses [
 	amplifyList add: aTestClass -> targetClasses
 ]

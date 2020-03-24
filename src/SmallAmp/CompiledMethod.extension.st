@@ -22,3 +22,8 @@ CompiledMethod >> smallAmpIsAccessor [
 CompiledMethod >> smallAmpIsAssertion [
 	^ self protocol = #asserting
 ]
+
+{ #category : #'*SmallAmp' }
+CompiledMethod >> smallAmpIsPure [
+	^ self ast smallAmpIsPure
+]

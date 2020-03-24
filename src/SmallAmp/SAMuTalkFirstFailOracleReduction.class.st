@@ -184,7 +184,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
-	| analysis1 mutantGenerator |
+	| analysis1 mutantGenerator mutants |
 	mutantGenerator := SmallAmpMutationsGenerationStrategy new.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {aClass}
@@ -192,12 +192,15 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 		using: MutantOperator contents
 		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
 		with: mutantGenerator.
-	(mutantGenerator mutationsFor: analysis1)
+	analysis1 generateCoverageAnalysis.
+	mutants := mutantGenerator mutationsFor: analysis1.
+	mutants
 		do: [ :m | 
 			mutantGenerator mutants: {m}.
 			aClass setMutant: m.
-			
-			analysis1 run ]
+analysis1 generateMutations.
+			analysis1 generateResults ]
+		displayingProgress: 'Oracle reducing mutation',' (',mutants size asString ,')'
 ]
 
 { #category : #'as yet unclassified' }
