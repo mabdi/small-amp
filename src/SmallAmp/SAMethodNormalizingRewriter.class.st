@@ -101,8 +101,10 @@ SAMethodNormalizingRewriter >> transformCascade: aCascadeNode [
 	| var receiver |
 	receiver := aCascadeNode messages anyOne receiver.
 	var := receiver isVariable
-		ifTrue: [ receiver ]
-		ifFalse: [self generateATemp].
+		ifTrue: [ receiver ].
+	var := var ifNil: [receiver isAssignment
+		ifTrue: [ receiver variable ]].
+	var := var ifNil: [ self generateATemp ].
 	^ self transformCascade: aCascadeNode assignsTo: var
 ]
 
@@ -114,11 +116,18 @@ SAMethodNormalizingRewriter >> transformCascade: aCascadeNode assignsTo: aVariab
 	receiver isCascade
 		ifTrue: [ result
 				addAll: (self transformCascade: receiver assignsTo: aVariable) ].
+	receiver isAssignment 
+		ifTrue: [ result
+				addAll: (self transformAssignment: receiver) ].
 	receiver isMessage
 		ifTrue: [ result
 				addAll: (self transformMessage: receiver assignsTo: aVariable) ].
 	aCascadeNode messages
-		doWithIndex: [ :amsg :i | |tmp| tmp := amsg copy. tmp receiver: aVariable. result addAll: (self transformMessage: tmp) ].
+		doWithIndex: [ :amsg :i | 
+			| tmp |
+			tmp := amsg copy.
+			tmp receiver: aVariable.
+			result addAll: (self transformMessage: tmp) ].
 	^ result
 ]
 
@@ -126,23 +135,36 @@ SAMethodNormalizingRewriter >> transformCascade: aCascadeNode assignsTo: aVariab
 SAMethodNormalizingRewriter >> transformMessage: aMessageNode [
 	| tmp |
 	tmp := self generateATemp.
-	^ self transformMessage: aMessageNode assignsTo: tmp 
+	^ self transformMessage: aMessageNode assignsTo: tmp
 ]
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> transformMessage: aMessageNode assignsTo: aVariable [
-	| result |
+	| result var |
 	result := OrderedCollection new.
 	aMessageNode receiver isVariable
 		ifTrue: [ result
 				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
-	aMessageNode receiver isLiteralNode ifTrue: [ result
+	aMessageNode receiver isLiteralNode
+		ifTrue: [ result
 				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
-	
 	aMessageNode receiver isCascade
-		ifTrue: [  ].
+		ifTrue: [ self error: 'todo' ].
+	aMessageNode receiver isAssignment
+		ifTrue: [ 
+			var := aMessageNode receiver variable.
+			result addAll: (self transformAssignment: aMessageNode receiver).
+			result add: (RBAssignmentNode
+						variable: aVariable 
+						value:
+							(RBMessageNode
+								receiver: var
+								selector: aMessageNode selector
+								arguments: aMessageNode arguments)).
+			 ].
+	
 	aMessageNode receiver isMessage
-		ifTrue: [ | tmp |
+		ifTrue: [ |  tmp |
 			tmp := self generateATemp.
 			result
 				addAll: (self transformMessage: aMessageNode receiver assignsTo: tmp).
