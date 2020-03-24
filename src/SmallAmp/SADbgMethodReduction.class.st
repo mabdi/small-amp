@@ -6,10 +6,10 @@ Class {
 
 { #category : #'as yet unclassified' }
 SADbgMethodReduction >> dbgList [
-	^ {#testSearch_amp_L306}
+	^ {#testRoomExitCycles_amp}
 ]
 
 { #category : #'as yet unclassified' }
 SADbgMethodReduction >> reduceMethods: aListOfMethods [
-	^ aListOfMethods select: [ :m | self dbgList includes: m selector  ]
+	^ (aListOfMethods select: [ :m | self dbgList includes: m selector ]) ifEmpty: [ aListOfMethods ]
 ]
