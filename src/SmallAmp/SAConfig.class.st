@@ -9,12 +9,15 @@ Class {
 		'debug',
 		'lite',
 		'selections',
-		'oracleReducions',
+		'oracleReducion',
 		'profiler',
 		'statementTimeOut',
 		'testRunTimeOut',
 		'serializationMaxDepth',
-		'methodReductions'
+		'methodReductions',
+		'prettifier',
+		'simplifier',
+		'maxPop'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -30,13 +33,16 @@ SAConfig class >> default [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: {SANoMethodReduction};
-		oracleReducions: {SAMuTalkFirstFailOracleReduction};
+		methodReductions: {SAMaxPopMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
 		testRunTimeOut: 10000;
 		statementTimeOut: 2000;
+		maxPop: 200;
 		debug: false;
 		lite: false;
-		yourself.
+		yourself
 ]
 
 { #category : #accessing }
@@ -100,6 +106,16 @@ SAConfig >> lite: anObject [
 ]
 
 { #category : #accessing }
+SAConfig >> maxPop [
+	^ maxPop
+]
+
+{ #category : #accessing }
+SAConfig >> maxPop: anObject [
+	maxPop := anObject
+]
+
+{ #category : #accessing }
 SAConfig >> methodReductions [
 	^ methodReductions
 ]
@@ -110,13 +126,23 @@ SAConfig >> methodReductions: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> oracleReducions [
-	^ oracleReducions
+SAConfig >> oracleReducion [
+	^ oracleReducion
 ]
 
 { #category : #accessing }
-SAConfig >> oracleReducions: list [
-	oracleReducions := list
+SAConfig >> oracleReducion: list [
+	oracleReducion := list
+]
+
+{ #category : #accessing }
+SAConfig >> prettifier [
+	^ prettifier
+]
+
+{ #category : #accessing }
+SAConfig >> prettifier: anObject [
+	prettifier := anObject
 ]
 
 { #category : #accessing }
@@ -148,6 +174,16 @@ SAConfig >> serializationMaxDepth [
 { #category : #accessing }
 SAConfig >> serializationMaxDepth: anObject [
 	serializationMaxDepth := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> simplifier [
+	^ simplifier
+]
+
+{ #category : #accessing }
+SAConfig >> simplifier: anObject [
+	simplifier := anObject
 ]
 
 { #category : #accessing }

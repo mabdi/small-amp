@@ -29,7 +29,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
 		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 10.
+	self assert: assertions size equals: 11.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
@@ -41,24 +41,27 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
 		equals: 'self assert: (foo at: 1) equals: 10'.
 	self
 		assertSourceCode: (assertions at: 4) formattedCode
-		equals: 'self deny: (foo at: 2) isZero'.
+		equals: 'self assert: (foo at: 2) class equals: Point'.
 	self
 		assertSourceCode: (assertions at: 5) formattedCode
-		equals: 'self assert: (foo at: 2) y equals: 10'.
+		equals: 'self deny: (foo at: 2) isZero'.
 	self
 		assertSourceCode: (assertions at: 6) formattedCode
-		equals: 'self deny: (foo at: 2) isFloatPoint'.
+		equals: 'self assert: (foo at: 2) y equals: 10'.
 	self
 		assertSourceCode: (assertions at: 7) formattedCode
-		equals: 'self assert: (foo at: 2) isIntegerPoint'.
+		equals: 'self deny: (foo at: 2) isFloatPoint'.
 	self
 		assertSourceCode: (assertions at: 8) formattedCode
-		equals: 'self assert: (foo at: 2) x equals: 20'.
+		equals: 'self assert: (foo at: 2) isIntegerPoint'.
 	self
 		assertSourceCode: (assertions at: 9) formattedCode
-		equals: 'self assert: (foo at: 2) isPoint'.
+		equals: 'self assert: (foo at: 2) x equals: 20'.
 	self
 		assertSourceCode: (assertions at: 10) formattedCode
+		equals: 'self assert: (foo at: 2) isPoint'.
+	self
+		assertSourceCode: (assertions at: 11) formattedCode
 		equals: 'self assert: (foo at: 3) equals: 30'
 ]
 
@@ -82,30 +85,32 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
-	|  item assertions obj |
-	obj := TestObject new field1: (Array with: 10 with: 20 /3 with: 30).
-	
+	| item assertions obj |
+	obj := TestObject new field1: (Array with: 10 with: 20 / 3 with: 30).
 	item := obj
 		smallAmpAcceptSerializerVisitor: self getASerializer
 		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 4.
+	self assert: assertions size equals: 5.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo field1 class equals: Array'.
+		equals: 'self assert: foo class equals: TestObject'.
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
-		equals: 'self assert: foo field1 size equals: 3'.
+		equals: 'self assert: foo field1 class equals: Array'.
 	self
 		assertSourceCode: (assertions at: 3) formattedCode
-		equals: 'self
+		equals: 'self assert: foo field1 size equals: 3'.
+	self
+		assertSourceCode: (assertions at: 4) formattedCode
+		equals:
+			'self
 	assert: (foo field1 collect: #asString)
 	equals: #(''10'' ''(20/3)'' ''30'')'.
 	self
-		assertSourceCode: (assertions at: 4) formattedCode
-		equals: 'self assert: foo field2 isNil'.
-	
+		assertSourceCode: (assertions at: 5) formattedCode
+		equals: 'self assert: foo field2 isNil'
 ]
 
 { #category : #test }
@@ -152,11 +157,11 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 	| arr item assertions |
 	arr := Array with: 10 with: 20 with: 30 @ 1.
 	item := arr
-		        smallAmpAcceptSerializerVisitor: self getASerializer
-		        atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 10.
+	self assert: assertions size equals: 11.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
@@ -171,21 +176,24 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		equals: 'self assert: (foo at: 2) equals: 20'.
 	self
 		assertSourceCode: (assertions at: 5) formattedCode
-		equals: 'self deny: (foo at: 3) isZero'.
+		equals: 'self assert: (foo at: 3) class equals: Point'.
 	self
 		assertSourceCode: (assertions at: 6) formattedCode
-		equals: 'self assert: (foo at: 3) y equals: 1'.
+		equals: 'self deny: (foo at: 3) isZero'.
 	self
 		assertSourceCode: (assertions at: 7) formattedCode
-		equals: 'self deny: (foo at: 3) isFloatPoint'.
+		equals: 'self assert: (foo at: 3) y equals: 1'.
 	self
 		assertSourceCode: (assertions at: 8) formattedCode
-		equals: 'self assert: (foo at: 3) isIntegerPoint'.
+		equals: 'self deny: (foo at: 3) isFloatPoint'.
 	self
 		assertSourceCode: (assertions at: 9) formattedCode
-		equals: 'self assert: (foo at: 3) x equals: 30'.
+		equals: 'self assert: (foo at: 3) isIntegerPoint'.
 	self
 		assertSourceCode: (assertions at: 10) formattedCode
+		equals: 'self assert: (foo at: 3) x equals: 30'.
+	self
+		assertSourceCode: (assertions at: 11) formattedCode
 		equals: 'self assert: (foo at: 3) isPoint'
 ]
 

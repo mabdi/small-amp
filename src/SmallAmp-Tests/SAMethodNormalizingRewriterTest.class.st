@@ -13,6 +13,55 @@ SAMethodNormalizingRewriterTest >> astHelper [
 ]
 
 { #category : #tests }
+SAMethodNormalizingRewriterTest >> testAssignmentReceiver [
+	| astBefore astAfter |
+	astBefore := self astHelper
+		parsedMethodFrom:
+			'testRoomExitCycles
+	| model room1 room2 exit1 exit2 ston object |
+	(room1 := STONTestMap new) at: #name put: ''Room 1''.
+	(room2 := STONTestMap new) at: #name put: ''Room 2''.
+	(exit1 := STONTestMap new)
+		at: #name put: ''Exit 1'';
+		at: #origin put: room1;
+		at: #destination put: room2.
+	(exit2 := STONTestMap new)
+		at: #name put: ''Exit 2'';
+		at: #origin put: room2;
+		at: #destination put: room1.
+	room1 at: #exit put: exit1.
+	room2 at: #exit put: exit2.
+	model := Array with: room1 with: room2.
+	ston := STON toString: model.
+	object := STON fromString: ston.'.
+	astAfter := self astHelper
+		parsedMethodFrom:
+			'testRoomExitCycles
+	| model room1 room2 exit1 exit2 ston object tmp_QzSdLqXCVx1 tmp_QzSdLqXCVx2 tmp_QzSdLqXCVx3 tmp_QzSdLqXCVx4 tmp_QzSdLqXCVx5 tmp_QzSdLqXCVx6 tmp_QzSdLqXCVx7 tmp_QzSdLqXCVx8 tmp_QzSdLqXCVx9 tmp_QzSdLqXCVx10 |
+	room1 := STONTestMap new.
+	tmp_QzSdLqXCVx1 := room1 at: #name put: ''Room 1''.
+	room2 := STONTestMap new.
+	tmp_QzSdLqXCVx2 := room2 at: #name put: ''Room 2''.
+	exit1 := STONTestMap new.
+	tmp_QzSdLqXCVx3 := exit1 at: #name put: ''Exit 1''.
+	tmp_QzSdLqXCVx4 := exit1	at: #origin put: room1.
+	tmp_QzSdLqXCVx5 := exit1	at: #destination put: room2.
+	exit2 := STONTestMap new.
+	tmp_QzSdLqXCVx6 := exit2	at: #name put: ''Exit 2''.
+	tmp_QzSdLqXCVx7 := exit2	at: #origin put: room2.
+	tmp_QzSdLqXCVx8 := exit2	at: #destination put: room1.
+	tmp_QzSdLqXCVx9 := room1 at: #exit put: exit1.
+	tmp_QzSdLqXCVx10 := room2 at: #exit put: exit2.
+	model := Array with: room1 with: room2.
+	ston := STON toString: model.
+	object := STON fromString: ston.'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
+		equals: (SAASTHelper new renameTempVars: astAfter formattedCode)
+]
+
+{ #category : #tests }
 SAMethodNormalizingRewriterTest >> testCascade [
 	| astBefore astAfter |
 	astBefore := self astHelper parsedMethodFrom:

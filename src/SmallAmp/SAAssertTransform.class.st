@@ -17,8 +17,25 @@ SAAssertTransform class >> transformAllAsserts: aParseTree [
 { #category : #accessor }
 SAAssertTransform >> getAllPatterns [
 	| methodsToBeCalled |
-	methodsToBeCalled := (self class methodsInProtocol:
-		                      'transform pattern') collect: #selector.
+	methodsToBeCalled := ((self class
+		methodsInProtocol: 'transform pattern') collect: #selector) asOrderedCollection.
+	methodsToBeCalled
+		addAll:
+			((self class methodsInProtocol: 'transform pattern should')
+				collect: #selector).
+	^ methodsToBeCalled
+		inject: OrderedCollection new
+		into: [ :result :item | 
+			result
+				addAll: (self perform: item);
+				yourself ]
+]
+
+{ #category : #accessor }
+SAAssertTransform >> getReduceOraclePatterns [
+	| methodsToBeCalled |
+	methodsToBeCalled := (self class
+		methodsInProtocol: 'transform pattern') collect: #selector.
 	^ methodsToBeCalled
 		inject: OrderedCollection new
 		into: [ :result :item | 
@@ -32,7 +49,7 @@ SAAssertTransform >> rewriteAllAssertsIn: aParseTree replaceBlock: aBlock [
 	| rewriter parser tree |
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
-	self getAllPatterns
+	self getReduceOraclePatterns
 		do: [ :each | 
 			rewriter
 				addRule: (RBBlockReplaceRule searchFor: each key replaceWith: aBlock) ].
@@ -147,20 +164,20 @@ SAAssertTransform >> transformDenyIdenticalTo [
 	   -> '(``@expected == ``@actual) not') }
 ]
 
-{ #category : #'transform pattern' }
+{ #category : #'transform pattern should' }
 SAAssertTransform >> transformShouldNotTakeMoreThan [
 	^ { 'self should: ``@aBlock notTakeMoreThan: ``@aDuration' -> '[``@aBlock value. true] valueWithin: ``@aDuration
 		onTimeout: [  false]' }
 ]
 
-{ #category : #'transform pattern' }
+{ #category : #'transform pattern should' }
 SAAssertTransform >> transformShouldNotTakeMoreThanMilliseconds [
 	^ { ('self should: ``@aBlock notTakeMoreThanMilliseconds: ``@anInteger'
 	   -> '[``@aBlock value. true] valueWithin: (Duration milliSeconds: ``@anInteger)
 		onTimeout: [false]') }
 ]
 
-{ #category : #'transform pattern' }
+{ #category : #'transform pattern should' }
 SAAssertTransform >> transformShouldRaise [
 	^ { 'self should: ``@aBlock raise: ``@anExceptionalEvent' -> '[ ``@aBlock value. false ]
 		on: ``@anExceptionalEvent
@@ -170,7 +187,7 @@ SAAssertTransform >> transformShouldRaise [
 		do: [ :ex | ex return: true ]' }
 ]
 
-{ #category : #'transform pattern' }
+{ #category : #'transform pattern should' }
 SAAssertTransform >> transformShouldntRaise [
 	^ { 'self shouldnt: ``@aBlock raise: ``@anExceptionalEvent' -> '([ ``@aBlock value. false ]
 		on: ``@anExceptionalEvent

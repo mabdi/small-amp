@@ -352,12 +352,16 @@ SAAssertGenerator >> buildAssertionsNilObservation: observation [
 SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	observation theValue keysDo: [ :key | 
-		(observation theValue at: key) name: key.
-		asserts addAll: ((observation theValue at: key) buildAssertions: self) ].
+	observation theValue
+		keysDo: [ :key | 
+			(observation theValue at: key) name: key.
+			asserts
+				addAll: ((observation theValue at: key) buildAssertions: self) ].
 	asserts := asserts reject: #isNil.
-	asserts do: [ :assertion | 
-		self appendMyName: observation name ToAssert: assertion ].
+	asserts
+		do:
+			[ :assertion | self appendMyName: observation name ToAssert: assertion ].
+	asserts addFirst: (self assertType: observation).
 	^ asserts
 ]
 

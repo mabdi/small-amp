@@ -23,9 +23,14 @@ SADefaultAssertionAmplifier class >> timing: anObject [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
-	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
+	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions allWindows |
+	allWindows := self allOpenedWindows.
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
+	Stdio stdout
+		nextPutAll: 'assert amplification: ' , aMethodAST selector;
+		lf;
+		flush.
 	self class timing
 		recoredTag: #normalizeMethod
 		toRun: [ self normalizeMethod: aMethodAST ].
@@ -53,9 +58,8 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		recoredTag: #checkPassing
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ].
-	self class timing
-		recoredTag: #cleanUp
-		toRun: [ self cleanUp ].
+	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
+	self closeAllWindowsBut: allWindows.
 	^ sourceCodeWithAssertions
 ]
 
@@ -109,17 +113,21 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r |
+	| r allWindows |
 	passingCheckClass
 		ifNil: [ passingCheckClass := self astHelper
 				buildTestClassWith: {sourceCodeWithAssertions}
 				using: testMethodModel testClass ]
 		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ].
+	allWindows := self allOpenedWindows.
 	r := [ (passingCheckClass run: testMethodModel selector) hasPassed ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ false ].
+	self closeAllWindowsBut: allWindows.
 	r
-		ifFalse: [ self log4debug: #AssertAmplifyCheckPassing what: sourceCodeWithAssertions ].
+		ifFalse: [ self
+				log4debug: #AssertAmplifyCheckPassing
+				what: sourceCodeWithAssertions ].
 	^ r
 ]
 

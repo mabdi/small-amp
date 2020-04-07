@@ -15,6 +15,11 @@ SAAbstractAssertionAmplifier class >> initializeWith: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
+SAAbstractAssertionAmplifier >> allOpenedWindows [
+	^  SystemWindow allInstances, GLMSystemWindow allInstances.
+]
+
+{ #category : #'as yet unclassified' }
 SAAbstractAssertionAmplifier >> amplifyAssertions [
 	^ self subclassResponsibility
 ]
@@ -23,6 +28,13 @@ SAAbstractAssertionAmplifier >> amplifyAssertions [
 SAAbstractAssertionAmplifier >> amplifyAssertionsFor: aTestModel [
 	testMethodModel := aTestModel.
 	^ self amplifyAssertions
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractAssertionAmplifier >> closeAllWindowsBut: openWindows [
+| actualWindows |
+	actualWindows := self allOpenedWindows.
+	(actualWindows copyWithoutAll: openWindows) do: #delete
 ]
 
 { #category : #initialization }

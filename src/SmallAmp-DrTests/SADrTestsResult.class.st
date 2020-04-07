@@ -10,7 +10,8 @@ Class {
 	#name : #SADrTestsResult,
 	#superclass : #DTPluginResult,
 	#instVars : [
-		'smallAmpResult'
+		'smallAmpResult',
+		'runConfig'
 	],
 	#category : #'SmallAmp-DrTests'
 }
@@ -33,16 +34,14 @@ SADrTestsResult >> aliveMutants [
 						name: 'Killed mutants in amplified';
 						subResults:
 							((self
-								filterJustKilledMutants: x reducedVersions first analysis generalResult killedMutants
+								filterJustKilledMutants: x reducedVersion analysis generalResult killedMutants
 								basedOn: x originalAnalysis generalResult killedMutants)
 								collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
 						name: 'Still alive mutants in amplified';
 						subResults:
-							((
-								 x reducedVersions first analysis generalResult aliveMutants
-								)
+							(x reducedVersion analysis generalResult aliveMutants
 								collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
@@ -65,9 +64,9 @@ SADrTestsResult >> amplifiedClasses [
 						subResults: (x testClass methods collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
-						name: 'Amplified (' , x reducedVersions first reducedClass name , '):';
+						name: 'Amplified (' , x reducedVersion reducedClass name , '):';
 						subResults:
-							(x reducedVersions first reducedClass methods
+							(x reducedVersion reducedClass methods
 								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
 								thenCollect: #asResultForDrTest);
 						yourself)};
@@ -83,10 +82,11 @@ SADrTestsResult >> buildTreeForUI [
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
 	^ DTTreeNode new
 		subResults:
-			{self amplifiedClasses.self mutationScores.
+			{self amplifiedClasses.
+			self mutationScores.
 			self aliveMutants.
 			self skippedTestMethods.
-			
+			self notProfiledMethods.
 			self timeInformations}
 ]
 
@@ -99,21 +99,34 @@ SADrTestsResult >> buildTreeInspectResult [
 
 { #category : #accessing }
 SADrTestsResult >> color [
-	| score_new score_old |
-	smallAmpResult results values size = 1
-		ifTrue: [ score_old := smallAmpResult results values first originalAnalysis
-				generalResult mutationScore.
-			score_new := smallAmpResult results values first reducedVersions
-				first analysis generalResult mutationScore.
-			score_new = 0
-				ifTrue: [ ^ Color named: 'red' ].
-			score_new - score_old = 0
-				ifTrue: [ ^ Color named: 'yellow' ].
-			score_new - score_old < 10
-				ifTrue: [ ^ Color named: 'lightGreen' ].
-			score_new - score_old >= 10
-				ifTrue: [ ^ Color named: 'green' ] ].
-	^ Color named: 'gray'
+	| getColor getDegree |
+	getColor := {(0 -> (Color named: 'red')).
+	(1 -> (Color named: 'gray')).
+	(2 -> (Color named: 'yellow')).
+	(3 -> (Color named: 'lightGreen')).
+	(4 -> (Color named: 'green'))} asDictionary.
+	getDegree := [ :score_old :score_new | 
+	| res |
+	res := nil.
+	score_new - score_old < 10
+		ifTrue: [ res := 3 ].
+	score_new - score_old >= 10
+		ifTrue: [ res := 4 ].
+	score_new - score_old = 0
+		ifTrue: [ res := 2 ].
+	
+	score_new = 0
+		ifTrue: [ res := 0 ].
+	res ifNil: [ res := 1 ].
+	res ].
+	^ getColor
+		at:
+			(smallAmpResult results values
+				collect: [ :r | 
+					getDegree
+						value: r originalAnalysis generalResult mutationScore
+						value: r reducedVersion analysis generalResult mutationScore ])
+				min
 ]
 
 { #category : #'as yet unclassified' }
@@ -136,14 +149,14 @@ SADrTestsResult >> mutationScores [
 				subResults:
 					{(DTTreeNode new
 						name:
-							x testClass name , ': %'
+							'Original: ' , x testClass name , ': %'
 								, x originalAnalysis generalResult mutationScore asString;
 						subResults: {};
 						yourself).
 					(DTTreeNode new
 						name:
-							x reducedVersions first reducedClass name , ': %'
-								, x reducedVersions first analysis generalResult mutationScore asString;
+							'Amplified: ', x reducedVersion reducedClass name , ': %'
+								, x reducedVersion analysis generalResult mutationScore asString;
 						subResults: {};
 						yourself)};
 				yourself ].
@@ -151,6 +164,41 @@ SADrTestsResult >> mutationScores [
 		name: 'Mutation scores';
 		subResults: subs;
 		yourself
+]
+
+{ #category : #accessing }
+SADrTestsResult >> notProfiledMethods [
+	| subs keys |
+	
+	subs := smallAmpResult results values
+		collect: [ :x | 
+			keys := runConfig profiler profile keys
+				select:
+					[ :p | x targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					((x targetClasses
+						flatCollect: [ :c | 
+							(c methods select: [ :m | m selector includesSubstring: ':' ])
+								reject: [ :m | 
+									keys
+										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
+						collect: #asResultForDrTest);
+				yourself ].
+	^ DTTreeNode new
+		name: 'Methods failed to be profiled:';
+		subResults: subs;
+		yourself
+]
+
+{ #category : #accessing }
+SADrTestsResult >> runConfig [ ^ runConfig
+]
+
+{ #category : #accessing }
+SADrTestsResult >> runConfig: config [
+	runConfig := config
 ]
 
 { #category : #accessing }

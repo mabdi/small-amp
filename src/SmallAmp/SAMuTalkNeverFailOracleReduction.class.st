@@ -185,7 +185,7 @@ SAMuTalkNeverFailOracleReduction >> mutalkRun: aClass [
 		mutating: targetClasses
 		using: MutantOperator contents
 		with: AllTestsMethodsRunningMutantEvaluationStrategy new.
-	analysis1 runSmallAmp.
+	analysis1 runSmallAmpVerbose.
 	^ analysis1
 ]
 

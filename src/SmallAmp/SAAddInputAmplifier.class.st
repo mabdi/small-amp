@@ -51,7 +51,7 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 	msg receiver isVariable
 		ifFalse: [ ^ false ].
 	^ (testMethodModel testTargets)
-		includes: (variableTypes at: msg receiver name)
+		includes: (variableTypes at: testMethodModel selector, ':', msg receiver name)
 ]
 
 { #category : #removing }
@@ -78,7 +78,7 @@ SAAddInputAmplifier >> generateNewStatementsAfter: statement [
 		ifTrue: [ msg := statement value ].
 	statement isMessage
 		ifTrue: [ msg := statement ].
-	theType := variableTypes at: msg receiver name.
+	theType := variableTypes at: testMethodModel selector , ':', msg receiver name.
 	methods := theType methods
 		reject: [ :m | msg selector = m selector or: [ self isNotSafeToSelect: m ] ].
 	nodes := methods

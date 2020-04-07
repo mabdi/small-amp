@@ -76,18 +76,23 @@ SALiteralMutator >> mutateFalse: aValue [
 { #category : #'as yet unclassified' }
 SALiteralMutator >> mutateInteger: aValue [
 	| nodes |
-	nodes := OrderedCollection new.
-	nodes add: (RBLiteralValueNode value: aValue + 1).
-	nodes add: (RBLiteralValueNode value: aValue - 1).
-	nodes add: (RBLiteralValueNode value: aValue * 2).
-	nodes add: (RBLiteralValueNode value: (aValue / 2) asInteger).
-	nodes add: (RBMessageNode
-			 receiver: (RBVariableNode named: #SmallInteger)
-			 selector: #maxVal).
-	nodes add: (RBMessageNode
-			 receiver: (RBVariableNode named: #SmallInteger)
-			 selector: #minVal).
-	nodes add: (RBLiteralValueNode value: 0).
+	nodes := {(aValue + 1).
+	(aValue - 1).
+	(aValue * 2).
+	(aValue / 2) asInteger.
+	0} asOrderedCollection.
+	nodes := (nodes reject: [ :x | x = aValue ])
+		collect: [ :q | RBLiteralValueNode value: q ].
+	nodes
+		add:
+			(RBMessageNode
+				receiver: (RBVariableNode named: #SmallInteger)
+				selector: #maxVal).
+	nodes
+		add:
+			(RBMessageNode
+				receiver: (RBVariableNode named: #SmallInteger)
+				selector: #minVal).
 	^ nodes
 ]
 
@@ -105,15 +110,12 @@ SALiteralMutator >> mutateObject: aValue [
 { #category : #'as yet unclassified' }
 SALiteralMutator >> mutateString: aValue [
 	| nodes |
-	nodes := OrderedCollection new.
-	nodes add: (RBLiteralValueNode value: '').
-	nodes add:
-		(RBLiteralValueNode value: (self updateRandom: aValue)).
-	nodes add:
-		(RBLiteralValueNode value: (self insertRandom: aValue)).
-	nodes add:
-		(RBLiteralValueNode value: (self removeRandom: aValue)).
-	nodes add: (RBLiteralValueNode value: self randomString).
+	nodes := {''.
+	(self updateRandom: aValue).
+	(self insertRandom: aValue).
+	(self removeRandom: aValue).
+	self randomString} asOrderedCollection.
+	nodes := nodes collect: [ :n | RBLiteralValueNode value: n ].
 	^ nodes
 ]
 
@@ -138,5 +140,8 @@ SALiteralMutator >> removeRandom: aStr [
 
 { #category : #removing }
 SALiteralMutator >> updateRandom: aStr [
-	^ aStr copy at: aStr size atRandom put: self characterSet atRandom;yourself
+	aStr ifEmpty: [ aStr ].
+	^ aStr copy
+		at: aStr size atRandom put: self characterSet atRandom;
+		yourself
 ]

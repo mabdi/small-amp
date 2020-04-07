@@ -12,9 +12,16 @@ SAAbstractSelection class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
-{ #category : #enumerating }
-SAAbstractSelection class >> select: aPopulation alreadySelected: aPopulationAll [
-	^ self new select: aPopulation alreadySelected: aPopulationAll
+{ #category : #'as yet unclassified' }
+SAAbstractSelection >> allOpenedWindows [
+	^ SystemWindow allInstances , GLMSystemWindow allInstances
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractSelection >> closeAllWindowsBut: openWindows [
+	| actualWindows |
+	actualWindows := self allOpenedWindows.
+	(actualWindows copyWithoutAll: openWindows) do: #delete
 ]
 
 { #category : #enumerating }
