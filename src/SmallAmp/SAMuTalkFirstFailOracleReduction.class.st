@@ -1,6 +1,9 @@
 Class {
 	#name : #SAMuTalkFirstFailOracleReduction,
 	#superclass : #SAAbstractOracleReduction,
+	#instVars : [
+		'particularResults'
+	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -149,9 +152,9 @@ SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 	| logs |
 	reducedTestClass := self createDuplicateClass.
 	self installLoggers.
-	self mutalkRunWithLogging: reducedTestClass.
+	particularResults := self mutalkRunWithLogging: reducedTestClass.
 	logs := reducedTestClass smallamp_logs.
-	self uninstallLoggersBut: logs.
+	self uninstallLoggersBut: logs
 ]
 
 { #category : #'as yet unclassified' }
@@ -185,6 +188,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	| analysis1 mutantGenerator mutants |
+	particularResults := OrderedCollection new.
 	mutantGenerator := SmallAmpMutationsGenerationStrategy new.
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {aClass}
@@ -192,15 +196,16 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 		using: MutantOperator contents
 		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
 		with: mutantGenerator.
+	mutants := uncovered collect: #mutant.
 	analysis1 generateCoverageAnalysis.
-	mutants := mutantGenerator mutationsFor: analysis1.
 	mutants
 		do: [ :m | 
 			mutantGenerator mutants: {m}.
 			aClass setMutant: m.
-analysis1 generateMutations.
-			analysis1 generateResults ]
-		displayingProgress: 'Oracle reducing mutation',' (',mutants size asString ,')'
+			analysis1 generateMutations.
+			particularResults addAll: analysis1 generateResultsLogger ]
+		displayingProgress: 'Oracle reducing mutation' , ' (' , uncovered size asString , ')'.
+	^ particularResults
 ]
 
 { #category : #'as yet unclassified' }
@@ -233,6 +238,7 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 						ifNone: [ empty ] ]).
 	rewriter executeTree: parser.
 	tree := rewriter tree.
+	
 	tree := self astHelper
 		addComment: (self synthesisCommentFrom: toComment)
 		toMethodAST: tree.
@@ -255,15 +261,42 @@ SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
 
 { #category : #running }
 SAMuTalkFirstFailOracleReduction >> synthesisCommentFrom: toComment [
+	| when |
 	^ String
 		streamContents: [ :s | 
 			s
-				nextPutAll: 'I detect: ';
+				nextPutAll: 'I test correctness of: ';
+				cr;
 				cr.
 			toComment
 				do: [ :m | 
-					s nextPutAll: m asString.
-					s cr ] ]
+					when := self synthesisWhenFor: (particularResults detect: [ :x | x mutant = m ]) mutantEvaluation
+		observation.
+					s
+						nextPutAll: '- ';
+						nextPutAll: m smallAmpCommentText.
+					when
+						ifNotNil: [ s
+								nextPutAll: ' when ';
+								nextPutAll: when ].
+					s
+						cr;
+						cr ] ]
+]
+
+{ #category : #running }
+SAMuTalkFirstFailOracleReduction >> synthesisWhenFor: observations [
+	| a |
+	observations ifEmpty: [ ^ nil ].
+	observations
+		keysDo: [ :key | 
+			(observations at: key) = SmallInteger maxVal
+				ifTrue: [ observations at: key put: 'SmallInteger maxVal' ].
+			(observations at: key) = SmallInteger minVal
+				ifTrue: [ observations at: key put: 'SmallInteger minVal' ] ].
+	a := OrderedCollection new.
+	observations associationsDo: [ :k | a add: k ].
+	^ a asArray asString 
 ]
 
 { #category : #'as yet unclassified' }

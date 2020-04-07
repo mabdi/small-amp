@@ -8,7 +8,8 @@ Class {
 		'targetClasses',
 		'reducedTestClass',
 		'reducedAddedTestClass',
-		'ignoredTestMethods'
+		'ignoredTestMethods',
+		'uncovered'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -49,6 +50,16 @@ SAAbstractOracleReduction >> reducedTestClass [
 	^ reducedTestClass
 ]
 
+{ #category : #accessing }
+SAAbstractOracleReduction >> uncovered [
+	^ uncovered
+]
+
+{ #category : #accessing }
+SAAbstractOracleReduction >> uncovered: anObject [
+	uncovered := anObject
+]
+
 { #category : #'instance creation' }
 SAAbstractOracleReduction >> with: aConfig [
 	self initialize.
@@ -56,8 +67,9 @@ SAAbstractOracleReduction >> with: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractOracleReduction >> with: newClass from: originalTestClass target: listTtargetClasses [
+SAAbstractOracleReduction >> with: newClass from: originalTestClass target: listTtargetClasses uncovered: aListMutants [
 	newTestClass := newClass.
-	 testClass := originalTestClass.
-	 targetClasses := listTtargetClasses.
+	testClass := originalTestClass.
+	targetClasses := listTtargetClasses.
+	uncovered := aListMutants
 ]

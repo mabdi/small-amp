@@ -81,8 +81,10 @@ SmallAmp >> amplifyAll [
 			[ instance := self amplify: item key target: item value.
 			res addResult: instance for: item ]
 				on: Error
-				do:
-					[ :ex | Transcript show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
+				do: [ :ex | 
+					self halt.
+					Transcript
+						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]

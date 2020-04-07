@@ -1,6 +1,11 @@
 Extension { #name : #CompiledMethod }
 
 { #category : #'*SmallAmp' }
+CompiledMethod >> isMadeBySmallAmp [
+	^ self hasPragmaNamed: SAASTHelper defaultPragma 
+]
+
+{ #category : #'*SmallAmp' }
 CompiledMethod >> smallAmpIsAccessor [
 	" code from MethodClassifier>>#classifyAccessor:"
 

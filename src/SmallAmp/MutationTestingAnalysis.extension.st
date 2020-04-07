@@ -1,6 +1,23 @@
 Extension { #name : #MutationTestingAnalysis }
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> generateResultsLogger [
+	particularResults := OrderedCollection new.
+	mutations
+		do: [ :aMutation | 
+			logger logStartEvaluating: aMutation.
+			particularResults
+				add:
+					(MutantEvaluationLogger
+						for: aMutation
+						using: testCases
+						following: mutantsEvaluationStrategy
+						andConsidering: self coverageAnalysisResult) value ]
+		displayingProgress: 'Evaluating mutants'.
+	^ particularResults
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> generateResultsSmallAmp [
 	particularResults := OrderedCollection new.
 	mutations

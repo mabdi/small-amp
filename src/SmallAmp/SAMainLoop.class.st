@@ -228,9 +228,10 @@ SAMainLoop >> oracleReduction [
 			reducer := (config oracleReducion initializeWith: config)
 				with: generatedClass
 				from: testClass
-				target: targetClasses.
+				target: targetClasses
+				uncovered: finalResult originalAnalysis generalResult aliveMutants.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-			finalResult reducedVersion: reducer makeReducedResult ].
+			finalResult reducedVersion: reducer makeReducedResult ]
 ]
 
 { #category : #'as yet unclassified' }
