@@ -113,7 +113,7 @@ SAMutationCoverageSelection >> matrixFromMutalk: aResult [
 
 { #category : #'as yet unclassified' }
 SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
-	| testClass targetClasses newTestClass analysis1 result |
+	| testClass targetClasses newTestClass analysis1 result wins |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
 	newTestClass := self astHelper
@@ -127,9 +127,10 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 		with:
 			(SmallAmpMutationsGenerationStrategy new
 				mutants: (uncoveredList collect: #mutant)).
+	wins := self allOpenedWindows.
 	result := analysis1 runSmallAmpVerbose.
 	result
-		ifTrue: [ self cleanUp: newTestClass ].
+		ifTrue: [ self cleanUp: newTestClass. self closeAllWindowsBut: wins ].
 	^ analysis1
 ]
 

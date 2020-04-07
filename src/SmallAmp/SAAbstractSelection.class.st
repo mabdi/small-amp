@@ -12,6 +12,18 @@ SAAbstractSelection class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
+{ #category : #'as yet unclassified' }
+SAAbstractSelection >> allOpenedWindows [
+	^ SystemWindow allInstances , GLMSystemWindow allInstances
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractSelection >> closeAllWindowsBut: openWindows [
+	| actualWindows |
+	actualWindows := self allOpenedWindows.
+	(actualWindows copyWithoutAll: openWindows) do: #delete
+]
+
 { #category : #enumerating }
 SAAbstractSelection >> select: aPopulation uncovered: uncoveredList [
 	self subclassResponsibility
