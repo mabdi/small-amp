@@ -41,6 +41,24 @@ SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 	aRBMessageNode arguments at: 1 put: msgNode
 ]
 
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> assertBlockValueAsString: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: (RBMessageNode receiver: theObject selector: #sourceNode)
+		selector: #formattedCode.
+	theValueNode := RBLiteralValueNode
+		value: observation theValue sourceNode formattedCode.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
 { #category : #asserting }
 SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
@@ -276,7 +294,7 @@ SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertType: observation).
-	asserts add: (self assertPrimitiveValueAsString: observation).
+	asserts add: (self assertBlockValueAsString: observation).
 	^ asserts
 ]
 

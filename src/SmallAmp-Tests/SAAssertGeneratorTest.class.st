@@ -412,14 +412,15 @@ SAAssertGeneratorTest >> testBuildAssertionsBlockClosureObservation [
 	| item assertions |
 	item := SAObservationBlockClosure newFor: [ :a | a + 1 ] atDepth: 1.
 	item name: 'foo'.
-	assertions := item buildAssertions: assertGenerator.
+		assertions := item buildAssertions: assertGenerator.
+
 	self assert: assertions size equals: 2.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: BlockClosure'.
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
-		equals: 'self assert: foo asString equals: ''[ :a | a + 1 ]'''
+		equals: 'self assert: foo sourceNode formattedCode equals: ''[ :a | a + 1 ]'''
 ]
 
 { #category : #tests }
