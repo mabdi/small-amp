@@ -35,6 +35,11 @@ SAMainLoop >> addPopulationToResult [
 					c ])
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoop >> allOpenedWindows [
+	^  SystemWindow allInstances, GLMSystemWindow allInstances.
+]
+
 { #category : #actions }
 SAMainLoop >> amplify [
 	self initialSteps.
@@ -63,15 +68,19 @@ SAMainLoop >> amplifyLite [
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
+	| allWindows |
 	finalResult logs
 		recoredTag: #assertionAmplification
-		toRun: [population
-		do: [ :tcase | 
-			self assertionAmplifiers
-				do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
-		displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
-	population := population reject: [ :tcase | tcase testMethod isNil ].]
-	
+		toRun: [ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
+							population
+				do: [ :tcase | 
+					self assertionAmplifiers
+						do: [ :amplifier | 
+							tcase assertionAmplifyBy: amplifier ] ]
+				displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
+							self closeAllWindowsBut: allWindows.
+			population := population
+				reject: [ :tcase | tcase testMethod isNil ] ]
 ]
 
 { #category : #asserting }
@@ -98,6 +107,13 @@ SAMainLoop >> cleanUpAndAddToResult [
 		toRun: [population := population collect: [ :obj | obj cleanedUpCopy ].
 	self addPopulationToResult.]
 	
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> closeAllWindowsBut: openWindows [
+| actualWindows |
+	actualWindows := self allOpenedWindows.
+	(actualWindows copyWithoutAll: openWindows) do: #delete
 ]
 
 { #category : #actions }
