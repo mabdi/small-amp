@@ -45,12 +45,13 @@ SAMainLoop >> amplify [
 	self initialSteps.
 	(1 to: config iterations)
 		do: [ :gen | 
-			self normalize.
+			uncovered ifNotEmpty: 
+			[self normalize.
 			self inputAmplification.
 			self methodReduction.
 			self assertionAmplification.
 			self selection.
-			self cleanUpAndAddToResult ]
+			self cleanUpAndAddToResult] ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	self oracleReduction.
 	self simplification.
