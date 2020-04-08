@@ -116,7 +116,7 @@ MutantEvaluationLogger >> value [
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
 	self installMetaLinks.
-	self testResultsDbg ]
+	self testResults  ]
 		ensure: [ self removeMetaLinks.
 			mutation uninstall ].
 	^ MutantEvaluationResult
