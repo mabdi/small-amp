@@ -51,17 +51,17 @@ SALiteralMutator >> mutateArrayNode: aNode [
 
 { #category : #'as yet unclassified' }
 SALiteralMutator >> mutateCharacter: aValue [
-	|nodes|
-	nodes := OrderedCollection new.
-	nodes add: (RBLiteralValueNode value: Character null).
-	nodes add: (RBLiteralValueNode value: Character cr).
-	nodes add: (RBLiteralValueNode value: Character space).
-	nodes add:
-		(RBLiteralValueNode value: Character allByteCharacters atRandom).
-	nodes add: (RBLiteralValueNode value:
-			 (Character value: aValue asInteger + 1)).
-	nodes add: (RBLiteralValueNode value:
-			 (Character value: aValue asInteger - 1)).
+	| nodes |
+	nodes := {Character null.
+	Character cr.
+	Character space.
+	Character allByteCharacters atRandom} asOrderedCollection.
+	aValue asInteger + 1 < Character maxVal
+		ifTrue: [ Character value: aValue asInteger + 1 ].
+	aValue asInteger - 1 >=0 ifTrue: [
+	Character value: aValue asInteger - 1].
+	nodes := (nodes reject: [ :x | x = aValue ])
+		collect: [ :q | RBLiteralValueNode value: q ].
 	^ nodes
 ]
 
