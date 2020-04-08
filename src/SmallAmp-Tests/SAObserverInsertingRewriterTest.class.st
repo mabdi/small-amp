@@ -61,7 +61,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			on: Error
 			do: [ :saERR| self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 1 ].
+		do: [ :ex | self class observer observeException: ex id: 1.
+			^ self ].
 	[ 
 	| smallamp_elapsedTime noObserve |
 	noObserve := false.
@@ -88,7 +89,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeAndInstvar [
 			on: Error
 			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 2 ]'.
+		do: [ :ex | self class observer observeException: ex id: 2.
+			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	SAObserverInsertingRewriter new
 		config: config;
@@ -135,7 +137,8 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			on: Error
 			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 1 ].
+		do: [ :ex | self class observer observeException: ex id: 1.
+			^ self ].
 	[ 
 	| smallamp_elapsedTime noObserve |
 	noObserve := false.
@@ -162,10 +165,14 @@ SAObserverInsertingRewriterTest >> testAMessageAndACascadeTwoTemps [
 			on: Error
 			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 2 ]'.
+		do: [ :ex | self class observer observeException: ex id: 2.
+			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	SAObserverInsertingRewriter new config: config; methodAST: methodAST; run.
+	SAObserverInsertingRewriter new
+		config: config;
+		methodAST: methodAST;
+		run.
 	self assert: methodAST dump equals: expectingAST dump
 ]
 
@@ -222,7 +229,8 @@ SAObserverInsertingRewriterTest >> testWithCascade [
 			on: Error
 			do: [ :saERR | self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 2 ]'.
+		do: [ :ex | self class observer observeException: ex id: 2.
+			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
 	SAObserverInsertingRewriter new
@@ -265,11 +273,13 @@ SAObserverInsertingRewriterTest >> testWithMessageCall [
 			on: Error
 			do: [:saERR | self error: ''checkMe'' ] ] ]
 		on: Error
-		do: [ :ex | self class observer observeException: ex id: 2 ]'.
+		do: [ :ex | self class observer observeException: ex id: 2.
+			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
 	SAObserverInsertingRewriter new
 		config: config;
-		methodAST: methodAST; run.
+		methodAST: methodAST;
+		run.
 	self assert: methodAST dump equals: expectingAST dump
 ]

@@ -27,3 +27,8 @@ TestObject >> field2 [
 TestObject >> field2: anObject [
 	field2 := anObject
 ]
+
+{ #category : #'as yet unclassified' }
+TestObject >> showError [
+	Error signal: 'an error'
+]

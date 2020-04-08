@@ -40,7 +40,7 @@ SAObserverInsertingRewriter >> insertObservers: aMethod [
 									'[]
 		on: Error
 		do: [ :ex | 
-			self class observer observeException: ex id: ' , idx asString , ']'.
+			self class observer observeException: ex id: ' , idx asString , '. ^ self ]'.
 							b := RBParser
 								parseExpression:
 									'[|smallamp_elapsedTime noObserve| noObserve:=false. smallamp_elapsedTime := Time
@@ -50,8 +50,8 @@ SAObserverInsertingRewriter >> insertObservers: aMethod [
 		valueWithin: ' , config statementTimeOut asString
 										,
 											' milliSeconds
-		onTimeout: [ self class observer observeTimeOut: ',config statementTimeOut asString,' id: '
-										, idx asString
+		onTimeout: [ self class observer observeTimeOut: '
+										, config statementTimeOut asString , ' id: ' , idx asString
 										,
 											'. noObserve:=true  ] ].
 	noObserve ifFalse: [ [self class observer observe: '

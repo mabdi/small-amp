@@ -169,23 +169,27 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	| aMethod newAsserts |
 	aMethod := self astHelper parsedMethodFrom: aMethodSrc.
 	newAsserts := self
-		              buildAsserts: anObserver
-		              methodName: aMethod selector.
-	newAsserts reverse do: [ :pair | 
-		pair value reverse do: [ :assrt | 
-			| enclouse |
-			enclouse := false.
-			(assrt arguments at: 1) isVariable ifTrue: [ 
-				(assrt arguments at: 1) name = SAAssertGenerator blockPlaceHolder ifTrue: [ enclouse := true ] ].
-			enclouse
-				ifTrue: [ 
-					| msg block |
-					msg := aMethod body statements at: pair key.
-					block := RBBlockNode body: (RBSequenceNode statements: { msg }).
-					assrt arguments at: 1 put: block.
-					aMethod body statements at: pair key put: assrt "] " ]
-				ifFalse: [ 
-				aMethod body statements add: assrt afterIndex: pair key ] ] ].
+		buildAsserts: anObserver
+		methodName: aMethod selector.
+	newAsserts ifEmpty: [ ^ aMethod formattedCode ].
+	[ newAsserts last key < aMethod statements size ]
+		whileTrue: [ aMethod statements removeLast ].
+	newAsserts reverse
+		do: [ :pair | 
+			pair value reverse
+				do: [ :assrt | 
+					| enclouse |
+					enclouse := false.
+					(assrt arguments at: 1) isVariable
+						ifTrue: [ (assrt arguments at: 1) name = SAAssertGenerator blockPlaceHolder
+								ifTrue: [ enclouse := true ] ].
+					enclouse
+						ifTrue: [ | msg block |
+							msg := aMethod body statements at: pair key.
+							block := RBBlockNode body: (RBSequenceNode statements: {msg}).
+							assrt arguments at: 1 put: block.
+							aMethod body statements at: pair key put: assrt	"] " ]
+						ifFalse: [ aMethod body statements add: assrt afterIndex: pair key ] ] ].
 	^ aMethod formattedCode
 ]
 
