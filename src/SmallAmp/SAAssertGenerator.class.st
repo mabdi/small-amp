@@ -329,6 +329,19 @@ SAAssertGenerator >> buildAssertionsCompiledCode: observation [
 ]
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsDateTimeObservation: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	observation isFlaky
+		ifTrue: [ asserts add: (self assertType: observation) ]
+		ifFalse: [ asserts
+				add:
+					(self assertPrimitiveValueAsString: observation ) ].
+	asserts := asserts reject: #isNil.
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> buildAssertionsErrorObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.

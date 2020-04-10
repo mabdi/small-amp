@@ -423,6 +423,26 @@ SAAssertGeneratorTest >> testBuildAssertionsBlockClosureObservation [
 		equals: 'self assert: foo sourceNode formattedCode equals: ''[ :a | a + 1 ]'''
 ]
 
+{ #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionsDateTimeObservation [
+	| item assertions |
+	item := SAObservationDateTime
+		newFor: (DateAndTime fromUnixTime: 1586554022)
+		atDepth: 1.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo asString equals: ''2020-04-10T23:27:02+02:00'''.
+	item isFlaky: true.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: DateAndTime'
+]
+
 { #category : #tests }
 SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	| item assertions |
