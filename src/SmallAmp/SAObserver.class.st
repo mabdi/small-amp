@@ -79,7 +79,7 @@ SAObserver >> initialize [
 
 { #category : #testing }
 SAObserver >> isInObservationScope: anObject [
-	^ targetClasses includes: anObject class 
+	^ targetClasses anySatisfy: [:c | |c2| c2 := anObject class. c2=c or: [c2 inheritsFrom: c]]
 ]
 
 { #category : #'instance creation' }
