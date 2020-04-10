@@ -212,6 +212,24 @@ SAAssertGenerator >> assertNil: observation [
 ]
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator >> assertPrimitiveAsUTCAsString: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: (RBMessageNode receiver: theObject selector: #asUTC)
+		selector: #asString.
+	theValueNode := RBLiteralValueNode
+		value: observation theValue asUTC asString.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
@@ -334,9 +352,8 @@ SAAssertGenerator >> buildAssertionsDateTimeObservation: observation [
 	asserts := OrderedCollection new.
 	observation isFlaky
 		ifTrue: [ asserts add: (self assertType: observation) ]
-		ifFalse: [ asserts
-				add:
-					(self assertPrimitiveValueAsString: observation ) ].
+		ifFalse:
+			[ asserts add: (self assertPrimitiveAsUTCAsString: observation) ].
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]

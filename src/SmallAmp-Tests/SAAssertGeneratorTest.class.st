@@ -434,7 +434,7 @@ SAAssertGeneratorTest >> testBuildAssertionsDateTimeObservation [
 	self assert: assertions size equals: 1.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo asString equals: ''2020-04-10T23:27:02+02:00'''.
+		equals: 'self assert: foo asUTC asString equals: ''2020-04-10T21:27:02+00:00'''.
 	item isFlaky: true.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions size equals: 1.
