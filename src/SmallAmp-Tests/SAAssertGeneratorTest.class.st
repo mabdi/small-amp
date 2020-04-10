@@ -86,7 +86,8 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
 	| item assertions obj |
-	obj := SATestObject new field1: (Array with: 10 with: 20 / 3 with: 30).
+	obj := SATestObject new
+		field1: (Array with: 10 with: 20 / 3 with: 30).
 	item := obj
 		smallAmpAcceptSerializerVisitor: self getASerializer
 		atDepth: 0.
@@ -95,7 +96,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
 	self assert: assertions size equals: 5.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo class equals: TestObject'.
+		equals: 'self assert: foo class equals: SATestObject'.
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo field1 class equals: Array'.
