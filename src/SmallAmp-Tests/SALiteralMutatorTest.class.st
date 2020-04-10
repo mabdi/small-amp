@@ -22,3 +22,13 @@ SALiteralMutatorTest >> testMutateCharacter [
 	self shouldnt: [ mutator mutateCharacter: Character null ] raise: PrimitiveFailed
 	
 ]
+
+{ #category : #test }
+SALiteralMutatorTest >> testMutateEmptyString [
+	self
+		deny:
+			((mutator mutateString: '') anySatisfy: [ :node | node value isEmpty ]).
+	self assertEmpty: (mutator removeRandom: '').
+	self assertEmpty: (mutator updateRandom: '').
+	self assert: (mutator insertRandom: '') size equals: 1.
+]

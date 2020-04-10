@@ -114,7 +114,7 @@ SALiteralMutator >> mutateString: aValue [
 	(self updateRandom: aValue).
 	(self insertRandom: aValue).
 	(self removeRandom: aValue).
-	self randomString} asOrderedCollection.
+	self randomString} asOrderedCollection reject: [:s | s = aValue].
 	nodes := nodes collect: [ :n | RBLiteralValueNode value: n ].
 	^ nodes
 ]
@@ -135,12 +135,13 @@ SALiteralMutator >> randomString [
 
 { #category : #removing }
 SALiteralMutator >> removeRandom: aStr [
+aStr ifEmpty: [ ^ aStr ].
 	^ aStr copyWithoutIndex: aStr size atRandom
 ]
 
 { #category : #removing }
 SALiteralMutator >> updateRandom: aStr [
-	aStr ifEmpty: [ aStr ].
+	aStr ifEmpty: [ ^ aStr ].
 	^ aStr copy
 		at: aStr size atRandom put: self characterSet atRandom;
 		yourself
