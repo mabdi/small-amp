@@ -1,34 +1,40 @@
 Class {
-	#name : #TestObject,
+	#name : #SATestObject,
 	#superclass : #Object,
 	#instVars : [
 		'field1',
-		'field2'
+		'field2',
+		'privateField'
 	],
 	#category : #'SmallAmp-Tests'
 }
 
 { #category : #accessing }
-TestObject >> field1 [
+SATestObject >> field1 [
 	^ field1
 ]
 
 { #category : #accessing }
-TestObject >> field1: anObject [
+SATestObject >> field1: anObject [
 	field1 := anObject
 ]
 
 { #category : #accessing }
-TestObject >> field2 [
+SATestObject >> field2 [
 	^ field2
 ]
 
 { #category : #accessing }
-TestObject >> field2: anObject [
+SATestObject >> field2: anObject [
 	field2 := anObject
 ]
 
+{ #category : #private }
+SATestObject >> privateField [
+	^ privateField
+]
+
 { #category : #'as yet unclassified' }
-TestObject >> showError [
+SATestObject >> showError [
 	Error signal: 'an error'
 ]

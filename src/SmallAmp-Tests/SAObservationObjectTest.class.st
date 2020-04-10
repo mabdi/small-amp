@@ -27,3 +27,13 @@ SAObservationObjectTest >> testCheckFlaky [
 	self deny: (item1 theValue at: #balance) isFlaky.
 	
 ]
+
+{ #category : #tests }
+SAObservationObjectTest >> testPrivateField [
+	| item1  obj1 |
+	obj1 := SATestObject new.
+	item1 := obj1
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 0.
+	self deny: (item1 theValue includesKey: #rand)
+]

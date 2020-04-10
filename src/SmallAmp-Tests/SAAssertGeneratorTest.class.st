@@ -86,7 +86,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
 	| item assertions obj |
-	obj := TestObject new field1: (Array with: 10 with: 20 / 3 with: 30).
+	obj := SATestObject new field1: (Array with: 10 with: 20 / 3 with: 30).
 	item := obj
 		smallAmpAcceptSerializerVisitor: self getASerializer
 		atDepth: 0.

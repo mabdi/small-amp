@@ -39,7 +39,7 @@ SADefaultAssertionAmplifierTest >> testCase2 [
 	testModel := SATestMethod
 		with: src
 		class: SmallBankTest
-		targets: {TestObject}.
+		targets: {SATestObject}.
 	sourceCodeWithAssertions := ins amplifyAssertionsFor: testModel.
 	self deny: (sourceCodeWithAssertions includesSubstring: 'y:= x field1 * 2')
 ]
