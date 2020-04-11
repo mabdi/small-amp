@@ -30,23 +30,19 @@ SALiteralMutator >> mutateArrayNode: aNode [
 	| nodes toRepeat ns |
 	nodes := OrderedCollection new.
 	nodes add: (RBArrayNode statements: {}).
-	aNode statements ifNotEmpty: [ 
-	toRepeat := aNode statements first copy.
-	nodes
-		add:
-			(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ]))].
+	aNode statements
+		ifNotEmpty: [ toRepeat := aNode statements first copy.
+			nodes
+				add:
+					(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ])) ].
 	nodes
 		add:
 			(RBArrayNode
 				statements: (aNode statements collect: [ :s | RBLiteralValueNode value: nil ])).
-	ns := aNode statements collect: [ :s | s copy ].
+	ns := (aNode statements collect: [ :s | s copy ]) asOrderedCollection.
 	ns add: (RBLiteralValueNode value: nil).
-	nodes
-		add:
-			(RBArrayNode
-				statements:
-					ns).
-	^ nodes
+	nodes add: (RBArrayNode statements: ns).
+	^ (nodes reject: [ :s | s = aNode ]) removeDuplicates
 ]
 
 { #category : #'as yet unclassified' }
@@ -94,6 +90,49 @@ SALiteralMutator >> mutateInteger: aValue [
 				receiver: (RBVariableNode named: #SmallInteger)
 				selector: #minVal).
 	^ nodes
+]
+
+{ #category : #'as yet unclassified' }
+SALiteralMutator >> mutateLiteralArrayNode: aNode [
+	| nodes toRepeat ns isByteArray nulVal |
+	isByteArray := aNode isForByteArray.
+	nulVal := isByteArray
+		ifTrue: [ 0 ]
+		ifFalse: [ nil ].
+	nodes := OrderedCollection new.
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: {}
+				stopPosition: -1
+				isByteArray: isByteArray).
+	aNode contents
+		ifNotEmpty: [ toRepeat := aNode contents first copy.
+			nodes
+				add:
+					(RBLiteralArrayNode
+						startPosition: 0
+						contents: (aNode contents collect: [ :s | toRepeat ])
+						stopPosition: -1
+						isByteArray: isByteArray) ].
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: (aNode contents collect: [ :s | RBLiteralValueNode value: nulVal ])
+				stopPosition: -1
+				isByteArray: isByteArray).
+	ns := (aNode contents collect: [ :s | s copy ]) asOrderedCollection.
+	ns add: (RBLiteralValueNode value: nulVal).
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: ns
+				stopPosition: -1
+				isByteArray: isByteArray).
+	^ (nodes reject: [ :s | s = aNode ]) removeDuplicates
 ]
 
 { #category : #'as yet unclassified' }
