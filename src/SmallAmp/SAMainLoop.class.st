@@ -126,10 +126,12 @@ SAMainLoop >> discardFailingTests [
 	testMethods := result expectedPasses
 		collect: [ :passed | (testClass lookupSelector: passed selector) sourceCode ].
 	finalResult
-		failedSelectorInOriginal: result failures , result expectedDefects.
+		failedSelectorInOriginal: (result failures , result expectedDefects) asOrderedCollection.
 	population := testMethods
-		collect:
-			[ :tcase | (SATestMethod with: tcase class: testClass targets: targetClasses) selectorAppend: '_amp'; yourself ]
+		collect: [ :tcase | 
+			(SATestMethod with: tcase class: testClass targets: targetClasses)
+				selectorAppend: '_amp';
+				yourself ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -195,8 +197,8 @@ SAMainLoop >> liteAmplification [
 { #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
-		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass ].
-	
+		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass.
+			finalResult runProfile: config profiler ]
 ]
 
 { #category : #accessing }
@@ -248,7 +250,8 @@ SAMainLoop >> oracleReduction [
 				target: targetClasses
 				uncovered: finalResult originalAnalysis generalResult aliveMutants.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-			finalResult reducedVersion: reducer makeReducedResult ]
+			finalResult amplifiedClass: reducer makeReducedResult.
+			finalResult mutalkRunMutated ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -257,7 +260,7 @@ SAMainLoop >> prettifying [
 	finalResult logs
 		recoredTag: #prettifying
 		toRun: [ prettifier := config prettifier initializeWith: config.
-			prettifier prettify: finalResult reducedVersion reducedClass ]
+			prettifier prettify: finalResult amplifiedClass ]
 ]
 
 { #category : #actions }
@@ -289,7 +292,7 @@ SAMainLoop >> simplification [
 	finalResult logs
 		recoredTag: #simplification
 		toRun: [ simplifier := config simplifier initializeWith: config.
-			simplifier simplify: finalResult reducedVersion reducedClass ]
+			simplifier simplify: finalResult amplifiedClass ]
 ]
 
 { #category : #accessing }

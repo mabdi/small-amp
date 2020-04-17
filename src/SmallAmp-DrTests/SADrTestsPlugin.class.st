@@ -92,7 +92,6 @@ SADrTestsPlugin >> runForConfiguration: aDTpluginConfiguration [
 	smallAmpResult := smallAmp amplifyAll.
 	result := self pluginResultClass new.
 	result smallAmpResult: smallAmpResult.
-	result runConfig: config.
 	^ result
 ]
 

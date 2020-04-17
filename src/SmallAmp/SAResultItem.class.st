@@ -3,14 +3,66 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'failedSelectorInOriginal',
-		'reducedVersion',
+		'amplifiedClass',
+		'amplifiedAnalysis',
 		'targetClasses',
 		'testClass',
 		'originalAnalysis',
-		'logs'
+		'logs',
+		'runProfile'
 	],
 	#category : #'SmallAmp-Model'
 }
+
+{ #category : #reporting }
+SAResultItem >> aliveMutantsInOriginal [
+^ self originalAnalysis generalResult aliveMutants
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedAnalysis [
+	^ amplifiedAnalysis
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedAnalysis: anObject [
+	amplifiedAnalysis := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedClass [
+	^ amplifiedClass
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedClass: anObject [
+	amplifiedClass := anObject
+]
+
+{ #category : #reporting }
+SAResultItem >> amplifiedMethods [
+	^ self amplifiedClass methods
+		select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
+]
+
+{ #category : #reporting }
+SAResultItem >> amplifiedMutationScore [
+	^ amplifiedAnalysis generalResult mutationScore
+]
+
+{ #category : #reporting }
+SAResultItem >> detailedTimeLabel [
+	| sum |
+	sum := (self logs summary collect: #value) sum.
+	^ self logs summary
+				collect: [ :s | 
+					
+							s key asString , ': % '
+								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
+								, (Duration milliSeconds: s value) humanReadablePrintString
+								, ')']
+						
+]
 
 { #category : #adding }
 SAResultItem >> failedSelectorInOriginal [
@@ -22,17 +74,38 @@ SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 	failedSelectorInOriginal := aListOfFaileds 
 ]
 
+{ #category : #private }
+SAResultItem >> filterJustAddedMethods: newClass basedOn: originalClass [
+	^ newClass methods
+		reject: [ :m | originalClass selectors includes: m selector ]
+]
+
+{ #category : #private }
+SAResultItem >> filterJustKilledMutants: newKilledMutants basedOn: originalKilledMutants [
+	^ newKilledMutants
+		reject: [ :m | 
+			(originalKilledMutants collect: [ :x | x mutant modifiedSource ])
+				includes: m mutant modifiedSource ]
+]
+
 { #category : #initialization }
 SAResultItem >> initialize [ 
 	logs := SALogger new
 ]
 
-{ #category : #initialization }
+{ #category : #reporting }
+SAResultItem >> killedMutantsInOriginal [
+	^ self
+		filterJustKilledMutants: self amplifiedAnalysis  generalResult killedMutants
+		basedOn: self originalAnalysis generalResult killedMutants
+]
+
+{ #category : #accessing }
 SAResultItem >> logs [
 	^ logs
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #reporting }
 SAResultItem >> markDownOn: stream [
 	stream
 		nextPutAll: '|';
@@ -45,29 +118,34 @@ SAResultItem >> markDownOn: stream [
 				seconds: ((self logs summary collect: #value) sum / 1000) asInteger)
 				humanReadablePrintString;
 		nextPutAll: '|'.
+	self markDownOn: stream class: testClass analysis: originalAnalysis.
+	stream nextPutAll: '|'.
+	self markDownOn: stream class: amplifiedClass analysis: amplifiedAnalysis.
+	
+	stream nextPutAll: '|'
+]
+
+{ #category : #private }
+SAResultItem >> markDownOn: stream class: theClass analysis: analysis [
 	stream nextPutAll: '#TestMethods: '.
-	stream nextPutAll: testClass methods size asString.
+	stream nextPutAll: theClass methods size asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#AllMutations: '.
 	stream
-		nextPutAll: originalAnalysis generalResult numberOfEvaluatedMutants asString.
+		nextPutAll: analysis generalResult numberOfEvaluatedMutants asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#KilledMutants: '.
 	stream
 		nextPutAll:
-			originalAnalysis generalResult numberOfKilledOrTerminatedMutants
+			analysis generalResult numberOfKilledOrTerminatedMutants
 				asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: 'Score: %'.
 	stream
-		nextPutAll: originalAnalysis generalResult mutationScore asString.
-	stream nextPutAll: '|'.
-	reducedVersion markDownOn: stream.
-			stream nextPutAll: '|'
-	
+		nextPutAll: analysis generalResult mutationScore asString.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #reporting }
 SAResultItem >> markDownTitleOn: stream [
 	stream
 		nextPutAll: '|';
@@ -80,10 +158,9 @@ SAResultItem >> markDownTitleOn: stream [
 		nextPutAll: 'Originial';
 		nextPutAll: '|'.
 	stream
-				nextPutAll: reducedVersion presentationName;
-				nextPutAll: '|';
-				cr	
-	.
+		nextPutAll: 'Amplified';
+		nextPutAll: '|';
+		cr.
 	stream
 		nextPutAll: '|';
 		nextPutAll: '---';
@@ -95,12 +172,41 @@ SAResultItem >> markDownTitleOn: stream [
 		nextPutAll: '----';
 		nextPutAll: '|'.
 	stream
-				nextPutAll: '----';
-				nextPutAll: '|';
-				cr 
+		nextPutAll: '----';
+		nextPutAll: '|';
+		cr
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #reporting }
+SAResultItem >> methodsNotProfiled [
+	| keys |
+	keys := self runProfile profile keys
+		select:
+			[ :p | self targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
+	^ (self targetClasses
+						flatCollect: [ :c | 
+							(c methods select: [ :m | m selector includesSubstring: ':' ])
+								reject: [ :m | 
+									keys
+										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
+]
+
+{ #category : #evaluation }
+SAResultItem >> mutalkRunMutated [
+	| analysis1 |
+	analysis1 := MutationTestingAnalysis
+		testCasesFrom: {amplifiedClass}
+		mutating: targetClasses
+		using: MutantOperator contents
+		with:
+			(IgnoreFailingTestsMethodsEvaluationStrategy
+				newWith: self failedSelectorInOriginal)
+		with: SmallAmpMutationsGenerationStrategy new.
+	analysis1 runSmallAmp.
+	amplifiedAnalysis := analysis1
+]
+
+{ #category : #evaluation }
 SAResultItem >> mutalkRunOriginal [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
@@ -125,14 +231,29 @@ SAResultItem >> originalAnalysis: anObject [
 	originalAnalysis := anObject
 ]
 
-{ #category : #accessing }
-SAResultItem >> reducedVersion [
-	^ reducedVersion
+{ #category : #reporting }
+SAResultItem >> originalMethods [
+	^ self testClass methods
+]
+
+{ #category : #reporting }
+SAResultItem >> originalMutationScore [
+	^ originalAnalysis generalResult mutationScore
 ]
 
 { #category : #accessing }
-SAResultItem >> reducedVersion: item [
-	reducedVersion := item
+SAResultItem >> runProfile [
+	^ runProfile
+]
+
+{ #category : #accessing }
+SAResultItem >> runProfile: aProfile [
+	runProfile := aProfile
+]
+
+{ #category : #reporting }
+SAResultItem >> stillAliveMutants [
+	^ amplifiedAnalysis generalResult aliveMutants
 ]
 
 { #category : #accessing }
@@ -153,4 +274,12 @@ SAResultItem >> testClass [
 { #category : #accessing }
 SAResultItem >> testClass: anObject [
 	testClass := anObject
+]
+
+{ #category : #reporting }
+SAResultItem >> totalTimeLabel [
+	| sum |
+	sum := (self logs summary collect: #value) sum.
+	^ testClass name , ' ('
+						, (Duration milliSeconds: sum) humanReadablePrintString , ')'
 ]
