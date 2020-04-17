@@ -41,6 +41,24 @@ SAAssertGenerator >> appendMyName: name ToAssert: aRBMessageNode [
 	aRBMessageNode arguments at: 1 put: msgNode
 ]
 
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> assertBlockValueAsString: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: (RBMessageNode receiver: theObject selector: #sourceNode)
+		selector: #formattedCode.
+	theValueNode := RBLiteralValueNode
+		value: observation theValue sourceNode formattedCode.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
 { #category : #asserting }
 SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
@@ -194,6 +212,24 @@ SAAssertGenerator >> assertNil: observation [
 ]
 
 { #category : #'as yet unclassified' }
+SAAssertGenerator >> assertPrimitiveAsUTCAsString: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: (RBMessageNode receiver: theObject selector: #asUTC)
+		selector: #asString.
+	theValueNode := RBLiteralValueNode
+		value: observation theValue asUTC asString.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
+{ #category : #'as yet unclassified' }
 SAAssertGenerator >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
@@ -276,7 +312,7 @@ SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertType: observation).
-	asserts add: (self assertPrimitiveValueAsString: observation).
+	asserts add: (self assertBlockValueAsString: observation).
 	^ asserts
 ]
 
@@ -307,6 +343,18 @@ SAAssertGenerator >> buildAssertionsCompiledCode: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	asserts add: (self assertType: observation).
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsDateTimeObservation: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	observation isFlaky
+		ifTrue: [ asserts add: (self assertType: observation) ]
+		ifFalse:
+			[ asserts add: (self assertPrimitiveAsUTCAsString: observation) ].
+	asserts := asserts reject: #isNil.
 	^ asserts
 ]
 

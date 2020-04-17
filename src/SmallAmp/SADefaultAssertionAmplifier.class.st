@@ -23,8 +23,7 @@ SADefaultAssertionAmplifier class >> timing: anObject [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
-	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions allWindows |
-	allWindows := self allOpenedWindows.
+	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
 	Stdio stdout
@@ -59,7 +58,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ].
 	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
-	self closeAllWindowsBut: allWindows.
+	
 	^ sourceCodeWithAssertions
 ]
 
@@ -114,20 +113,31 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	| r allWindows |
-	passingCheckClass
+	"passingCheckClass
 		ifNil: [ passingCheckClass := self astHelper
 				buildTestClassWith: {sourceCodeWithAssertions}
 				using: testMethodModel testClass ]
-		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ].
-	allWindows := self allOpenedWindows.
-	r := [ (passingCheckClass run: testMethodModel selector) hasPassed ]
-		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ false ].
-	self closeAllWindowsBut: allWindows.
+		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ]."
+	"self class timing
+		recoredTag: #checkPassingAllOpen
+		toRun: [ allWindows := self allOpenedWindows ]."
+	self class timing
+		recoredTag: #checkPassingCompile
+		toRun: [ generatedClass compile: sourceCodeWithAssertions ].
+	self class timing
+		recoredTag: #checkPassingHasPassed
+		toRun: [ r := [ (generatedClass run: testMethodModel selector) hasPassed ]
+				valueWithin: config testRunTimeOut milliSeconds
+				onTimeout: [ false ] ].
+	"self class timing
+		recoredTag: #checkPassingCloseAll
+		toRun: [ self closeAllWindowsBut: allWindows ]."
 	r
-		ifFalse: [ self
-				log4debug: #AssertAmplifyCheckPassing
-				what: sourceCodeWithAssertions ].
+		ifFalse: [ self class timing
+				recoredTag: #checkPassingLoggin
+				toRun: [ self
+						log4debug: #AssertAmplifyCheckPassing
+						what: sourceCodeWithAssertions ] ].
 	^ r
 ]
 
@@ -169,23 +179,27 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	| aMethod newAsserts |
 	aMethod := self astHelper parsedMethodFrom: aMethodSrc.
 	newAsserts := self
-		              buildAsserts: anObserver
-		              methodName: aMethod selector.
-	newAsserts reverse do: [ :pair | 
-		pair value reverse do: [ :assrt | 
-			| enclouse |
-			enclouse := false.
-			(assrt arguments at: 1) isVariable ifTrue: [ 
-				(assrt arguments at: 1) name = SAAssertGenerator blockPlaceHolder ifTrue: [ enclouse := true ] ].
-			enclouse
-				ifTrue: [ 
-					| msg block |
-					msg := aMethod body statements at: pair key.
-					block := RBBlockNode body: (RBSequenceNode statements: { msg }).
-					assrt arguments at: 1 put: block.
-					aMethod body statements at: pair key put: assrt "] " ]
-				ifFalse: [ 
-				aMethod body statements add: assrt afterIndex: pair key ] ] ].
+		buildAsserts: anObserver
+		methodName: aMethod selector.
+	newAsserts ifEmpty: [ ^ aMethod formattedCode ].
+	[ newAsserts last key < aMethod statements size ]
+		whileTrue: [ aMethod statements removeLast ].
+	newAsserts reverse
+		do: [ :pair | 
+			pair value reverse
+				do: [ :assrt | 
+					| enclouse |
+					enclouse := false.
+					(assrt arguments at: 1) isVariable
+						ifTrue: [ (assrt arguments at: 1) name = SAAssertGenerator blockPlaceHolder
+								ifTrue: [ enclouse := true ] ].
+					enclouse
+						ifTrue: [ | msg block |
+							msg := aMethod body statements at: pair key.
+							block := RBBlockNode body: (RBSequenceNode statements: {msg}).
+							assrt arguments at: 1 put: block.
+							aMethod body statements at: pair key put: assrt	"] " ]
+						ifFalse: [ aMethod body statements add: assrt afterIndex: pair key ] ] ].
 	^ aMethod formattedCode
 ]
 

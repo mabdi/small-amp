@@ -30,38 +30,34 @@ SALiteralMutator >> mutateArrayNode: aNode [
 	| nodes toRepeat ns |
 	nodes := OrderedCollection new.
 	nodes add: (RBArrayNode statements: {}).
-	aNode statements ifNotEmpty: [ 
-	toRepeat := aNode statements first copy.
-	nodes
-		add:
-			(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ]))].
+	aNode statements
+		ifNotEmpty: [ toRepeat := aNode statements first copy.
+			nodes
+				add:
+					(RBArrayNode statements: (aNode statements collect: [ :s | toRepeat ])) ].
 	nodes
 		add:
 			(RBArrayNode
 				statements: (aNode statements collect: [ :s | RBLiteralValueNode value: nil ])).
-	ns := aNode statements collect: [ :s | s copy ].
+	ns := (aNode statements collect: [ :s | s copy ]) asOrderedCollection.
 	ns add: (RBLiteralValueNode value: nil).
-	nodes
-		add:
-			(RBArrayNode
-				statements:
-					ns).
-	^ nodes
+	nodes add: (RBArrayNode statements: ns).
+	^ (nodes reject: [ :s | s = aNode ]) removeDuplicates
 ]
 
 { #category : #'as yet unclassified' }
 SALiteralMutator >> mutateCharacter: aValue [
-	|nodes|
-	nodes := OrderedCollection new.
-	nodes add: (RBLiteralValueNode value: Character null).
-	nodes add: (RBLiteralValueNode value: Character cr).
-	nodes add: (RBLiteralValueNode value: Character space).
-	nodes add:
-		(RBLiteralValueNode value: Character allByteCharacters atRandom).
-	nodes add: (RBLiteralValueNode value:
-			 (Character value: aValue asInteger + 1)).
-	nodes add: (RBLiteralValueNode value:
-			 (Character value: aValue asInteger - 1)).
+	| nodes |
+	nodes := {Character null.
+	Character cr.
+	Character space.
+	Character allByteCharacters atRandom} asOrderedCollection.
+	aValue asInteger + 1 < Character maxVal
+		ifTrue: [ Character value: aValue asInteger + 1 ].
+	aValue asInteger - 1 >=0 ifTrue: [
+	Character value: aValue asInteger - 1].
+	nodes := (nodes reject: [ :x | x = aValue ])
+		collect: [ :q | RBLiteralValueNode value: q ].
 	^ nodes
 ]
 
@@ -97,6 +93,49 @@ SALiteralMutator >> mutateInteger: aValue [
 ]
 
 { #category : #'as yet unclassified' }
+SALiteralMutator >> mutateLiteralArrayNode: aNode [
+	| nodes toRepeat ns isByteArray nulVal |
+	isByteArray := aNode isForByteArray.
+	nulVal := isByteArray
+		ifTrue: [ 0 ]
+		ifFalse: [ nil ].
+	nodes := OrderedCollection new.
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: {}
+				stopPosition: -1
+				isByteArray: isByteArray).
+	aNode contents
+		ifNotEmpty: [ toRepeat := aNode contents first copy.
+			nodes
+				add:
+					(RBLiteralArrayNode
+						startPosition: 0
+						contents: (aNode contents collect: [ :s | toRepeat ])
+						stopPosition: -1
+						isByteArray: isByteArray) ].
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: (aNode contents collect: [ :s | RBLiteralValueNode value: nulVal ])
+				stopPosition: -1
+				isByteArray: isByteArray).
+	ns := (aNode contents collect: [ :s | s copy ]) asOrderedCollection.
+	ns add: (RBLiteralValueNode value: nulVal).
+	nodes
+		add:
+			(RBLiteralArrayNode
+				startPosition: 0
+				contents: ns
+				stopPosition: -1
+				isByteArray: isByteArray).
+	^ (nodes reject: [ :s | s = aNode ]) removeDuplicates
+]
+
+{ #category : #'as yet unclassified' }
 SALiteralMutator >> mutateNode: aNode [
 	aNode isLiteralNode ifFalse: [ ^ {  } ].
 	^ aNode value smallAmpMutateWith: self. 
@@ -114,7 +153,7 @@ SALiteralMutator >> mutateString: aValue [
 	(self updateRandom: aValue).
 	(self insertRandom: aValue).
 	(self removeRandom: aValue).
-	self randomString} asOrderedCollection.
+	self randomString} asOrderedCollection reject: [:s | s = aValue].
 	nodes := nodes collect: [ :n | RBLiteralValueNode value: n ].
 	^ nodes
 ]
@@ -135,12 +174,13 @@ SALiteralMutator >> randomString [
 
 { #category : #removing }
 SALiteralMutator >> removeRandom: aStr [
+aStr ifEmpty: [ ^ aStr ].
 	^ aStr copyWithoutIndex: aStr size atRandom
 ]
 
 { #category : #removing }
 SALiteralMutator >> updateRandom: aStr [
-	aStr ifEmpty: [ aStr ].
+	aStr ifEmpty: [ ^ aStr ].
 	^ aStr copy
 		at: aStr size atRandom put: self characterSet atRandom;
 		yourself

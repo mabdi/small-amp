@@ -94,6 +94,16 @@ SAStateSerializer >> visitCompiledCode: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitDateTime: theObject atDepth: anInteger [
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	^ SAObservationDateTime 
+		newForClass: theObject class
+		values: theObject
+		atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitFalse: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationFalse newAtDepth: anInteger

@@ -120,6 +120,18 @@ SAStateSerializerTest >> testCharacter [
 ]
 
 { #category : #tests }
+SAStateSerializerTest >> testDateAndTime [
+	| item obj |
+	obj := DateAndTime fromUnixTime: 1586554022.
+	item := obj
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: item class equals: SAObservationDateTime.
+	self assert: item theClass equals: DateAndTime.
+	self assert: item theValue equals: (DateAndTime fromUnixTime: 1586554022)
+]
+
+{ #category : #tests }
 SAStateSerializerTest >> testError [
 	| item |
 	item := SAObservationError forError: OutOfMemory.

@@ -86,7 +86,8 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionEmpty [
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
 	| item assertions obj |
-	obj := TestObject new field1: (Array with: 10 with: 20 / 3 with: 30).
+	obj := SATestObject new
+		field1: (Array with: 10 with: 20 / 3 with: 30).
 	item := obj
 		smallAmpAcceptSerializerVisitor: self getASerializer
 		atDepth: 0.
@@ -95,7 +96,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionObject [
 	self assert: assertions size equals: 5.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
-		equals: 'self assert: foo class equals: TestObject'.
+		equals: 'self assert: foo class equals: SATestObject'.
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo field1 class equals: Array'.
@@ -412,14 +413,35 @@ SAAssertGeneratorTest >> testBuildAssertionsBlockClosureObservation [
 	| item assertions |
 	item := SAObservationBlockClosure newFor: [ :a | a + 1 ] atDepth: 1.
 	item name: 'foo'.
-	assertions := item buildAssertions: assertGenerator.
+		assertions := item buildAssertions: assertGenerator.
+
 	self assert: assertions size equals: 2.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: BlockClosure'.
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
-		equals: 'self assert: foo asString equals: ''[ :a | a + 1 ]'''
+		equals: 'self assert: foo sourceNode formattedCode equals: ''[ :a | a + 1 ]'''
+]
+
+{ #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionsDateTimeObservation [
+	| item assertions |
+	item := SAObservationDateTime
+		newFor: (DateAndTime fromUnixTime: 1586554022)
+		atDepth: 1.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo asUTC asString equals: ''2020-04-10T21:27:02+00:00'''.
+	item isFlaky: true.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo class equals: DateAndTime'
 ]
 
 { #category : #tests }

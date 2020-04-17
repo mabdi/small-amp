@@ -27,6 +27,16 @@ SALiteralMutationRewriterTest >> testBoolean [
 ]
 
 { #category : #tests }
+SALiteralMutationRewriterTest >> testByteArray [
+	| res |
+	res := SALiteralMutationRewriter runWith: 'foo |a| a set:#[0 1 2 3]'.
+	self assert: res size equals: 3. "ignore children"
+	self
+		assertMethodSourceCode: (res at: 1) asString
+		equals: 'foo |a| a set:#[]'
+]
+
+{ #category : #tests }
 SALiteralMutationRewriterTest >> testInteger [
 	| res |
 	res := SALiteralMutationRewriter runWith: 'foo |a| a:=10'.
@@ -40,6 +50,16 @@ SALiteralMutationRewriterTest >> testIntegerDouble [
 	| res |
 	res := SALiteralMutationRewriter runWith: 'foo |a| a:=10. b:=10'.
 	self assertMethodSourceCode: (res at: 1) asString equals: 'foo |a| a:=11. b:=10'
+]
+
+{ #category : #tests }
+SALiteralMutationRewriterTest >> testLiteralArray [
+	| res |
+	res := SALiteralMutationRewriter runWith: 'foo |a| a set:#(0 1 2 3)'.
+	self assert: res size equals: 29. "continue to mutation in children"
+	self
+		assertMethodSourceCode: (res at: 1) asString
+		equals: 'foo |a| a set:#()'
 ]
 
 { #category : #tests }

@@ -83,6 +83,14 @@ SALiteralMutationRewriter >> visitArrayNode: anArrayNode [
 ]
 
 { #category : #visiting }
+SALiteralMutationRewriter >> visitLiteralArrayNode: aRBLiteralArrayNode [
+	| mutants |
+	mutants := mutator mutateLiteralArrayNode: aRBLiteralArrayNode.
+	mappings add: aRBLiteralArrayNode -> mutants.
+	aRBLiteralArrayNode isForByteArray ifFalse: [ super visitLiteralArrayNode: aRBLiteralArrayNode ]
+]
+
+{ #category : #visiting }
 SALiteralMutationRewriter >> visitLiteralNode: aLiteralNode [
 	| mutants |
 	mutants := self mutationsOfLiteralNode: aLiteralNode.
