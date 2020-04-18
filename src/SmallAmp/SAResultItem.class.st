@@ -94,7 +94,7 @@ SAResultItem >> initialize [
 ]
 
 { #category : #reporting }
-SAResultItem >> killedMutantsInOriginal [
+SAResultItem >> killedMutantsInAmplified [
 	^ self
 		filterJustKilledMutants: self amplifiedAnalysis  generalResult killedMutants
 		basedOn: self originalAnalysis generalResult killedMutants
