@@ -25,7 +25,7 @@ Class {
 { #category : #accessing }
 SAConfig class >> default [
 	^ SAConfig new
-		iterations: 3;
+		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 3;
 		inputAmplifiers:
