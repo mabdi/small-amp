@@ -35,24 +35,11 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'config',
-		'amplifyList'
+		'amplifyList',
+		'logsStream'
 	],
 	#category : #'SmallAmp-Core'
 }
-
-{ #category : #'as yet unclassified' }
-SmallAmp class >> debugLog: aString [
-	| string |
-	string := aString isString
-		ifFalse: [ aString asString ]
-		ifTrue: [ aString ].
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: string;
-		lf;
-		flush
-]
 
 { #category : #example }
 SmallAmp class >> example [
@@ -104,6 +91,7 @@ SmallAmp >> amplifyAll [
 
 { #category : #actions }
 SmallAmp >> amplifyEval [
+	logsStream := String new writeStream.
 	self debugLog: 'Run start.'.
 	CompiledMethod compilerClass compiler compilationContext encoderClass
 		= EncoderForSistaV1
@@ -113,9 +101,9 @@ SmallAmp >> amplifyEval [
 	Author fullName
 		ifNil: [ Author fullName: 'SmallAmpEval'.
 			self debugLog: 'Author set.' ].
-	
 	amplifyList do: [ :item | self amplifyEvalItem: item ].
-	self debugLog: 'Run finish.'
+	self debugLog: 'Run finish.'.
+	self exportLogs
 ]
 
 { #category : #actions }
@@ -137,7 +125,30 @@ SmallAmp >> amplifyEvalItem: item [
 
 { #category : #'as yet unclassified' }
 SmallAmp >> debugLog: aString [
-	self class debugLog: aString 
+	| string |
+	string := aString isString
+		ifFalse: [ aString asString ]
+		ifTrue: [ aString ].
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		flush.
+	logsStream nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf.
+]
+
+{ #category : #actions }
+SmallAmp >> exportLogs [
+	| fileName |
+	fileName := UUID new asString36 , '.log'.
+	(FileSystem disk workingDirectory / fileName) writeStream
+		nextPutAll: logsStream contents;
+		close.
+
 ]
 
 { #category : #initialization }
