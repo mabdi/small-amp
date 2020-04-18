@@ -14,7 +14,7 @@ SAResult >> aliveMutants [
 						yourself).
 					(DTTreeNode new
 						name: 'Killed mutants in amplified';
-						subResults: (x killedMutantsInOriginal collect: #asResultForDrTest);
+						subResults: (x killedMutantsInAmplified collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
 						name: 'Still alive mutants in amplified';

@@ -40,6 +40,20 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SmallAmp class >> debugLog: aString [
+	| string |
+	string := aString isString
+		ifFalse: [ aString asString ]
+		ifTrue: [ aString ].
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		flush
+]
+
 { #category : #example }
 SmallAmp class >> example [
 	| result |
@@ -81,12 +95,49 @@ SmallAmp >> amplifyAll [
 			[ instance := self amplify: item key target: item value.
 			res addResult: instance for: item ]
 				on: Error
-				do: [ :ex | 
-					self halt.
+				do: [ :ex |
 					Transcript
 						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
+]
+
+{ #category : #actions }
+SmallAmp >> amplifyEval [
+	self debugLog: 'Run start.'.
+	CompiledMethod compilerClass compiler compilationContext encoderClass
+		= EncoderForSistaV1
+		ifFalse: [ CompiledMethod compilerClass compiler compilationContext
+				encoderClass: EncoderForSistaV1.
+			self debugLog: 'Encoder changed to SistaV1.' ].
+	Author fullName
+		ifNil: [ Author fullName: 'SmallAmpEval'.
+			self debugLog: 'Author set.' ].
+	
+	amplifyList do: [ :item | self amplifyEvalItem: item ].
+	self debugLog: 'Run finish.'
+]
+
+{ #category : #actions }
+SmallAmp >> amplifyEvalItem: item [
+	| instance |
+	self debugLog: 'Run instance start: ' , item key name asString.
+	[ instance := self amplify: item key target: item value.
+	self debugLog: 'Run instance finished successfully.'.
+	self debugLog: 'Json saved on ' , instance saveResultToFile.
+	instance amplifiedClass fileOut.
+	self
+		debugLog: 'Amplified class saved.' .
+	self debugLog: 'Run instance finish: ' , item key name asString ]
+		on: Error
+		do: [ :x | 
+			self debugLog: 'Run instance crashed: ' , item key name asString.
+			self debugLog: 'Error details:' , x description ]
+]
+
+{ #category : #'as yet unclassified' }
+SmallAmp >> debugLog: aString [
+	self class debugLog: aString 
 ]
 
 { #category : #initialization }
@@ -118,5 +169,5 @@ SmallAmp >> testCase: aTestClass [
 
 { #category : #adding }
 SmallAmp >> testCase: aTestClass targets: targetClasses [
-	amplifyList add: aTestClass -> targetClasses
+	amplifyList add: (aTestClass -> targetClasses)
 ]

@@ -51,6 +51,37 @@ SAResultItem >> amplifiedMutationScore [
 ]
 
 { #category : #reporting }
+SAResultItem >> asDictionaryObject [
+	^ {(#testCase -> testClass name).
+	(#targetClasses -> (targetClasses collect: #name) asArray).
+	(#amplifiedClass -> self amplifiedClass name).
+	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
+	(#mutationScoreBefore -> self originalMutationScore).
+	(#mutationScoreAfter -> self amplifiedMutationScore).
+	(#timeTotal -> self totalTime).
+	(#timeDetail -> self detailedTimeLabel asArray) .
+	(#methodsNotProfiled -> (self methodsNotProfiled collect: #name) asArray).
+	(#testMethodsIgnored
+		-> (self failedSelectorInOriginal collect: #name) asArray).
+	(#mutantsAliveInOriginal
+		->
+			(self aliveMutantsInOriginal
+				collect: [ :m | m mutant asDictionaryObject ]) asArray).
+	(#killedInAmplified
+		->
+			(self killedMutantsInAmplified
+				collect: [ :m | m mutant asDictionaryObject ]) asArray).
+	(#stillAliveMutants
+		-> (self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ]) asArray)}
+		asDictionary
+]
+
+{ #category : #export }
+SAResultItem >> asFileText [
+	^ STONJSON toStringPretty: self asDictionaryObject 
+]
+
+{ #category : #reporting }
 SAResultItem >> detailedTimeLabel [
 	| sum |
 	sum := (self logs summary collect: #value) sum.
@@ -64,12 +95,12 @@ SAResultItem >> detailedTimeLabel [
 						
 ]
 
-{ #category : #adding }
+{ #category : #accessing }
 SAResultItem >> failedSelectorInOriginal [
 	^ failedSelectorInOriginal
 ]
 
-{ #category : #adding }
+{ #category : #accessing }
 SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 	failedSelectorInOriginal := aListOfFaileds 
 ]
@@ -251,6 +282,16 @@ SAResultItem >> runProfile: aProfile [
 	runProfile := aProfile
 ]
 
+{ #category : #export }
+SAResultItem >> saveResultToFile [
+	| fileName |
+	fileName := UUID new asString36 , '.txt'.
+	(FileSystem disk workingDirectory / fileName) writeStream
+		nextPutAll: self asFileText;
+		close.
+	^ fileName 
+]
+
 { #category : #reporting }
 SAResultItem >> stillAliveMutants [
 	^ amplifiedAnalysis generalResult aliveMutants
@@ -277,9 +318,14 @@ SAResultItem >> testClass: anObject [
 ]
 
 { #category : #reporting }
-SAResultItem >> totalTimeLabel [
+SAResultItem >> totalTime [
 	| sum |
 	sum := (self logs summary collect: #value) sum.
-	^ testClass name , ' ('
-						, (Duration milliSeconds: sum) humanReadablePrintString , ')'
+	^ (Duration milliSeconds: sum) humanReadablePrintString
+]
+
+{ #category : #reporting }
+SAResultItem >> totalTimeLabel [
+	
+	^ testClass name , ' (' , self totalTime , ')'
 ]
