@@ -165,6 +165,16 @@ SmallAmp >> preRunChecks [
 			[ Warning new signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ]
 ]
 
+{ #category : #actions }
+SmallAmp >> regenerateMethod: aMethodName [
+	| sa method |
+	amplifyList do: [ :item |
+	sa := SAMainLoop with: config for: item key targets: item value.
+	method := sa regenerateMethod: aMethodName.
+	method ifNotNil: [ ^ method ]
+	]
+]
+
 { #category : #adding }
 SmallAmp >> testCase: aTestClass [ 
 	self testCase: aTestClass targets: aTestClass smallAmpTargetClasses 

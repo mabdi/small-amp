@@ -264,6 +264,32 @@ SAMainLoop >> prettifying [
 ]
 
 { #category : #actions }
+SAMainLoop >> regenerateMethod: aMethodName [
+	| method |
+	method := testClass allTestSelectors
+		detect: [ :m | aMethodName beginsWith: m ]
+		ifNone: [ ^ nil ].
+	method := (SATestMethod
+		with: (testClass methodNamed: method) sourceCode
+		class: testClass
+		targets: targetClasses)
+		selectorAppend: '_amp';
+		yourself.
+	self methodProfiling.
+	1 to: config iterations do: [ :gen | 
+		| newcodes |
+		method strip.
+		method normalize.
+		newcodes := self inputAmplifiers
+			flatCollect: [ :amplifier | method inputAmplifyBy: amplifier ].
+		newcodes
+			detect: [ :m | m selector = aMethodName ]
+			ifFound: [ :m | ^ m testMethod ]
+			ifNone: [  newcodes
+					detect: [ :m | aMethodName beginsWith: m selector , '_' ] ifFound: [:m | method := m] ifNone: [ ^ nil ] ] ]
+]
+
+{ #category : #actions }
 SAMainLoop >> selection [
 	| selectedTests |
 	finalResult logs
