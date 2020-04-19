@@ -286,10 +286,10 @@ SAResultItem >> runProfile: aProfile [
 SAResultItem >> saveResultToFile [
 	| fileName |
 	fileName := UUID new asString36 , '.txt'.
-	(FileSystem disk workingDirectory / fileName) writeStream
+	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.
-	^ fileName 
+	^ fileName
 ]
 
 { #category : #reporting }

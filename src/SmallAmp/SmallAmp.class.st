@@ -145,10 +145,9 @@ SmallAmp >> debugLog: aString [
 SmallAmp >> exportLogs [
 	| fileName |
 	fileName := UUID new asString36 , '.log'.
-	(FileSystem disk workingDirectory / fileName) writeStream
+	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: logsStream contents;
-		close.
-
+		close
 ]
 
 { #category : #initialization }
