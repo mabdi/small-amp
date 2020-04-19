@@ -284,8 +284,13 @@ SAResultItem >> runProfile: aProfile [
 
 { #category : #export }
 SAResultItem >> saveResultToFile [
+	^ self saveResultToFileAs: ''
+]
+
+{ #category : #export }
+SAResultItem >> saveResultToFileAs: testClassName [
 	| fileName |
-	fileName := UUID new asString36 , '.txt'.
+	fileName := testClassName, UUID new asString36 , '.txt'.
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.

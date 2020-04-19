@@ -36,7 +36,7 @@ Class {
 	#instVars : [
 		'config',
 		'amplifyList',
-		'logsStream'
+		'logsFile'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -91,36 +91,35 @@ SmallAmp >> amplifyAll [
 
 { #category : #actions }
 SmallAmp >> amplifyEval [
-	logsStream := String new writeStream.
 	self debugLog: 'Run start.'.
-	CompiledMethod compilerClass compiler compilationContext encoderClass
-		= EncoderForSistaV1
-		ifFalse: [ CompiledMethod compilerClass compiler compilationContext
-				encoderClass: EncoderForSistaV1.
+	CompilationContext bytecodeBackend = EncoderForSistaV1
+		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
 			self debugLog: 'Encoder changed to SistaV1.' ].
 	Author fullName
 		ifNil: [ Author fullName: 'SmallAmpEval'.
 			self debugLog: 'Author set.' ].
 	amplifyList do: [ :item | self amplifyEvalItem: item ].
-	self debugLog: 'Run finish.'.
-	self exportLogs
+	self debugLog: 'Run finish.'
 ]
 
 { #category : #actions }
 SmallAmp >> amplifyEvalItem: item [
-	| instance |
-	self debugLog: 'Run instance start: ' , item key name asString.
+	| instance className |
+	className := item key name asString.
+	logsFile := FileLocator imageDirectory / (className , '.log').
+	self debugLog: 'Run instance start: ' , className.
 	[ instance := self amplify: item key target: item value.
 	self debugLog: 'Run instance finished successfully.'.
-	self debugLog: 'Json saved on ' , instance saveResultToFile.
-	instance amplifiedClass fileOut.
 	self
-		debugLog: 'Amplified class saved.' .
-	self debugLog: 'Run instance finish: ' , item key name asString ]
+		debugLog: 'Json saved on ' , (instance saveResultToFileAs: className).
+	instance amplifiedClass fileOut.
+	self debugLog: 'Amplified class saved.'.
+	self debugLog: 'Run instance finish: ' , className ]
 		on: Error
 		do: [ :x | 
-			self debugLog: 'Run instance crashed: ' , item key name asString.
-			self debugLog: 'Error details:' , x description ]
+			self debugLog: 'Run instance crashed: ' , className.
+			self debugLog: 'Error details:' , x description ].
+	logsFile := nil.
 ]
 
 { #category : #'as yet unclassified' }
@@ -135,19 +134,13 @@ SmallAmp >> debugLog: aString [
 		nextPutAll: string;
 		lf;
 		flush.
-	logsStream nextPutAll: Time nowUTC print24;
+	logsFile ifNotNil: 
+	[logsFile writeStream
+		nextPutAll: Time nowUTC print24;
 		nextPutAll: String space;
 		nextPutAll: string;
-		lf.
-]
-
-{ #category : #actions }
-SmallAmp >> exportLogs [
-	| fileName |
-	fileName := UUID new asString36 , '.log'.
-	(FileLocator imageDirectory / fileName) writeStream
-		nextPutAll: logsStream contents;
-		close
+		lf;
+		close]
 ]
 
 { #category : #initialization }
