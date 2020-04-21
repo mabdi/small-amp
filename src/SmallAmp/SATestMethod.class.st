@@ -11,6 +11,16 @@ Class {
 	#category : #'SmallAmp-Model'
 }
 
+{ #category : #'instance creation' }
+SATestMethod class >> from: aCompiledMethod [
+	aCompiledMethod methodClass isTestCase
+		ifFalse: [ self error: 'only test methods are accepted.' ].
+	^ self new
+		initializeWith: aCompiledMethod sourceCode
+		class: aCompiledMethod methodClass
+		targets: aCompiledMethod methodClass smallAmpTargetClasses
+]
+
 { #category : #'as yet unclassified' }
 SATestMethod class >> with: aTestMethod class: aTestClass targets: objectsUnderTest [
 	^ self new
