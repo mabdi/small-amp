@@ -166,13 +166,10 @@ SAMuTalkNeverFailOracleReduction >> makeReducedClass [
 { #category : #'as yet unclassified' }
 SAMuTalkNeverFailOracleReduction >> makeReducedResult [
 	| res |
-	res := SAResultReducedItem new.
+	
 	self makeReducedClass.
 	self makeReducedAddedClass.
-	res reducer: self class.
-	res reducedClass: self reducedAddedTestClass.
-	res analysis: (self mutalkRun: self reducedAddedTestClass).
-	res presentationName: self presentationName.
+	res := self reducedAddedTestClass.
 	self cleanUp: reducedTestClass.
 	^ res
 ]

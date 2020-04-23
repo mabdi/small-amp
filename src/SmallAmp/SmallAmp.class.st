@@ -35,7 +35,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'config',
-		'amplifyList'
+		'amplifyList',
+		'logsFile'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -81,12 +82,65 @@ SmallAmp >> amplifyAll [
 			[ instance := self amplify: item key target: item value.
 			res addResult: instance for: item ]
 				on: Error
-				do: [ :ex | 
-					self halt.
+				do: [ :ex |
 					Transcript
 						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
+]
+
+{ #category : #actions }
+SmallAmp >> amplifyEval [
+	self debugLog: 'Run start.'.
+	CompilationContext bytecodeBackend = EncoderForSistaV1
+		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
+			self debugLog: 'Encoder changed to SistaV1.' ].
+	Author fullName
+		ifNil: [ Author fullName: 'SmallAmpEval'.
+			self debugLog: 'Author set.' ].
+	amplifyList do: [ :item | self amplifyEvalItem: item ].
+	self debugLog: 'Run finish.'
+]
+
+{ #category : #actions }
+SmallAmp >> amplifyEvalItem: item [
+	| instance className |
+	className := item key name asString.
+	logsFile := FileLocator imageDirectory / (className , '.log').
+	self debugLog: 'Run instance start: ' , className.
+	[ instance := self amplify: item key target: item value.
+	self debugLog: 'Run instance finished successfully.'.
+	self
+		debugLog: 'Json saved on ' , (instance saveResultToFileAs: className).
+	instance amplifiedClass fileOut.
+	self debugLog: 'Amplified class saved.'.
+	self debugLog: 'Run instance finish: ' , className ]
+		on: Error
+		do: [ :x | 
+			self debugLog: 'Run instance crashed: ' , className.
+			self debugLog: 'Error details:' , x description ].
+	logsFile := nil.
+]
+
+{ #category : #'as yet unclassified' }
+SmallAmp >> debugLog: aString [
+	| string |
+	string := aString isString
+		ifFalse: [ aString asString ]
+		ifTrue: [ aString ].
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		flush.
+	logsFile ifNotNil: 
+	[logsFile writeStream
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		close]
 ]
 
 { #category : #initialization }
@@ -111,6 +165,16 @@ SmallAmp >> preRunChecks [
 			[ Warning new signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ]
 ]
 
+{ #category : #actions }
+SmallAmp >> regenerateMethod: aMethodName [
+	| sa method |
+	amplifyList do: [ :item |
+	sa := SAMainLoop with: config for: item key targets: item value.
+	method := sa regenerateMethod: aMethodName.
+	method ifNotNil: [ ^ method ]
+	]
+]
+
 { #category : #adding }
 SmallAmp >> testCase: aTestClass [ 
 	self testCase: aTestClass targets: aTestClass smallAmpTargetClasses 
@@ -118,5 +182,5 @@ SmallAmp >> testCase: aTestClass [
 
 { #category : #adding }
 SmallAmp >> testCase: aTestClass targets: targetClasses [
-	amplifyList add: aTestClass -> targetClasses
+	amplifyList add: (aTestClass -> targetClasses)
 ]

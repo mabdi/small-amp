@@ -93,8 +93,7 @@ SAAddInputAmplifier >> generateNewStatementsAfter: statement [
 
 { #category : #testing }
 SAAddInputAmplifier >> isNotSafeToSelect: method [
-	^ {#initialization} includes: method protocol
-	
+	^ {#initialization . #private} includes: method protocol
 ]
 
 { #category : #'as yet unclassified' }
