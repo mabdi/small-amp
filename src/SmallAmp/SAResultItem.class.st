@@ -326,11 +326,10 @@ SAResultItem >> testClass: anObject [
 SAResultItem >> totalTime [
 	| sum |
 	sum := (self logs summary collect: #value) sum.
-	^ (Duration milliSeconds: sum) humanReadablePrintString
+	^ (Duration milliSeconds: sum) 
 ]
 
 { #category : #reporting }
 SAResultItem >> totalTimeLabel [
-	
-	^ testClass name , ' (' , self totalTime , ')'
+	^ testClass name , ' (' , self totalTime humanReadablePrintString, ')'
 ]
