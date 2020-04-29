@@ -67,6 +67,7 @@ SAResultItem >> asDictionaryObject [
 		-> (self methodsNotProfiled collect: #name) asArray).
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
+	(#numberOfAllMutationsInOriginal -> self numberOfAllMutationsInOriginal size).
 	(#mutantsAliveInOriginal
 		->
 			(self aliveMutantsInOriginal
@@ -255,6 +256,11 @@ SAResultItem >> mutalkRunOriginal [
 		with: (SmallAmpMutationsGenerationStrategy new).
 	analysis1 runSmallAmp.
 	originalAnalysis := analysis1
+]
+
+{ #category : #reporting }
+SAResultItem >> numberOfAllMutationsInOriginal [
+	^ self originalAnalysis generalResult numberOfEvaluatedMutants
 ]
 
 { #category : #accessing }
