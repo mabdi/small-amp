@@ -41,6 +41,38 @@ SAAssertTransformTest >> testGetReduceOraclePatterns [
 		do: [ :item | self assert: item class equals: Association ]
 ]
 
+{ #category : #test }
+SAAssertTransformTest >> testNumberOfAssertionsIn [
+	| sourceCode methodAST |
+	sourceCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.
+	self assert: tmp1 isNotEmpty.self should: [tmp1 isNotEmpty].self deny: tmp1 isNotEmpty'.
+	methodAST := self astHelper parsedMethodFrom: sourceCode.
+	self
+		assert: (SAAssertTransform new numberOfAssertionsIn: methodAST)
+		equals: 3
+]
+
+{ #category : #test }
+SAAssertTransformTest >> testNumberOfAssertionsIn2 [
+	| sourceCode methodAST |
+	sourceCode := 'fooMethod
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.
+	self assert: tmp1 isNotEmpty; should: [tmp1 isNotEmpty]; deny: tmp1 isNotEmpty'.
+	methodAST := self astHelper parsedMethodFrom: sourceCode.
+	self
+		assert: (SAAssertTransform new numberOfAssertionsIn: methodAST)
+		equals: 3
+]
+
 { #category : #tests }
 SAAssertTransformTest >> testRemoveAllAsserts [
 	| methodAST sourceCode expectingCode |

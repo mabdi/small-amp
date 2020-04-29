@@ -45,6 +45,22 @@ SAAssertTransform >> getReduceOraclePatterns [
 ]
 
 { #category : #running }
+SAAssertTransform >> numberOfAssertionsIn: aParseTree [
+	| searcher timesToApply |
+	searcher := RBParseTreeSearcher new.
+	timesToApply := 0.
+	self getAllPatterns
+		do: [ :each | 
+			searcher
+		matches: each key
+		do: [ :node :answer | timesToApply := timesToApply + 1 ]. ].
+	searcher executeTree: aParseTree copy.
+	^ timesToApply
+	
+	
+]
+
+{ #category : #running }
 SAAssertTransform >> rewriteAllAssertsIn: aParseTree replaceBlock: aBlock [
 	| rewriter parser tree |
 	rewriter := RBParseTreeRewriter new.
