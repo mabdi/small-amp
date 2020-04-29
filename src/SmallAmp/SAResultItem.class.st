@@ -58,9 +58,13 @@ SAResultItem >> asDictionaryObject [
 	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
-	(#timeTotal -> self totalTime).
-	(#timeDetail -> self detailedTimeLabel asArray) .
-	(#methodsNotProfiled -> (self methodsNotProfiled collect: #name) asArray).
+	(#timeTotal -> self totalTime asSeconds).
+	(#targetLoc -> (targetClasses collect: #linesOfCode) sum).
+	(#testLoc -> testClass linesOfCode).
+	(#testAmpLoc -> (self amplifiedMethods collect: #linesOfCode) sum).
+	(#timeDetail -> self detailedTimeLabel asArray).
+	(#methodsNotProfiled
+		-> (self methodsNotProfiled collect: #name) asArray).
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
 	(#mutantsAliveInOriginal
@@ -72,8 +76,9 @@ SAResultItem >> asDictionaryObject [
 			(self killedMutantsInAmplified
 				collect: [ :m | m mutant asDictionaryObject ]) asArray).
 	(#stillAliveMutants
-		-> (self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ]) asArray)}
-		asDictionary
+		->
+			(self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
+				asArray)} asDictionary
 ]
 
 { #category : #export }
