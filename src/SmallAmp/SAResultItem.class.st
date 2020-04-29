@@ -301,7 +301,7 @@ SAResultItem >> saveResultToFile [
 { #category : #export }
 SAResultItem >> saveResultToFileAs: testClassName [
 	| fileName |
-	fileName := testClassName, UUID new asString36 , '.txt'.
+	fileName := testClassName , '.json'.
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.
