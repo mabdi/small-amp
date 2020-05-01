@@ -60,14 +60,15 @@ SAResultItem >> asDictionaryObject [
 	(#mutationScoreAfter -> self amplifiedMutationScore).
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc -> (targetClasses collect: #linesOfCode) sum).
-	(#testLoc -> testClass linesOfCode).
+	(#testLoc -> testClass linesOfCode asString).
 	(#testAmpLoc -> (self amplifiedMethods collect: #linesOfCode) sum).
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
-	(#numberOfAllMutationsInOriginal -> self numberOfAllMutationsInOriginal size).
+	(#numberOfAllMutationsInOriginal
+		-> self numberOfAllMutationsInOriginal).
 	(#mutantsAliveInOriginal
 		->
 			(self aliveMutantsInOriginal

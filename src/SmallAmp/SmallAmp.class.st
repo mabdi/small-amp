@@ -198,7 +198,8 @@ SmallAmp >> metricsEval: aPrefix [
 	(FileLocator workingDirectory / 'todo.txt') writeStream
 		nextPutAll: (Character cr join: targetedTests);
 		lf;
-		close
+		close.
+	^ stat
 ]
 
 { #category : #actions }
