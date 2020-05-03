@@ -126,7 +126,8 @@ SAMainLoop >> closeAllWindowsBut: openWindows [
 { #category : #actions }
 SAMainLoop >> discardFailingTests [
 	| result testMethods |
-	[ testRunTimeoutMillis := [result := testClass suite run] timeToRun ]
+	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
+		asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
 	testMethods := result expectedPasses
