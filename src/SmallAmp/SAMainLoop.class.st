@@ -124,7 +124,7 @@ SAMainLoop >> discardFailingTests [
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Check Me' ].
 	testMethods := result expectedPasses
-		collect: [ :passed | (testClass lookupSelector: passed selector) sourceCode ].
+		collect: [ :passed | (passed class lookupSelector: passed selector) sourceCode ].
 	finalResult
 		failedSelectorInOriginal: (result failures , result expectedDefects) asOrderedCollection.
 	population := testMethods
