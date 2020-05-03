@@ -51,8 +51,8 @@ SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 		do:
 			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
 	[ aTestSuite suite run ]
-		valueWithin: (3*config testRunTimeOut) milliSeconds
-		onTimeout: [ self error: 'check me' ] ]
+		valueWithin: config testRunTimeOut milliSeconds
+		onTimeout: [ self error: 'Profiling timeout' ] ]
 		ensure: [ listOfTargetClass
 				do: [ :aTargetClass | self uninstallProxyFor: aTargetClass ] ]
 ]

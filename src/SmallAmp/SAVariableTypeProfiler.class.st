@@ -75,7 +75,7 @@ SAVariableTypeProfiler >> run [
 		do: [ :method | self installMetaLinksOnMethod: method ].
 	[ generatedClass suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'check me' ] ]
+		onTimeout: [ self error: 'variable profiling timeout' ] ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]
