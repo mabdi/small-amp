@@ -27,7 +27,8 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
 	Stdio stdout
-		nextPutAll: 'assert amplification: ' , aMethodAST selector;
+		nextPutAll: 'assert amplification: ';
+		nextPutAll: aMethodAST selector;
 		lf;
 		flush.
 	self class timing
@@ -58,7 +59,6 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ].
 	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
-	
 	^ sourceCodeWithAssertions
 ]
 

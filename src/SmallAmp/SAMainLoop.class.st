@@ -46,13 +46,18 @@ SAMainLoop >> amplify [
 	self initialSteps.
 	(1 to: config iterations)
 		do: [ :gen | 
-			uncovered ifNotEmpty: 
-			[self normalize.
-			self inputAmplification.
-			self methodReduction.
-			self assertionAmplification.
-			self selection.
-			self cleanUpAndAddToResult] ]
+			Stdio stdout
+				nextPutAll: 'New generation started: ';
+				nextPutAll: gen asString;
+				lf;
+				flush.
+			uncovered
+				ifNotEmpty: [ self normalize.
+					self inputAmplification.
+					self methodReduction.
+					self assertionAmplification.
+					self selection.
+					self cleanUpAndAddToResult ] ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	self oracleReduction.
 	self simplification.
@@ -296,16 +301,15 @@ SAMainLoop >> selection [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun:
-	[population ifEmpty: [ ^ self ].
-	selectedTests := OrderedCollection new.
-	self selections
-		do: [ :sel | 
-			selectedTests addAll: (sel select: population uncovered: uncovered).
-			uncovered := sel uncovered ]
-		displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
-	population := selectedTests].
-	
+		toRun: [ 
+			population ifEmpty: [ ^ self ].
+			selectedTests := OrderedCollection new.
+			self selections
+				do: [ :sel | 
+					selectedTests addAll: (sel select: population uncovered: uncovered).
+					uncovered := sel uncovered ]
+				displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
+			population := selectedTests ]
 ]
 
 { #category : #accessing }

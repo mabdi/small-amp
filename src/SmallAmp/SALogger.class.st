@@ -37,10 +37,12 @@ SALogger >> logs [
 ]
 
 { #category : #initialization }
-SALogger >> recoredTag: aTag toRun: aBlock [ 
-	logs add:
-			aTag
-				-> (Time millisecondsToRun: aBlock  )
+SALogger >> recoredTag: aTag toRun: aBlock [
+	Stdio stdout
+		nextPutAll: 'Recording millisecondsToRun:';
+		nextPutAll: aTag asString; lf;
+		flush.
+	logs add: aTag -> (Time millisecondsToRun: aBlock)
 ]
 
 { #category : #initialization }
