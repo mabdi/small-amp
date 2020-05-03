@@ -127,7 +127,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	self class timing
 		recoredTag: #checkPassingHasPassed
 		toRun: [ r := [ (generatedClass run: testMethodModel selector) hasPassed ]
-				valueWithin: config testRunTimeOutMult * testRunTimeoutMillis 
+				valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds 
 				onTimeout: [ false ] ].
 	"self class timing
 		recoredTag: #checkPassingCloseAll
@@ -222,7 +222,7 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	^ [ generatedClass run: testMethodModel selector ]
-		valueWithin: config testRunTimeOutMult * testRunTimeoutMillis
+		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
 		onTimeout: [ nil ]
 ]
 

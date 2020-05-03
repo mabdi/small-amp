@@ -15,11 +15,9 @@ Class {
 SADefaultAssertionAmplifierTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 
-	aConfig := SAConfig new
-		testRunTimeOut: 10000;
-		statementTimeOut: 1000;
-		flackyTestRepeat: 3.
-	ins := SADefaultAssertionAmplifier initializeWith: aConfig
+	aConfig := SAConfig default.
+	ins := SADefaultAssertionAmplifier initializeWith: aConfig.
+	ins testRunTimeoutMillis: 1000
 ]
 
 { #category : #tests }
