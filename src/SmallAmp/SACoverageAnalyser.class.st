@@ -17,6 +17,31 @@ Class {
 }
 
 { #category : #accessing }
+SACoverageAnalyser >> allBranches [
+	^ allBranches
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> allMethods [
+	^ allMethods
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> allStatements [
+	^ allStatements
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> branchesCoverage [
+	^ (100 * self branchesCovered / self allBranches) asInteger
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> branchesCovered [
+	^ branchesCovered
+]
+
+{ #category : #accessing }
 SACoverageAnalyser >> classes [
 	^ classes
 ]
@@ -42,6 +67,16 @@ SACoverageAnalyser >> methods [
 		into: [ :methodReferences :aClass | 
 			methodReferences addAll: aClass methods.
 			methodReferences ]
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> methodsCoverage [
+	^ (100 * self methodsCovered  / self allMethods ) asInteger
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> methodsCovered [
+	^ methodsCovered
 ]
 
 { #category : #evaluating }
@@ -84,6 +119,16 @@ SACoverageAnalyser >> runTests [
 			testCases do: [ :each | each addToSuiteFromSelectors: suite ].
 			suite run.
 			 ]
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> statementsCoverage [
+	^ (100 * self statementsCovered  / self allStatements ) asInteger
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> statementsCovered [
+	^ statementsCovered
 ]
 
 { #category : #accessing }

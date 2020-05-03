@@ -9,7 +9,9 @@ Class {
 		'testClass',
 		'originalAnalysis',
 		'logs',
-		'runProfile'
+		'runProfile',
+		'amplifiedCoverage',
+		'originalCoverage'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -56,6 +58,16 @@ SAResultItem >> amplifiedMutationScore [
 ]
 
 { #category : #reporting }
+SAResultItem >> amplifiedTestCoverage [
+	amplifiedCoverage
+		ifNil: [ amplifiedCoverage := SACoverageAnalyser new
+				classes: targetClasses;
+				testCases: {amplifiedClass };
+				run ].
+	^ amplifiedCoverage
+]
+
+{ #category : #reporting }
 SAResultItem >> asDictionaryObject [
 	^ {(#testCase -> testClass name).
 	(#targetClasses -> (targetClasses collect: #name) asArray).
@@ -66,14 +78,24 @@ SAResultItem >> asDictionaryObject [
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc -> (targetClasses collect: #linesOfCode) sum).
 	(#testLoc -> testClass linesOfCode asString).
+	(#amplifiedCoverageMethods
+		-> self amplifiedTestCoverage methodsCoverage).
+	(#amplifiedCoverageBranches
+		-> self amplifiedTestCoverage branchesCoverage).
+	(#amplifiedCoverageStatementes
+		-> self amplifiedTestCoverage statementsCoverage).
+	(#originalCoverageMethods
+		-> self originalTestCoverage methodsCoverage).
+	(#originalCoverageBranches
+		-> self originalTestCoverage branchesCoverage).
+	(#originalCoverageStatementes
+		-> self originalTestCoverage statementsCoverage).
 	(#testAmpLoc -> (self amplifiedMethods collect: #linesOfCode) sum).
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
 	(#assertionDensityOriginal -> self originalMethodsAssertionDensity).
-	(#assertionDensityAmplified
-		-> self amplifiedMethodsAssertionDensity ).
-	
+	(#assertionDensityAmplified -> self amplifiedMethodsAssertionDensity).
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
 	(#numberOfAllMutationsInOriginal
@@ -298,6 +320,16 @@ SAResultItem >> originalMethodsAssertionDensity [
 { #category : #reporting }
 SAResultItem >> originalMutationScore [
 	^ originalAnalysis generalResult mutationScore
+]
+
+{ #category : #reporting }
+SAResultItem >> originalTestCoverage [
+	originalCoverage
+		ifNil: [ originalCoverage := SACoverageAnalyser new
+				classes: targetClasses;
+				testCases: {testClass};
+				run ].
+	^ originalCoverage
 ]
 
 { #category : #accessing }
