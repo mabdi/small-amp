@@ -163,6 +163,31 @@ SAMethodNormalizingRewriterTest >> testDuplicateMessages [
 ]
 
 { #category : #tests }
+SAMethodNormalizingRewriterTest >> testErrorIssue52 [
+	| astBefore astAfter |
+	astBefore := self astHelper
+		parsedMethodFrom:
+			'testBlockAcceptsEpsilon
+	| block |
+	block := [ :context | context next ] asPParser
+					isNullable: true;
+					yourself.
+	self assertIsNullable: block.'.
+	astAfter := self astHelper
+		parsedMethodFrom:
+			'testBlockAcceptsEpsilon
+	| block tmp_AKSwqxDrtS1 tmp_ppf4PClwGI2 tmp_uxnp9e1fBg3 |
+	block := [ :context | context next ] asPParser.
+	tmp_AKSwqxDrtS1 := block isNullable: true.
+	tmp_ppf4PClwGI2 := block yourself.
+	tmp_uxnp9e1fBg3 := self assertIsNullable: block'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assert: (SAASTHelper new renameTempVars: astBefore dump)
+		equals: (SAASTHelper new renameTempVars: astAfter dump)
+]
+
+{ #category : #tests }
 SAMethodNormalizingRewriterTest >> testIntNormalizer [
 	| astBefore astAfter |
 	astBefore := self astHelper
