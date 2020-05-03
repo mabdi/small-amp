@@ -46,6 +46,11 @@ SAResultItem >> amplifiedMethods [
 ]
 
 { #category : #reporting }
+SAResultItem >> amplifiedMethodsAssertionDensity [
+	^ (self amplifiedMethods collect: [ :m | SATestAssertionDensity new densityForMethod: m sourceCode ] ) average
+]
+
+{ #category : #reporting }
 SAResultItem >> amplifiedMutationScore [
 	^ amplifiedAnalysis generalResult mutationScore
 ]
@@ -65,6 +70,10 @@ SAResultItem >> asDictionaryObject [
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
+	(#assertionDensityOriginal -> self originalMethodsAssertionDensity).
+	(#assertionDensityAmplified
+		-> self amplifiedMethodsAssertionDensity ).
+	
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
 	(#numberOfAllMutationsInOriginal
@@ -276,7 +285,14 @@ SAResultItem >> originalAnalysis: anObject [
 
 { #category : #reporting }
 SAResultItem >> originalMethods [
-	^ self testClass methods
+	^ self testClass methods select: #isTestMethod 
+]
+
+{ #category : #reporting }
+SAResultItem >> originalMethodsAssertionDensity [
+	^ (self originalMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m sourceCode ])
+		average
 ]
 
 { #category : #reporting }
