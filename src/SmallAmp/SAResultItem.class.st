@@ -76,7 +76,9 @@ SAResultItem >> asDictionaryObject [
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
 	(#timeTotal -> self totalTime asSeconds).
-	(#targetLoc -> (targetClasses collect: #linesOfCode) sum).
+	(#targetLoc -> (targetClasses collect: #linesOfCode)
+		inject: 0
+		into: [ :accum :each | accum + each ]).
 	(#testLoc -> testClass linesOfCode asString).
 	(#amplifiedCoverageMethods
 		-> self amplifiedTestCoverage methodsCoverage).
@@ -90,7 +92,7 @@ SAResultItem >> asDictionaryObject [
 		-> self originalTestCoverage branchesCoverage).
 	(#originalCoverageStatementes
 		-> self originalTestCoverage statementsCoverage).
-	(#testAmpLoc -> (self amplifiedMethods collect: #linesOfCode) sum).
+	(#testAmpLoc -> (self amplifiedMethods collect: #linesOfCode) inject: 0 into: [ :accum :each | accum + each ]).
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
