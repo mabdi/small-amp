@@ -28,12 +28,116 @@ SAMethodNormalizingRewriter >> addTemporaryVariables [
 ]
 
 { #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> extractVariableFrom: aNode [
+	aNode isAssignment
+		ifTrue: [ ^ aNode variable ].
+	(aNode isVariable and: [ aNode name first isUppercase not ])
+		ifTrue: [ ^ aNode ].
+	^ self generateATemp 
+]
+
+{ #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> generateATemp [
 	| tmp |
 	tmp := 'tmp_' , self randomString , idx asString.
 	idx := idx + 1.
 	tmpVariables add: tmp.
 	^ RBVariableNode named: tmp
+]
+
+{ #category : #initialization }
+SAMethodNormalizingRewriter >> initialize [
+	idx := 1.
+	tmpVariables := OrderedCollection new.
+]
+
+{ #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> normalizeAssignment: anAssignmentNode assignTo: assignTo [
+	" dont care about assignTo value yet "
+
+	| result |
+	anAssignmentNode value isAssignment
+		ifTrue: [ result := anAssignmentNode value
+				smallAmpNormalizeWith: self
+				assignTo: anAssignmentNode value variable.
+			result
+				add:
+					(RBAssignmentNode
+						variable: anAssignmentNode variable
+						value: anAssignmentNode value variable).
+					^ result ].
+	result := anAssignmentNode value
+		smallAmpNormalizeWith: self
+		assignTo: anAssignmentNode variable.
+	result
+		ifEmpty: [ result
+				add:
+					(RBAssignmentNode
+						variable: anAssignmentNode variable
+						value: anAssignmentNode value) ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> normalizeCascadeNode: aCascadeNode assignTo: assignTo [
+	| receiver result receiverVar aVariable tmpMsg |
+	result := OrderedCollection new.
+	receiver := aCascadeNode messages anyOne receiver.
+	receiverVar := receiver.
+	({receiverVar isMessage.
+	receiverVar isCascade.
+	receiverVar isAssignment} anySatisfy: #value)
+		ifTrue: [ receiverVar := self extractVariableFrom: receiverVar ].
+	receiverVar name first isUppercase
+		ifTrue: [ receiverVar := self generateATemp ].
+	aVariable := assignTo ifNil: [ receiverVar ] ifNotNil: [ assignTo ].
+	"tmp := self extractVariableFrom: receiver."
+	
+	result
+		addAll: (receiver smallAmpNormalizeWith: self assignTo: receiverVar).
+	aCascadeNode messages
+		doWithIndex: [ :amsg :i | 
+			tmpMsg := amsg copy.
+			receiver isVariable ifTrue: [ tmpMsg receiver: receiver ] ifFalse: [ tmpMsg receiver: receiverVar ]
+			.
+			i = aCascadeNode messages size
+				ifTrue: [ result
+						addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: aVariable) ]
+				ifFalse: [ result addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: nil) ] ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> normalizeMessageNode: aMessageNode assignTo: assignTo [
+	| aVariable result tmp |
+	tmp := aMessageNode receiver.
+	({tmp isMessage. tmp isCascade. tmp isAssignment  } anySatisfy: #value)
+		ifTrue: [ tmp := self extractVariableFrom: tmp ].
+	aVariable := assignTo
+		ifNil: [ self generateATemp ]
+		ifNotNil: [ assignTo ].
+	result := OrderedCollection new.
+	result
+		addAll: (aMessageNode receiver smallAmpNormalizeWith: self assignTo: tmp).
+	"result ifEmpty: [ tmp := aMessageNode receiver ]."
+	result
+		add:
+			(RBAssignmentNode
+				variable: aVariable
+				value:
+					(RBMessageNode
+						receiver: tmp
+						selector: aMessageNode selector
+						arguments: aMessageNode arguments)).
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SAMethodNormalizingRewriter >> normalizeNode: aNode assignTo: assignTo [
+	^ OrderedCollection new
+	"assignTo ifNil: [ self error: 'assignTo is nil' ].
+	^ OrderedCollection
+		with: (RBAssignmentNode variable: assignTo value: aNode copy)"
 ]
 
 { #category : #'as yet unclassified' }
@@ -70,112 +174,12 @@ SAMethodNormalizingRewriter >> run [
 	aMethodAST statements
 		do: [ :aStatement | 
 			| transformedNodes |
-			transformedNodes := OrderedCollection new.
-			aStatement isCascade
-				ifTrue: [ transformedNodes := self transformCascade: aStatement ].
-			aStatement isMessage
-				ifTrue: [ transformedNodes := self transformMessage: aStatement ].
-			aStatement isAssignment
-				ifTrue: [ transformedNodes := self transformAssignment: aStatement ].
+			transformedNodes := aStatement smallAmpNormalizeWith: self assignTo: nil.
 			transformedNodes
 				ifNotEmpty: [ toBeChanged
 						add: (self transformNewNodes: transformedNodes insteadOf: aStatement) ] ].
-	
 	self performSteps: toBeChanged.
 	self addTemporaryVariables
-]
-
-{ #category : #'as yet unclassified' }
-SAMethodNormalizingRewriter >> transformAssignment: anAssignmentNode [
-	| result |
-	result := OrderedCollection new.
-	anAssignmentNode value isMessage
-		ifTrue: [ result addAll: (self transformMessage: anAssignmentNode value assignsTo: anAssignmentNode variable) ].
-	anAssignmentNode value isCascade
-		ifTrue: [ result addAll: (self transformCascade: anAssignmentNode value assignsTo: anAssignmentNode variable) ].
-		^ result
-]
-
-{ #category : #'as yet unclassified' }
-SAMethodNormalizingRewriter >> transformCascade: aCascadeNode [
-	| var receiver |
-	receiver := aCascadeNode messages anyOne receiver.
-	var := receiver isVariable
-		ifTrue: [ receiver ].
-	var := var ifNil: [receiver isAssignment
-		ifTrue: [ receiver variable ]].
-	var := var ifNil: [ self generateATemp ].
-	^ self transformCascade: aCascadeNode assignsTo: var
-]
-
-{ #category : #'as yet unclassified' }
-SAMethodNormalizingRewriter >> transformCascade: aCascadeNode assignsTo: aVariable [
-	| result receiver |
-	result := OrderedCollection new.
-	receiver := aCascadeNode messages anyOne receiver.
-	receiver isCascade
-		ifTrue: [ result
-				addAll: (self transformCascade: receiver assignsTo: aVariable) ].
-	receiver isAssignment 
-		ifTrue: [ result
-				addAll: (self transformAssignment: receiver) ].
-	receiver isMessage
-		ifTrue: [ result
-				addAll: (self transformMessage: receiver assignsTo: aVariable) ].
-	aCascadeNode messages
-		doWithIndex: [ :amsg :i | 
-			| tmp |
-			tmp := amsg copy.
-			tmp receiver: aVariable.
-			result addAll: (self transformMessage: tmp) ].
-	^ result
-]
-
-{ #category : #'as yet unclassified' }
-SAMethodNormalizingRewriter >> transformMessage: aMessageNode [
-	| tmp |
-	tmp := self generateATemp.
-	^ self transformMessage: aMessageNode assignsTo: tmp
-]
-
-{ #category : #'as yet unclassified' }
-SAMethodNormalizingRewriter >> transformMessage: aMessageNode assignsTo: aVariable [
-	| result var |
-	result := OrderedCollection new.
-	({aMessageNode receiver isVariable.
-	aMessageNode receiver isLiteralNode.
-	aMessageNode receiver isBlock} anySatisfy: #value)
-		ifTrue: [ result
-				add: (RBAssignmentNode variable: aVariable value: aMessageNode copy) ].
-	aMessageNode receiver isCascade
-		ifTrue: [ self error: 'todo' ].
-	aMessageNode receiver isAssignment
-		ifTrue: [ var := aMessageNode receiver variable.
-			result addAll: (self transformAssignment: aMessageNode receiver).
-			result
-				add:
-					(RBAssignmentNode
-						variable: aVariable
-						value:
-							(RBMessageNode
-								receiver: var
-								selector: aMessageNode selector
-								arguments: aMessageNode arguments)) ].
-	aMessageNode receiver isMessage
-		ifTrue: [ | tmp |
-			tmp := self generateATemp.
-			result
-				addAll: (self transformMessage: aMessageNode receiver assignsTo: tmp).
-			result
-				add:
-					(RBAssignmentNode
-						variable: aVariable
-						value:
-							(RBMessageNode
-								receiver: tmp
-								selector: aMessageNode selector
-								arguments: aMessageNode arguments)) ].
-	^ result
 ]
 
 { #category : #'as yet unclassified' }
@@ -199,7 +203,5 @@ SAMethodNormalizingRewriter >> transformNewNodes: transformedNodes insteadOf: st
 
 { #category : #initialization }
 SAMethodNormalizingRewriter >> with: aTestTestAST [
-	tmpVariables := OrderedCollection new.
-	aMethodAST := aTestTestAST.
-	idx := 1
+	aMethodAST := aTestTestAST
 ]
