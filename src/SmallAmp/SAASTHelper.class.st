@@ -53,6 +53,7 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		package: self defaultTempPackage.
 	(testClass methods reject: #isTestMethod)
 		do: [ :item | tempClass compile: item sourceCode ].
+	(testClass class methods do: [ :item | tempClass class compile: item sourceCode ]).
 	aCollection
 		do: [ :item | 
 			| ast |
