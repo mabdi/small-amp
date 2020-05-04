@@ -350,10 +350,26 @@ SAMethodNormalizingRewriterTest >> testNormalizeAssignmentAssignTo [
 { #category : #tests }
 SAMethodNormalizingRewriterTest >> testSelf [
 	| astBefore astAfter |
-	astBefore := self astHelper parsedMethodFrom: 'foo self do'.
-	astAfter := 'foo
-	| tmp_QzSdLqXCVx1 |
-	tmp_QzSdLqXCVx1 := self do'.
+	astBefore := self astHelper
+		parsedMethodFrom:
+			'testAnd
+
+	| grammar prs |
+	grammar := ''Grammar <- &("Foo Bar") "Foo"''.
+	prs := self grammar: grammar start: ''Grammar''.
+	self
+		assert: prs fail: ''Foo'';
+		assert: prs parse: ''Foo Bar'' to: #(''Foo Bar'' ''Foo'') end: 3'.
+	astAfter := 'testAnd
+	| grammar prs tmp_Axq1NOJndZ1 tmp_Axq1NOJndZ2 |
+	grammar := ''Grammar <- &("Foo Bar") "Foo"''.
+	prs := self grammar: grammar start: ''Grammar''.
+	tmp_Axq1NOJndZ2 := self assert: prs fail: ''Foo''.
+	tmp_Axq1NOJndZ1 := self
+		assert: prs
+		parse: ''Foo Bar''
+		to: #(''Foo Bar'' ''Foo'')
+		end: 3'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
 		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)

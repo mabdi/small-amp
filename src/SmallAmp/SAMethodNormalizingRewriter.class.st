@@ -90,18 +90,18 @@ SAMethodNormalizingRewriter >> normalizeCascadeNode: aCascadeNode assignTo: assi
 	receiverVar isCascade.
 	receiverVar isAssignment} anySatisfy: #value)
 		ifTrue: [ receiverVar := self extractVariableFrom: receiverVar ].
-	receiverVar name first isUppercase
+	(receiverVar isSelfOrSuper or: [receiverVar name first isUppercase])
 		ifTrue: [ receiverVar := self generateATemp ].
 	aVariable := assignTo ifNil: [ receiverVar ] ifNotNil: [ assignTo ].
 	"tmp := self extractVariableFrom: receiver."
-	
 	result
 		addAll: (receiver smallAmpNormalizeWith: self assignTo: receiverVar).
 	aCascadeNode messages
 		doWithIndex: [ :amsg :i | 
 			tmpMsg := amsg copy.
-			receiver isVariable ifTrue: [ tmpMsg receiver: receiver ] ifFalse: [ tmpMsg receiver: receiverVar ]
-			.
+			receiver isVariable
+				ifTrue: [ tmpMsg receiver: receiver ]
+				ifFalse: [ tmpMsg receiver: receiverVar ].
 			i = aCascadeNode messages size
 				ifTrue: [ result
 						addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: aVariable) ]
