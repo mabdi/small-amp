@@ -31,9 +31,11 @@ SAMethodNormalizingRewriter >> addTemporaryVariables [
 SAMethodNormalizingRewriter >> extractVariableFrom: aNode [
 	aNode isAssignment
 		ifTrue: [ ^ aNode variable ].
+	aNode isSelfOrSuper
+		ifTrue: [ ^ self generateATemp ].
 	(aNode isVariable and: [ aNode name first isUppercase not ])
 		ifTrue: [ ^ aNode ].
-	^ self generateATemp 
+	^ self generateATemp
 ]
 
 { #category : #'as yet unclassified' }

@@ -346,3 +346,16 @@ SAMethodNormalizingRewriterTest >> testNormalizeAssignmentAssignTo [
 				asArray
 		equals: {}
 ]
+
+{ #category : #tests }
+SAMethodNormalizingRewriterTest >> testSelf [
+	| astBefore astAfter |
+	astBefore := self astHelper parsedMethodFrom: 'foo self do'.
+	astAfter := 'foo
+	| tmp_QzSdLqXCVx1 |
+	tmp_QzSdLqXCVx1 := self do'.
+	SAMethodNormalizingRewriter runWith: astBefore.
+	self
+		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
+		equals: (SAASTHelper new renameTempVars: astAfter)
+]
