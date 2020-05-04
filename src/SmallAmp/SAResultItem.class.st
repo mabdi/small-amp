@@ -49,7 +49,8 @@ SAResultItem >> amplifiedMethods [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethodsAssertionDensity [
-	^ (self amplifiedMethods collect: [ :m | SATestAssertionDensity new densityForMethod: m sourceCode ] ) average
+	^ (self amplifiedMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ] ) inject: 0 into: [ :s :i | s+i ] 
 ]
 
 { #category : #reporting }
@@ -319,8 +320,7 @@ SAResultItem >> originalMethods [
 { #category : #reporting }
 SAResultItem >> originalMethodsAssertionDensity [
 	^ (self originalMethods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m sourceCode ])
-		average
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ] ) inject: 0 into: [ :s :i | s+i ] 
 ]
 
 { #category : #reporting }
