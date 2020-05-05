@@ -49,8 +49,10 @@ SAResultItem >> amplifiedMethods [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethodsAssertionDensity [
-	^ (self amplifiedMethods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m ] ) inject: 0 into: [ :s :i | s+i ] 
+	^ ((self amplifiedMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
+		inject: 0
+		into: [ :s :i | s + i ]) / self amplifiedMethods size
 ]
 
 { #category : #reporting }
@@ -319,8 +321,10 @@ SAResultItem >> originalMethods [
 
 { #category : #reporting }
 SAResultItem >> originalMethodsAssertionDensity [
-	^ (self originalMethods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m ] ) inject: 0 into: [ :s :i | s+i ] 
+	^ ((self originalMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
+		inject: 0
+		into: [ :s :i | s + i ]) / self originalMethods size
 ]
 
 { #category : #reporting }
