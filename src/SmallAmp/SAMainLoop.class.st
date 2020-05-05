@@ -134,7 +134,11 @@ SAMainLoop >> discardFailingTests [
 		collect:
 			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
 	finalResult
-		failedSelectorInOriginal: (result failures , result expectedDefects) asOrderedCollection.
+		failedSelectorInOriginal:
+			(result failures , result expectedDefects
+				collect:
+					[ :failed | failed class lookupSelector: failed selector ]
+						asOrderedCollection).
 	population := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
