@@ -34,7 +34,7 @@ SAConfig class >> default [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: {SAMaxPopMethodReduction};
+		methodReductions: {SANoMethodReduction };
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
