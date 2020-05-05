@@ -49,10 +49,12 @@ SAResultItem >> amplifiedMethods [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethodsAssertionDensity [
+	self amplifiedMethods ifEmpty: [ ^ 0 ].
 	^ ((self amplifiedMethods
 		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
 		inject: 0
 		into: [ :s :i | s + i ]) / self amplifiedMethods size
+		printShowingDecimalPlaces: 2
 ]
 
 { #category : #reporting }
@@ -321,10 +323,11 @@ SAResultItem >> originalMethods [
 
 { #category : #reporting }
 SAResultItem >> originalMethodsAssertionDensity [
-	^ ((self originalMethods
+	self originalMethods ifEmpty: [ ^ 0 ].
+	^ (((self originalMethods
 		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
 		inject: 0
-		into: [ :s :i | s + i ]) / self originalMethods size
+		into: [ :s :i | s + i ]) / self originalMethods size) printShowingDecimalPlaces: 2
 ]
 
 { #category : #reporting }
