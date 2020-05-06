@@ -293,17 +293,18 @@ SAAssertGenerator >> assertTrue: observation [
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> assertType: observation [
 	| assertStatement theObject thClassName |
-	observation theClass isTestCase ifTrue: [ ^ {  } ].
+	observation theClass isTestCase
+		ifTrue: [ ^ nil ].
 	theObject := RBMessageNode
-		             receiver: (RBVariableNode named: observation name)
-		             selector: #class.
+		receiver: (RBVariableNode named: observation name)
+		selector: #class.
 	thClassName := RBVariableNode named: observation theClass name.
 	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:
-		                   arguments: { 
-				                   theObject.
-				                   thClassName}.
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			thClassName}.
 	^ assertStatement
 ]
 
@@ -311,7 +312,7 @@ SAAssertGenerator >> assertType: observation [
 SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	asserts add: (self assertType: observation).
+	(self assertType: observation) ifNotNil: [:s |asserts add: s].
 	asserts add: (self assertBlockValueAsString: observation).
 	^ asserts
 ]
@@ -320,16 +321,17 @@ SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 	| assertStatements |
 	assertStatements := OrderedCollection new.
-	assertStatements add: (self assertType: observation).
+	(self assertType: observation) ifNotNil: [:s |assertStatements  add: s].
 	assertStatements
 		add:
 			(observation theValue isEmpty
 				ifTrue: [ self assertEmpty: observation ]
 				ifFalse: [ self assertCollectionSize: observation ]).
 	assertStatements
-		add: ([ self assertCollectionPrimitiveValues: observation ]
-		on: SAUnprintableNonliteralValue
-		do: [ self assertCollectionPrimitiveValuesAsString: observation ]).
+		add:
+			([ self assertCollectionPrimitiveValues: observation ]
+				on: SAUnprintableNonliteralValue
+				do: [ self assertCollectionPrimitiveValuesAsString: observation ]).
 	assertStatements
 		addAll: (self assertCollectionIncludeValues: observation).
 	"assertStatements add:
@@ -342,7 +344,7 @@ SAAssertGenerator >> buildAssertionsCollectionObservation: observation [
 SAAssertGenerator >> buildAssertionsCompiledCode: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	asserts add: (self assertType: observation).
+	(self assertType: observation) ifNotNil: [:s |asserts add: s].
 	^ asserts
 ]
 
@@ -351,9 +353,8 @@ SAAssertGenerator >> buildAssertionsDateTimeObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	observation isFlaky
-		ifTrue: [ asserts add: (self assertType: observation) ]
-		ifFalse:
-			[ asserts add: (self assertPrimitiveAsUTCAsString: observation) ].
+		ifTrue: [ (self assertType: observation) ifNotNil: [:s |asserts add: s]. ]
+		ifFalse: [ asserts add: (self assertPrimitiveAsUTCAsString: observation) ].
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]
@@ -380,9 +381,9 @@ SAAssertGenerator >> buildAssertionsFalseObservation: observation [
 SAAssertGenerator >> buildAssertionsFractionObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	asserts add: (self assertType: observation).
-	observation isFlaky ifFalse: [ 
-		asserts add: (self assertPrimitiveValueAsString: observation) ].
+	(self assertType: observation) ifNotNil: [ :s | asserts add: s ].
+	observation isFlaky
+		ifFalse: [ asserts add: (self assertPrimitiveValueAsString: observation) ].
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]
@@ -409,7 +410,7 @@ SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 	asserts
 		do:
 			[ :assertion | self appendMyName: observation name ToAssert: assertion ].
-	asserts addFirst: (self assertType: observation).
+	(self assertType: observation) ifNotNil: [:s |asserts addFirst: s].
 	^ asserts
 ]
 
@@ -418,7 +419,8 @@ SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
 	observation isFlaky
-		ifTrue: [ asserts add: (self assertType: observation) ]
+		ifTrue: [ (self assertType: observation)
+				ifNotNil: [ :s | asserts add: s ] ]
 		ifFalse: [ asserts
 				add:
 					([ self assertPrimitiveValue: observation ]
