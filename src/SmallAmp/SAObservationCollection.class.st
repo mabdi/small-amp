@@ -12,6 +12,10 @@ SAObservationCollection >> buildAssertions: aGenerator [
 { #category : #adding }
 SAObservationCollection >> checkFlaky: anItem [
 	self theValue
-		doWithIndex:
-			[ :item :index | |v| v := (self theValue at: index). v ifNotNil: [ v checkFlaky: (anItem theValue at: index) ] ]
+		doWithIndex: [ :item :index | 
+			| v |
+			v := self theValue at: index.
+			anItem theValue size < index
+				ifTrue: [ v := nil ].
+			v ifNotNil: [ v checkFlaky: (anItem theValue at: index) ] ]
 ]
