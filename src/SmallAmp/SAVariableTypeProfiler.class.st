@@ -45,6 +45,7 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 SAVariableTypeProfiler >> executeBeforeNode: node value: val [
 	node isRead
 		ifFalse: [ ^ self ].
+	[ val class inheritsFrom: Object ]  on: Error do: [ ^ self ].
 	self variablesTypes
 		at: node methodNode selector , ':' , node name
 		put: val class

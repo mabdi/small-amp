@@ -51,10 +51,11 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 	msg receiver isVariable
 		ifFalse: [ ^ false ].
 	^ testMethodModel testTargets
-		anySatisfy: [:c | |c2| c2:= (variableTypes at: testMethodModel selector , ':' , msg receiver name).
-			c2 = c or: [ c2 inheritsFrom: c ]
-			
-			]
+		anySatisfy: [ :c | 
+			variableTypes
+				at: testMethodModel selector , ':' , msg receiver name
+				ifPresent: [ :c2 | c2 = c or: [ c2 inheritsFrom: c ] ]
+				ifAbsent: [ false ] ]
 ]
 
 { #category : #removing }
