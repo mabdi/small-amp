@@ -23,13 +23,21 @@ MutationTestingAnalysis >> generateResultsSmallAmp [
 	mutations
 		do: [ :aMutation | 
 			logger logStartEvaluating: aMutation.
-			particularResults
+			[ particularResults
 				add:
 					(MutantEvaluation
 						for: aMutation
 						using: testCases
 						following: mutantsEvaluationStrategy
 						andConsidering: self coverageAnalysisResult) valueSmallAmp ]
+				on: Error
+				do: [ Stdio stdout
+						nextPutAll: 'Mutation generation failed: ';
+						nextPutAll: aMutation description;
+						nextPutAll: 'Method: ';
+						nextPutAll: aMutation originalMethod name asString;
+						lf;
+						flush ] ]
 		displayingProgress: 'Evaluating mutants'.
 	^ particularResults
 ]

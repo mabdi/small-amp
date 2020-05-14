@@ -64,14 +64,14 @@ SADrTestsResult >> color [
 		ifTrue: [ res := 0 ].
 	res ifNil: [ res := 1 ].
 	res ].
+   smallAmpResult results values ifEmpty: [ ^ Color named: 'gray'].
 	^ getColor
 		at:
 			(smallAmpResult results values
 				collect: [ :r | 
 					getDegree
 						value: r originalMutationScore
-						value: r amplifiedMutationScore ])
-				min
+						value: r amplifiedMutationScore ]) min
 ]
 
 { #category : #accessing }

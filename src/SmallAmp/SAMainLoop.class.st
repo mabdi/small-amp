@@ -11,7 +11,8 @@ Class {
 		'uncovered',
 		'inputAmplifiers',
 		'assertionAmplifiers',
-		'methodReductions'
+		'methodReductions',
+		'testRunTimeoutMillis'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -45,13 +46,18 @@ SAMainLoop >> amplify [
 	self initialSteps.
 	(1 to: config iterations)
 		do: [ :gen | 
-			uncovered ifNotEmpty: 
-			[self normalize.
-			self inputAmplification.
-			self methodReduction.
-			self assertionAmplification.
-			self selection.
-			self cleanUpAndAddToResult] ]
+			Stdio stdout
+				nextPutAll: 'New generation started: ';
+				nextPutAll: gen asString;
+				lf;
+				flush.
+			uncovered
+				ifNotEmpty: [ self normalize.
+					self inputAmplification.
+					self methodReduction.
+					self assertionAmplification.
+					self selection.
+					self cleanUpAndAddToResult ] ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	self oracleReduction.
 	self simplification.
@@ -72,14 +78,14 @@ SAMainLoop >> assertionAmplification [
 	| allWindows |
 	finalResult logs
 		recoredTag: #assertionAmplification
-		toRun: [ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
-							population
+		toRun:
+			[ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
+			population
 				do: [ :tcase | 
 					self assertionAmplifiers
-						do: [ :amplifier | 
-							tcase assertionAmplifyBy: amplifier ] ]
+						do: [ :amplifier | amplifier testRunTimeoutMillis: testRunTimeoutMillis.tcase assertionAmplifyBy: amplifier ] ]
 				displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
-							self closeAllWindowsBut: allWindows.
+			self closeAllWindowsBut: allWindows.
 			population := population
 				reject: [ :tcase | tcase testMethod isNil ] ]
 ]
@@ -120,13 +126,19 @@ SAMainLoop >> closeAllWindowsBut: openWindows [
 { #category : #actions }
 SAMainLoop >> discardFailingTests [
 	| result testMethods |
-	result := [ testClass suite run ]
+	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
+		asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'Check Me' ].
+		onTimeout: [ self error: 'Original test class timeout' ].
 	testMethods := result expectedPasses
-		collect: [ :passed | (testClass lookupSelector: passed selector) sourceCode ].
+		collect:
+			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
 	finalResult
-		failedSelectorInOriginal: (result failures , result expectedDefects) asOrderedCollection.
+		failedSelectorInOriginal:
+			(result failures , result expectedDefects
+				collect:
+					[ :failed | failed class lookupSelector: failed selector ]
+						)asOrderedCollection.
 	population := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
@@ -177,14 +189,13 @@ SAMainLoop >> liteAmplification [
 	| aPopulation old_Pop |
 	finalResult logs
 		recoredTag: #liteAmplification
-		toRun: [ 
-			aPopulation := population
+		toRun: [ aPopulation := population
 				collect: [ :tcase | tcase renamedCopy: '_amp' ].
 			aPopulation do: [ :tcase | tcase strip ].
 			aPopulation
 				do: [ :tcase | 
 					self assertionAmplifiers
-						do: [ :amplifier | tcase assertionAmplifyBy: amplifier ] ]
+						do: [ :amplifier | amplifier testRunTimeoutMillis: testRunTimeoutMillis . tcase assertionAmplifyBy: amplifier ] ]
 				displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
 			old_Pop := population.
 			population := aPopulation reject: [ :x | x testMethod isNil ].
@@ -197,7 +208,9 @@ SAMainLoop >> liteAmplification [
 { #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
-		ifNotNil: [ config profiler profileClasses: targetClasses byRunning: testClass.
+		ifNotNil: [ config profiler
+				profileClasses: targetClasses
+				byRunning: testClass.
 			finalResult runProfile: config profiler ]
 ]
 
@@ -210,8 +223,7 @@ SAMainLoop >> methodReduction [
 		toRun: [ p := population.
 			self methodReductions
 				do: [ :reducer | 
-					
-					reducer uncovered: uncovered.
+					reducer uncovered: uncovered; testRunTimeoutMillis: testRunTimeoutMillis .
 					p := reducer reduceMethods: p ]
 				displayingProgress: 'Method Reduction' , ' (' , size , ')'.
 			population := p ]
@@ -294,16 +306,15 @@ SAMainLoop >> selection [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun:
-	[population ifEmpty: [ ^ self ].
-	selectedTests := OrderedCollection new.
-	self selections
-		do: [ :sel | 
-			selectedTests addAll: (sel select: population uncovered: uncovered).
-			uncovered := sel uncovered ]
-		displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
-	population := selectedTests].
-	
+		toRun: [ 
+			population ifEmpty: [ ^ self ].
+			selectedTests := OrderedCollection new.
+			self selections
+				do: [ :sel | 
+					selectedTests addAll: (sel select: population uncovered: uncovered).
+					uncovered := sel uncovered ]
+				displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
+			population := selectedTests ]
 ]
 
 { #category : #accessing }

@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'config',
-		'uncovered'
+		'uncovered',
+		'testRunTimeoutMillis'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -16,6 +17,11 @@ SAAbstractMethodReduction class >> initializeWith: aConfig [
 { #category : #'as yet unclassified' }
 SAAbstractMethodReduction >> reduceMethods: aListOfMethods [
 	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
+SAAbstractMethodReduction >> testRunTimeoutMillis: anObject [
+	testRunTimeoutMillis := anObject
 ]
 
 { #category : #accessing }

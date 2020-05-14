@@ -45,6 +45,7 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 SAVariableTypeProfiler >> executeBeforeNode: node value: val [
 	node isRead
 		ifFalse: [ ^ self ].
+	[ val class inheritsFrom: Object ]  on: Error do: [ ^ self ].
 	self variablesTypes
 		at: node methodNode selector , ':' , node name
 		put: val class
@@ -75,7 +76,7 @@ SAVariableTypeProfiler >> run [
 		do: [ :method | self installMetaLinksOnMethod: method ].
 	[ generatedClass suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'check me' ] ]
+		onTimeout: [ self error: 'variable profiling timeout' ] ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]

@@ -102,14 +102,16 @@ SAAliveMutationMethodReduction >> reduceMethodsOld: aListOfMethods [
 
 { #category : #'as yet unclassified' }
 SAAliveMutationMethodReduction >> runTestClassAndObserve: aListOfMethods [
-	selectedMethods addAll: ((testClass testSelectors
-		select: [ :m | aListOfMethods anySatisfy: [ :z | z selector = m ] ])
-		select: [ :sel | 
-			covered := false.
-			[ testClass run: sel ]
-				valueWithin: config testRunTimeOut milliSeconds
-				onTimeout: [ covered := false ].
-			covered ])
+	selectedMethods
+		addAll:
+			((testClass testSelectors
+				select: [ :m | aListOfMethods anySatisfy: [ :z | z selector = m ] ])
+				select: [ :sel | 
+					covered := false.
+					[ testClass run: sel ]
+						valueWithin: config testRunTimeOutMult * testRunTimeoutMillis
+						onTimeout: [ covered := false ].
+					covered ])
 ]
 
 { #category : #'as yet unclassified' }

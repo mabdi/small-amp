@@ -1,12 +1,25 @@
 Class {
 	#name : #SADbgMethodReduction,
 	#superclass : #SAAbstractMethodReduction,
+	#instVars : [
+		'dbgList'
+	],
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #'as yet unclassified' }
+SADbgMethodReduction >> dbgAdd: item [
+	dbgList add: item
+]
+
+{ #category : #'as yet unclassified' }
 SADbgMethodReduction >> dbgList [
-	^ {#testRoomExitCycles_amp}
+	^ dbgList 
+]
+
+{ #category : #initialization }
+SADbgMethodReduction >> initialize [ 
+	dbgList := OrderedCollection new
 ]
 
 { #category : #'as yet unclassified' }

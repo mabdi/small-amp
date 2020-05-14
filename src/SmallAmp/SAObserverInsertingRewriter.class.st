@@ -21,9 +21,11 @@ SAObserverInsertingRewriter >> initialize [
 
 { #category : #'as yet unclassified' }
 SAObserverInsertingRewriter >> insertObservers: aMethod [
+	| aNode |
 	targetNodes
-		do: [ :aNode | 
+		do: [ :theNode | 
 			| idx theReceiver theSelector a b |
+			aNode := theNode nodesDo: [:each | each comments: nil]..
 			idx := aMethod body statements indexOf: aNode.
 			theReceiver := nil.
 			theSelector := nil.
@@ -40,7 +42,8 @@ SAObserverInsertingRewriter >> insertObservers: aMethod [
 									'[]
 		on: Error
 		do: [ :ex | 
-			self class observer observeException: ex id: ' , idx asString , '. ^ self ]'.
+			self class observer observeException: ex id: ' , idx asString
+										, '. ^ self ]'.
 							b := RBParser
 								parseExpression:
 									'[|smallamp_elapsedTime noObserve| noObserve:=false. smallamp_elapsedTime := Time

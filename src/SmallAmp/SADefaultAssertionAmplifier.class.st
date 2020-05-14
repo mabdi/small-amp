@@ -27,7 +27,8 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
 	Stdio stdout
-		nextPutAll: 'assert amplification: ' , aMethodAST selector;
+		nextPutAll: 'assert amplification: ';
+		nextPutAll: aMethodAST selector;
 		lf;
 		flush.
 	self class timing
@@ -58,7 +59,6 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		toRun: [ (self checkPassing: sourceCodeWithAssertions)
 				ifFalse: [ ^ nil ] ].
 	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
-	
 	^ sourceCodeWithAssertions
 ]
 
@@ -127,7 +127,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	self class timing
 		recoredTag: #checkPassingHasPassed
 		toRun: [ r := [ (generatedClass run: testMethodModel selector) hasPassed ]
-				valueWithin: config testRunTimeOut milliSeconds
+				valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds 
 				onTimeout: [ false ] ].
 	"self class timing
 		recoredTag: #checkPassingCloseAll
@@ -222,7 +222,7 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	^ [ generatedClass run: testMethodModel selector ]
-		valueWithin: config testRunTimeOut milliSeconds
+		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
 		onTimeout: [ nil ]
 ]
 

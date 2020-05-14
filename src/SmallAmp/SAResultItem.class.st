@@ -9,7 +9,9 @@ Class {
 		'testClass',
 		'originalAnalysis',
 		'logs',
-		'runProfile'
+		'runProfile',
+		'amplifiedCoverage',
+		'originalCoverage'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -46,8 +48,28 @@ SAResultItem >> amplifiedMethods [
 ]
 
 { #category : #reporting }
+SAResultItem >> amplifiedMethodsAssertionDensity [
+	self amplifiedMethods ifEmpty: [ ^ 0 ].
+	^ ((self amplifiedMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
+		inject: 0
+		into: [ :s :i | s + i ]) / self amplifiedMethods size
+		printShowingDecimalPlaces: 2
+]
+
+{ #category : #reporting }
 SAResultItem >> amplifiedMutationScore [
 	^ amplifiedAnalysis generalResult mutationScore
+]
+
+{ #category : #reporting }
+SAResultItem >> amplifiedTestCoverage [
+	amplifiedCoverage
+		ifNil: [ amplifiedCoverage := SACoverageAnalyser new
+				classes: targetClasses;
+				testCases: {amplifiedClass };
+				run ].
+	^ amplifiedCoverage
 ]
 
 { #category : #reporting }
@@ -58,11 +80,37 @@ SAResultItem >> asDictionaryObject [
 	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
-	(#timeTotal -> self totalTime).
-	(#timeDetail -> self detailedTimeLabel asArray) .
-	(#methodsNotProfiled -> (self methodsNotProfiled collect: #name) asArray).
+	(#timeTotal -> self totalTime asSeconds).
+	(#targetLoc
+		->
+			((targetClasses collect: #linesOfCode)
+				inject: 0
+				into: [ :accum :each | accum + each ])).
+	(#testLoc -> testClass linesOfCode asString).
+	(#amplifiedCoverageMethods
+		-> self amplifiedTestCoverage methodsCoverage).
+	(#amplifiedCoverageBranches
+		-> self amplifiedTestCoverage branchesCoverage).
+	(#amplifiedCoverageStatementes
+		-> self amplifiedTestCoverage statementsCoverage).
+	(#originalCoverageMethods
+		-> self originalTestCoverage methodsCoverage).
+	(#originalCoverageBranches
+		-> self originalTestCoverage branchesCoverage).
+	(#originalCoverageStatementes
+		-> self originalTestCoverage statementsCoverage).
+	(#testAmpLoc -> ((self amplifiedMethods collect: #linesOfCode)
+		inject: 0
+		into: [ :accum :each | accum + each ])).
+	(#timeDetail -> self detailedTimeLabel asArray).
+	(#methodsNotProfiled
+		-> (self methodsNotProfiled collect: #name) asArray).
+	(#assertionDensityOriginal -> self originalMethodsAssertionDensity).
+	(#assertionDensityAmplified -> self amplifiedMethodsAssertionDensity).
 	(#testMethodsIgnored
 		-> (self failedSelectorInOriginal collect: #name) asArray).
+	(#numberOfAllMutationsInOriginal
+		-> self numberOfAllMutationsInOriginal).
 	(#mutantsAliveInOriginal
 		->
 			(self aliveMutantsInOriginal
@@ -72,8 +120,9 @@ SAResultItem >> asDictionaryObject [
 			(self killedMutantsInAmplified
 				collect: [ :m | m mutant asDictionaryObject ]) asArray).
 	(#stillAliveMutants
-		-> (self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ]) asArray)}
-		asDictionary
+		->
+			(self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
+				asArray)} asDictionary
 ]
 
 { #category : #export }
@@ -252,6 +301,11 @@ SAResultItem >> mutalkRunOriginal [
 	originalAnalysis := analysis1
 ]
 
+{ #category : #reporting }
+SAResultItem >> numberOfAllMutationsInOriginal [
+	^ self originalAnalysis generalResult numberOfEvaluatedMutants
+]
+
 { #category : #accessing }
 SAResultItem >> originalAnalysis [
 	^ originalAnalysis
@@ -264,12 +318,31 @@ SAResultItem >> originalAnalysis: anObject [
 
 { #category : #reporting }
 SAResultItem >> originalMethods [
-	^ self testClass methods
+	^ self testClass methods select: #isTestMethod 
+]
+
+{ #category : #reporting }
+SAResultItem >> originalMethodsAssertionDensity [
+	self originalMethods ifEmpty: [ ^ 0 ].
+	^ (((self originalMethods
+		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
+		inject: 0
+		into: [ :s :i | s + i ]) / self originalMethods size) printShowingDecimalPlaces: 2
 ]
 
 { #category : #reporting }
 SAResultItem >> originalMutationScore [
 	^ originalAnalysis generalResult mutationScore
+]
+
+{ #category : #reporting }
+SAResultItem >> originalTestCoverage [
+	originalCoverage
+		ifNil: [ originalCoverage := SACoverageAnalyser new
+				classes: targetClasses;
+				testCases: {testClass};
+				run ].
+	^ originalCoverage
 ]
 
 { #category : #accessing }
@@ -290,7 +363,7 @@ SAResultItem >> saveResultToFile [
 { #category : #export }
 SAResultItem >> saveResultToFileAs: testClassName [
 	| fileName |
-	fileName := testClassName, UUID new asString36 , '.txt'.
+	fileName := testClassName , '.json'.
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.
@@ -326,11 +399,10 @@ SAResultItem >> testClass: anObject [
 SAResultItem >> totalTime [
 	| sum |
 	sum := (self logs summary collect: #value) sum.
-	^ (Duration milliSeconds: sum) humanReadablePrintString
+	^ (Duration milliSeconds: sum) 
 ]
 
 { #category : #reporting }
 SAResultItem >> totalTimeLabel [
-	
-	^ testClass name , ' (' , self totalTime , ')'
+	^ testClass name , ' (' , self totalTime humanReadablePrintString, ')'
 ]

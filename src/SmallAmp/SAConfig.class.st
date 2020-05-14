@@ -17,7 +17,8 @@ Class {
 		'methodReductions',
 		'prettifier',
 		'simplifier',
-		'maxPop'
+		'maxPop',
+		'testRunTimeOutMult'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -33,11 +34,12 @@ SAConfig class >> default [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: {SAMaxPopMethodReduction};
+		methodReductions: {SANoMethodReduction };
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
-		testRunTimeOut: 10000;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
 		debug: false;
@@ -204,4 +206,14 @@ SAConfig >> testRunTimeOut [
 { #category : #accessing }
 SAConfig >> testRunTimeOut: anObject [
 	testRunTimeOut := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOutMult [
+	^ testRunTimeOutMult
+]
+
+{ #category : #accessing }
+SAConfig >> testRunTimeOutMult: anObject [
+	testRunTimeOutMult := anObject
 ]

@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'testMethodModel',
-		'config'
+		'config',
+		'testRunTimeoutMillis'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -23,6 +24,11 @@ SAAbstractAssertionAmplifier >> amplifyAssertions [
 SAAbstractAssertionAmplifier >> amplifyAssertionsFor: aTestModel [
 	testMethodModel := aTestModel.
 	^ self amplifyAssertions
+]
+
+{ #category : #accessing }
+SAAbstractAssertionAmplifier >> testRunTimeoutMillis: anObject [
+	testRunTimeoutMillis := anObject
 ]
 
 { #category : #initialization }
