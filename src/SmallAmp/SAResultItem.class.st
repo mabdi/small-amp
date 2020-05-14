@@ -86,6 +86,14 @@ SAResultItem >> asDictionaryObject [
 			((targetClasses collect: #linesOfCode)
 				inject: 0
 				into: [ :accum :each | accum + each ])).
+	(#targetChurn
+		->
+			(((targetClasses
+				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
+				inject: 0
+				into: [ :accum :each | accum + each ])
+				printShowingDecimalPlaces: 2)).
+	(#testChurn -> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2)).
 	(#testLoc -> testClass linesOfCode asString).
 	(#amplifiedCoverageMethods
 		-> self amplifiedTestCoverage methodsCoverage).
@@ -99,9 +107,11 @@ SAResultItem >> asDictionaryObject [
 		-> self originalTestCoverage branchesCoverage).
 	(#originalCoverageStatementes
 		-> self originalTestCoverage statementsCoverage).
-	(#testAmpLoc -> ((self amplifiedMethods collect: #linesOfCode)
-		inject: 0
-		into: [ :accum :each | accum + each ])).
+	(#testAmpLoc
+		->
+			((self amplifiedMethods collect: #linesOfCode)
+				inject: 0
+				into: [ :accum :each | accum + each ])).
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
@@ -153,12 +163,12 @@ SAResultItem >> codeChurn: filename repoName: aGithubProjectName [
 			changes := changes splitOn: Character tab.
 			adds := adds + (changes at: 1) asInteger.
 			removes := removes + (changes at: 1) asInteger ].
-	^ (adds + removes) / history size printShowingDecimalPlaces: 2
+	^ (adds + removes) / history size 
 ]
 
 { #category : #'as yet unclassified' }
 SAResultItem >> codeChurnForClass: aClass [
-	| package repoName base cls filename |
+	| package repoName base filename |
 	package := (IceRepository registry flatCollect: #loadedPackages)
 		detect: [ :p | p name = aClass package name ]
 		ifNone: [ self error: 'not found' ].
@@ -167,7 +177,7 @@ SAResultItem >> codeChurnForClass: aClass [
 		basename.
 	filename := base , '/' , package package , '/' , aClass name
 		, '.class.st'.
-	^ self codeChurn: filename repoName: repoName  
+	^ self codeChurn: filename repoName: repoName
 ]
 
 { #category : #reporting }
