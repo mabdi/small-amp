@@ -173,9 +173,9 @@ SAResultItem >> codeChurnForClass: aClass [
 		detect: [ :p | p name = aClass package name ]
 		ifNone: [ self error: 'not found' ].
 	repoName := package repository name.
-	base := package repository basicCodeDirectory asFileReference
-		basename.
-	filename := base , '/' , package package , '/' , aClass name
+	base := package repository subdirectory.
+	base ifNotEmpty: [ base := base , '/' ].
+	filename := base , package package , '/' , aClass name
 		, '.class.st'.
 	^ self codeChurn: filename repoName: repoName
 ]
