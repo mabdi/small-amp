@@ -16,6 +16,29 @@ Class {
 	#category : #'SmallAmp-Model'
 }
 
+{ #category : #'as yet unclassified' }
+SAResultItem class >> forAmplified: newTest original: theOriginal target: targets [
+	^ self new
+		testClass: theOriginal;
+		amplifiedClass: newTest;
+		targetClasses: targets;
+		regenerate;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
+SAResultItem class >> forAmplified: newTest original: theOriginal target: targets profiler: aProfiler [
+	aProfiler profileClasses: targets byRunning: theOriginal.
+	
+	^ self new
+		testClass: theOriginal;
+		amplifiedClass: newTest;
+		targetClasses: targets;
+		runProfile: aProfiler;
+		regenerate;
+		yourself
+]
+
 { #category : #reporting }
 SAResultItem >> aliveMutantsInOriginal [
 ^ self originalAnalysis generalResult aliveMutants
@@ -183,6 +206,7 @@ SAResultItem >> codeChurnForClass: aClass [
 { #category : #reporting }
 SAResultItem >> detailedTimeLabel [
 	| sum |
+	self logs summary ifEmpty: [^ 'NA'].
 	sum := (self logs summary collect: #value) sum.
 	^ self logs summary
 				collect: [ :s | 
@@ -196,6 +220,13 @@ SAResultItem >> detailedTimeLabel [
 
 { #category : #accessing }
 SAResultItem >> failedSelectorInOriginal [
+	| result |
+	failedSelectorInOriginal
+		ifNil: [ result := testClass suite run.
+			failedSelectorInOriginal:=
+			(result failures , result expectedDefects
+				collect: [ :failed | failed class lookupSelector: failed selector ])
+				asOrderedCollection. ].
 	^ failedSelectorInOriginal
 ]
 
@@ -310,15 +341,16 @@ SAResultItem >> markDownTitleOn: stream [
 { #category : #reporting }
 SAResultItem >> methodsNotProfiled [
 	| keys |
+	self runProfile ifNil: [ ^ {  } ].
 	keys := self runProfile profile keys
 		select:
 			[ :p | self targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
-	^ (self targetClasses
-						flatCollect: [ :c | 
-							(c methods select: [ :m | m selector includesSubstring: ':' ])
-								reject: [ :m | 
-									keys
-										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
+	^ self targetClasses
+		flatCollect: [ :c | 
+			(c methods select: [ :m | m selector includesSubstring: ':' ])
+				reject: [ :m | 
+					keys
+						anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ]
 ]
 
 { #category : #evaluation }
@@ -395,6 +427,14 @@ SAResultItem >> originalTestCoverage [
 	^ originalCoverage
 ]
 
+{ #category : #'as yet unclassified' }
+SAResultItem >> regenerate [
+	self
+		mutalkRunOriginal;
+		mutalkRunMutated;
+		failedSelectorInOriginal
+]
+
 { #category : #accessing }
 SAResultItem >> runProfile [
 	^ runProfile
@@ -448,6 +488,7 @@ SAResultItem >> testClass: anObject [
 { #category : #reporting }
 SAResultItem >> totalTime [
 	| sum |
+	self logs summary ifEmpty: [ ^ -1 ].
 	sum := (self logs summary collect: #value) sum.
 	^ (Duration milliSeconds: sum) 
 ]
