@@ -206,16 +206,13 @@ SAResultItem >> codeChurnForClass: aClass [
 { #category : #reporting }
 SAResultItem >> detailedTimeLabel [
 	| sum |
-	self logs summary ifEmpty: [^ 'NA'].
+	self logs summary ifEmpty: [ ^ {} ].
 	sum := (self logs summary collect: #value) sum.
 	^ self logs summary
-				collect: [ :s | 
-					
-							s key asString , ': % '
-								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
-								, (Duration milliSeconds: s value) humanReadablePrintString
-								, ')']
-						
+		collect: [ :s | 
+			s key asString , ': % '
+				, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
+				, (Duration milliSeconds: s value) humanReadablePrintString , ')' ]
 ]
 
 { #category : #accessing }
@@ -488,9 +485,9 @@ SAResultItem >> testClass: anObject [
 { #category : #reporting }
 SAResultItem >> totalTime [
 	| sum |
-	self logs summary ifEmpty: [ ^ -1 ].
+	self logs summary ifEmpty: [ ^ Duration milliSeconds: 0 ].
 	sum := (self logs summary collect: #value) sum.
-	^ (Duration milliSeconds: sum) 
+	^ Duration milliSeconds: sum
 ]
 
 { #category : #reporting }
