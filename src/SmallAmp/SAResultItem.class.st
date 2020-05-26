@@ -192,15 +192,16 @@ SAResultItem >> codeChurn: filename repoName: aGithubProjectName [
 { #category : #'as yet unclassified' }
 SAResultItem >> codeChurnForClass: aClass [
 	| package repoName base filename |
-	package := (IceRepository registry flatCollect: #loadedPackages)
+	[ package := (IceRepository registry flatCollect: #loadedPackages)
 		detect: [ :p | p name = aClass package name ]
 		ifNone: [ self error: 'not found' ].
 	repoName := package repository name.
 	base := package repository subdirectory.
 	base ifNotEmpty: [ base := base , '/' ].
-	filename := base , package package , '/' , aClass name
-		, '.class.st'.
-	^ self codeChurn: filename repoName: repoName
+	filename := base , package package , '/' , aClass name , '.class.st'.
+	^ self codeChurn: filename repoName: repoName ]
+		on: Error
+		do: [ ^ -1 ]
 ]
 
 { #category : #reporting }
