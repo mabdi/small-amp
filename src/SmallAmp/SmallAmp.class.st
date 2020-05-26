@@ -61,6 +61,15 @@ SmallAmp class >> initializeWith: aConfig [
 	^ self new initializeWith: aConfig
 ]
 
+{ #category : #'world menu' }
+SmallAmp class >> menuCommandOn: aBuilder [
+	<worldMenu>
+	aBuilder item: #SmallAmp.
+	(aBuilder
+		item: #'Clear temp';
+		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ]
+]
+
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
 	| sa |
