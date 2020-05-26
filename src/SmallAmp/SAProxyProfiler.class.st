@@ -1,8 +1,17 @@
 Class {
 	#name : #SAProxyProfiler,
 	#superclass : #SAAbstractProfiler,
+	#instVars : [
+		'links'
+	],
 	#category : #'SmallAmp-Core'
 }
+
+{ #category : #accessing }
+SAProxyProfiler >> initialize [ 
+	super initialize.
+	links := OrderedCollection new
+]
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> installProxyOn: aMethod [
@@ -10,7 +19,8 @@ SAProxyProfiler >> installProxyOn: aMethod [
 	(self isItSafeToProxyTo: aMethod)
 		ifFalse: [ ^ self ].
 	link := SAProfilingProxy on: aMethod profiler: self.
-	link install
+	link install.
+	links add: link
 ]
 
 { #category : #'as yet unclassified' }
@@ -59,7 +69,7 @@ SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> uninstallProxyFor: aClass [
-	"aClass removeSelector: #smallGenCallRecords:."
-	Transcript show: aClass name, ' removed metalinks'.
-	SAProfilingProxy cureClass: aClass
+	"SAProfilingProxy cureClass: aClass"
+
+	links do: [ :link | link uninstall ]	
 ]
