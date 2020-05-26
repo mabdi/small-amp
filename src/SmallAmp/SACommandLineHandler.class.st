@@ -4,6 +4,7 @@ Usage: smallamp [ --stat=prefix | --amp=testClass | --reload | --rejson=amplifie
 	--amp=testClass             runs smallamp on testClass
 	--reload                    reload (git pull) small-amp repo
 	--rejson=amplifiedClass     Regenerate json files for amplified class
+	--clearTemp                 Clears temp package.
 	--noquit                    Don't quite image after performing the operation
 	--nosave                    Don't save image after opertation
 	
@@ -47,7 +48,14 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'amp')
 		ifTrue: [ self evalAmp ].
+	(self hasOption: 'clearTemp')
+		ifTrue: [ self clearTempClasses ].
 	self end
+]
+
+{ #category : #activation }
+SACommandLineHandler >> clearTempClasses [
+	SAASTHelper new clearTempClasses 
 ]
 
 { #category : #accessing }
