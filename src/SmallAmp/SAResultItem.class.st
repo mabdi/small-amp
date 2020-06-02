@@ -109,14 +109,15 @@ SAResultItem >> asDictionaryObject [
 			((targetClasses collect: #linesOfCode)
 				inject: 0
 				into: [ :accum :each | accum + each ])).
-	(#targetChurn
+	"(#targetChurn
 		->
 			(((targetClasses
 				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
 				inject: 0
 				into: [ :accum :each | accum + each ])
 				printShowingDecimalPlaces: 2)).
-	(#testChurn -> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2)).
+	(#testChurn
+		-> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2))."
 	(#testLoc -> testClass linesOfCode asString).
 	(#amplifiedCoverageMethods
 		-> self amplifiedTestCoverage methodsCoverage).
