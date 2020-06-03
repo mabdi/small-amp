@@ -45,15 +45,14 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
-	| tempClass |
-	tempClass := testClass superclass
-		subclass: (testClass name asString , self getId asString) asSymbol
-		instanceVariableNames: testClass instanceVariablesString
-		classVariableNames: ''
-		package: self defaultTempPackage.
-	(testClass methods reject: #isTestMethod)
-		do: [ :item | tempClass compile: item sourceCode ].
-	(testClass class methods do: [ :item | tempClass class compile: item sourceCode ]).
+	| tempClass package |
+	tempClass := testClass
+		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
+	package := RPackageOrganizer default
+		packageNamed: self defaultTempPackage.
+	package addClass: tempClass.
+	(testClass methods select: #isTestMethod)
+		do: [ :item | tempClass removeSelector: item selector ].
 	aCollection
 		do: [ :item | 
 			| ast |
