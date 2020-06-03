@@ -45,15 +45,12 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
-	| tempClass package |
-	tempClass := testClass
-		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
-	(RPackageOrganizer default includesPackageNamed: self defaultTempPackage) ifFalse: [ (RPackageOrganizer default createPackageNamed: self defaultTempPackage) ].
-	package := RPackageOrganizer default
-		packageNamed: self defaultTempPackage.
-	package addClass: tempClass.
-	(testClass methods select: #isTestMethod)
-		do: [ :item | tempClass removeSelector: item selector ].
+	| tempClass |
+	tempClass := testClass 
+		subclass: (testClass name asString , self getId asString) asSymbol
+		instanceVariableNames: testClass instanceVariablesString
+		classVariableNames: ''
+		package: self defaultTempPackage.
 	aCollection
 		do: [ :item | 
 			| ast |
@@ -114,6 +111,28 @@ SAASTHelper >> getId [
 SAASTHelper >> killAllMetalinksOn: aClass [ 
 	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
 
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
+	| tempClass package |
+	tempClass := testClass
+		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
+	(RPackageOrganizer default
+		includesPackageNamed: self defaultTempPackage)
+		ifFalse: [ RPackageOrganizer default
+				createPackageNamed: self defaultTempPackage ].
+	package := RPackageOrganizer default
+		packageNamed: self defaultTempPackage.
+	package addClass: tempClass.
+	(testClass methods select: #isTestMethod)
+		do: [ :item | tempClass removeSelector: item selector ].
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			tempClass compile: ast formattedCode ].
+	^ tempClass
 ]
 
 { #category : #'method operations' }
