@@ -48,6 +48,7 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	| tempClass package |
 	tempClass := testClass
 		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
+	(RPackageOrganizer default includesPackageNamed: self defaultTempPackage) ifFalse: [ (RPackageOrganizer default createPackageNamed: self defaultTempPackage) ].
 	package := RPackageOrganizer default
 		packageNamed: self defaultTempPackage.
 	package addClass: tempClass.
