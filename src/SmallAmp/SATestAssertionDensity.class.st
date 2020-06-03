@@ -13,6 +13,8 @@ SATestAssertionDensity >> densityForClass: aTestClass [
 
 { #category : #'as yet unclassified' }
 SATestAssertionDensity >> densityForMethod: aTestMethod [
+	aTestMethod ast statements 
+		ifEmpty: [ ^ 0 ].
 	^ (self numberOfAssertionsInMethod: aTestMethod)
 		/ aTestMethod ast statements size
 ]
