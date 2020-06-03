@@ -453,6 +453,7 @@ SAResultItem >> saveResultToFile [
 SAResultItem >> saveResultToFileAs: testClassName [
 	| fileName |
 	fileName := testClassName , '.json'.
+	(FileLocator imageDirectory / fileName) exists ifTrue: [ (FileLocator imageDirectory / fileName) delete ]. 
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.
