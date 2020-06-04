@@ -59,7 +59,7 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 	[ listOfTargetClass
 		do:
-			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
+			[ :aTargetClass | (aTargetClass methods,aTargetClass  class methods)  do: [ :aMethod | self installProxyOn: aMethod ] ].
 	[ aTestSuite suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Profiling timeout' ] ]
