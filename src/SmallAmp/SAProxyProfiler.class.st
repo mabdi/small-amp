@@ -25,8 +25,8 @@ SAProxyProfiler >> installProxyOn: aMethod [
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> isItSafeToProxyTo: aMethod [
-	({#initialization} includes: aMethod protocol)
-		ifTrue: [ ^ false ].
+	"({#initialization} includes: aMethod protocol)
+		ifTrue: [ ^ false ]."
 	^ true
 ]
 

@@ -7,6 +7,33 @@ Class {
 	#category : #'SmallAmp-Example'
 }
 
+{ #category : #'as yet unclassified' }
+SmallBank2 class >> calculateRate: aPercent amount: anInt [
+	" I expect it profiled"
+	aPercent < 0 ifTrue: [ self error: 'negetive ' ].
+	^ (anInt * aPercent / 100) asInteger
+]
+
+{ #category : #'as yet unclassified' }
+SmallBank2 class >> calculateRate: aPercent amount: anInt month: monthes [
+	"I expect it not profiled."
+	^ (self calculateRate: aPercent amount: anInt) / monthes asInteger
+]
+
+{ #category : #'as yet unclassified' }
+SmallBank2 class >> calculateRateExample [
+	"I expect it added in  input amplification"
+
+	^ self calculateRate: 2 amount: 1000000 month: 12
+]
+
+{ #category : #'instance creation' }
+SmallBank2 class >> with: amount [
+	^ self new
+		deposit:  amount;
+		yourself
+]
+
 { #category : #accessing }
 SmallBank2 >> balance [
 	^ balance

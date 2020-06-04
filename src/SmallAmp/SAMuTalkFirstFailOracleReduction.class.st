@@ -7,6 +7,22 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #adding }
+SAMuTalkFirstFailOracleReduction >> addErrorBlocks: newTree [
+	| replace |
+	replace := OrderedCollection new.
+	(newTree statements select: #isAssignment) do: [ :stmt | 
+		newTree body replaceNode: stmt withNode: (RBMessageNode
+	receiver:
+		(RBBlockNode
+			body: (RBSequenceNode statements: {(stmt copy)}))
+	selector: #on:do:
+	arguments:
+		{(RBVariableNode named: #Error).
+		(RBBlockNode body: (RBSequenceNode statements: {}))}) 
+		 ]
+]
+
 { #category : #running }
 SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 	| id b |
@@ -31,29 +47,6 @@ SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 { #category : #accessing }
 SAMuTalkFirstFailOracleReduction >> astHelper [
 	^ SAASTHelper new
-]
-
-{ #category : #private }
-SAMuTalkFirstFailOracleReduction >> cleanAndReduceMethod: methodast [
-	| tobecleaned |
-	tobecleaned := OrderedCollection new.
-	methodast statements
-		select: [ :node | 
-			node class = RBMessageNode
-				and: [ node receiver name = #self
-						and: [ node selector asString endsWith: 'description:' ] ] ]
-		thenDo: [ :node | 
-			node arguments last value = 'Important Assertions'
-				ifTrue: [ 
-					node
-						selector:
-							(node selector asString
-								copyWithRegex: 'description\:$'
-								matchesReplacedWith: '').
-					node arguments  removeLast			
-								 ]
-				ifFalse: [ tobecleaned add: node ] ].
-	methodast statements removeAll: tobecleaned
 ]
 
 { #category : #cleanup }
@@ -99,8 +92,7 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 		compile:
 			'smallamp_logsAdd: aString self smallamp_logs add: (smallamp_mutant -> aString)'.
 	reducedTestClass
-		compile:
-			'smallamp_logs: aString  self class smallamp_logsAdd: aString'.
+		compile: 'smallamp_logs: aString  self class smallamp_logsAdd: aString'.
 	reducedTestClass
 		compile:
 			'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
@@ -110,6 +102,7 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self addLoggerToAllAsserts: theMethod ast.
+			self addErrorBlocks: newTree.
 			reducedTestClass compile: newTree formattedCode ]
 ]
 
@@ -159,12 +152,12 @@ SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> makeReducedResult [
+	| res |
 	self makeReducedClass.
-	"self makeReducedAddedClass."
-	"res := self reducedAddedTestClass."
-	"res analysis: (self mutalkRun: self reducedAddedTestClass)."
-	"self cleanUp: reducedTestClass."
-	^ reducedTestClass
+	self makeReducedAddedClass.
+	res := self reducedAddedTestClass.
+	self cleanUp: reducedTestClass.
+	^ res
 ]
 
 { #category : #'as yet unclassified' }
@@ -240,6 +233,18 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 	^ tree
 ]
 
+{ #category : #adding }
+SAMuTalkFirstFailOracleReduction >> removeErrorBlocks: newTree [
+	| replace |
+	replace := OrderedCollection new.
+	(newTree statements select: [:stmt | (stmt isMessage) and: [ (stmt selector = #on:do:) and: [(stmt arguments  at:2) statements isEmpty]] ])
+		do: [ :stmt | 
+			newTree body
+				replaceNode: stmt
+				withNode: (stmt receiver statements at: 1) copy
+					 ]
+]
+
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
 	| last |
@@ -310,6 +315,7 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfPairs [
 			newTree := self
 				removeAllAssertsAndTransformImportants: listOfPairs
 				in: theMethod ast.
+			self removeErrorBlocks: newTree.
 			(self hasAnySelfCall: newTree)
 				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
