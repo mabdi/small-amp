@@ -159,13 +159,12 @@ SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> makeReducedResult [
-	| res |
 	self makeReducedClass.
-	self makeReducedAddedClass.
-	res := self reducedAddedTestClass.
+	"self makeReducedAddedClass."
+	"res := self reducedAddedTestClass."
 	"res analysis: (self mutalkRun: self reducedAddedTestClass)."
-	self cleanUp: reducedTestClass.
-	^ res
+	"self cleanUp: reducedTestClass."
+	^ reducedTestClass
 ]
 
 { #category : #'as yet unclassified' }
@@ -215,6 +214,7 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 	toComment := OrderedCollection new.
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
+	parser allChildren do: [:each | each comments: nil]..
 	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
 	empty := RBParser parseExpression: ''.
 	rewriter
@@ -234,7 +234,6 @@ SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: list
 						ifNone: [ empty ] ]).
 	rewriter executeTree: parser.
 	tree := rewriter tree.
-	
 	tree := self astHelper
 		addComment: (self synthesisCommentFrom: toComment)
 		toMethodAST: tree.
