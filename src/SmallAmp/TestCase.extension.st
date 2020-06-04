@@ -1,6 +1,6 @@
 Extension { #name : #TestCase }
 
-{ #category : #'*SmallAmp-DrTests' }
+{ #category : #'*SmallAmp' }
 TestCase class >> smallAmpTargetClasses [
 	| c t |
 	self isAbstract
