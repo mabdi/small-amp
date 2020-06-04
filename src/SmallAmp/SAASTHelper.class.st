@@ -46,9 +46,9 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	| tempClass |
-	tempClass := testClass 
+	tempClass := testClass
 		subclass: (testClass name asString , self getId asString) asSymbol
-		instanceVariableNames: testClass instanceVariablesString
+		instanceVariableNames: ''
 		classVariableNames: ''
 		package: self defaultTempPackage.
 	aCollection
