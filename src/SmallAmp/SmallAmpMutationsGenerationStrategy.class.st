@@ -8,8 +8,20 @@ Class {
 }
 
 { #category : #generating }
+SmallAmpMutationsGenerationStrategy >> classesAndMetaclassesFrom: modelClasses [
+	^ modelClasses
+		inject: OrderedCollection new
+		into: [ :classes :aClass | 
+			classes
+				add: aClass;
+				add: aClass class.
+			classes ]
+]
+
+{ #category : #generating }
 SmallAmpMutationsGenerationStrategy >> methodsToMutateFrom: aMutationTestingAnalysis [
-	^ (aMutationTestingAnalysis modelClasses)
+	^ (self
+		classesAndMetaclassesFrom: aMutationTestingAnalysis modelClasses)
 		inject: OrderedCollection new
 		into: [ :methods :aClass | 
 			methods addAll: aClass methods.

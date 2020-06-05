@@ -106,7 +106,7 @@ SAResultItem >> asDictionaryObject [
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc
 		->
-			((targetClasses collect: #linesOfCode)
+			((targetClasses collect: [:c | c linesOfCode + c class linesOfCode])
 				inject: 0
 				into: [ :accum :each | accum + each ])).
 	"(#targetChurn
@@ -340,16 +340,22 @@ SAResultItem >> markDownTitleOn: stream [
 { #category : #reporting }
 SAResultItem >> methodsNotProfiled [
 	| keys |
-	self runProfile ifNil: [ ^ {  } ].
+	self runProfile ifNil: [ ^ {} ].
 	keys := self runProfile profile keys
-		select:
-			[ :p | self targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
+		select: [ :p | 
+			self targetClasses
+				anySatisfy:
+					[ :t | (p beginsWith: '#' , t name) | (p beginsWith: '#' , t class name) ] ].
+	
 	^ self targetClasses
 		flatCollect: [ :c | 
-			(c methods select: [ :m | m selector includesSubstring: ':' ])
+			(c methods , c class methods
+				select: [ :m | m selector includesSubstring: ':' ])
 				reject: [ :m | 
 					keys
-						anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ]
+						anySatisfy: [ :k | 
+							(k beginsWith: '#' , c name , '#' , m selector)
+								| (k beginsWith: '#' , c class name , '#' , m selector) ] ] ]
 ]
 
 { #category : #evaluation }

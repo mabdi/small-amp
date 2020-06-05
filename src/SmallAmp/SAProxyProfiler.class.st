@@ -25,8 +25,8 @@ SAProxyProfiler >> installProxyOn: aMethod [
 
 { #category : #'as yet unclassified' }
 SAProxyProfiler >> isItSafeToProxyTo: aMethod [
-	({#initialization} includes: aMethod protocol)
-		ifTrue: [ ^ false ].
+	"({#initialization} includes: aMethod protocol)
+		ifTrue: [ ^ false ]."
 	^ true
 ]
 
@@ -59,7 +59,7 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
 	[ listOfTargetClass
 		do:
-			[ :aTargetClass | aTargetClass methods do: [ :aMethod | self installProxyOn: aMethod ] ].
+			[ :aTargetClass | (aTargetClass methods,aTargetClass  class methods)  do: [ :aMethod | self installProxyOn: aMethod ] ].
 	[ aTestSuite suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Profiling timeout' ] ]
