@@ -154,10 +154,11 @@ SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	| res |
 	self makeReducedClass.
-	self makeReducedAddedClass.
+	"self makeReducedAddedClass.
 	res := self reducedAddedTestClass.
 	self cleanUp: reducedTestClass.
-	^ res
+	^ res"
+	^ reducedTestClass
 ]
 
 { #category : #'as yet unclassified' }

@@ -51,6 +51,8 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		instanceVariableNames: ''
 		classVariableNames: ''
 		package: self defaultTempPackage.
+	tempClass class compile: 'shouldInheritSelectors
+	^ self superclass shouldInheritSelectors'.
 	aCollection
 		do: [ :item | 
 			| ast |
