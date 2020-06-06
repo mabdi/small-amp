@@ -53,6 +53,14 @@ SACommandLineHandler >> activate [
 	self end
 ]
 
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> allClassesForRepo: repoName [
+	^ ((IceRepository registry detect: [ :r | r name = repoName ])
+		workingCopy packages select: [ :p | p isLoaded ])
+		flatCollect: [ :p | p package asPackage definedClasses ]
+		
+]
+
 { #category : #activation }
 SACommandLineHandler >> clearTempClasses [
 	SAASTHelper new clearTempClasses 
@@ -87,35 +95,27 @@ SACommandLineHandler >> evalStats [
 ]
 
 { #category : #actions }
-SACommandLineHandler >> metricsEval: aPrefix [
-	| search packages classes testPackages tests targetedTests testMethodTargeted stat testrun testsuite loc |
-	search := aPrefix asLowercase.
-	packages := RPackage organizer packages
-		select: [ :p | p name asLowercase includesSubstring: search ].
-	classes := packages flatCollect: [ :p | p definedClasses ].
+SACommandLineHandler >> metricsEval: repoName [
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc |
+	classes := self allClassesForRepo: repoName.
 	loc := (classes collect: #linesOfCode) sum.
-	testPackages := packages
-		select: [ :p | p definedClasses anySatisfy: [ :c | c isTestCase ] ].
-	tests := testPackages
-		flatCollect:
-			[ :p | p definedClasses select: [ :c | c allSuperclasses includes: TestCase ] ].
-	testsuite := TestSuite new.
-	tests do: [ :ts | testsuite addTests: ts buildSuite tests ].
-	testrun := testsuite run.
+	tests := classes select: #isTestCase.
 	targetedTests := tests
 		select: [ :s | s smallAmpTargetClasses isNotNil ].
-	testMethodTargeted := targetedTests flatCollect: #allTestSelectors.
-	stat := {{(#packages -> packages size).
-	(#classes -> classes size).
-	(#testPackages -> testPackages size).
+	testsuite := TestSuite new.
+	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
+	testrun := testsuite run.
+	testMethodTargeted := testsuite tests.
+	stat := {{(#classes -> classes size).
 	(#tests -> tests size).
 	(#loc -> loc).
 	(#targetedTests -> targetedTests size).
 	(#targetedTestsMethods -> testMethodTargeted size).
+	(#allGreen -> (testrun failureCount + testrun errorCount < 0)).
 	(#testsFails -> testrun failureCount).
 	(#testsErrors -> testrun errorCount).
 	(#testsPasses -> testrun passedCount)}} asString.
-	(FileLocator imageDirectory / (search , '.stat')) writeStream
+	(FileLocator imageDirectory / (repoName , '.stat')) writeStream
 		nextPutAll: stat;
 		lf;
 		close.
@@ -123,7 +123,12 @@ SACommandLineHandler >> metricsEval: aPrefix [
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
 		close.
+	(FileLocator imageDirectory / 'allTests.txt') writeStream
+		nextPutAll: (Character lf join: targetedTests);
+		lf;
+		close.
 	^ stat
+	
 ]
 
 { #category : #'as yet unclassified' }
