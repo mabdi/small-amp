@@ -102,11 +102,17 @@ SACommandLineHandler >> metricsEval: repoName [
 	tests := classes select: #isTestCase.
 	targetedTests := tests
 		select: [ :s | s smallAmpTargetClasses isNotNil ].
+	targetedTests := targetedTests
+		select: [ :ts | 
+			| mr |
+			mr := self runMutalk: ts.
+			mr generalResult mutationScore < 100 ].
 	testsuite := TestSuite new.
 	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
 	testrun := testsuite run.
+	
 	testMethodTargeted := testsuite tests.
-	stat := {{(#classes -> classes size).
+	stat := {(#classes -> classes size).
 	(#tests -> tests size).
 	(#loc -> loc).
 	(#targetedTests -> targetedTests size).
@@ -114,7 +120,7 @@ SACommandLineHandler >> metricsEval: repoName [
 	(#allGreen -> (testrun failureCount + testrun errorCount < 0)).
 	(#testsFails -> testrun failureCount).
 	(#testsErrors -> testrun errorCount).
-	(#testsPasses -> testrun passedCount)}} asString.
+	(#testsPasses -> testrun passedCount)} asString.
 	(FileLocator imageDirectory / (repoName , '.stat')) writeStream
 		nextPutAll: stat;
 		lf;
@@ -128,7 +134,6 @@ SACommandLineHandler >> metricsEval: repoName [
 		lf;
 		close.
 	^ stat
-	
 ]
 
 { #category : #'as yet unclassified' }
@@ -137,4 +142,17 @@ SACommandLineHandler >> reloadSmallAmp [
 		detect: [ :r | r name = 'small-amp' ]
 		ifFound: [ :r | r pull ]
 		ifNone: [ self exitFailure: 'repo not found.' ]
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> runMutalk: aTestClass [
+	| analysis1 |
+	analysis1 := MutationTestingAnalysis
+		testCasesFrom: {aTestClass}
+		mutating: aTestClass smallAmpTargetClasses 
+		using: MutantOperator contents
+		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
+		with: SmallAmpMutationsGenerationStrategy new.
+	analysis1 run.
+	^ analysis1
 ]
