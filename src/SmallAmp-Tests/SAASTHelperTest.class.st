@@ -16,6 +16,14 @@ SAASTHelperTest >> testAddCommentToMethod [
 ]
 
 { #category : #test }
+SAASTHelperTest >> testAddCommentToMethodQuote [
+	| h src2 |
+	h := SAASTHelper new.
+	src2 := h addComment: 'some " comments is here' toMethod: 'foo x:=1'.
+	self assertMethodSourceCode: src2 equals: (RBParser parseMethod: 'foo ''some " comments is here''. x:=1') formattedCode 
+]
+
+{ #category : #test }
 SAASTHelperTest >> testBuildTestClassAndRun [
 	| result methods testMethods |
 	testMethods := SAAssertTransformTest methods

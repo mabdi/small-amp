@@ -35,12 +35,18 @@ SAASTHelper >> addComment: aText toMethod: anSRC [
 { #category : #adding }
 SAASTHelper >> addComment: aText toMethodAST: anAST [
 	| newMethodAST |
-	newMethodAST := self parserClass
-		parseMethod: anAST selector , ' "' , aText , '"'.
-	newMethodAST replaceNode: newMethodAST body withNode: anAST body.
-	newMethodAST replaceNode: newMethodAST arguments withNode: anAST arguments.
-	newMethodAST pragmas: anAST pragmas.
-	^ newMethodAST
+	(aText includes: $")
+		ifTrue: [ newMethodAST := anAST copy.
+			newMethodAST statements addFirst: (RBLiteralValueNode value: aText).
+			 ]
+		ifFalse: [ newMethodAST := self parserClass
+				parseMethod: anAST selector , ' "' , aText , '"'.
+			newMethodAST replaceNode: newMethodAST body withNode: anAST body.
+			newMethodAST
+				replaceNode: newMethodAST arguments
+				withNode: anAST arguments.
+			newMethodAST pragmas: anAST pragmas. ].
+		^ newMethodAST
 ]
 
 { #category : #'method operations' }
