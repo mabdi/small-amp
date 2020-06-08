@@ -105,12 +105,12 @@ SACommandLineHandler >> metricsEval: repoName [
 	targetedTests := targetedTests
 		select: [ :ts | 
 			| mr |
-			mr := self runMutalk: ts.
-			mr generalResult mutationScore < 100 ].
+			
+			[mr := self runMutalk: ts.
+			mr generalResult mutationScore < 100] on: Error do: [ false ] ].
 	testsuite := TestSuite new.
 	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
 	testrun := testsuite run.
-	
 	testMethodTargeted := testsuite tests.
 	stat := {(#classes -> classes size).
 	(#tests -> tests size).
