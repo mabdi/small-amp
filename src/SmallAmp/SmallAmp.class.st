@@ -66,8 +66,14 @@ SmallAmp class >> menuCommandOn: aBuilder [
 	<worldMenu>
 	aBuilder item: #SmallAmp.
 	(aBuilder
+		item: #'Browse Temp Package';
+		parent: #SmallAmp) action: [ SAASTHelper new defaultTempPackage asPackage browse ].
+	(aBuilder
 		item: #'Clear temp';
-		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ]
+		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
+	(aBuilder
+		item: #'Default config';
+		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ]
 ]
 
 { #category : #private }
