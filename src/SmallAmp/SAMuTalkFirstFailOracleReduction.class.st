@@ -91,7 +91,6 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 	reducedTestClass class
 		compile:
 			'smallamp_logsAdd: aString self smallamp_logs add: (smallamp_mutant -> aString)'.
-	reducedTestClass class compile: 'shouldInheritSelectors ^ false'.
 	reducedTestClass
 		compile: 'smallamp_logs: aString  self class smallamp_logsAdd: aString'.
 	reducedTestClass
@@ -307,7 +306,6 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfPairs [
 	reducedTestClass class removeSelector: #setMutant:.
 	reducedTestClass class removeSelector: #smallamp_logsAdd:.
 	reducedTestClass removeSelector: #smallamp_logs:.
-	reducedTestClass class compile: SAASTHelper defaultCodeForShouldInheritSelectors.
 	reducedTestClass removeSelector: #assert:description:resumable:.
 	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	reducedTestClass class removeInstVarNamed: 'smallamp_mutant'.
