@@ -8,6 +8,18 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAASTHelper class >> defaultCodeFor: aSelector [
+	{(#shouldInheritSelectors
+		->
+			'^ self superclass shouldInheritSelectors')} at: aSelector ifAbsent: [ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper class >> defaultCodeForShouldInheritSelectors [
+	^ 'shouldInheritSelectors ^ self superclass shouldInheritSelectors'
+]
+
+{ #category : #'as yet unclassified' }
 SAASTHelper class >> defaultPragma [
 	^ #madeBySmallAmp
 ]
@@ -59,8 +71,8 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		package: self defaultTempPackage.
 	tempClass class
 		compile:
-			'shouldInheritSelectors
-	^ true'.
+			
+				 (self class defaultCodeForShouldInheritSelectors).
 	aCollection
 		do: [ :item | 
 			| ast |
