@@ -55,9 +55,8 @@ SACommandLineHandler >> activate [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> allClassesForRepo: repoName [
-	^ ((IceRepository registry detect: [ :r | r name = repoName ])
-		workingCopy packages select: [ :p | p isLoaded ])
-		flatCollect: [ :p | p package asPackage definedClasses ]
+	(IceRepository registry detect: [ :r | r name = repoName ] ifFound: [ :r | ^ (r workingCopy packages select: [ :p | p isLoaded ])
+		flatCollect: [ :p | p package asPackage definedClasses ] ] ifNone: [ self error: 'repo not installed. ' , repoName])
 		
 ]
 
