@@ -9,9 +9,6 @@ Class {
 		'finalResult',
 		'resultPeople',
 		'uncovered',
-		'inputAmplifiers',
-		'assertionAmplifiers',
-		'methodReductions',
 		'testRunTimeoutMillis'
 	],
 	#category : #'SmallAmp-Core'
@@ -92,9 +89,8 @@ SAMainLoop >> assertionAmplification [
 
 { #category : #asserting }
 SAMainLoop >> assertionAmplifiers [
-	^ assertionAmplifiers
-		ifNil: [ assertionAmplifiers := config assertionAmplifiers
-				collect: [ :amplifier | amplifier initializeWith: config ] ]
+	^ config assertionAmplifiers
+				collect: [ :amplifier | amplifier initializeWith: config]
 ]
 
 { #category : #accessing }
@@ -130,15 +126,15 @@ SAMainLoop >> discardFailingTests [
 		asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
+		testRunTimeoutMillis := { 1000. testRunTimeoutMillis } max.
 	testMethods := result expectedPasses
 		collect:
 			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
 	finalResult
 		failedSelectorInOriginal:
 			(result failures , result expectedDefects
-				collect:
-					[ :failed | failed class lookupSelector: failed selector ]
-						)asOrderedCollection.
+				collect: [ :failed | failed class lookupSelector: failed selector ])
+				asOrderedCollection.
 	population := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
@@ -231,10 +227,8 @@ SAMainLoop >> methodReduction [
 
 { #category : #accessing }
 SAMainLoop >> methodReductions [
-	methodReductions
-		ifNil: [ methodReductions := config methodReductions
-				collect: [ :reducer | reducer initializeWith: config ] ].
-			^ methodReductions
+	^ config methodReductions
+				collect: [ :reducer | reducer initializeWith: config ]
 ]
 
 { #category : #'as yet unclassified' }
