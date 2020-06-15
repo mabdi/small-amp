@@ -143,16 +143,3 @@ SACommandLineHandler >> reloadSmallAmp [
 		ifFound: [ :r | r pull ]
 		ifNone: [ self exitFailure: 'repo not found.' ]
 ]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> runMutalk: aTestClass [
-	| analysis1 |
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: {aTestClass}
-		mutating: aTestClass smallAmpTargetClasses 
-		using: MutantOperator contents
-		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
-		with: SmallAmpMutationsGenerationStrategy new.
-	analysis1 run.
-	^ analysis1
-]

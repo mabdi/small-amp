@@ -106,40 +106,6 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 			reducedTestClass compile: newTree formattedCode ]
 ]
 
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> loggersAreInstalled [
-	^ newTestClass methodDict includesKey: #logFailure:
-]
-
-{ #category : #private }
-SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast [
-	methodast statements
-		do:
-			[ :node | 
-			(node class = RBMessageNode
-				and: [ node receiver name = #self
-						and: [ (node selector asString endsWith: 'description:')
-								and: [ node arguments last value = (methodast selector asString , ':' , id) ] ] ])
-				ifTrue: [ (node arguments at: node arguments size)
-						value: 'Important Assertions'
-						start: 0
-						stop: -1 ] ].
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
-	| l methods |
-	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
-	methods := (testClass testSelectors
-		reject: [ :s | (self ignoredTestMethods collect: #selector) includes: s ])
-		collect: [ :s | (testClass methodNamed: s) sourceCode ].
-	methods := methods , (l value: reducedTestClass).
-	reducedAddedTestClass := self astHelper
-		buildTestClassWith: methods
-		using: testClass
-		
-]
-
 { #category : #actions }
 SAMuTalkFirstFailOracleReduction >> makeReducedClass [
 	| logs |
@@ -159,19 +125,6 @@ SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	self cleanUp: reducedTestClass.
 	^ res"
 	^ reducedTestClass
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
-	| analysis1 |
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: {aClass}
-		mutating: targetClasses
-		using: MutantOperator contents
-		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
-		with: SmallAmpMutationsGenerationStrategy new.
-	analysis1 run.
-	^ analysis1
 ]
 
 { #category : #'as yet unclassified' }
@@ -195,11 +148,6 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 			particularResults addAll: analysis1 generateResultsLogger ]
 		displayingProgress: 'Oracle reducing mutation' , ' (' , uncovered size asString , ')'.
 	^ particularResults
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> presentationName [
-	^ 'First Mutation Failed'
 ]
 
 { #category : #running }
