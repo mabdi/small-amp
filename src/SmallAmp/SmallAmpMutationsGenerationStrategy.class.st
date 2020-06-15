@@ -24,7 +24,9 @@ SmallAmpMutationsGenerationStrategy >> methodsToMutateFrom: aMutationTestingAnal
 		classesAndMetaclassesFrom: aMutationTestingAnalysis modelClasses)
 		inject: OrderedCollection new
 		into: [ :methods :aClass | 
-			methods addAll: aClass methods.
+			(aClass isKindOf: TraitedMetaclass)
+				ifTrue: [ methods addAll: aClass baseLocalMethods ]
+				ifFalse: [ methods addAll: aClass methods ].
 			methods ]
 ]
 

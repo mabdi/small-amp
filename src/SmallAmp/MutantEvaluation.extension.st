@@ -32,7 +32,7 @@ MutantEvaluation >> valueSmallAmp [
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
 	self testResultsSmallAmp ]
-		ensure: [ mutation uninstall ].
+		ensure: [ mutation uninstallDeep ].
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults
