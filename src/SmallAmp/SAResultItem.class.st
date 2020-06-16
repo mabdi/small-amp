@@ -103,7 +103,8 @@ SAResultItem >> asDictionaryObject [
 	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
-	(#directTestingOriginal -> (self directTestingOriginal printShowingDecimalPlaces: 2)).
+	"(#directTestingOriginal
+		-> (self directTestingOriginal printShowingDecimalPlaces: 2))."
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc
 		->
