@@ -103,10 +103,11 @@ SAResultItem >> asDictionaryObject [
 	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
+	(#directTestingOriginal -> (self directTestingOriginal printShowingDecimalPlaces: 2)).
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc
 		->
-			((targetClasses collect: [:c | c linesOfCode + c class linesOfCode])
+			((targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
 				inject: 0
 				into: [ :accum :each | accum + each ])).
 	"(#targetChurn
@@ -215,6 +216,20 @@ SAResultItem >> detailedTimeLabel [
 			s key asString , ': % '
 				, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
 				, (Duration milliSeconds: s value) humanReadablePrintString , ')' ]
+]
+
+{ #category : #reporting }
+SAResultItem >> directTestingOriginal [
+	| dict vals |
+	testClass allTestSelectors ifEmpty: [ ^ 0 ].
+	dict := (SAReceiverTypeProfiler initializeWith: SAConfig default)
+		testClass: testClass;
+		testTargets: testClass smallAmpTargetClasses;
+		run.
+	vals := dict directCalls values.
+	vals
+		ifEmpty: [ ^ 0 ]
+		ifNotEmpty: [ ^ vals sum / testClass allTestSelectors size ]
 ]
 
 { #category : #accessing }
