@@ -276,7 +276,7 @@ SAMainLoop >> regenerateMethod: aMethodName [
 		detect: [ :m | aMethodName beginsWith: m ]
 		ifNone: [ ^ nil ].
 	method := (SATestMethod
-		with: (testClass methodNamed: method) sourceCode
+		with: (testClass lookupSelector: method) sourceCode
 		class: testClass
 		targets: targetClasses)
 		selectorAppend: '_amp';
@@ -291,8 +291,10 @@ SAMainLoop >> regenerateMethod: aMethodName [
 		newcodes
 			detect: [ :m | m selector = aMethodName ]
 			ifFound: [ :m | ^ m testMethod ]
-			ifNone: [  newcodes
-					detect: [ :m | aMethodName beginsWith: m selector , '_' ] ifFound: [:m | method := m] ifNone: [ ^ nil ] ] ]
+			ifNone: [ newcodes
+					detect: [ :m | aMethodName beginsWith: m selector , '_' ]
+					ifFound: [ :m | method := m ]
+					ifNone: [ ^ nil ] ] ]
 ]
 
 { #category : #actions }
