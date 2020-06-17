@@ -95,9 +95,12 @@ SmallAmp >> amplifyAll [
 			| instance |
 			Transcript show: 'Processing ' , item key name.
 			[ instance := self amplify: item key target: item value.
-			res addResult: instance for: item ]
+			res addResult: instance for: item.
+			config saveToFile
+				ifTrue: [ instance saveResultToFileAs: item key asString.
+					instance amplifiedClass fileOut ] ]
 				on: Error
-				do: [ :ex |
+				do: [ :ex | 
 					Transcript
 						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
