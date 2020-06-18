@@ -64,10 +64,18 @@ SmallAmp class >> initializeWith: aConfig [
 { #category : #'world menu' }
 SmallAmp class >> menuCommandOn: aBuilder [
 	<worldMenu>
+	| dt |
 	aBuilder item: #SmallAmp.
 	(aBuilder
+		item: #'Open Ui (DrTests)';
+		parent: #SmallAmp)
+		action: [ dt := DrTests new.
+			dt pluginsDropList selectItem: SADrTestsPlugin. 
+			dt openWithSpec ].
+	(aBuilder
 		item: #'Browse Temp Package';
-		parent: #SmallAmp) action: [ SAASTHelper new defaultTempPackage asPackage browse ].
+		parent: #SmallAmp)
+		action: [ SAASTHelper new defaultTempPackage asPackage browse ].
 	(aBuilder
 		item: #'Clear temp';
 		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
