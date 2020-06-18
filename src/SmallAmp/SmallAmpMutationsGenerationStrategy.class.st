@@ -28,9 +28,8 @@ SmallAmpMutationsGenerationStrategy >> methodsToMutateFrom: aMutationTestingAnal
 				ifTrue: [ methods addAll: aClass baseLocalMethods ]
 				ifFalse: [ methods
 						addAll: (aClass methods select: [ :m | m traitSource isNil ]) ]."
-					methods
-						addAll: (aClass methods select: [ :m | m traitSource isNil ])
-			methods ]
+			methods
+				addAll: (aClass methods select: [ :m | m traitSource isNil ]). methods ]
 ]
 
 { #category : #accessing }
