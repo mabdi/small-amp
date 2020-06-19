@@ -8,12 +8,28 @@ Class {
 }
 
 { #category : #generating }
+SmallAmpMutationsGenerationStrategy >> classesAndMetaclassesFrom: modelClasses [
+	^ modelClasses
+		inject: OrderedCollection new
+		into: [ :classes :aClass | 
+			classes
+				add: aClass;
+				add: aClass class.
+			classes ]
+]
+
+{ #category : #generating }
 SmallAmpMutationsGenerationStrategy >> methodsToMutateFrom: aMutationTestingAnalysis [
-	^ (aMutationTestingAnalysis modelClasses)
+	^ (self
+		classesAndMetaclassesFrom: aMutationTestingAnalysis modelClasses)
 		inject: OrderedCollection new
 		into: [ :methods :aClass | 
-			methods addAll: aClass methods.
-			methods ]
+			"(aClass isKindOf: TraitedMetaclass)
+				ifTrue: [ methods addAll: aClass baseLocalMethods ]
+				ifFalse: [ methods
+						addAll: (aClass methods select: [ :m | m traitSource isNil ]) ]."
+			methods
+				addAll: (aClass methods select: [ :m | m traitSource isNil ]). methods ]
 ]
 
 { #category : #accessing }

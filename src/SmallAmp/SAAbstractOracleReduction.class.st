@@ -35,11 +35,6 @@ SAAbstractOracleReduction >> makeReducedResult [
 	^ self subclassResponsibility 
 ]
 
-{ #category : #'as yet unclassified' }
-SAAbstractOracleReduction >> presentationName [
-	^ self class name
-]
-
 { #category : #accessing }
 SAAbstractOracleReduction >> reducedAddedTestClass [
 	^ reducedAddedTestClass

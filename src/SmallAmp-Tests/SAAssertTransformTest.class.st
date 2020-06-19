@@ -20,6 +20,29 @@ SAAssertTransformTest >> setUp [
 ]
 
 { #category : #tests }
+SAAssertTransformTest >> testAssertWithReturn [
+	| methodAST sourceCode expectingCode |
+	sourceCode := 'foo
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.
+	^ self assert: tmp1 isNotEmpty'.
+	expectingCode := 'foo
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.'.
+	methodAST := self astHelper parsedMethodFrom: sourceCode.
+	methodAST := SAAssertTransform removeAllAsserts: methodAST.
+	self
+		assertMethodSourceCode: methodAST formattedCode
+		equals: expectingCode
+]
+
+{ #category : #tests }
 SAAssertTransformTest >> testGetAllPatterns [
 	| anAssertTransform allPatterns |
 	anAssertTransform := SAAssertTransform new.

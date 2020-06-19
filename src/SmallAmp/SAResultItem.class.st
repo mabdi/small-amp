@@ -16,6 +16,29 @@ Class {
 	#category : #'SmallAmp-Model'
 }
 
+{ #category : #'as yet unclassified' }
+SAResultItem class >> forAmplified: newTest original: theOriginal target: targets [
+	^ self new
+		testClass: theOriginal;
+		amplifiedClass: newTest;
+		targetClasses: targets;
+		regenerate;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
+SAResultItem class >> forAmplified: newTest original: theOriginal target: targets profiler: aProfiler [
+	aProfiler profileClasses: targets byRunning: theOriginal.
+	
+	^ self new
+		testClass: theOriginal;
+		amplifiedClass: newTest;
+		targetClasses: targets;
+		runProfile: aProfiler;
+		regenerate;
+		yourself
+]
+
 { #category : #reporting }
 SAResultItem >> aliveMutantsInOriginal [
 ^ self originalAnalysis generalResult aliveMutants
@@ -80,12 +103,23 @@ SAResultItem >> asDictionaryObject [
 	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
 	(#mutationScoreBefore -> self originalMutationScore).
 	(#mutationScoreAfter -> self amplifiedMutationScore).
+	"(#directTestingOriginal
+		-> (self directTestingOriginal printShowingDecimalPlaces: 2))."
 	(#timeTotal -> self totalTime asSeconds).
 	(#targetLoc
 		->
-			((targetClasses collect: #linesOfCode)
+			((targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
 				inject: 0
 				into: [ :accum :each | accum + each ])).
+	"(#targetChurn
+		->
+			(((targetClasses
+				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
+				inject: 0
+				into: [ :accum :each | accum + each ])
+				printShowingDecimalPlaces: 2)).
+	(#testChurn
+		-> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2))."
 	(#testLoc -> testClass linesOfCode asString).
 	(#amplifiedCoverageMethods
 		-> self amplifiedTestCoverage methodsCoverage).
@@ -99,9 +133,11 @@ SAResultItem >> asDictionaryObject [
 		-> self originalTestCoverage branchesCoverage).
 	(#originalCoverageStatementes
 		-> self originalTestCoverage statementsCoverage).
-	(#testAmpLoc -> ((self amplifiedMethods collect: #linesOfCode)
-		inject: 0
-		into: [ :accum :each | accum + each ])).
+	(#testAmpLoc
+		->
+			((self amplifiedMethods collect: #linesOfCode)
+				inject: 0
+				into: [ :accum :each | accum + each ])).
 	(#timeDetail -> self detailedTimeLabel asArray).
 	(#methodsNotProfiled
 		-> (self methodsNotProfiled collect: #name) asArray).
@@ -130,22 +166,82 @@ SAResultItem >> asFileText [
 	^ STONJSON toStringPretty: self asDictionaryObject 
 ]
 
+{ #category : #'as yet unclassified' }
+SAResultItem >> codeChurn: filename repoName: aGithubProjectName [
+	| location cmd history adds removes changes |
+	location := IceRepository registry
+		detect: [ :pr | pr name = aGithubProjectName ]
+		ifFound: [ :pr | pr location ]
+		ifNone: [ self error: 'churn error: project name is not in iceberg' ].
+	cmd := '(cd ' , location asFileReference pathString
+		, ' && git log --format="%H" ' , filename , ')'.
+	history := OSPlatform current resultOfCommand: cmd.
+	adds := 0.
+	removes := 0.
+	history := (history splitOn: Character lf) reject: #isEmpty.
+	history ifEmpty: [ ^ 0 ].
+	history
+		do: [ :line | 
+			cmd := '(cd ' , location asFileReference pathString
+				, ' && git show --numstat --pretty="" ' , line , ' | grep '
+				, filename , ')'.
+			changes := OSPlatform current resultOfCommand: cmd.
+			changes := changes splitOn: Character tab.
+			adds := adds + (changes at: 1) asInteger.
+			removes := removes + (changes at: 1) asInteger ].
+	^ (adds + removes) / history size 
+]
+
+{ #category : #'as yet unclassified' }
+SAResultItem >> codeChurnForClass: aClass [
+	| package repoName base filename |
+	[ package := (IceRepository registry flatCollect: #loadedPackages)
+		detect: [ :p | p name = aClass package name ]
+		ifNone: [ self error: 'not found' ].
+	repoName := package repository name.
+	base := package repository subdirectory.
+	base ifNotEmpty: [ base := base , '/' ].
+	filename := base , package package , '/' , aClass name , '.class.st'.
+	^ self codeChurn: filename repoName: repoName ]
+		on: Error
+		do: [ ^ -1 ]
+]
+
 { #category : #reporting }
 SAResultItem >> detailedTimeLabel [
 	| sum |
+	self logs summary ifEmpty: [ ^ {} ].
 	sum := (self logs summary collect: #value) sum.
 	^ self logs summary
-				collect: [ :s | 
-					
-							s key asString , ': % '
-								, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
-								, (Duration milliSeconds: s value) humanReadablePrintString
-								, ')']
-						
+		collect: [ :s | 
+			s key asString , ': % '
+				, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
+				, (Duration milliSeconds: s value) humanReadablePrintString , ')' ]
+]
+
+{ #category : #reporting }
+SAResultItem >> directTestingOriginal [
+	| dict vals |
+	testClass allTestSelectors ifEmpty: [ ^ 0 ].
+	dict := (SAReceiverTypeProfiler initializeWith: SAConfig default)
+		testClass: testClass;
+		testTargets: testClass smallAmpTargetClasses;
+		run.
+	vals := dict directCalls values.
+	vals
+		ifEmpty: [ ^ 0 ]
+		ifNotEmpty: [ ^ vals sum / testClass allTestSelectors size ]
 ]
 
 { #category : #accessing }
 SAResultItem >> failedSelectorInOriginal [
+	| result |
+	failedSelectorInOriginal
+		ifNil: [ result := testClass suite run.
+			failedSelectorInOriginal:=
+			(result failures , result expectedDefects
+				collect: [ :failed | failed class lookupSelector: failed selector ])
+				asOrderedCollection. ].
 	^ failedSelectorInOriginal
 ]
 
@@ -260,15 +356,22 @@ SAResultItem >> markDownTitleOn: stream [
 { #category : #reporting }
 SAResultItem >> methodsNotProfiled [
 	| keys |
+	self runProfile ifNil: [ ^ {} ].
 	keys := self runProfile profile keys
-		select:
-			[ :p | self targetClasses anySatisfy: [ :t | p beginsWith: '#' , t name ] ].
-	^ (self targetClasses
-						flatCollect: [ :c | 
-							(c methods select: [ :m | m selector includesSubstring: ':' ])
-								reject: [ :m | 
-									keys
-										anySatisfy: [ :k | k beginsWith: '#' , c name , '#' , m selector ] ] ])
+		select: [ :p | 
+			self targetClasses
+				anySatisfy:
+					[ :t | (p beginsWith: '#' , t name) | (p beginsWith: '#' , t class name) ] ].
+	
+	^ self targetClasses
+		flatCollect: [ :c | 
+			(c methods , c class methods
+				select: [ :m | m selector includesSubstring: ':' ])
+				reject: [ :m | 
+					keys
+						anySatisfy: [ :k | 
+							(k beginsWith: '#' , c name , '#' , m selector)
+								| (k beginsWith: '#' , c class name , '#' , m selector) ] ] ]
 ]
 
 { #category : #evaluation }
@@ -345,6 +448,14 @@ SAResultItem >> originalTestCoverage [
 	^ originalCoverage
 ]
 
+{ #category : #'as yet unclassified' }
+SAResultItem >> regenerate [
+	self
+		mutalkRunOriginal;
+		mutalkRunMutated;
+		failedSelectorInOriginal
+]
+
 { #category : #accessing }
 SAResultItem >> runProfile [
 	^ runProfile
@@ -364,6 +475,7 @@ SAResultItem >> saveResultToFile [
 SAResultItem >> saveResultToFileAs: testClassName [
 	| fileName |
 	fileName := testClassName , '.json'.
+	(FileLocator imageDirectory / fileName) exists ifTrue: [ (FileLocator imageDirectory / fileName) delete ]. 
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: self asFileText;
 		close.
@@ -398,8 +510,9 @@ SAResultItem >> testClass: anObject [
 { #category : #reporting }
 SAResultItem >> totalTime [
 	| sum |
+	self logs summary ifEmpty: [ ^ Duration milliSeconds: 0 ].
 	sum := (self logs summary collect: #value) sum.
-	^ (Duration milliSeconds: sum) 
+	^ Duration milliSeconds: sum
 ]
 
 { #category : #reporting }

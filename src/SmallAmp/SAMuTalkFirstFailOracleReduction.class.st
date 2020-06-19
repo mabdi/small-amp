@@ -7,6 +7,22 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #adding }
+SAMuTalkFirstFailOracleReduction >> addErrorBlocks: newTree [
+	| replace |
+	replace := OrderedCollection new.
+	(newTree statements select: #isAssignment) do: [ :stmt | 
+		newTree body replaceNode: stmt withNode: (RBMessageNode
+	receiver:
+		(RBBlockNode
+			body: (RBSequenceNode statements: {(stmt copy)}))
+	selector: #on:do:
+	arguments:
+		{(RBVariableNode named: #Error).
+		(RBBlockNode body: (RBSequenceNode statements: {}))}) 
+		 ]
+]
+
 { #category : #running }
 SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 	| id b |
@@ -31,29 +47,6 @@ SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 { #category : #accessing }
 SAMuTalkFirstFailOracleReduction >> astHelper [
 	^ SAASTHelper new
-]
-
-{ #category : #private }
-SAMuTalkFirstFailOracleReduction >> cleanAndReduceMethod: methodast [
-	| tobecleaned |
-	tobecleaned := OrderedCollection new.
-	methodast statements
-		select: [ :node | 
-			node class = RBMessageNode
-				and: [ node receiver name = #self
-						and: [ node selector asString endsWith: 'description:' ] ] ]
-		thenDo: [ :node | 
-			node arguments last value = 'Important Assertions'
-				ifTrue: [ 
-					node
-						selector:
-							(node selector asString
-								copyWithRegex: 'description\:$'
-								matchesReplacedWith: '').
-					node arguments  removeLast			
-								 ]
-				ifFalse: [ tobecleaned add: node ] ].
-	methodast statements removeAll: tobecleaned
 ]
 
 { #category : #cleanup }
@@ -99,8 +92,7 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 		compile:
 			'smallamp_logsAdd: aString self smallamp_logs add: (smallamp_mutant -> aString)'.
 	reducedTestClass
-		compile:
-			'smallamp_logs: aString  self class smallamp_logsAdd: aString'.
+		compile: 'smallamp_logs: aString  self class smallamp_logsAdd: aString'.
 	reducedTestClass
 		compile:
 			'assert: aBooleanOrBlock description: aStringOrBlock resumable: resumableBoolean
@@ -110,75 +102,20 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self addLoggerToAllAsserts: theMethod ast.
+			self addErrorBlocks: newTree.
 			reducedTestClass compile: newTree formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> loggersAreInstalled [
-	^ newTestClass methodDict includesKey: #logFailure:
-]
-
-{ #category : #private }
-SAMuTalkFirstFailOracleReduction >> makeAssertImportant: id atMethod: methodast [
-	methodast statements
-		do:
-			[ :node | 
-			(node class = RBMessageNode
-				and: [ node receiver name = #self
-						and: [ (node selector asString endsWith: 'description:')
-								and: [ node arguments last value = (methodast selector asString , ':' , id) ] ] ])
-				ifTrue: [ (node arguments at: node arguments size)
-						value: 'Important Assertions'
-						start: 0
-						stop: -1 ] ].
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> makeReducedAddedClass [
-	| l methods |
-	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
-	methods := (testClass testSelectors
-		reject: [ :s | (self ignoredTestMethods collect: #selector) includes: s ])
-		collect: [ :s | (testClass methodNamed: s) sourceCode ].
-	methods := methods , (l value: reducedTestClass).
-	reducedAddedTestClass := self astHelper
-		buildTestClassWith: methods
-		using: testClass
-		
-]
-
-{ #category : #actions }
-SAMuTalkFirstFailOracleReduction >> makeReducedClass [
+SAMuTalkFirstFailOracleReduction >> makeReducedResult [
 	| logs |
 	reducedTestClass := self createDuplicateClass.
 	self installLoggers.
 	particularResults := self mutalkRunWithLogging: reducedTestClass.
 	logs := reducedTestClass smallamp_logs.
-	self uninstallLoggersBut: logs
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> makeReducedResult [
-	| res |
-	self makeReducedClass.
-	self makeReducedAddedClass.
-	res := self reducedAddedTestClass.
-	"res analysis: (self mutalkRun: self reducedAddedTestClass)."
-	self cleanUp: reducedTestClass.
-	^ res
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> mutalkRun: aClass [
-	| analysis1 |
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: {aClass}
-		mutating: targetClasses
-		using: MutantOperator contents
-		with: SortedTestsMethodsRunningMutantEvaluationStrategy new
-		with: SmallAmpMutationsGenerationStrategy new.
-	analysis1 run.
-	^ analysis1
+	self uninstallLoggers.
+	self reduceMehtodsBasedOn: logs.
+	^ reducedTestClass
 ]
 
 { #category : #'as yet unclassified' }
@@ -205,40 +142,30 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> presentationName [
-	^ 'First Mutation Failed'
+SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
+	reducedTestClass methods
+		select: #isTestMethod
+		thenDo: [ :theMethod | 
+			| newTree |
+			newTree := self
+				transformBackAndMakeCommentsBaseOn: listOfPairs
+				in: theMethod ast.
+			self removeErrorBlocks: newTree.
+			(self hasAnySelfCall: newTree)
+				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
+				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
 
-{ #category : #running }
-SAMuTalkFirstFailOracleReduction >> removeAllAssertsAndTransformImportants: listOfIds in: aParseTree [
-	| searchFor rewriter parser tree empty toComment |
-	toComment := OrderedCollection new.
-	rewriter := RBParseTreeRewriter new.
-	parser := aParseTree copy.
-	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
-	empty := RBParser parseExpression: ''.
-	rewriter
-		addRule:
-			(RBBlockReplaceRule
-				searchFor: searchFor
-				replaceWith: [ :node | 
-					| thisId theAssertion |
-					thisId := (((node arguments at: 2) body statements at: 1)
-						arguments at: 1) value.
-					theAssertion := node receiver body statements at: 1.
-					listOfIds
-						detect: [ :p | p value = thisId ]
-						ifFound: [ :p | 
-							toComment add: p key.
-							theAssertion ]
-						ifNone: [ empty ] ]).
-	rewriter executeTree: parser.
-	tree := rewriter tree.
-	
-	tree := self astHelper
-		addComment: (self synthesisCommentFrom: toComment)
-		toMethodAST: tree.
-	^ tree
+{ #category : #adding }
+SAMuTalkFirstFailOracleReduction >> removeErrorBlocks: newTree [
+	| replace |
+	replace := OrderedCollection new.
+	(newTree statements select: [:stmt | (stmt isMessage) and: [ (stmt selector = #on:do:) and: [(stmt arguments  at:2) statements isEmpty]] ])
+		do: [ :stmt | 
+			newTree body
+				replaceNode: stmt
+				withNode: (stmt receiver statements at: 1) copy
+					 ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -258,6 +185,7 @@ SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
 { #category : #running }
 SAMuTalkFirstFailOracleReduction >> synthesisCommentFrom: toComment [
 	| when |
+	toComment ifEmpty: [ ^ nil ].
 	^ String
 		streamContents: [ :s | 
 			s
@@ -266,8 +194,10 @@ SAMuTalkFirstFailOracleReduction >> synthesisCommentFrom: toComment [
 				cr.
 			toComment
 				do: [ :m | 
-					when := self synthesisWhenFor: (particularResults detect: [ :x | x mutant = m ]) mutantEvaluation
-		observation.
+					when := self
+						synthesisWhenFor:
+							(particularResults detect: [ :x | x mutant = m ]) mutantEvaluation
+								observation.
 					s
 						nextPutAll: '- ';
 						nextPutAll: m smallAmpCommentText.
@@ -295,8 +225,41 @@ SAMuTalkFirstFailOracleReduction >> synthesisWhenFor: observations [
 	^ a asArray asString 
 ]
 
+{ #category : #running }
+SAMuTalkFirstFailOracleReduction >> transformBackAndMakeCommentsBaseOn: listOfIds in: aParseTree [
+	| searchFor rewriter parser tree empty toComment |
+	toComment := OrderedCollection new.
+	rewriter := RBParseTreeRewriter new.
+	parser := aParseTree copy.
+	parser allChildren do: [ :each | each comments: nil ].
+	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
+	empty := RBParser parseExpression: ''.
+	rewriter
+		addRule:
+			(RBBlockReplaceRule
+				searchFor: searchFor
+				replaceWith: [ :node | 
+					| thisId theAssertion |
+					thisId := (((node arguments at: 2) body statements at: 1)
+						arguments at: 1) value.
+					theAssertion := node receiver body statements at: 1.
+					listOfIds
+						detect: [ :p | p value = thisId ]
+						ifFound: [ :p | 
+							toComment add: p key.
+							theAssertion ]
+						ifNone: [ empty ] ]).
+	rewriter executeTree: parser.
+	tree := rewriter tree.
+	(self synthesisCommentFrom: toComment) ifNotNil: [ :x | tree := self astHelper
+		addComment: x
+		toMethodAST: tree ]
+	.
+	^ tree
+]
+
 { #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfPairs [
+SAMuTalkFirstFailOracleReduction >> uninstallLoggers [
 	reducedTestClass class removeSelector: #smallamp_logs.
 	reducedTestClass class removeSelector: #setMutant:.
 	reducedTestClass class removeSelector: #smallamp_logsAdd:.
@@ -304,14 +267,5 @@ SAMuTalkFirstFailOracleReduction >> uninstallLoggersBut: listOfPairs [
 	reducedTestClass removeSelector: #assert:description:resumable:.
 	reducedTestClass class removeInstVarNamed: 'smallamp_logs'.
 	reducedTestClass class removeInstVarNamed: 'smallamp_mutant'.
-	reducedTestClass methods
-		select: #isTestMethod
-		thenDo: [ :theMethod | 
-			| newTree |
-			newTree := self
-				removeAllAssertsAndTransformImportants: listOfPairs
-				in: theMethod ast.
-			(self hasAnySelfCall: newTree)
-				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
-				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
+	
 ]

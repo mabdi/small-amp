@@ -12,7 +12,7 @@ MutationTestingAnalysis >> generateResultsLogger [
 						for: aMutation
 						using: testCases
 						following: mutantsEvaluationStrategy
-						andConsidering: self coverageAnalysisResult) value ]
+						andConsidering: self coverageAnalysisResult) value  ]
 		displayingProgress: 'Evaluating mutants'.
 	^ particularResults
 ]
@@ -43,6 +43,31 @@ MutationTestingAnalysis >> generateResultsSmallAmp [
 ]
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
+	particularResults := OrderedCollection new.
+	mutations
+		do: [ :aMutation | 
+			logger logStartEvaluating: aMutation.
+			[ particularResults
+				add:
+					(MutantEvaluation
+						for: aMutation
+						using: testCases
+						following: mutantsEvaluationStrategy
+						andConsidering: self coverageAnalysisResult) valueSmallAmpVerbose  ]
+				on: Error
+				do: [ Stdio stdout
+						nextPutAll: 'Mutation generation failed: ';
+						nextPutAll: aMutation description;
+						nextPutAll: 'Method: ';
+						nextPutAll: aMutation originalMethod name asString;
+						lf;
+						flush ] ]
+		displayingProgress: 'Evaluating mutants'.
+	^ particularResults
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> runSmallAmp [
 	"Obtain mutants applying the operators in the classes (or
 	methods of
@@ -56,7 +81,7 @@ MutationTestingAnalysis >> runSmallAmp [
 	elapsedTime := Time
 		millisecondsToRun: [ self generateCoverageAnalysis.
 			self generateMutations.
-			self generateResults ].
+			self generateResultsSmallAmp ].
 	true ]
 		on: TestsWithErrorsException
 		do: [ :ex | 
@@ -79,7 +104,7 @@ MutationTestingAnalysis >> runSmallAmpVerbose [
 	elapsedTime := Time
 		millisecondsToRun: [ self generateCoverageAnalysis.
 			self generateMutations.
-			self generateResultsSmallAmp ].
+			self generateResultsSmallAmpVerbose ].
 	true ]
 		on: TestsWithErrorsException
 		do: [ :ex | 

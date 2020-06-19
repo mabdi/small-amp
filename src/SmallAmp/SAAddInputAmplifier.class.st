@@ -42,7 +42,8 @@ SAAddInputAmplifier >> applyMessageAdd: index on: aMethod [
 
 { #category : #removing }
 SAAddInputAmplifier >> checkSafeToAddAfter: statement [
-	| msg |
+	| msg key|
+
 	msg := statement.
 	statement isAssignment
 		ifTrue: [ msg := statement value ].
@@ -50,11 +51,12 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 		ifFalse: [ ^ false ].
 	msg receiver isVariable
 		ifFalse: [ ^ false ].
+			key := testMethodModel selector , ':' , msg receiver name.
 	^ testMethodModel testTargets
 		anySatisfy: [ :c | 
 			variableTypes
-				at: testMethodModel selector , ':' , msg receiver name
-				ifPresent: [ :c2 | c2 = c or: [ c2 inheritsFrom: c ] ]
+				at: key
+				ifPresent: [ :c2 | c2 = c | (c2 inheritsFrom: c) | (c2 = c class) ]
 				ifAbsent: [ false ] ]
 ]
 
@@ -94,7 +96,7 @@ SAAddInputAmplifier >> generateNewStatementsAfter: statement [
 
 { #category : #testing }
 SAAddInputAmplifier >> isNotSafeToSelect: method [
-	^ {#initialization . #private} includes: method protocol
+	^ {"#initialization ." #private} includes: method protocol
 ]
 
 { #category : #'as yet unclassified' }

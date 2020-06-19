@@ -33,6 +33,7 @@ SACoverageAnalyser >> allStatements [
 
 { #category : #accessing }
 SACoverageAnalyser >> branchesCoverage [
+	self allBranches isZero ifTrue: [ ^ 0 ].
 	^ (100 * self branchesCovered / self allBranches) asInteger
 ]
 
@@ -71,7 +72,10 @@ SACoverageAnalyser >> methods [
 
 { #category : #accessing }
 SACoverageAnalyser >> methodsCoverage [
-	^ (100 * self methodsCovered  / self allMethods ) asInteger
+	self allMethods isZero
+		ifTrue: [ ^ 0 ].
+	
+	^ (100 * self methodsCovered / self allMethods) asInteger
 ]
 
 { #category : #accessing }
@@ -123,7 +127,10 @@ SACoverageAnalyser >> runTests [
 
 { #category : #accessing }
 SACoverageAnalyser >> statementsCoverage [
-	^ (100 * self statementsCovered  / self allStatements ) asInteger
+	self allStatements isZero
+		ifTrue: [ ^ 0 ].
+	
+	^ (100 * self statementsCovered / self allStatements) asInteger
 ]
 
 { #category : #accessing }

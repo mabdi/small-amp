@@ -8,6 +8,19 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SADefaultPrettification >> fixNamePostfixes: nameMapping [
+	| needsPostfix names idx |
+	names := (nameMapping collect: #value) asSet.
+	names
+		do: [ :name | 
+			needsPostfix := nameMapping select: [ :x | x value = name ].
+			needsPostfix size > 1
+				ifTrue: [ idx := 1.
+					needsPostfix
+						do: [ :kvp | kvp value: kvp value , idx asString. idx:= idx + 1 ] ] ]
+]
+
 { #category : #initialization }
 SADefaultPrettification >> initialize [
 	usedNames := Dictionary new
@@ -21,33 +34,28 @@ SADefaultPrettification >> prettify [
 
 { #category : #'as yet unclassified' }
 SADefaultPrettification >> renameInsideMethod: aMethodSrc profiles: varTypes [
-	| src newName ast |
+	| src newNames ast |
 	src := SAASTHelper new cleanUp: aMethodSrc.
 	ast := SAASTHelper new parsedMethodFrom: src.
-	newName := ast temporaries
+	newNames := (ast temporaries
 		select: [ :tv | tv name matchesRegex: SAASTHelper tempPattern ]
 		thenCollect: [ :t | 
 			t name
-				-> (varTypes at: ast selector , ':' , t name) canonicalArgumentName ].
-	^ self renameTemp: newName in: ast
+				-> (varTypes at: ast selector , ':' , t name) canonicalArgumentName ])
+		.
+	^ self renameTemp: newNames in: ast
 ]
 
 { #category : #'as yet unclassified' }
 SADefaultPrettification >> renameTemp: nameMapping in: mtdAST [
 	| rewriter |
-	self flag: #todo.	"use integer index"
-	nameMapping
-		withIndexDo: [ :kvp :idx | 
-			nameMapping
-				withIndexDo: [ :kvp2 :idx2 | 
-					idx < idx2
-						ifTrue: [ kvp value = kvp2 value
-								ifTrue: [ kvp2 value: kvp2 value , '0' ] ] ] ].
+	self fixNamePostfixes: nameMapping.
+	
 	rewriter := RBParseTreeRewriter new.
-	nameMapping do: [ :mp | rewriter replace: mp key with: mp value ].
+	nameMapping associationsDo: [ :mp | rewriter replace: mp key with: mp value ].
 	rewriter executeTree: mtdAST.
 	nameMapping
-		do: [ :kvp | 
+		associationsDo: [ :kvp | 
 			(mtdAST temporaries select: [ :tm | tm name = kvp key ]) first
 				name: kvp value ].
 	^ mtdAST formattedCode

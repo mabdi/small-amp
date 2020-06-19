@@ -18,7 +18,8 @@ Class {
 		'prettifier',
 		'simplifier',
 		'maxPop',
-		'testRunTimeOutMult'
+		'testRunTimeOutMult',
+		'saveToFile'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -34,7 +35,7 @@ SAConfig class >> default [
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selections: {SAMutationCoverageSelection};
-		methodReductions: {SANoMethodReduction };
+		methodReductions: {SAMaxPopMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
@@ -44,6 +45,7 @@ SAConfig class >> default [
 		maxPop: 200;
 		debug: false;
 		lite: false;
+		saveToFile: false;
 		yourself
 ]
 
@@ -156,6 +158,16 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
+]
+
+{ #category : #accessing }
+SAConfig >> saveToFile [
+	^ saveToFile
+]
+
+{ #category : #accessing }
+SAConfig >> saveToFile: anObject [
+	saveToFile := anObject
 ]
 
 { #category : #accessing }

@@ -16,6 +16,13 @@ Class {
 	#category : #'SmallAmp-DrTests'
 }
 
+{ #category : #'as yet unclassified' }
+SADrTestsResult >> buildTreeFileOut [
+	<dtSmallAmpResultTreeNamed: 'File Out data' order: 3>
+	self smallAmpResult ifNotNil: [ :result | result results keysAndValuesDo: [ :k :v | v saveResultToFileAs: k . v amplifiedClass fileOut  ] ].
+	^ DTTreeNode new subResults: {}
+]
+
 { #category : #accessing }
 SADrTestsResult >> buildTreeForUI [
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>

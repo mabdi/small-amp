@@ -78,19 +78,17 @@ SAAssertTransform >> rewriteAllAssertsIn: aParseTree replaceBlock: aBlock [
 SAAssertTransform >> transformAllAsserts: aParseTree extract: doExtract [
 	| rewriter parser empty tree |
 	rewriter := RBParseTreeRewriter new.
-	parser := aParseTree copy.
+	parser := self transformRemoveReturn: aParseTree copy.
 	empty := RBParser parseExpression: ''.
-	self getAllPatterns do: [ :each | 
-		doExtract
-			ifTrue: [ rewriter replace: each key with: each value ]
-			ifFalse: [ 
-				rewriter addRule:
-					(RBBlockReplaceRule
-						 searchFor: each key
-						 replaceWith: [ :node | empty ]) ] ].
+	self getAllPatterns
+		do: [ :each | 
+			doExtract
+				ifTrue: [ rewriter replace: each key with: each value ]
+				ifFalse: [ rewriter
+						addRule:
+							(RBBlockReplaceRule searchFor: each key replaceWith: [ :node | empty ]) ] ].
 	rewriter executeTree: parser.
 	tree := rewriter tree.
-	
 	^ tree
 ]
 
@@ -178,6 +176,17 @@ SAAssertTransform >> transformDenyIdenticalTo [
 	self flag: #TODO. "check it"
 	^ { ('self deny: ``@actual identicalTo: ``@expected'
 	   -> '(``@expected == ``@actual) not') }
+]
+
+{ #category : #running }
+SAAssertTransform >> transformRemoveReturn: aParseTree [
+	| rewriter parser tree |
+	rewriter := RBParseTreeRewriter new.
+	parser := aParseTree copy.
+	rewriter replace: '^``@object' with: '``@object'.
+	rewriter executeTree: parser.
+	tree := rewriter tree.
+	^ tree
 ]
 
 { #category : #'transform pattern should' }

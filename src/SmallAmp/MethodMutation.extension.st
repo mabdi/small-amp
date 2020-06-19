@@ -23,3 +23,12 @@ MethodMutation >> smallAmpCommentText [
 				nextPutAll: self originalMethod selector;
 				nextPutAll: '`' ]
 ]
+
+{ #category : #'*SmallAmp' }
+MethodMutation >> uninstallDeep [
+	"UnInstall the mutant recompiling the original method into the class."
+
+	MethodInstaller new
+		installFromSource: originalMethod sourceCode
+		in: originalClass
+]

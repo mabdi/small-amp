@@ -1,7 +1,7 @@
 Extension { #name : #MutantEvaluation }
 
 { #category : #'*SmallAmp' }
-MutantEvaluation >> runTestsSmallAmp [
+MutantEvaluation >> runTestsSmallAmpVerbose [
 	"Collect all suite test and execute them."
 
 	| suite |
@@ -16,8 +16,8 @@ MutantEvaluation >> runTestsSmallAmp [
 ]
 
 { #category : #'*SmallAmp' }
-MutantEvaluation >> testResultsSmallAmp [
-	^ [ self runTestsSmallAmp ]
+MutantEvaluation >> testResultsSmallAmpVerbose [
+	^ [ self runTestsSmallAmpVerbose ]
 		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
 		onTimeout: [ nil ]
 ]
@@ -31,8 +31,25 @@ MutantEvaluation >> valueSmallAmp [
 		flush.
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
-	self testResultsSmallAmp ]
-		ensure: [ mutation uninstall ].
+	self testResults ]
+		ensure: [ mutation uninstallDeep ].
+	^ MutantEvaluationResult
+		for: mutation
+		results: testResults
+		producedBy: self
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> valueSmallAmpVerbose [
+	| testResults |
+	Stdio stdout
+		nextPutAll: mutation originalMethod name asString;
+		lf;
+		flush.
+	self initializeCoverageResultIfNil.
+	testResults := [ mutation install.
+	self testResultsSmallAmpVerbose ]
+		ensure: [ mutation uninstallDeep ].
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults

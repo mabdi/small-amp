@@ -35,25 +35,35 @@ SAASTHelper >> addComment: aText toMethod: anSRC [
 { #category : #adding }
 SAASTHelper >> addComment: aText toMethodAST: anAST [
 	| newMethodAST |
-	newMethodAST := self parserClass
-		parseMethod: anAST selector , ' "' , aText , '"'.
-	newMethodAST replaceNode: newMethodAST body withNode: anAST body.
-	newMethodAST replaceNode: newMethodAST arguments withNode: anAST arguments.
-	newMethodAST pragmas: anAST pragmas.
-	^ newMethodAST
+	(aText includes: $")
+		ifTrue: [ newMethodAST := anAST copy.
+			newMethodAST statements addFirst: (RBLiteralValueNode value: aText).
+			 ]
+		ifFalse: [ newMethodAST := self parserClass
+				parseMethod: anAST selector , ' "' , aText , '"'.
+			newMethodAST replaceNode: newMethodAST body withNode: anAST body.
+			newMethodAST
+				replaceNode: newMethodAST arguments
+				withNode: anAST arguments.
+			newMethodAST pragmas: anAST pragmas. ].
+		^ newMethodAST
 ]
 
 { #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	| tempClass |
-	tempClass := testClass superclass
+	tempClass := testClass
 		subclass: (testClass name asString , self getId asString) asSymbol
-		instanceVariableNames: testClass instanceVariablesString
+		instanceVariableNames: ''
 		classVariableNames: ''
 		package: self defaultTempPackage.
-	(testClass methods reject: #isTestMethod)
-		do: [ :item | tempClass compile: item sourceCode ].
-	(testClass class methods do: [ :item | tempClass class compile: item sourceCode ]).
+	tempClass class
+		compile:
+			'allTestSelectors
+		| answer |
+		answer := Set withAll: self testSelectors.
+		answer addAll: self superclass allTestSelectors.
+		^ answer asSortedCollection asOrderedCollection'.
 	aCollection
 		do: [ :item | 
 			| ast |
@@ -114,6 +124,28 @@ SAASTHelper >> getId [
 SAASTHelper >> killAllMetalinksOn: aClass [ 
 	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
 
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
+	| tempClass package |
+	tempClass := testClass
+		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
+	(RPackageOrganizer default
+		includesPackageNamed: self defaultTempPackage)
+		ifFalse: [ RPackageOrganizer default
+				createPackageNamed: self defaultTempPackage ].
+	package := RPackageOrganizer default
+		packageNamed: self defaultTempPackage.
+	package addClass: tempClass.
+	(testClass methods select: #isTestMethod)
+		do: [ :item | tempClass removeSelector: item selector ].
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			tempClass compile: ast formattedCode ].
+	^ tempClass
 ]
 
 { #category : #'method operations' }

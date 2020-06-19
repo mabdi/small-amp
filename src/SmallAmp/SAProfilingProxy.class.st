@@ -75,8 +75,9 @@ SAProfilingProxy >> gtDisplayString [
 
 { #category : #initialization }
 SAProfilingProxy >> initializeOn: aCompiledMethod profiler: anObject [
-	aCompiledMethod class = CompiledMethod
-		ifFalse: [ Error new signal: 'cannot install proxy on other object' ].
+	#(CompiledMethod ReflectiveMethod)
+		detect: [:s | s = aCompiledMethod class asString]
+		ifNone: [ Error new signal: 'cannot install proxy on other object' ].
 	profiler := anObject.
 	method := aCompiledMethod
 ]

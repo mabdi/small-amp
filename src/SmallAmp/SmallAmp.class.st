@@ -61,9 +61,27 @@ SmallAmp class >> initializeWith: aConfig [
 	^ self new initializeWith: aConfig
 ]
 
-{ #category : #actions }
-SmallAmp class >> metricsEval: aPrefix [
-	^ self new metricsEval: aPrefix
+{ #category : #'world menu' }
+SmallAmp class >> menuCommandOn: aBuilder [
+	<worldMenu>
+	| dt |
+	aBuilder item: #SmallAmp.
+	(aBuilder
+		item: #'Open Ui (DrTests)';
+		parent: #SmallAmp)
+		action: [ dt := DrTests new.
+			dt pluginsDropList selectItem: SADrTestsPlugin. 
+			dt openWithSpec ].
+	(aBuilder
+		item: #'Browse Temp Package';
+		parent: #SmallAmp)
+		action: [ SAASTHelper new defaultTempPackage asPackage browse ].
+	(aBuilder
+		item: #'Clear temp';
+		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
+	(aBuilder
+		item: #'Default config';
+		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ]
 ]
 
 { #category : #private }
@@ -85,9 +103,12 @@ SmallAmp >> amplifyAll [
 			| instance |
 			Transcript show: 'Processing ' , item key name.
 			[ instance := self amplify: item key target: item value.
-			res addResult: instance for: item ]
+			res addResult: instance for: item.
+			config saveToFile
+				ifTrue: [ instance saveResultToFileAs: item key asString.
+					instance amplifiedClass fileOut ] ]
 				on: Error
-				do: [ :ex |
+				do: [ :ex | 
 					Transcript
 						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
@@ -160,46 +181,6 @@ SmallAmp >> initializeWith: aConfig [
 	self initialize. 
 	config := aConfig.
 	
-]
-
-{ #category : #actions }
-SmallAmp >> metricsEval: aPrefix [
-	| search packages classes testPackages tests targetedTests testMethodTargeted stat testrun testsuite loc |
-	search := aPrefix asLowercase.
-	packages := RPackage organizer packages
-		select: [ :p | p name asLowercase includesSubstring: search ].
-	classes := packages flatCollect: [ :p | p definedClasses ].
-	loc := (classes collect: #linesOfCode) sum.
-	testPackages := packages
-		select: [ :p | p definedClasses anySatisfy: [ :c | c isTestCase ] ].
-	tests := testPackages
-		flatCollect:
-			[ :p | p definedClasses select: [ :c | c allSuperclasses includes: TestCase ] ].
-	testsuite := TestSuite new.
-	tests do: [ :ts | testsuite addTests: ts buildSuite tests ].
-	testrun := testsuite run.
-	targetedTests := tests
-		select: [ :s | s smallAmpTargetClasses isNotNil ].
-	testMethodTargeted := targetedTests flatCollect: #allTestSelectors.
-	stat := {{(#packages -> packages size).
-	(#classes -> classes size).
-	(#testPackages -> testPackages size).
-	(#tests -> tests size).
-	(#loc -> loc).
-	(#targetedTests -> targetedTests size).
-	(#targetedTestsMethods -> testMethodTargeted size).
-	(#testsFails -> testrun failureCount).
-	(#testsErrors -> testrun errorCount).
-	(#testsPasses -> testrun passedCount)}} asString.
-	(FileLocator workingDirectory / (search , '.stat')) writeStream
-		nextPutAll: stat;
-		lf;
-		close.
-	(FileLocator workingDirectory / 'todo.txt') writeStream
-		nextPutAll: (Character cr join: targetedTests);
-		lf;
-		close.
-	^ stat
 ]
 
 { #category : #actions }
