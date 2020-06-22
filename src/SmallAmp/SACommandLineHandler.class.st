@@ -117,7 +117,7 @@ SACommandLineHandler >> metricsEval: repoName [
 	(#loc -> loc).
 	(#targetedTests -> targetedTests size).
 	(#targetedTestsMethods -> testMethodTargeted size).
-	(#allGreen -> (testrun failureCount + testrun errorCount < 0)).
+	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
 	(#testsFails -> testrun failureCount).
 	(#testsErrors -> testrun errorCount).
 	(#testsPasses -> testrun passedCount)} asString.
