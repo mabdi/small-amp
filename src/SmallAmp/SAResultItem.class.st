@@ -97,68 +97,127 @@ SAResultItem >> amplifiedTestCoverage [
 
 { #category : #reporting }
 SAResultItem >> asDictionaryObject [
-	^ {(#testCase -> testClass name).
-	(#targetClasses -> (targetClasses collect: #name) asArray).
-	(#amplifiedClass -> self amplifiedClass name).
-	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
-	(#mutationScoreBefore -> self originalMutationScore).
-	(#mutationScoreAfter -> self amplifiedMutationScore).
-	"(#directTestingOriginal
-		-> (self directTestingOriginal printShowingDecimalPlaces: 2))."
-	(#timeTotal -> self totalTime asSeconds).
-	(#targetLoc
-		->
-			((targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
+	| result |
+	result := Dictionary new.
+	self safeFail: [ testClass name ] key: #testCase addTo: result.
+	self
+		safeFail: [ (targetClasses collect: #name) asArray ]
+		key: #targetClasses
+		addTo: result.
+	self
+		safeFail: [ self amplifiedClass name ]
+		key: #amplifiedClass
+		addTo: result.
+	self
+		safeFail: [ (self amplifiedMethods collect: #name) asArray ]
+		key: #amplifiedMethods
+		addTo: result.
+	self
+		safeFail: [ self originalMutationScore ]
+		key: #mutationScoreBefore
+		addTo: result.
+	self
+		safeFail: [ self amplifiedMutationScore ]
+		key: #mutationScoreAfter
+		addTo: result.
+	self
+		safeFail: [ self directTestingOriginal printShowingDecimalPlaces: 2 ]
+		key: #directTestingOriginal
+		addTo: result.
+	self
+		safeFail: [ self totalTime asSeconds ]
+		key: #timeTotal
+		addTo: result.
+	self
+		safeFail:
+			[ (targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
 				inject: 0
-				into: [ :accum :each | accum + each ])).
-	"(#targetChurn
-		->
-			(((targetClasses
+				into: [ :accum :each | accum + each ] ]
+		key: #targetLoc
+		addTo: result.
+	self
+		safeFail: [ ((targetClasses
 				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
 				inject: 0
 				into: [ :accum :each | accum + each ])
-				printShowingDecimalPlaces: 2)).
-	(#testChurn
-		-> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2))."
-	(#testLoc -> testClass linesOfCode asString).
-	(#amplifiedCoverageMethods
-		-> self amplifiedTestCoverage methodsCoverage).
-	(#amplifiedCoverageBranches
-		-> self amplifiedTestCoverage branchesCoverage).
-	(#amplifiedCoverageStatementes
-		-> self amplifiedTestCoverage statementsCoverage).
-	(#originalCoverageMethods
-		-> self originalTestCoverage methodsCoverage).
-	(#originalCoverageBranches
-		-> self originalTestCoverage branchesCoverage).
-	(#originalCoverageStatementes
-		-> self originalTestCoverage statementsCoverage).
-	(#testAmpLoc
-		->
-			((self amplifiedMethods collect: #linesOfCode)
+				printShowingDecimalPlaces: 2 ]
+		key: #targetChurn
+		addTo: result.
+	self
+		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
+		key: #testChurn
+		addTo: result.
+	self
+		safeFail: [ testClass linesOfCode asString ]
+		key: #testLoc
+		addTo: result.
+	self
+		safeFail: [ self amplifiedTestCoverage methodsCoverage ]
+		key: #amplifiedCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ self amplifiedTestCoverage branchesCoverage ]
+		key: #amplifiedCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ self amplifiedTestCoverage statementsCoverage ]
+		key: #amplifiedCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage methodsCoverage ]
+		key: #originalCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage branchesCoverage ]
+		key: #originalCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage statementsCoverage ]
+		key: #originalCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ (self amplifiedMethods collect: #linesOfCode)
 				inject: 0
-				into: [ :accum :each | accum + each ])).
-	(#timeDetail -> self detailedTimeLabel asArray).
-	(#methodsNotProfiled
-		-> (self methodsNotProfiled collect: #name) asArray).
-	(#assertionDensityOriginal -> self originalMethodsAssertionDensity).
-	(#assertionDensityAmplified -> self amplifiedMethodsAssertionDensity).
-	(#testMethodsIgnored
-		-> (self failedSelectorInOriginal collect: #name) asArray).
-	(#numberOfAllMutationsInOriginal
-		-> self numberOfAllMutationsInOriginal).
-	(#mutantsAliveInOriginal
-		->
-			(self aliveMutantsInOriginal
-				collect: [ :m | m mutant asDictionaryObject ]) asArray).
-	(#killedInAmplified
-		->
-			(self killedMutantsInAmplified
-				collect: [ :m | m mutant asDictionaryObject ]) asArray).
-	(#stillAliveMutants
-		->
-			(self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
-				asArray)} asDictionary
+				into: [ :accum :each | accum + each ] ]
+		key: #testAmpLoc
+		addTo: result.
+	self
+		safeFail: [ self detailedTimeLabel asArray ]
+		key: #timeDetail
+		addTo: result.
+	self
+		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
+		key: #methodsNotProfiled
+		addTo: result.
+	self
+		safeFail: [ self originalMethodsAssertionDensity ]
+		key: #assertionDensityOriginal
+		addTo: result.
+	self
+		safeFail: [ self amplifiedMethodsAssertionDensity ]
+		key: #assertionDensityAmplified
+		addTo: result.
+	self
+		safeFail: [ (self failedSelectorInOriginal collect: #name) asArray ]
+		key: #testMethodsIgnored
+		addTo: result.
+	self
+		safeFail: [ self numberOfAllMutationsInOriginal ]
+		key: #numberOfAllMutationsInOriginal
+		addTo: result.
+	self
+		safeFail: [ (self aliveMutantsInOriginal
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #mutantsAliveInOriginal
+		addTo: result.
+	self
+		safeFail: [ (self killedMutantsInAmplified
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #killedInAmplified
+		addTo: result.
+	self safeFail: [ (self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
+				asArray ] key: #stillAliveMutants addTo: result.
+	^ result
 ]
 
 { #category : #export }
@@ -464,6 +523,26 @@ SAResultItem >> runProfile [
 { #category : #accessing }
 SAResultItem >> runProfile: aProfile [
 	runProfile := aProfile
+]
+
+{ #category : #'as yet unclassified' }
+SAResultItem >> safeFail: block key: aKey addTo: aDictionary [
+	| theValue |
+	theValue := block
+		on: Error
+		do: [ :x | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: x class asString;
+				nextPutAll: ': ';
+				nextPutAll: x asString;
+				nextPutAll: '-';
+				nextPutAll: x messageText;
+				lf;
+				flush.
+			'N/A' ].
+	aDictionary at: aKey put: theValue
 ]
 
 { #category : #export }
