@@ -120,10 +120,10 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ self amplifiedMutationScore ]
 		key: #mutationScoreAfter
 		addTo: result.
-	self
+	"self
 		safeFail: [ self directTestingOriginal printShowingDecimalPlaces: 2 ]
 		key: #directTestingOriginal
-		addTo: result.
+		addTo: result."
 	self
 		safeFail: [ self totalTime asSeconds ]
 		key: #timeTotal
@@ -135,7 +135,7 @@ SAResultItem >> asDictionaryObject [
 				into: [ :accum :each | accum + each ] ]
 		key: #targetLoc
 		addTo: result.
-	self
+	"self
 		safeFail: [ ((targetClasses
 				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
 				inject: 0
@@ -146,12 +146,12 @@ SAResultItem >> asDictionaryObject [
 	self
 		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
 		key: #testChurn
-		addTo: result.
+		addTo: result."
 	self
 		safeFail: [ testClass linesOfCode asString ]
 		key: #testLoc
 		addTo: result.
-	self
+	"self
 		safeFail: [ self amplifiedTestCoverage methodsCoverage ]
 		key: #amplifiedCoverageMethods
 		addTo: result.
@@ -174,7 +174,7 @@ SAResultItem >> asDictionaryObject [
 	self
 		safeFail: [ self originalTestCoverage statementsCoverage ]
 		key: #originalCoverageStatementes
-		addTo: result.
+		addTo: result."
 	self
 		safeFail: [ (self amplifiedMethods collect: #linesOfCode)
 				inject: 0
@@ -189,14 +189,14 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
 		key: #methodsNotProfiled
 		addTo: result.
-	self
+	"self
 		safeFail: [ self originalMethodsAssertionDensity ]
 		key: #assertionDensityOriginal
 		addTo: result.
 	self
 		safeFail: [ self amplifiedMethodsAssertionDensity ]
 		key: #assertionDensityAmplified
-		addTo: result.
+		addTo: result."
 	self
 		safeFail: [ (self failedSelectorInOriginal collect: #name) asArray ]
 		key: #testMethodsIgnored
@@ -215,8 +215,11 @@ SAResultItem >> asDictionaryObject [
 				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
 		key: #killedInAmplified
 		addTo: result.
-	self safeFail: [ (self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
-				asArray ] key: #stillAliveMutants addTo: result.
+	self
+		safeFail: [ (self stillAliveMutants
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #stillAliveMutants
+		addTo: result.
 	^ result
 ]
 
