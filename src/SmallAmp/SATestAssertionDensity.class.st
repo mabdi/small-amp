@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SATestAssertionDensity class >> dencityFor: methods [
+	methods ifEmpty: [ ^ 0 ].
+	^ ((methods
+		collect: [ :m | self new densityForMethod: m ])
+		inject: 0
+		into: [ :s :i | s + i ]) / methods size
+		printShowingDecimalPlaces: 2
+]
+
+{ #category : #'as yet unclassified' }
 SATestAssertionDensity >> densityForClass: aTestClass [
 	^ (aTestClass methods
 		select: #isTestMethod

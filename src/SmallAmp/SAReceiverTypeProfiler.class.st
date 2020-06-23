@@ -11,6 +11,21 @@ Class {
 	#category : #'SmallAmp-Helpers'
 }
 
+{ #category : #'as yet unclassified' }
+SAReceiverTypeProfiler class >> directCallsFor: aTestClass [
+	| dict vals |
+	aTestClass allTestSelectors ifEmpty: [ ^ '0' ].
+	dict := (self initializeWith: SAConfig default)
+		testClass: aTestClass;
+		testTargets: aTestClass smallAmpTargetClasses;
+		run.
+	vals := dict directCalls values.
+	vals
+		ifEmpty: [ ^ '0' ]
+		ifNotEmpty: [ ^ vals sum / aTestClass allTestSelectors size
+				printShowingDecimalPlaces: 2 ]
+]
+
 { #category : #initialization }
 SAReceiverTypeProfiler class >> initializeWith: aConfig [
 	^ self new with: aConfig

@@ -46,6 +46,8 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self reloadSmallAmp ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
+	(self hasOption: 'xinfo')
+		ifTrue: [ self extraInformation ].
 	(self hasOption: 'amp')
 		ifTrue: [ self evalAmp ].
 	(self hasOption: 'clearTemp')
@@ -91,6 +93,97 @@ SACommandLineHandler >> evalStats [
 		detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix  allButFirst: '--stat=' size.
 	self metricsEval: prefix
+]
+
+{ #category : #accessing }
+SACommandLineHandler >> extraInformation [
+	| testName res resstr fileName |
+	testName := self arguments
+		detect: [ :arg | arg beginsWith: '--xinfo=' ]
+		ifFound: [ :arg | arg allButFirst: '--xinfo=' size ].
+	res := self extraInformationFor: testName.
+	resstr := STONJSON toStringPretty: res.
+	fileName := testName , '.xjson'.
+	(FileLocator imageDirectory / fileName) exists
+		ifTrue: [ (FileLocator imageDirectory / fileName) delete ].
+	(FileLocator imageDirectory / fileName) writeStream
+		nextPutAll: resstr ;
+		close.
+]
+
+{ #category : #accessing }
+SACommandLineHandler >> extraInformationFor: amplified [
+	| json result targetClasses testClass amplifiedClass amplifiedCoverage originalCoverage |
+	result := Dictionary new.
+	json := STONJSON
+		fromString:
+			FileLocator imageDirectory
+				/ (amplified , '.json') asFileReference contents.
+	targetClasses := (json at: #targetClasses)
+		collect: [ :c | self class environment at: c ].
+	testClass := self class environment at: (json at: #testClass).
+	amplifiedClass := self class environment
+		at: (json at: #amplifiedClass).
+	amplifiedCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {amplifiedClass};
+		run.
+	originalCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {testClass};
+		run.
+	self
+		safeFail: [ SAReceiverTypeProfiler directCallsFor: testClass ]
+		key: #directTestingOriginal
+		addTo: result.
+	"self
+		safeFail: [ ((targetClasses
+				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
+				inject: 0
+				into: [ :accum :each | accum + each ])
+				printShowingDecimalPlaces: 2 ]
+		key: #targetChurn
+		addTo: result.
+	self
+		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
+		key: #testChurn
+		addTo: result."
+	self
+		safeFail: [ amplifiedCoverage methodsCoverage ]
+		key: #amplifiedCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage branchesCoverage ]
+		key: #amplifiedCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage statementsCoverage ]
+		key: #amplifiedCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ originalCoverage methodsCoverage ]
+		key: #originalCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ originalCoverage branchesCoverage ]
+		key: #originalCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ originalCoverage statementsCoverage ]
+		key: #originalCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ SATestAssertionDensity
+				dencityFor: (testClass methods select: #isTestMethod) ]
+		key: #assertionDensityOriginal
+		addTo: result.
+	self
+		safeFail: [ SATestAssertionDensity
+				dencityFor:
+					(amplifiedClass methods
+						select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
+		key: #assertionDensityAmplified
+		addTo: result
 ]
 
 { #category : #actions }
@@ -142,4 +235,24 @@ SACommandLineHandler >> reloadSmallAmp [
 		detect: [ :r | r name = 'small-amp' ]
 		ifFound: [ :r | r pull ]
 		ifNone: [ self exitFailure: 'repo not found.' ]
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
+	| theValue |
+	theValue := block
+		on: Error
+		do: [ :x | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: x class asString;
+				nextPutAll: ': ';
+				nextPutAll: x asString;
+				nextPutAll: '-';
+				nextPutAll: x messageText;
+				lf;
+				flush.
+			'N/A' ].
+	aDictionary at: aKey put: theValue
 ]
