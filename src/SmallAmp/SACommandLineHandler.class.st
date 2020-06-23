@@ -136,18 +136,18 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		safeFail: [ SAReceiverTypeProfiler directCallsFor: testClass ]
 		key: #directTestingOriginal
 		addTo: result.
-	"self
+	self
 		safeFail: [ ((targetClasses
-				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
+				collect: [ :cls | (SACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
 				inject: 0
 				into: [ :accum :each | accum + each ])
 				printShowingDecimalPlaces: 2 ]
 		key: #targetChurn
 		addTo: result.
 	self
-		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
+		safeFail: [ (SACodeChurnAnalyser new codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
 		key: #testChurn
-		addTo: result."
+		addTo: result.
 	self
 		safeFail: [ amplifiedCoverage methodsCoverage ]
 		key: #amplifiedCoverageMethods
