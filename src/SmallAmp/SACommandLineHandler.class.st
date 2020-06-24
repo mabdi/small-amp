@@ -117,8 +117,8 @@ SACommandLineHandler >> extraInformationFor: amplified [
 	result := Dictionary new.
 	json := STONJSON
 		fromString:
-			FileLocator imageDirectory
-				/ (amplified , '.json') asFileReference contents.
+			(FileLocator imageDirectory
+				/ (amplified , '.json')) asFileReference contents.
 	targetClasses := (json at: #targetClasses)
 		collect: [ :c | self class environment at: c ].
 	testClass := self class environment at: (json at: #testClass).
@@ -145,7 +145,8 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		key: #targetChurn
 		addTo: result.
 	self
-		safeFail: [ (SACodeChurnAnalyser new codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
+		safeFail: [ (SACodeChurnAnalyser new codeChurnForClass: testClass)
+				printShowingDecimalPlaces: 2 ]
 		key: #testChurn
 		addTo: result.
 	self
