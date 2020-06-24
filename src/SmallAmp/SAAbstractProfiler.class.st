@@ -21,9 +21,7 @@ SAAbstractProfiler >> config: aConfig [
 
 { #category : #accessing }
 SAAbstractProfiler >> initialize [
-	profile := Dictionary new.
-	samples := Dictionary new.
-	
+	self reset
 ]
 
 { #category : #accessing }
@@ -34,6 +32,12 @@ SAAbstractProfiler >> profile [
 { #category : #'as yet unclassified' }
 SAAbstractProfiler >> profileClasses: aTargetClass byRunning: aTestSuite [
 	self subclassResponsibility
+]
+
+{ #category : #initialization }
+SAAbstractProfiler >> reset [
+	profile := Dictionary new.
+	samples := Dictionary new
 ]
 
 { #category : #accessing }

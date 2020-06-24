@@ -204,9 +204,9 @@ SAMainLoop >> liteAmplification [
 { #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
-		ifNotNil: [ config profiler
-				profileClasses: targetClasses
-				byRunning: testClass.
+		ifNotNil: [ config profiler reset.
+			self flag: #TODO "why wee need cache profiles in config?".
+			config profiler profileClasses: targetClasses byRunning: testClass.
 			finalResult runProfile: config profiler ]
 ]
 
