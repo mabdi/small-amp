@@ -98,17 +98,17 @@ SACommandLineHandler >> evalStats [
 { #category : #accessing }
 SACommandLineHandler >> extraInformation [
 	| testName res resstr fileName |
-	testName := self arguments
+	self arguments
 		detect: [ :arg | arg beginsWith: '--xinfo=' ]
-		ifFound: [ :arg | arg allButFirst: '--xinfo=' size ].
+		ifFound: [ :arg | testName :=  arg allButFirst: '--xinfo=' size ].
 	res := self extraInformationFor: testName.
 	resstr := STONJSON toStringPretty: res.
 	fileName := testName , '.xjson'.
 	(FileLocator imageDirectory / fileName) exists
 		ifTrue: [ (FileLocator imageDirectory / fileName) delete ].
 	(FileLocator imageDirectory / fileName) writeStream
-		nextPutAll: resstr ;
-		close.
+		nextPutAll: resstr;
+		close
 ]
 
 { #category : #accessing }
@@ -117,13 +117,13 @@ SACommandLineHandler >> extraInformationFor: amplified [
 	result := Dictionary new.
 	json := STONJSON
 		fromString:
-			(FileLocator imageDirectory
-				/ (amplified , '.json')) asFileReference contents.
+			(FileLocator imageDirectory / (amplified , '.json')) asFileReference
+				contents.
 	targetClasses := (json at: #targetClasses)
-		collect: [ :c | self class environment at: c ].
-	testClass := self class environment at: (json at: #testClass).
+		collect: [ :c | self class environment at: c asSymbol ].
+	testClass := self class environment at: (json at: #testClass) asSymbol .
 	amplifiedClass := self class environment
-		at: (json at: #amplifiedClass).
+		at: (json at: #amplifiedClass) asSymbol .
 	amplifiedCoverage := SACoverageAnalyser new
 		classes: targetClasses;
 		testCases: {amplifiedClass};
