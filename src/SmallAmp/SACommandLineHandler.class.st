@@ -121,9 +121,15 @@ SACommandLineHandler >> extraInformationFor: amplified [
 				contents.
 	targetClasses := (json at: #targetClasses)
 		collect: [ :c | self class environment at: c asSymbol ].
-	testClass := self class environment at: (json at: #testClass) asSymbol .
-	amplifiedClass := self class environment
-		at: (json at: #amplifiedClass) asSymbol .
+	testClass := self class environment at: (json at: #testCase) asSymbol.
+	self class environment
+		at: (json at: #amplifiedClass) asSymbol
+		ifPresent: [ :x | amplifiedClass := x ]
+		ifAbsent: [ (FileLocator imageDirectory / ((json at: #amplifiedClass) , '.st'))
+				asFileReference fileIn.
+				amplifiedClass :=self class environment
+		at: (json at: #amplifiedClass) asSymbol
+				 ].
 	amplifiedCoverage := SACoverageAnalyser new
 		classes: targetClasses;
 		testCases: {amplifiedClass};
@@ -184,7 +190,8 @@ SACommandLineHandler >> extraInformationFor: amplified [
 					(amplifiedClass methods
 						select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
 		key: #assertionDensityAmplified
-		addTo: result
+		addTo: result.
+	^ result
 ]
 
 { #category : #actions }
