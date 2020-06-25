@@ -78,14 +78,13 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 		ifNil: [ generatedClass := self astHelper
 				buildTestClassWith: {}
 				using: aClass.
+				self astHelper disableDeprecationsOn: generatedClass.
 			generatedClass class addInstVarNamed: 'observer'.
 			generatedClass class
 				compile:
 					'observer ^ observer ifNil: [ observer := SAObserver newForTarget: '
 						, testMethodModel testTargets asString , ' ]'.
-					generatedClass class
-				compile:
-					'observerReset  observer := nil ' ].
+			generatedClass class compile: 'observerReset  observer := nil ' ].
 	generatedClass observerReset.
 	generatedClass compile: aMethod formattedCode.
 	^ generatedClass
@@ -226,7 +225,8 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
-	^ [ [ generatedClass run: testMethodModel selector ]
+	
+	^ [ [  generatedClass run: testMethodModel selector ]
 		on: Exception
 		do: [ :x | 
 			x isResumable

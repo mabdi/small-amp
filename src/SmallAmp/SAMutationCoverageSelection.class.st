@@ -124,7 +124,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 			newTestClass
 				ifNil: [ newTestClass := self astHelper
 						buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-						using: testClass ]
+						using: testClass.
+						self astHelper disableDeprecationsOn: newTestClass . ]
 				ifNotNil: [ :cls | 
 					aPage
 						do:
@@ -132,7 +133,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 			self
 				mutalkRunClass: newTestClass
 				mutants: uncoveredList
-				targetClasses: targetClasses ]displayingProgress: 'Running Mutalk'
+				targetClasses: targetClasses ]
+		displayingProgress: 'Running Mutalk'
 ]
 
 { #category : #'as yet unclassified' }

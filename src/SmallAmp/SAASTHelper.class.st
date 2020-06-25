@@ -110,6 +110,26 @@ SAASTHelper >> defaultTempPackage [
 	^ 'SmallAmpTempClasses'
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> disableDeprecationsOn: aClass [
+	| methods str |
+	methods := (Object methodsInProtocol: #deprecation)
+		collect: [ :m | m ast copy ].
+	methods
+		do: [ :m | 
+			str := m
+				replaceNode: m body
+				withNode: (RBSequenceNode statements: #()).
+			aClass compile: str formattedCode ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> enableDeprecationsOn: aClass [
+
+	(Object methodsInProtocol: #deprecation)
+		do: [ :m | aClass removeSelector: m selector ]
+]
+
 { #category : #'method operations' }
 SAASTHelper >> extractMethodName: aSourceCode [
 	^ (self parsedMethodFrom: aSourceCode) selector
