@@ -222,6 +222,18 @@ SAASTHelper >> signAsSmallAmp: src [
 ]
 
 { #category : #'as yet unclassified' }
+SAASTHelper >> strip: testMethod [
+	| m |
+	m := SAAssertTransform
+		removeAllAsserts: (self parsedMethodFrom: testMethod).
+	
+	(m body allChildren allSatisfy: #isSequence 	)
+		ifTrue: [ m := SAAssertTransform
+				transformAllAsserts: (self parsedMethodFrom: testMethod) ]. "we dont use isEmpty because sometimes we have empty sequences inside body. if all children isSequence we can say all of them are empty"
+	^ m formattedCode
+]
+
+{ #category : #'as yet unclassified' }
 SAASTHelper >> stripMethodSrc: aMethod [
 	^ self stripString: aMethod sourceCode 
 ]

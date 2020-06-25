@@ -77,3 +77,36 @@ SAASTHelperTest >> testOldBuildTestClassAndRun [
 	self assert: result testSelectors size equals: methods size.
 	SAASTHelper new removeClass: result source: self class name
 ]
+
+{ #category : #test }
+SAASTHelperTest >> testStrip [
+	| sourceCode expectingCode result |
+	sourceCode := 'foo
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.
+	self assert: tmp1 isNotEmpty'.
+	expectingCode := 'foo
+	| tmp1 |
+	a := foo bar.
+	tmp1 := Array
+		with: 1;
+		with: 2.
+	'.
+	result := SAASTHelper new strip: sourceCode.
+	self assertMethodSourceCode: result equals: expectingCode.
+	sourceCode := 'foo
+	self assert: foo bar equals: 1.
+	self deny: self hello.
+	self assert: tmp1 isNotEmpty'.
+	expectingCode := 'foo
+	foo bar = 1.
+	self hello value not.
+	tmp1 isNotEmpty value	
+	'.
+	result := SAASTHelper new strip: sourceCode.
+	self assertMethodSourceCode: result equals: expectingCode.
+	
+]
