@@ -78,7 +78,6 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 		ifNil: [ generatedClass := self astHelper
 				buildTestClassWith: {}
 				using: aClass.
-				self astHelper disableDeprecationsOn: generatedClass.
 			generatedClass class addInstVarNamed: 'observer'.
 			generatedClass class
 				compile:

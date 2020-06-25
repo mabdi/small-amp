@@ -125,7 +125,7 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 				ifNil: [ newTestClass := self astHelper
 						buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 						using: testClass.
-						self astHelper disableDeprecationsOn: newTestClass . ]
+					 ]
 				ifNotNil: [ :cls | 
 					aPage
 						do:
@@ -140,6 +140,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation mutants: uncoveredList [
 { #category : #'as yet unclassified' }
 SAMutationCoverageSelection >> mutalkRunClass: newTestClass mutants: uncoveredList targetClasses: targetClasses [
 	| analysis1 result wins |
+	targetClasses
+		do: [ :targetClass | self astHelper disableDeprecationsOn: targetClass ].
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}
 		mutating: targetClasses
@@ -150,6 +152,7 @@ SAMutationCoverageSelection >> mutalkRunClass: newTestClass mutants: uncoveredLi
 				mutants: (uncoveredList collect: #mutant)).
 	wins := self allOpenedWindows.
 	result := analysis1 runSmallAmpVerbose.
+	targetClasses do: [:targetClass | self astHelper enableDeprecationsOn: targetClass].
 	self cleanUp: newTestClass.
 	self closeAllWindowsBut: wins.
 	Stdio stdout
