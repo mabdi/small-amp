@@ -116,7 +116,7 @@ SmallAmp >> amplifyAll [
 ]
 
 { #category : #actions }
-SmallAmp >> amplifyAllSanboxed [
+SmallAmp >> amplifyAllSandboxed [
 	| res cmd json |
 	self preRunChecks.
 	res := SAResult new.
