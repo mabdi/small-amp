@@ -116,6 +116,50 @@ SmallAmp >> amplifyAll [
 ]
 
 { #category : #actions }
+SmallAmp >> amplifyAllSanboxed [
+	| res cmd json |
+	self preRunChecks.
+	res := SAResult new.
+	amplifyList
+		do: [ :item | 
+			| instance tcase |
+			tcase := item key name.
+			[ cmd := String
+				streamContents: [ :stream | 
+					stream
+						nextPutAll: FileLocator vmBinary pathString;
+						nextPutAll: ' ';
+						nextPutAll: FileLocator image pathString;
+						nextPutAll: ' ';
+						nextPutAll: 'smallamp';
+						nextPutAll: ' ';
+						nextPutAll: '--amp=';
+						nextPutAll: tcase;
+						nextPutAll: ' ';
+						nextPutAll: '--nosave' ].
+			(FileLocator imageDirectory / (tcase , '.json')) exists
+				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
+			OSPlatform current resultOfCommand: cmd.
+			(FileLocator imageDirectory / (tcase , '.json')) exists
+				ifTrue: [ json := STONJSON
+						fromString:
+							(FileLocator imageDirectory / (tcase , '.json')) asFileReference
+								contents.
+					(FileLocator imageDirectory
+						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
+					instance := SAResultItem fromDictionaryObject: json.
+					res addResult: instance for: item ]
+				ifFalse: [ 
+					'unfinished run' traceCr ] ]
+				on: Error
+				do: [ :ex | 
+					self
+						traceCr: 'Error in processing ' , item key name , ': ' , ex asString ] ]
+		displayingProgress: [ :item | 'Processing ' , item key name ].
+	^ res
+]
+
+{ #category : #actions }
 SmallAmp >> amplifyEval [
 	self debugLog: 'Run start.'.
 	CompilationContext bytecodeBackend = EncoderForSistaV1

@@ -80,10 +80,13 @@ SACommandLineHandler >> end [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalAmp [
 	| testClass |
-	testClass := self arguments
+	self arguments
 		detect: [ :arg | arg beginsWith: '--amp=' ]
-		ifFound: [ :arg | arg allButFirst: '--amp=' size ].
-	SmallAmp initializeDefault testCase: testClass ; amplifyEval
+		ifFound: [ :arg | testClass := (arg allButFirst: '--amp=' size) asClass ].
+	SmallAmp initializeDefault
+		testCase: testClass;
+		amplifyEval.
+	Smalltalk snapshot: false andQuit: true.
 ]
 
 { #category : #'as yet unclassified' }

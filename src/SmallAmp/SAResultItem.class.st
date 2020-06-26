@@ -39,6 +39,16 @@ SAResultItem class >> forAmplified: newTest original: theOriginal target: target
 		yourself
 ]
 
+{ #category : #'instance creation' }
+SAResultItem class >> fromDictionaryObject: aJsonObj [
+	^ self
+		forAmplified: ((aJsonObj at: #amplifiedClass) asClass )
+		original: ( (aJsonObj at: #testCase) asClass )
+		target:
+			((aJsonObj at: #targetClasses)
+				collect: #asClass)
+]
+
 { #category : #reporting }
 SAResultItem >> aliveMutantsInOriginal [
 ^ self originalAnalysis generalResult aliveMutants
