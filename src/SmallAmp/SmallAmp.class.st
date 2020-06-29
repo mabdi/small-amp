@@ -194,6 +194,16 @@ SmallAmp >> amplifyEvalItem: item [
 ]
 
 { #category : #'as yet unclassified' }
+SmallAmp >> applyExclude [
+	| exList |
+	(FileLocator imageDirectory / config excludeList) exists
+		ifFalse: [ ^ amplifyList ].
+	exList := ((FileLocator imageDirectory / config excludeList)
+		asFileReference contents splitOn: String lf) reject: [:line | line beginsWith: '#'].
+	^ amplifyList reject: [ :r | exList includes: r key name ]
+]
+
+{ #category : #'as yet unclassified' }
 SmallAmp >> debugLog: aString [
 	| string |
 	string := aString isString
@@ -212,6 +222,13 @@ SmallAmp >> debugLog: aString [
 		nextPutAll: string;
 		lf;
 		close]
+]
+
+{ #category : #'as yet unclassified' }
+SmallAmp >> finalAmplifyList [
+	config enableExclude
+		ifTrue: [ ^ self applyExclude ]
+		ifFalse: [ ^ amplifyList ]
 ]
 
 { #category : #initialization }

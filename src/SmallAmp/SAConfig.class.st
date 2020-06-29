@@ -20,7 +20,9 @@ Class {
 		'maxPop',
 		'testRunTimeOutMult',
 		'saveToFile',
-		'runSandboxed'
+		'runSandboxed',
+		'excludeList',
+		'enableExclude'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -48,6 +50,8 @@ SAConfig class >> default [
 		lite: false;
 		saveToFile: false;
 		runSandboxed: false;
+		enableExclude: false;
+		excludeList: '../blacklist.txt';
 		yourself
 ]
 
@@ -69,6 +73,26 @@ SAConfig >> debug [
 { #category : #accessing }
 SAConfig >> debug: anObject [
 	debug := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> enableExclude [
+	^ enableExclude
+]
+
+{ #category : #accessing }
+SAConfig >> enableExclude: anObject [
+	enableExclude := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> excludeList [
+	^ excludeList
+]
+
+{ #category : #accessing }
+SAConfig >> excludeList: anObject [
+	excludeList := anObject
 ]
 
 { #category : #accessing }
