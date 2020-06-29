@@ -8,6 +8,385 @@ Class {
 }
 
 { #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethod [
+	| method ins src2 ast |
+	"no change"
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t3 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t3 method2.
+	
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := ins method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins method1; method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade2 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := ins method2.
+	t3 := ins2 method2.
+	t3 := t1 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := ins method2.
+	t3 := ins2 method2.
+	t3 := t1 method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade3 [
+	| method ins src2 ast continue |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := ins method2.
+	t3 := ins method3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	continue := true.
+	[ continue ]
+		whileTrue: [ continue := ins packStatementsInMethod: ast ].
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t3 := ins method1; method2; method3.
+	'
+]
+
+{ #category : #tests }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade4 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins m1;m2.
+	t2 := ins m3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins m1; m2; m3.
+	'
+]
+
+{ #category : #tests }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade5 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins m1.
+	t2 := ins m2; m3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins m1; m2; m3.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade6 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins m1; m2; m3.
+	t2 := ins m4; m5.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins m1; m2; m3; m4; m5
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade7 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins m1 m2 m3.
+	t2 := ins m4 m5.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+		t1 := ins m1 m2 m3.
+	t2 := ins m4 m5.
+
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodCascade8 [
+	| method ins src2 ast continue |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	ins method1.
+	ins method2.
+	ins method3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	continue := true.
+	[ continue ]
+		whileTrue: [ continue := ins packStatementsInMethod: ast ].
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	ins method1; method2; method3.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t1 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins method1 method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain2 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t1 method2.
+	t3 := ins2 method2.
+	t3 := t1 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t1 method2.
+	t3 := ins2 method2.
+	t3 := t1 method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain3 [
+	| method ins src2 ast continue |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t1 method2.
+	t3 := t2 method3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	continue := true.
+	[ continue ] whileTrue: 
+	[continue := ins packStatementsInMethod: ast].
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t3 := ins method1 method2 method3.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain4 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := 1 + 1.
+	t2 := t1 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := (1 + 1) method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain5 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := 1.
+	t2 := t1 method2.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := 1 method2.
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain6 [
+	| method ins src2 ast |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins m1 m2 m3.
+	t2 := t1 m4.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	src2 := ins packStatementsInMethod: ast.
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t2 := ins m1 m2 m3 m4
+	'
+]
+
+{ #category : #test }
+SADefaultPrettificationTest >> testPackStatementsInMethodChain7 [
+	| method ins src2 ast continue |
+	ins := SADefaultPrettification new.
+	method := 'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	t1 := ins method1.
+	t2 := t1 method2.
+	t2 method3.
+	'.
+	ast := SAASTHelper new parsedMethodFrom: method.
+	continue := true.
+	[ continue ]
+		whileTrue: [ continue := ins packStatementsInMethod: ast ].
+	self
+		assertMethodSourceCode: ast formattedCode
+		equals:
+			'testSomeThing
+	<madeBySmallAmp>
+	| t1 t2 t3 |
+	ins method1 method2 method3.
+	'
+]
+
+{ #category : #test }
 SADefaultPrettificationTest >> testRename [
 	| method ins varTypes src2 |
 	ins := SADefaultPrettification new.
