@@ -203,7 +203,8 @@ SmallAmp >> applyExclude [
 		reject: [ :line | line beginsWith: '#' ].
 	list := amplifyList reject: [ :r | exList includes: r key name ].
 	config overwrite
-		ifFalse: [list := list reject: [ :class | (FileLocator imageDirectory / (class , '.json')) exists ] ].
+		ifFalse: [ list := list
+				reject: [ :kvp | (FileLocator imageDirectory / (kvp key name , '.json')) exists ] ].
 	^ list
 ]
 
