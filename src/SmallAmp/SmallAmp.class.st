@@ -100,7 +100,7 @@ SmallAmp >> amplifyAll [
 		ifTrue: [ ^ self amplifyAllSandboxed ].
 	self preRunChecks.
 	res := SAResult new.
-	amplifyList
+	self  finalAmplifyList 
 		do: [ :item | 
 			| instance |
 			('Processing ' , item key name) traceCr.
@@ -110,8 +110,8 @@ SmallAmp >> amplifyAll [
 				ifTrue: [ instance saveResultToFileAs: item key asString.
 					instance amplifiedClass fileOut ] ]
 				on: Error
-				do: [ :ex | 
-					('Error in processing ' , item key name , ': ' , ex asString) traceCr  ] ]
+				do:
+					[ :ex | ('Error in processing ' , item key name , ': ' , ex asString) traceCr ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
@@ -121,10 +121,13 @@ SmallAmp >> amplifyAllSandboxed [
 	| res cmd json |
 	self preRunChecks.
 	res := SAResult new.
-	amplifyList
+	self finalAmplifyList
 		do: [ :item | 
 			| instance tcase |
 			tcase := item key name.
+			(FileLocator imageDirectory / (tcase , '.json')) exists
+				ifTrue: [
+						(FileLocator imageDirectory / (tcase , '.json')) delete ].
 			[ cmd := String
 				streamContents: [ :stream | 
 					stream
@@ -138,8 +141,6 @@ SmallAmp >> amplifyAllSandboxed [
 						nextPutAll: tcase;
 						nextPutAll: ' ';
 						nextPutAll: '--nosave' ].
-			(FileLocator imageDirectory / (tcase , '.json')) exists
-				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
 			OSPlatform current resultOfCommand: cmd.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ json := STONJSON
@@ -150,8 +151,7 @@ SmallAmp >> amplifyAllSandboxed [
 						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
 					instance := SAResultItem fromDictionaryObject: json.
 					res addResult: instance for: item ]
-				ifFalse: [ 
-					'unfinished run' traceCr ] ]
+				ifFalse: [ 'unfinished run' traceCr ] ]
 				on: Error
 				do: [ :ex | 
 					self
@@ -195,12 +195,16 @@ SmallAmp >> amplifyEvalItem: item [
 
 { #category : #'as yet unclassified' }
 SmallAmp >> applyExclude [
-	| exList |
+	| exList list |
 	(FileLocator imageDirectory / config excludeList) exists
 		ifFalse: [ ^ amplifyList ].
 	exList := ((FileLocator imageDirectory / config excludeList)
-		asFileReference contents splitOn: String lf) reject: [:line | line beginsWith: '#'].
-	^ amplifyList reject: [ :r | exList includes: r key name ]
+		asFileReference contents splitOn: String lf)
+		reject: [ :line | line beginsWith: '#' ].
+	list := amplifyList reject: [ :r | exList includes: r key name ].
+	config overwrite
+		ifFalse: [list := list reject: [ :class | (FileLocator imageDirectory / (class , '.json')) exists ] ].
+	^ list
 ]
 
 { #category : #'as yet unclassified' }

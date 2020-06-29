@@ -22,7 +22,8 @@ Class {
 		'saveToFile',
 		'runSandboxed',
 		'excludeList',
-		'enableExclude'
+		'enableExclude',
+		'overwrite'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -51,6 +52,7 @@ SAConfig class >> default [
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
+		overwrite: false;
 		excludeList: '../blacklist.txt';
 		yourself
 ]
@@ -163,6 +165,16 @@ SAConfig >> oracleReducion [
 { #category : #accessing }
 SAConfig >> oracleReducion: list [
 	oracleReducion := list
+]
+
+{ #category : #accessing }
+SAConfig >> overwrite [
+	^ overwrite
+]
+
+{ #category : #accessing }
+SAConfig >> overwrite: anObject [
+	overwrite := anObject
 ]
 
 { #category : #accessing }
