@@ -19,7 +19,8 @@ Class {
 		'simplifier',
 		'maxPop',
 		'testRunTimeOutMult',
-		'saveToFile'
+		'saveToFile',
+		'runSandboxed'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -46,6 +47,7 @@ SAConfig class >> default [
 		debug: false;
 		lite: false;
 		saveToFile: false;
+		runSandboxed: false;
 		yourself
 ]
 
@@ -158,6 +160,16 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
+]
+
+{ #category : #accessing }
+SAConfig >> runSandboxed [
+	^ runSandboxed
+]
+
+{ #category : #accessing }
+SAConfig >> runSandboxed: anObject [
+	runSandboxed := anObject
 ]
 
 { #category : #accessing }

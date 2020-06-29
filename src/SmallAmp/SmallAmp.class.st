@@ -96,12 +96,14 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
+	config runSandboxed
+		ifTrue: [ ^ self amplifyAllSandboxed ].
 	self preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
 			| instance |
-			Transcript show: 'Processing ' , item key name.
+			('Processing ' , item key name) traceCr.
 			[ instance := self amplify: item key target: item value.
 			res addResult: instance for: item.
 			config saveToFile
@@ -109,8 +111,7 @@ SmallAmp >> amplifyAll [
 					instance amplifiedClass fileOut ] ]
 				on: Error
 				do: [ :ex | 
-					Transcript
-						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
+					('Error in processing ' , item key name , ': ' , ex asString) traceCr  ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
