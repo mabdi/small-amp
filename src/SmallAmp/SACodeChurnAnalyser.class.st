@@ -6,23 +6,30 @@ Class {
 
 { #category : #'as yet unclassified' }
 SACodeChurnAnalyser >> codeChurnFileTree: classFolder repoName: aGithubProjectName [
-	| location cmd history adds removes changes filename |
+	| location cmd history adds removes changes filename ch |
 	location := IceRepository registry
 		detect: [ :pr | pr name = aGithubProjectName ]
 		ifFound: [ :pr | pr location ]
 		ifNone: [ self error: 'churn error: project name is not in iceberg' ].
-	history := self runGitLogOn: classFolder path: location asFileReference pathString.
+	history := self
+		runGitLogOn: classFolder
+		path: location asFileReference pathString.
 	adds := 0.
 	removes := 0.
 	history := (history splitOn: Character lf) reject: #isEmpty.
 	history ifEmpty: [ ^ 0 ].
 	history
 		do: [ :line | 
-			
-			changes := self  runGitShowOn: classFolder  line: line path: location asFileReference pathString.
-			changes := changes splitOn: Character tab.
-			adds := adds + (changes at: 1) asInteger.
-			removes := removes + (changes at: 1) asInteger ].
+			changes := self
+				runGitShowOn: classFolder
+				line: line
+				path: location asFileReference pathString.
+			changes := (changes splitOn: Character lf) reject: #isEmpty.
+			changes
+				do: [ :change | 
+					ch := change splitOn: Character tab.
+					adds := adds + (ch at: 1) asInteger.
+					removes := removes + (ch at: 1) asInteger ] ]. 
 	^ (adds + removes) / history size
 ]
 
@@ -65,7 +72,7 @@ SACodeChurnAnalyser >> codeChurnForTonelClass: aClass [
 
 { #category : #'as yet unclassified' }
 SACodeChurnAnalyser >> codeChurnTonel: filename repoName: aGithubProjectName [
-	| location history adds removes changes |
+	| location history adds removes changes ch |
 	location := IceRepository registry
 		detect: [ :pr | pr name = aGithubProjectName ]
 		ifFound: [ :pr | pr location ]
@@ -84,10 +91,10 @@ SACodeChurnAnalyser >> codeChurnTonel: filename repoName: aGithubProjectName [
 				line: line
 				path: location asFileReference pathString.
 			changes := (changes splitOn: Character lf) reject: #isEmpty.
-			changes isEmpty
-				ifFalse: [ changes := changes splitOn: Character tab.
-					adds := adds + (changes at: 1) asInteger.
-					removes := removes + (changes at: 1) asInteger ] ].
+			
+			changes do:[ :change | ch  := change splitOn: Character tab.
+					adds := adds + (ch at: 1) asInteger.
+					removes := removes + (ch at: 1) asInteger ] ].
 	^ (adds + removes) / history size
 ]
 
