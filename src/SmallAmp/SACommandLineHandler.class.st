@@ -254,7 +254,7 @@ SACommandLineHandler >> metricsEval: repoName [
 SACommandLineHandler >> reloadSmallAmp [
 	IceRepository registry
 		detect: [ :r | r name = 'small-amp' ]
-		ifFound: [ :r | r pull ]
+		ifFound: [ :r | r pullFrom: r remotes first ]
 		ifNone: [ self exitFailure: 'repo not found.' ]
 ]
 
