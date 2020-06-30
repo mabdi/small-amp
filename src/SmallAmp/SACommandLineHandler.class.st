@@ -138,9 +138,8 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		ifPresent: [ :x | amplifiedClass := x ]
 		ifAbsent: [ (FileLocator imageDirectory / ((json at: #amplifiedClass) , '.st'))
 				asFileReference fileIn.
-				amplifiedClass :=self class environment
-		at: (json at: #amplifiedClass) asSymbol
-				 ].
+			amplifiedClass := self class environment
+				at: (json at: #amplifiedClass) asSymbol ].
 	amplifiedCoverage := SACoverageAnalyser new
 		classes: targetClasses;
 		testCases: {amplifiedClass};
@@ -149,6 +148,7 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		classes: targetClasses;
 		testCases: {testClass};
 		run.
+	('Processing ', amplified) traceCr.
 	self
 		safeFail: [ SAReceiverTypeProfiler directCallsFor: testClass ]
 		key: #directTestingOriginal
