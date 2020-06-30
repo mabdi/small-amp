@@ -67,6 +67,14 @@ SACommandLineHandler >> clearTempClasses [
 	SAASTHelper new clearTempClasses 
 ]
 
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> commitIdForRepo: repoName [
+	[IceRepository registry
+		detect: [ :r | r name = repoName ]
+		ifFound: [ :r | ^ r branch commit shortId ]
+		ifNone: [ self error: 'repo not installed. ' , repoName ]] on: Error do: [ :x | ^ 'NA' ] 
+]
+
 { #category : #accessing }
 SACommandLineHandler >> end [
 	| noquit nosave |
@@ -199,8 +207,9 @@ SACommandLineHandler >> extraInformationFor: amplified [
 
 { #category : #actions }
 SACommandLineHandler >> metricsEval: repoName [
-	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc |
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
 	classes := self allClassesForRepo: repoName.
+	commitId := self commitIdForRepo: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
 	targetedTests := tests
@@ -219,6 +228,7 @@ SACommandLineHandler >> metricsEval: repoName [
 	stat := {(#classes -> classes size).
 	(#tests -> tests size).
 	(#loc -> loc).
+	(#commitId -> commitId).
 	(#targetedTests -> targetedTests size).
 	(#targetedTestsMethods -> testMethodTargeted size).
 	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
