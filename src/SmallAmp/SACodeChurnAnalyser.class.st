@@ -116,15 +116,15 @@ SACodeChurnAnalyser >> runGitLogOn: filename path: directory [
 
 { #category : #'as yet unclassified' }
 SACodeChurnAnalyser >> runGitShowOn: filename line: line path: path [
-| cmd |
-cmd := ''
-				join:
-					{'(cd '.
-					path.
-					' && git show --numstat --pretty="" '.
-					line.
-					' | grep '.
-					filename.
-					')'}.
-			^ OSPlatform current resultOfCommand: cmd
+	| cmd |
+	cmd := ''
+		join:
+			{'(cd '.
+			path.
+			' && git show --numstat --pretty="" '.
+			line.
+			' | grep '.
+			(filename splitOn: $/) last.
+			')'}.
+	^ OSPlatform current resultOfCommand: cmd
 ]
