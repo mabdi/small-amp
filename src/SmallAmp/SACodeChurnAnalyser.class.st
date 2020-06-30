@@ -83,9 +83,11 @@ SACodeChurnAnalyser >> codeChurnTonel: filename repoName: aGithubProjectName [
 				runGitShowOn: filename
 				line: line
 				path: location asFileReference pathString.
-			changes := changes splitOn: Character tab.
-			adds := adds + (changes at: 1) asInteger.
-			removes := removes + (changes at: 1) asInteger ].
+			changes := (changes splitOn: Character lf) reject: #isEmpty.
+			changes isEmpty
+				ifFalse: [ changes := changes splitOn: Character tab.
+					adds := adds + (changes at: 1) asInteger.
+					removes := removes + (changes at: 1) asInteger ] ].
 	^ (adds + removes) / history size
 ]
 
