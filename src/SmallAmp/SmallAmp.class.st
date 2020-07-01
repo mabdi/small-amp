@@ -70,7 +70,7 @@ SmallAmp class >> menuCommandOn: aBuilder [
 		item: #'Open Ui (DrTests)';
 		parent: #SmallAmp)
 		action: [ dt := DrTests new.
-			dt pluginsDropList selectItem: SADrTestsPlugin. 
+			dt pluginsDropList selectItem: SADrTestsPlugin.
 			dt openWithSpec ].
 	(aBuilder
 		item: #'Browse Temp Package';
@@ -81,7 +81,14 @@ SmallAmp class >> menuCommandOn: aBuilder [
 		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
 	(aBuilder
 		item: #'Default config';
-		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ]
+		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ].
+	(aBuilder
+		item: #'Load recent updates';
+		parent: #SmallAmp)
+		action: [ IceRepository pullRepoNamed: 'small-amp'.
+			self
+				inform:
+					'Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp') ]
 ]
 
 { #category : #private }

@@ -43,7 +43,10 @@ SACommandLineHandler >> activate [
 	self activateHelp
 		ifTrue: [ ^ self ].
 	(self hasOption: 'reload')
-		ifTrue: [ self reloadSmallAmp ].
+		ifTrue: [ IceRepository pullRepoNamed: 'small-amp'.
+			('Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp'))
+				traceCr.
+				Smalltalk snapshot: true andQuit: true ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'xinfo')
@@ -65,14 +68,6 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 { #category : #activation }
 SACommandLineHandler >> clearTempClasses [
 	SAASTHelper new clearTempClasses 
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> commitIdForRepo: repoName [
-	[IceRepository registry
-		detect: [ :r | r name = repoName ]
-		ifFound: [ :r | ^ r branch commit shortId ]
-		ifNone: [ self error: 'repo not installed. ' , repoName ]] on: Error do: [ :x | ^ 'NA' ] 
 ]
 
 { #category : #accessing }
@@ -209,7 +204,7 @@ SACommandLineHandler >> extraInformationFor: amplified [
 SACommandLineHandler >> metricsEval: repoName [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
 	classes := self allClassesForRepo: repoName.
-	commitId := self commitIdForRepo: repoName.
+	commitId := IceRepository latestCommitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
 	targetedTests := tests
@@ -248,14 +243,6 @@ SACommandLineHandler >> metricsEval: repoName [
 		lf;
 		close.
 	^ stat
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> reloadSmallAmp [
-	IceRepository registry
-		detect: [ :r | r name = 'small-amp' ]
-		ifFound: [ :r | r pullFrom: r remotes first ]
-		ifNone: [ self exitFailure: 'repo not found.' ]
 ]
 
 { #category : #'as yet unclassified' }
