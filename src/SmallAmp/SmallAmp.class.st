@@ -106,7 +106,7 @@ SmallAmp >> amplifyAll [
 		ifTrue: [ ^ self amplifyAllSandboxed ].
 	self preRunChecks.
 	res := SAResult new.
-	self  finalAmplifyList 
+	amplifyList
 		do: [ :item | 
 			| instance |
 			('Processing ' , item key name) traceCr.
