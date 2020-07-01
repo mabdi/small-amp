@@ -125,7 +125,7 @@ SmallAmp >> amplifyAll [
 
 { #category : #actions }
 SmallAmp >> amplifyAllSandboxed [
-	| res cmd json |
+	| res cmd json output |
 	self preRunChecks.
 	res := SAResult new.
 	self finalAmplifyList
@@ -133,8 +133,7 @@ SmallAmp >> amplifyAllSandboxed [
 			| instance tcase |
 			tcase := item key name.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
-				ifTrue: [
-						(FileLocator imageDirectory / (tcase , '.json')) delete ].
+				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
 			[ cmd := String
 				streamContents: [ :stream | 
 					stream
@@ -148,7 +147,12 @@ SmallAmp >> amplifyAllSandboxed [
 						nextPutAll: tcase;
 						nextPutAll: ' ';
 						nextPutAll: '--nosave' ].
-			OSPlatform current resultOfCommand: cmd.
+			output := OSPlatform current resultOfCommand: cmd.
+			(FileLocator imageDirectory / (tcase, '.log')) exists
+		ifTrue: [ (FileLocator imageDirectory / (tcase, '.log')) delete ].
+	(FileLocator imageDirectory / (tcase, '.log')) writeStream
+		nextPutAll: output ;
+		close.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ json := STONJSON
 						fromString:
