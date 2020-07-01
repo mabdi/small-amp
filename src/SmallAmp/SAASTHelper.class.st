@@ -100,6 +100,14 @@ SAASTHelper >> clearTempClasses [
 		displayingProgress: 'Clear temp classes.'
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> createTempPackage [
+	(RPackageOrganizer default
+		includesPackageNamed: self defaultTempPackage)
+		ifFalse: [ RPackageOrganizer default
+				createPackageNamed: self defaultTempPackage ].
+]
+
 { #category : #'method operations' }
 SAASTHelper >> defaultPragma [
 	^ self class defaultPragma

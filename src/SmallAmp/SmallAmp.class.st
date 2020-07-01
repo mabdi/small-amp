@@ -64,7 +64,7 @@ SmallAmp class >> initializeWith: aConfig [
 { #category : #'world menu' }
 SmallAmp class >> menuCommandOn: aBuilder [
 	<worldMenu>
-	| dt |
+	| dt h |
 	aBuilder item: #SmallAmp.
 	(aBuilder
 		item: #'Open Ui (DrTests)';
@@ -75,7 +75,7 @@ SmallAmp class >> menuCommandOn: aBuilder [
 	(aBuilder
 		item: #'Browse Temp Package';
 		parent: #SmallAmp)
-		action: [ SAASTHelper new defaultTempPackage asPackage browse ].
+		action: [ h:= SAASTHelper new. h createTempPackage. h defaultTempPackage asPackage browse ].
 	(aBuilder
 		item: #'Clear temp';
 		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
@@ -87,8 +87,7 @@ SmallAmp class >> menuCommandOn: aBuilder [
 		parent: #SmallAmp)
 		action: [ IceRepository pullRepoNamed: 'small-amp'.
 			self
-				inform:
-					'Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp') ]
+				inform: 'Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp') ]
 ]
 
 { #category : #private }
