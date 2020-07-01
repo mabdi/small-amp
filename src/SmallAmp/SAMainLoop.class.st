@@ -40,6 +40,8 @@ SAMainLoop >> allOpenedWindows [
 
 { #category : #actions }
 SAMainLoop >> amplify [
+	| ts_start skip |
+	ts_start := DateAndTime now.
 	self initialSteps.
 	(1 to: config iterations)
 		do: [ :gen | 
@@ -48,8 +50,11 @@ SAMainLoop >> amplify [
 				nextPutAll: gen asString;
 				lf;
 				flush.
-			uncovered
-				ifNotEmpty: [ self normalize.
+			skip := uncovered isEmpty.
+			config timeBudget > 0
+				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget ifTrue: [ skip := true ] ].
+			skip
+				ifFalse: [ self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.

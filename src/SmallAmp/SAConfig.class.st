@@ -23,7 +23,8 @@ Class {
 		'runSandboxed',
 		'excludeList',
 		'enableExclude',
-		'overwrite'
+		'overwrite',
+		'timeBudget'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -54,6 +55,7 @@ SAConfig class >> default [
 		enableExclude: false;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
+		timeBudget: 1800;
 		yourself
 ]
 
@@ -276,4 +278,14 @@ SAConfig >> testRunTimeOutMult [
 { #category : #accessing }
 SAConfig >> testRunTimeOutMult: anObject [
 	testRunTimeOutMult := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> timeBudget [
+	^ timeBudget
+]
+
+{ #category : #accessing }
+SAConfig >> timeBudget: anObject [
+	timeBudget := anObject
 ]
