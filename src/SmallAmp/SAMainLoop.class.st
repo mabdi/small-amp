@@ -52,7 +52,8 @@ SAMainLoop >> amplify [
 				flush.
 			skip := uncovered isEmpty.
 			config timeBudget > 0
-				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget ifTrue: [ skip := true ] ].
+				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget
+						ifTrue: [ skip := true. finalResult timeBudgetFinished:true ] ].
 			skip
 				ifFalse: [ self normalize.
 					self inputAmplification.

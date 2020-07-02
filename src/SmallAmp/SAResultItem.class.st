@@ -11,7 +11,8 @@ Class {
 		'logs',
 		'runProfile',
 		'amplifiedCoverage',
-		'originalCoverage'
+		'originalCoverage',
+		'timeBudgetFinished'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -196,6 +197,10 @@ SAResultItem >> asDictionaryObject [
 		key: #timeDetail
 		addTo: result.
 	self
+		safeFail: [ self timeBudgetFinished ]
+		key: #timeBudgetFinished
+		addTo: result.
+	self
 		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
 		key: #methodsNotProfiled
 		addTo: result.
@@ -296,8 +301,9 @@ SAResultItem >> filterJustKilledMutants: newKilledMutants basedOn: originalKille
 ]
 
 { #category : #initialization }
-SAResultItem >> initialize [ 
-	logs := SALogger new
+SAResultItem >> initialize [
+	logs := SALogger new.
+	timeBudgetFinished := false
 ]
 
 { #category : #reporting }
@@ -556,6 +562,16 @@ SAResultItem >> testClass [
 { #category : #accessing }
 SAResultItem >> testClass: anObject [
 	testClass := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> timeBudgetFinished [
+	^ timeBudgetFinished
+]
+
+{ #category : #accessing }
+SAResultItem >> timeBudgetFinished: anObject [
+	timeBudgetFinished := anObject
 ]
 
 { #category : #reporting }
