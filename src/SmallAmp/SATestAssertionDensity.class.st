@@ -16,9 +16,8 @@ SATestAssertionDensity class >> dencityFor: methods [
 
 { #category : #'as yet unclassified' }
 SATestAssertionDensity >> densityForClass: aTestClass [
-	^ (aTestClass methods
-		select: #isTestMethod
-		thenCollect: [ :x | self numberOfAssertionsInMethod: x ]) average 
+	^ (aTestClass allTestSelectors
+		collect: [ :x | self numberOfAssertionsInMethod: (aTestClass lookupSelector: x) ]) average
 ]
 
 { #category : #'as yet unclassified' }
