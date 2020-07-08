@@ -33,3 +33,9 @@ SmallAmp can be used as a plugin for DrTest. More informaion [here](https://gith
  ```
  
  You can find the generated testcases in `SmallAmpTempClasses` package. 
+
+## How to use: Hook
+
+You can also ask SmallAmp to generate assertions for you:
+
+![SmallAmp](https://user-images.githubusercontent.com/3696683/86917621-a71f0480-c125-11ea-9f25-09ed7d6cf358.gif)
