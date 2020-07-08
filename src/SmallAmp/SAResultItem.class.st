@@ -11,7 +11,8 @@ Class {
 		'logs',
 		'runProfile',
 		'amplifiedCoverage',
-		'originalCoverage'
+		'originalCoverage',
+		'timeBudgetFinished'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -37,6 +38,16 @@ SAResultItem class >> forAmplified: newTest original: theOriginal target: target
 		runProfile: aProfiler;
 		regenerate;
 		yourself
+]
+
+{ #category : #'instance creation' }
+SAResultItem class >> fromDictionaryObject: aJsonObj [
+	^ self
+		forAmplified: ((aJsonObj at: #amplifiedClass) asClass )
+		original: ( (aJsonObj at: #testCase) asClass )
+		target:
+			((aJsonObj at: #targetClasses)
+				collect: #asClass)
 ]
 
 { #category : #reporting }
@@ -97,114 +108,139 @@ SAResultItem >> amplifiedTestCoverage [
 
 { #category : #reporting }
 SAResultItem >> asDictionaryObject [
-	^ {(#testCase -> testClass name).
-	(#targetClasses -> (targetClasses collect: #name) asArray).
-	(#amplifiedClass -> self amplifiedClass name).
-	(#amplifiedMethods -> (self amplifiedMethods collect: #name) asArray).
-	(#mutationScoreBefore -> self originalMutationScore).
-	(#mutationScoreAfter -> self amplifiedMutationScore).
-	"(#directTestingOriginal
-		-> (self directTestingOriginal printShowingDecimalPlaces: 2))."
-	(#timeTotal -> self totalTime asSeconds).
-	(#targetLoc
-		->
-			((targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
+	| result |
+	result := Dictionary new.
+	self safeFail: [ testClass name ] key: #testCase addTo: result.
+	self
+		safeFail: [ (targetClasses collect: #name) asArray ]
+		key: #targetClasses
+		addTo: result.
+	self
+		safeFail: [ self amplifiedClass name ]
+		key: #amplifiedClass
+		addTo: result.
+	self
+		safeFail: [ (self amplifiedMethods collect: #name) asArray ]
+		key: #amplifiedMethods
+		addTo: result.
+	self
+		safeFail: [ self originalMutationScore ]
+		key: #mutationScoreBefore
+		addTo: result.
+	self
+		safeFail: [ self amplifiedMutationScore ]
+		key: #mutationScoreAfter
+		addTo: result.
+	"self
+		safeFail: [ self directTestingOriginal printShowingDecimalPlaces: 2 ]
+		key: #directTestingOriginal
+		addTo: result."
+	self
+		safeFail: [ self totalTime asSeconds ]
+		key: #timeTotal
+		addTo: result.
+	self
+		safeFail:
+			[ (targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
 				inject: 0
-				into: [ :accum :each | accum + each ])).
-	"(#targetChurn
-		->
-			(((targetClasses
+				into: [ :accum :each | accum + each ] ]
+		key: #targetLoc
+		addTo: result.
+	"self
+		safeFail: [ ((targetClasses
 				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
 				inject: 0
 				into: [ :accum :each | accum + each ])
-				printShowingDecimalPlaces: 2)).
-	(#testChurn
-		-> ((self codeChurnForClass: testClass) printShowingDecimalPlaces: 2))."
-	(#testLoc -> testClass linesOfCode asString).
-	(#amplifiedCoverageMethods
-		-> self amplifiedTestCoverage methodsCoverage).
-	(#amplifiedCoverageBranches
-		-> self amplifiedTestCoverage branchesCoverage).
-	(#amplifiedCoverageStatementes
-		-> self amplifiedTestCoverage statementsCoverage).
-	(#originalCoverageMethods
-		-> self originalTestCoverage methodsCoverage).
-	(#originalCoverageBranches
-		-> self originalTestCoverage branchesCoverage).
-	(#originalCoverageStatementes
-		-> self originalTestCoverage statementsCoverage).
-	(#testAmpLoc
-		->
-			((self amplifiedMethods collect: #linesOfCode)
+				printShowingDecimalPlaces: 2 ]
+		key: #targetChurn
+		addTo: result.
+	self
+		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
+		key: #testChurn
+		addTo: result."
+	self
+		safeFail: [ testClass linesOfCode asString ]
+		key: #testLoc
+		addTo: result.
+	"self
+		safeFail: [ self amplifiedTestCoverage methodsCoverage ]
+		key: #amplifiedCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ self amplifiedTestCoverage branchesCoverage ]
+		key: #amplifiedCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ self amplifiedTestCoverage statementsCoverage ]
+		key: #amplifiedCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage methodsCoverage ]
+		key: #originalCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage branchesCoverage ]
+		key: #originalCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ self originalTestCoverage statementsCoverage ]
+		key: #originalCoverageStatementes
+		addTo: result."
+	self
+		safeFail: [ (self amplifiedMethods collect: #linesOfCode)
 				inject: 0
-				into: [ :accum :each | accum + each ])).
-	(#timeDetail -> self detailedTimeLabel asArray).
-	(#methodsNotProfiled
-		-> (self methodsNotProfiled collect: #name) asArray).
-	(#assertionDensityOriginal -> self originalMethodsAssertionDensity).
-	(#assertionDensityAmplified -> self amplifiedMethodsAssertionDensity).
-	(#testMethodsIgnored
-		-> (self failedSelectorInOriginal collect: #name) asArray).
-	(#numberOfAllMutationsInOriginal
-		-> self numberOfAllMutationsInOriginal).
-	(#mutantsAliveInOriginal
-		->
-			(self aliveMutantsInOriginal
-				collect: [ :m | m mutant asDictionaryObject ]) asArray).
-	(#killedInAmplified
-		->
-			(self killedMutantsInAmplified
-				collect: [ :m | m mutant asDictionaryObject ]) asArray).
-	(#stillAliveMutants
-		->
-			(self stillAliveMutants collect: [ :m | m mutant asDictionaryObject ])
-				asArray)} asDictionary
+				into: [ :accum :each | accum + each ] ]
+		key: #testAmpLoc
+		addTo: result.
+	self
+		safeFail: [ self detailedTimeLabel asArray ]
+		key: #timeDetail
+		addTo: result.
+	self
+		safeFail: [ self timeBudgetFinished ]
+		key: #timeBudgetFinished
+		addTo: result.
+	self
+		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
+		key: #methodsNotProfiled
+		addTo: result.
+	"self
+		safeFail: [ self originalMethodsAssertionDensity ]
+		key: #assertionDensityOriginal
+		addTo: result.
+	self
+		safeFail: [ self amplifiedMethodsAssertionDensity ]
+		key: #assertionDensityAmplified
+		addTo: result."
+	self
+		safeFail: [ (self failedSelectorInOriginal collect: #name) asArray ]
+		key: #testMethodsIgnored
+		addTo: result.
+	self
+		safeFail: [ self numberOfAllMutationsInOriginal ]
+		key: #numberOfAllMutationsInOriginal
+		addTo: result.
+	self
+		safeFail: [ (self aliveMutantsInOriginal
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #mutantsAliveInOriginal
+		addTo: result.
+	self
+		safeFail: [ (self killedMutantsInAmplified
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #killedInAmplified
+		addTo: result.
+	self
+		safeFail: [ (self stillAliveMutants
+				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		key: #stillAliveMutants
+		addTo: result.
+	^ result
 ]
 
 { #category : #export }
 SAResultItem >> asFileText [
 	^ STONJSON toStringPretty: self asDictionaryObject 
-]
-
-{ #category : #'as yet unclassified' }
-SAResultItem >> codeChurn: filename repoName: aGithubProjectName [
-	| location cmd history adds removes changes |
-	location := IceRepository registry
-		detect: [ :pr | pr name = aGithubProjectName ]
-		ifFound: [ :pr | pr location ]
-		ifNone: [ self error: 'churn error: project name is not in iceberg' ].
-	cmd := '(cd ' , location asFileReference pathString
-		, ' && git log --format="%H" ' , filename , ')'.
-	history := OSPlatform current resultOfCommand: cmd.
-	adds := 0.
-	removes := 0.
-	history := (history splitOn: Character lf) reject: #isEmpty.
-	history ifEmpty: [ ^ 0 ].
-	history
-		do: [ :line | 
-			cmd := '(cd ' , location asFileReference pathString
-				, ' && git show --numstat --pretty="" ' , line , ' | grep '
-				, filename , ')'.
-			changes := OSPlatform current resultOfCommand: cmd.
-			changes := changes splitOn: Character tab.
-			adds := adds + (changes at: 1) asInteger.
-			removes := removes + (changes at: 1) asInteger ].
-	^ (adds + removes) / history size 
-]
-
-{ #category : #'as yet unclassified' }
-SAResultItem >> codeChurnForClass: aClass [
-	| package repoName base filename |
-	[ package := (IceRepository registry flatCollect: #loadedPackages)
-		detect: [ :p | p name = aClass package name ]
-		ifNone: [ self error: 'not found' ].
-	repoName := package repository name.
-	base := package repository subdirectory.
-	base ifNotEmpty: [ base := base , '/' ].
-	filename := base , package package , '/' , aClass name , '.class.st'.
-	^ self codeChurn: filename repoName: repoName ]
-		on: Error
-		do: [ ^ -1 ]
 ]
 
 { #category : #reporting }
@@ -265,8 +301,9 @@ SAResultItem >> filterJustKilledMutants: newKilledMutants basedOn: originalKille
 ]
 
 { #category : #initialization }
-SAResultItem >> initialize [ 
-	logs := SALogger new
+SAResultItem >> initialize [
+	logs := SALogger new.
+	timeBudgetFinished := false
 ]
 
 { #category : #reporting }
@@ -466,6 +503,26 @@ SAResultItem >> runProfile: aProfile [
 	runProfile := aProfile
 ]
 
+{ #category : #'as yet unclassified' }
+SAResultItem >> safeFail: block key: aKey addTo: aDictionary [
+	| theValue |
+	theValue := block
+		on: Error
+		do: [ :x | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: x class asString;
+				nextPutAll: ': ';
+				nextPutAll: x asString;
+				nextPutAll: '-';
+				nextPutAll: x messageText;
+				lf;
+				flush.
+			'N/A' ].
+	aDictionary at: aKey put: theValue
+]
+
 { #category : #export }
 SAResultItem >> saveResultToFile [
 	^ self saveResultToFileAs: ''
@@ -505,6 +562,16 @@ SAResultItem >> testClass [
 { #category : #accessing }
 SAResultItem >> testClass: anObject [
 	testClass := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> timeBudgetFinished [
+	^ timeBudgetFinished
+]
+
+{ #category : #accessing }
+SAResultItem >> timeBudgetFinished: anObject [
+	timeBudgetFinished := anObject
 ]
 
 { #category : #reporting }

@@ -19,7 +19,12 @@ Class {
 		'simplifier',
 		'maxPop',
 		'testRunTimeOutMult',
-		'saveToFile'
+		'saveToFile',
+		'runSandboxed',
+		'excludeList',
+		'enableExclude',
+		'overwrite',
+		'timeBudget'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -46,6 +51,11 @@ SAConfig class >> default [
 		debug: false;
 		lite: false;
 		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 1800;
 		yourself
 ]
 
@@ -67,6 +77,26 @@ SAConfig >> debug [
 { #category : #accessing }
 SAConfig >> debug: anObject [
 	debug := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> enableExclude [
+	^ enableExclude
+]
+
+{ #category : #accessing }
+SAConfig >> enableExclude: anObject [
+	enableExclude := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> excludeList [
+	^ excludeList
+]
+
+{ #category : #accessing }
+SAConfig >> excludeList: anObject [
+	excludeList := anObject
 ]
 
 { #category : #accessing }
@@ -140,6 +170,16 @@ SAConfig >> oracleReducion: list [
 ]
 
 { #category : #accessing }
+SAConfig >> overwrite [
+	^ overwrite
+]
+
+{ #category : #accessing }
+SAConfig >> overwrite: anObject [
+	overwrite := anObject
+]
+
+{ #category : #accessing }
 SAConfig >> prettifier [
 	^ prettifier
 ]
@@ -158,6 +198,16 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
+]
+
+{ #category : #accessing }
+SAConfig >> runSandboxed [
+	^ runSandboxed
+]
+
+{ #category : #accessing }
+SAConfig >> runSandboxed: anObject [
+	runSandboxed := anObject
 ]
 
 { #category : #accessing }
@@ -228,4 +278,14 @@ SAConfig >> testRunTimeOutMult [
 { #category : #accessing }
 SAConfig >> testRunTimeOutMult: anObject [
 	testRunTimeOutMult := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> timeBudget [
+	^ timeBudget
+]
+
+{ #category : #accessing }
+SAConfig >> timeBudget: anObject [
+	timeBudget := anObject
 ]

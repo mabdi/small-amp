@@ -16,7 +16,8 @@ CompiledMethod >> smallAmpIsAccessor [
 		ifTrue: [ ^ true ].
 	self protocol = #private
 		ifTrue: [ ^ false ].
-
+	self protocol = #deprecated
+		ifTrue: [ ^ false ].
 	names := self methodClass allInstVarNames.
 	selector := self selector.
 	(selector endsWith: ':')

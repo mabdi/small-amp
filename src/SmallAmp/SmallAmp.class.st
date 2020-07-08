@@ -41,6 +41,33 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SmallAmp class >> assertionsHere: caller for: anObject [
+	| ast observation hook asserts hookIndex newCode aMethod |
+	aMethod := (caller class lookupSelector: caller selector).
+	ast := aMethod ast.
+	hook := nil.
+	hookIndex := -1.
+	ast statements
+		withIndexDo: [ :s :i | 
+			(s isMessage and: [ s receiver name = self name ])
+				ifTrue: [ hook := s.
+					hookIndex := i ] ].
+	observation := anObject
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 0.
+	observation name: (hook arguments at: 2) formattedCode.
+	asserts := observation buildAssertions: SAAssertGenerator new.
+	asserts reverseDo: [:newNode | ast body addNode: newNode after: hook].
+	ast body removeNode: hook.
+	newCode := ast formattedCode .
+				Author
+				useAuthor: 'SmallAmp'
+				during: [ caller class
+						compile: newCode
+						classified: aMethod protocol ].
+]
+
 { #category : #example }
 SmallAmp class >> example [
 	| result |
@@ -64,24 +91,30 @@ SmallAmp class >> initializeWith: aConfig [
 { #category : #'world menu' }
 SmallAmp class >> menuCommandOn: aBuilder [
 	<worldMenu>
-	| dt |
+	| dt h |
 	aBuilder item: #SmallAmp.
 	(aBuilder
 		item: #'Open Ui (DrTests)';
 		parent: #SmallAmp)
 		action: [ dt := DrTests new.
-			dt pluginsDropList selectItem: SADrTestsPlugin. 
+			dt pluginsDropList selectItem: SADrTestsPlugin.
 			dt openWithSpec ].
 	(aBuilder
 		item: #'Browse Temp Package';
 		parent: #SmallAmp)
-		action: [ SAASTHelper new defaultTempPackage asPackage browse ].
+		action: [ h:= SAASTHelper new. h createTempPackage. h defaultTempPackage asPackage browse ].
 	(aBuilder
 		item: #'Clear temp';
 		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
 	(aBuilder
 		item: #'Default config';
-		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ]
+		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ].
+	(aBuilder
+		item: #'Load recent updates';
+		parent: #SmallAmp)
+		action: [ IceRepository pullRepoNamed: 'small-amp'.
+			self
+				inform: 'Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp') ]
 ]
 
 { #category : #private }
@@ -96,21 +129,70 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
+	config runSandboxed
+		ifTrue: [ ^ self amplifyAllSandboxed ].
 	self preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
 			| instance |
-			Transcript show: 'Processing ' , item key name.
+			('Processing ' , item key name) traceCr.
 			[ instance := self amplify: item key target: item value.
 			res addResult: instance for: item.
 			config saveToFile
 				ifTrue: [ instance saveResultToFileAs: item key asString.
 					instance amplifiedClass fileOut ] ]
 				on: Error
+				do:
+					[ :ex | ('Error in processing ' , item key name , ': ' , ex asString) traceCr ] ]
+		displayingProgress: [ :item | 'Processing ' , item key name ].
+	^ res
+]
+
+{ #category : #actions }
+SmallAmp >> amplifyAllSandboxed [
+	| res cmd json output |
+	self preRunChecks.
+	res := SAResult new.
+	self finalAmplifyList
+		do: [ :item | 
+			| instance tcase |
+			tcase := item key name.
+			(FileLocator imageDirectory / (tcase , '.json')) exists
+				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
+			[ cmd := String
+				streamContents: [ :stream | 
+					stream
+						nextPutAll: FileLocator vmBinary pathString;
+						nextPutAll: ' ';
+						nextPutAll: FileLocator image pathString;
+						nextPutAll: ' ';
+						nextPutAll: 'smallamp';
+						nextPutAll: ' ';
+						nextPutAll: '--amp=';
+						nextPutAll: tcase;
+						nextPutAll: ' ';
+						nextPutAll: '--nosave' ].
+			output := OSPlatform current resultOfCommand: cmd.
+			(FileLocator imageDirectory / (tcase, '.log')) exists
+		ifTrue: [ (FileLocator imageDirectory / (tcase, '.log')) delete ].
+	(FileLocator imageDirectory / (tcase, '.log')) writeStream
+		nextPutAll: output ;
+		close.
+			(FileLocator imageDirectory / (tcase , '.json')) exists
+				ifTrue: [ json := STONJSON
+						fromString:
+							(FileLocator imageDirectory / (tcase , '.json')) asFileReference
+								contents.
+					(FileLocator imageDirectory
+						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
+					instance := SAResultItem fromDictionaryObject: json.
+					res addResult: instance for: item ]
+				ifFalse: [ 'unfinished run' traceCr ] ]
+				on: Error
 				do: [ :ex | 
-					Transcript
-						show: 'Error in processing ' , item key name , ': ' , ex asString ] ]
+					self
+						traceCr: 'Error in processing ' , item key name , ': ' , ex asString ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
@@ -149,6 +231,21 @@ SmallAmp >> amplifyEvalItem: item [
 ]
 
 { #category : #'as yet unclassified' }
+SmallAmp >> applyExclude [
+	| exList list |
+	(FileLocator imageDirectory / config excludeList) exists
+		ifFalse: [ ^ amplifyList ].
+	exList := ((FileLocator imageDirectory / config excludeList)
+		asFileReference contents splitOn: String lf)
+		reject: [ :line | line beginsWith: '#' ].
+	list := amplifyList reject: [ :r | exList includes: r key name ].
+	config overwrite
+		ifFalse: [ list := list
+				reject: [ :kvp | (FileLocator imageDirectory / (kvp key name , '.json')) exists ] ].
+	^ list
+]
+
+{ #category : #'as yet unclassified' }
 SmallAmp >> debugLog: aString [
 	| string |
 	string := aString isString
@@ -167,6 +264,13 @@ SmallAmp >> debugLog: aString [
 		nextPutAll: string;
 		lf;
 		close]
+]
+
+{ #category : #'as yet unclassified' }
+SmallAmp >> finalAmplifyList [
+	config enableExclude
+		ifTrue: [ ^ self applyExclude ]
+		ifFalse: [ ^ amplifyList ]
 ]
 
 { #category : #initialization }

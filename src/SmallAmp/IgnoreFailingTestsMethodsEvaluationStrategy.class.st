@@ -13,6 +13,11 @@ IgnoreFailingTestsMethodsEvaluationStrategy class >> newWith: aCollection [
 	^ self new toIgnore: aCollection; yourself 	
 ]
 
+{ #category : #initialization }
+IgnoreFailingTestsMethodsEvaluationStrategy >> initialize [ 
+toIgnore := {}
+]
+
 { #category : #tests }
 IgnoreFailingTestsMethodsEvaluationStrategy >> testCasesToEvaluate: aMutation for: aMutantEvaluation [
 	"Small Hack! each underline is added in each change. we sort based on number of changes. low to high"
@@ -29,5 +34,6 @@ IgnoreFailingTestsMethodsEvaluationStrategy >> toIgnore [
 
 { #category : #accessing }
 IgnoreFailingTestsMethodsEvaluationStrategy >> toIgnore: anObject [
+	anObject ifNil: [ self halt ].
 	toIgnore := anObject
 ]

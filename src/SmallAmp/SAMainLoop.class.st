@@ -40,6 +40,8 @@ SAMainLoop >> allOpenedWindows [
 
 { #category : #actions }
 SAMainLoop >> amplify [
+	| ts_start skip |
+	ts_start := DateAndTime now.
 	self initialSteps.
 	(1 to: config iterations)
 		do: [ :gen | 
@@ -48,8 +50,12 @@ SAMainLoop >> amplify [
 				nextPutAll: gen asString;
 				lf;
 				flush.
-			uncovered
-				ifNotEmpty: [ self normalize.
+			skip := uncovered isEmpty.
+			config timeBudget > 0
+				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget
+						ifTrue: [ skip := true. finalResult timeBudgetFinished:true ] ].
+			skip
+				ifFalse: [ self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.
@@ -204,9 +210,9 @@ SAMainLoop >> liteAmplification [
 { #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
-		ifNotNil: [ config profiler
-				profileClasses: targetClasses
-				byRunning: testClass.
+		ifNotNil: [ config profiler reset.
+			self flag: #TODO "why wee need cache profiles in config?".
+			config profiler profileClasses: targetClasses byRunning: testClass.
 			finalResult runProfile: config profiler ]
 ]
 

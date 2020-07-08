@@ -43,9 +43,14 @@ SACommandLineHandler >> activate [
 	self activateHelp
 		ifTrue: [ ^ self ].
 	(self hasOption: 'reload')
-		ifTrue: [ self reloadSmallAmp ].
+		ifTrue: [ IceRepository pullRepoNamed: 'small-amp'.
+			('Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp'))
+				traceCr.
+				Smalltalk snapshot: true andQuit: true ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
+	(self hasOption: 'xinfo')
+		ifTrue: [ self extraInformation ].
 	(self hasOption: 'amp')
 		ifTrue: [ self evalAmp ].
 	(self hasOption: 'clearTemp')
@@ -78,10 +83,13 @@ SACommandLineHandler >> end [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalAmp [
 	| testClass |
-	testClass := self arguments
+	self arguments
 		detect: [ :arg | arg beginsWith: '--amp=' ]
-		ifFound: [ :arg | arg allButFirst: '--amp=' size ].
-	SmallAmp initializeDefault testCase: testClass ; amplifyEval
+		ifFound: [ :arg | testClass := (arg allButFirst: '--amp=' size) asClass ].
+	SmallAmp initializeDefault
+		testCase: testClass;
+		amplifyEval.
+	Smalltalk snapshot: false andQuit: true.
 ]
 
 { #category : #'as yet unclassified' }
@@ -93,10 +101,110 @@ SACommandLineHandler >> evalStats [
 	self metricsEval: prefix
 ]
 
+{ #category : #accessing }
+SACommandLineHandler >> extraInformation [
+	| testName res resstr fileName |
+	self arguments
+		detect: [ :arg | arg beginsWith: '--xinfo=' ]
+		ifFound: [ :arg | testName :=  arg allButFirst: '--xinfo=' size ].
+	res := self extraInformationFor: testName.
+	resstr := STONJSON toStringPretty: res.
+	fileName := testName , '.xjson'.
+	(FileLocator imageDirectory / fileName) exists
+		ifTrue: [ (FileLocator imageDirectory / fileName) delete ].
+	(FileLocator imageDirectory / fileName) writeStream
+		nextPutAll: resstr;
+		close
+]
+
+{ #category : #accessing }
+SACommandLineHandler >> extraInformationFor: amplified [
+	| json result targetClasses testClass amplifiedClass amplifiedCoverage originalCoverage |
+	result := Dictionary new.
+	json := STONJSON
+		fromString:
+			(FileLocator imageDirectory / (amplified , '.json')) asFileReference
+				contents.
+	targetClasses := (json at: #targetClasses)
+		collect: [ :c | self class environment at: c asSymbol ].
+	testClass := self class environment at: (json at: #testCase) asSymbol.
+	self class environment
+		at: (json at: #amplifiedClass) asSymbol
+		ifPresent: [ :x | amplifiedClass := x ]
+		ifAbsent: [ (FileLocator imageDirectory / ((json at: #amplifiedClass) , '.st'))
+				asFileReference fileIn.
+			amplifiedClass := self class environment
+				at: (json at: #amplifiedClass) asSymbol ].
+	amplifiedCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {amplifiedClass};
+		run.
+	originalCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {testClass};
+		run.
+	('Processing ', amplified) traceCr.
+	self
+		safeFail: [ SAReceiverTypeProfiler directCallsFor: testClass ]
+		key: #directTestingOriginal
+		addTo: result.
+	self
+		safeFail: [ ((targetClasses
+				collect: [ :cls | (SACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
+				inject: 0
+				into: [ :accum :each | accum + each ])
+				printShowingDecimalPlaces: 2 ]
+		key: #targetChurn
+		addTo: result.
+	self
+		safeFail: [ (SACodeChurnAnalyser new codeChurnForClass: testClass)
+				printShowingDecimalPlaces: 2 ]
+		key: #testChurn
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage methodsCoverage ]
+		key: #amplifiedCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage branchesCoverage ]
+		key: #amplifiedCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage statementsCoverage ]
+		key: #amplifiedCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ originalCoverage methodsCoverage ]
+		key: #originalCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ originalCoverage branchesCoverage ]
+		key: #originalCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ originalCoverage statementsCoverage ]
+		key: #originalCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ SATestAssertionDensity
+				dencityFor: (testClass methods select: #isTestMethod) ]
+		key: #assertionDensityOriginal
+		addTo: result.
+	self
+		safeFail: [ SATestAssertionDensity
+				dencityFor:
+					(amplifiedClass methods
+						select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
+		key: #assertionDensityAmplified
+		addTo: result.
+	^ result
+]
+
 { #category : #actions }
 SACommandLineHandler >> metricsEval: repoName [
-	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc |
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
 	classes := self allClassesForRepo: repoName.
+	commitId := IceRepository latestCommitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
 	targetedTests := tests
@@ -115,9 +223,10 @@ SACommandLineHandler >> metricsEval: repoName [
 	stat := {(#classes -> classes size).
 	(#tests -> tests size).
 	(#loc -> loc).
+	(#commitId -> commitId).
 	(#targetedTests -> targetedTests size).
 	(#targetedTestsMethods -> testMethodTargeted size).
-	(#allGreen -> (testrun failureCount + testrun errorCount < 0)).
+	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
 	(#testsFails -> testrun failureCount).
 	(#testsErrors -> testrun errorCount).
 	(#testsPasses -> testrun passedCount)} asString.
@@ -137,9 +246,21 @@ SACommandLineHandler >> metricsEval: repoName [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> reloadSmallAmp [
-	IceRepository registry
-		detect: [ :r | r name = 'small-amp' ]
-		ifFound: [ :r | r pull ]
-		ifNone: [ self exitFailure: 'repo not found.' ]
+SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
+	| theValue |
+	theValue := block
+		on: Error
+		do: [ :x | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: x class asString;
+				nextPutAll: ': ';
+				nextPutAll: x asString;
+				nextPutAll: '-';
+				nextPutAll: x messageText;
+				lf;
+				flush.
+			'N/A' ].
+	aDictionary at: aKey put: theValue
 ]

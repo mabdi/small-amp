@@ -144,7 +144,8 @@ SATestMethod >> signAsSmallAmp [
 
 { #category : #removing }
 SATestMethod >> strip [
-	testMethod := self astHelper removeAssertions: testMethod
+	testMethod := self astHelper strip: testMethod.
+	
 ]
 
 { #category : #accessing }

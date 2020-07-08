@@ -1,6 +1,26 @@
 Extension { #name : #MutantEvaluation }
 
 { #category : #'*SmallAmp' }
+MutantEvaluation >> runTestsSmallAmp [
+	"Collect all suite test and execute them."
+
+	| suite |
+	suite := TestSuite named: 'MutationEvaluation'.
+	suite
+		addTests:
+			((strategy testCasesToEvaluate: mutation for: self)
+				collect: [ :each | each testCase ]).
+	^ [ [ suite runStoppingOnFirstFailOrError ]
+		on: Exception
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ x signal ] ] ]
+		on: Exception
+		do: [ :ex | nil ]
+]
+
+{ #category : #'*SmallAmp' }
 MutantEvaluation >> runTestsSmallAmpVerbose [
 	"Collect all suite test and execute them."
 
@@ -10,9 +30,20 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ "run or runStoppingOnFirstFailOrError" suite run ]
+	^ [ [suite run]on: Exception
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ x signal ] ]  ]
 		on: Error
 		do: [ :ex | nil ]
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> testResultsSmallAmp [
+	^ [ self runTestsSmallAmp ]
+		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
+		onTimeout: [ nil ]
 ]
 
 { #category : #'*SmallAmp' }
@@ -31,7 +62,7 @@ MutantEvaluation >> valueSmallAmp [
 		flush.
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
-	self testResults ]
+	self testResultsSmallAmp ]
 		ensure: [ mutation uninstallDeep ].
 	^ MutantEvaluationResult
 		for: mutation

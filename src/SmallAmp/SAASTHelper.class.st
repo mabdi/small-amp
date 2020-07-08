@@ -100,6 +100,14 @@ SAASTHelper >> clearTempClasses [
 		displayingProgress: 'Clear temp classes.'
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> createTempPackage [
+	(RPackageOrganizer default
+		includesPackageNamed: self defaultTempPackage)
+		ifFalse: [ RPackageOrganizer default
+				createPackageNamed: self defaultTempPackage ].
+]
+
 { #category : #'method operations' }
 SAASTHelper >> defaultPragma [
 	^ self class defaultPragma
@@ -108,6 +116,26 @@ SAASTHelper >> defaultPragma [
 { #category : #'as yet unclassified' }
 SAASTHelper >> defaultTempPackage [
 	^ 'SmallAmpTempClasses'
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> disableDeprecationsOn: aClass [
+	| methods str |
+	methods := (Object methodsInProtocol: #deprecation)
+		collect: [ :m | m ast copy ].
+	methods
+		do: [ :m | 
+			str := m
+				replaceNode: m body
+				withNode: (RBSequenceNode statements: #()).
+			aClass compile: str formattedCode ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> enableDeprecationsOn: aClass [
+
+	(Object methodsInProtocol: #deprecation)
+		do: [ :m | aClass removeSelector: m selector ]
 ]
 
 { #category : #'method operations' }
@@ -219,6 +247,18 @@ SAASTHelper >> signAsSmallAmp: src [
 		ifFalse: [ ast
 				addPragma: (RBPragmaNode selector: self defaultPragma arguments: {}) ].
 			^ ast formattedCode 
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> strip: testMethod [
+	| m |
+	m := SAAssertTransform
+		removeAllAsserts: (self parsedMethodFrom: testMethod).
+	
+	(m body allChildren allSatisfy: #isSequence 	)
+		ifTrue: [ m := SAAssertTransform
+				transformAllAsserts: (self parsedMethodFrom: testMethod) ]. "we dont use isEmpty because sometimes we have empty sequences inside body. if all children isSequence we can say all of them are empty"
+	^ m formattedCode
 ]
 
 { #category : #'as yet unclassified' }
