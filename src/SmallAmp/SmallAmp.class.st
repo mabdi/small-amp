@@ -41,6 +41,33 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SmallAmp class >> assertionsHere: caller for: anObject [
+	| ast observation hook asserts hookIndex newCode aMethod |
+	aMethod := (caller class lookupSelector: caller selector).
+	ast := aMethod ast.
+	hook := nil.
+	hookIndex := -1.
+	ast statements
+		withIndexDo: [ :s :i | 
+			(s isMessage and: [ s receiver name = self name ])
+				ifTrue: [ hook := s.
+					hookIndex := i ] ].
+	observation := anObject
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 0.
+	observation name: (hook arguments at: 2) formattedCode.
+	asserts := observation buildAssertions: SAAssertGenerator new.
+	asserts reverseDo: [:newNode | ast body addNode: newNode after: hook].
+	ast body removeNode: hook.
+	newCode := ast formattedCode .
+				Author
+				useAuthor: 'SmallAmp'
+				during: [ caller class
+						compile: newCode
+						classified: aMethod protocol ].
+]
+
 { #category : #example }
 SmallAmp class >> example [
 	| result |
