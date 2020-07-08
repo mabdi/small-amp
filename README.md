@@ -39,3 +39,6 @@ SmallAmp can be used as a plugin for DrTest. More informaion [here](https://gith
 You can also ask SmallAmp to generate assertions for you:
 
 ![SmallAmp](https://user-images.githubusercontent.com/3696683/86917621-a71f0480-c125-11ea-9f25-09ed7d6cf358.gif)
+
+Add this line to your test method: `SmallAmp assertionsHere: self for: anObject` (replace `anObject` with a object from your test method).
+And run the test. Test will refactor itself and add new assertions.
