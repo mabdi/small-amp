@@ -9,7 +9,8 @@ Class {
 		'finalResult',
 		'resultPeople',
 		'uncovered',
-		'testRunTimeoutMillis'
+		'testRunTimeoutMillis',
+		'testSuite'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -150,13 +151,13 @@ SAMainLoop >> discardFailingTests [
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> initialSteps [
-finalResult logs
+	finalResult logs
 		recoredTag: #initialSteps
-		toRun:
-	[self discardFailingTests.
-	finalResult mutalkRunOriginal.
-	uncovered := finalResult originalAnalysis generalResult aliveMutants.
-	self methodProfiling.]
+		toRun: [ self discardFailingTests.
+			testSuite ifNotNil: [ finalResult mutalkRunOriginalTestSuite: testSuite  ] ifNil: [ finalResult mutalkRunOriginal ].
+			uncovered := finalResult originalAnalysis generalResult
+				aliveMutants.
+			self methodProfiling ]
 ]
 
 { #category : #initialization }
@@ -342,6 +343,11 @@ SAMainLoop >> targetClasses [
 { #category : #accessing }
 SAMainLoop >> testClass [
 	^ testClass
+]
+
+{ #category : #accessing }
+SAMainLoop >> testSuite: aListOfTests [
+	testSuite := aListOfTests
 ]
 
 { #category : #'instance creation' }

@@ -24,7 +24,8 @@ Class {
 		'excludeList',
 		'enableExclude',
 		'overwrite',
-		'timeBudget'
+		'timeBudget',
+		'useTestSuite'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -54,6 +55,7 @@ SAConfig class >> default [
 		runSandboxed: false;
 		enableExclude: false;
 		overwrite: false;
+		useTestSuite: false;
 		excludeList: '../blacklist.txt';
 		timeBudget: 1800;
 		yourself
@@ -288,4 +290,14 @@ SAConfig >> timeBudget [
 { #category : #accessing }
 SAConfig >> timeBudget: anObject [
 	timeBudget := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> useTestSuite [
+	^ useTestSuite
+]
+
+{ #category : #accessing }
+SAConfig >> useTestSuite: anObject [
+	useTestSuite := anObject
 ]

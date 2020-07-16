@@ -441,6 +441,24 @@ SAResultItem >> mutalkRunOriginal [
 	originalAnalysis := analysis1
 ]
 
+{ #category : #evaluation }
+SAResultItem >> mutalkRunOriginalTestSuite: aListOfTests [
+	| analysis1 testCases |
+	testCases := OrderedCollection new.
+	testCases addAll: aListOfTests.
+	testCases add: testClass.
+	analysis1 := MutationTestingAnalysis
+		testCasesFrom: testCases
+		mutating: targetClasses
+		using: MutantOperator contents
+		with:
+			(IgnoreFailingTestsMethodsEvaluationStrategy
+				newWith: self failedSelectorInOriginal)
+		with: SmallAmpMutationsGenerationStrategy new.
+	analysis1 runSmallAmp.
+	originalAnalysis := analysis1
+]
+
 { #category : #reporting }
 SAResultItem >> numberOfAllMutationsInOriginal [
 	^ self originalAnalysis generalResult numberOfEvaluatedMutants

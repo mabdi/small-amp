@@ -36,7 +36,8 @@ Class {
 	#instVars : [
 		'config',
 		'amplifyList',
-		'logsFile'
+		'logsFile',
+		'testSuite'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -121,8 +122,10 @@ SmallAmp class >> menuCommandOn: aBuilder [
 SmallAmp >> amplify: aTestClass target: targetClasses [
 	| sa |
 	sa := SAMainLoop with: config for: aTestClass targets: targetClasses.
+	config useTestSuite & testSuite isNotNil
+		ifTrue: [ sa testSuite: testSuite ].
 	^ config lite
-		ifTrue: [ sa amplifyLite  ]
+		ifTrue: [ sa amplifyLite ]
 		ifFalse: [ sa amplify ]
 ]
 
@@ -313,4 +316,9 @@ SmallAmp >> testCase: aTestClass [
 { #category : #adding }
 SmallAmp >> testCase: aTestClass targets: targetClasses [
 	amplifyList add: (aTestClass -> targetClasses)
+]
+
+{ #category : #accessing }
+SmallAmp >> testSuite: aListOfTests [
+	testSuite := aListOfTests 
 ]
