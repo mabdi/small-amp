@@ -212,8 +212,11 @@ SAMainLoop >> liteAmplification [
 SAMainLoop >> methodProfiling [
 	config profiler
 		ifNotNil: [ config profiler reset.
-			self flag: #TODO "why wee need cache profiles in config?".
-			config profiler profileClasses: targetClasses byRunning: testClass.
+			self flag: #TODO.	"why wee need cache profiles in config?"
+			testSuite
+				ifNotNil: [ finalResult mutalkRunOriginalTestSuite: testSuite ]
+				ifNil: [ config profiler profileClasses: targetClasses byRunning: testClass. ].
+			
 			finalResult runProfile: config profiler ]
 ]
 

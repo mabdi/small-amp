@@ -56,10 +56,15 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 ]
 
 { #category : #'as yet unclassified' }
-SAProxyProfiler >> profileClasses: listOfTargetClass byRunning: aTestSuite [
+SAProxyProfiler >> profileClasses: listOfTargetClass byRunningTests: aListOfTest [
+	| aTestSuite |
 	[ listOfTargetClass
-		do:
-			[ :aTargetClass | (aTargetClass methods,aTargetClass  class methods)  do: [ :aMethod | self installProxyOn: aMethod ] ].
+		do: [ :aTargetClass | 
+			aTargetClass methods , aTargetClass class methods
+				do: [ :aMethod | self installProxyOn: aMethod ] ].
+	aTestSuite := TestSuite new.
+	aListOfTest do: [ :ts | aTestSuite addTests: ts buildSuite tests ].
+	
 	[ aTestSuite suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Profiling timeout' ] ]

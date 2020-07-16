@@ -31,6 +31,11 @@ SAAbstractProfiler >> profile [
 
 { #category : #'as yet unclassified' }
 SAAbstractProfiler >> profileClasses: aTargetClass byRunning: aTestSuite [
+	self profileClasses: aTargetClass byRunningTests: {aTestSuite}
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractProfiler >> profileClasses: aTargetClass byRunningTests: aListOfTest [
 	self subclassResponsibility
 ]
 
