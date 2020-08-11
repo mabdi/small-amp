@@ -426,10 +426,11 @@ SAAssertGeneratorTest >> testBuildAssertionsDateTimeObservation [
 { #category : #tests }
 SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	| item assertions |
+	self skip: 'I dont generate timeout at the moment'
+	"
 	item := SAObservationTimeout forTimeout: 125.
 	assertions := item buildAssertions: assertGenerator.
 	self assert: assertions class equals: OrderedCollection.
 	self deny: assertions isEmpty.
-	self assert: (assertions first selector) equals: #should:takeMoreThan: 
-	
+	self assert: assertions first selector equals: #should:takeMoreThan:"
 ]
