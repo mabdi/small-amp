@@ -82,7 +82,8 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 			generatedClass class
 				compile:
 					'observer ^ observer ifNil: [ observer := SAObserver newForTarget: '
-						, testMethodModel testTargets asString , ' ]'.
+						, testMethodModel testTargets asString , ' serialDepth: '
+						, config serializationMaxDepth asString , ' ]'.
 			generatedClass class compile: 'observerReset  observer := nil ' ].
 	generatedClass observerReset.
 	generatedClass compile: aMethod formattedCode.

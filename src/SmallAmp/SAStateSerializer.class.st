@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAStateSerializer class >> withDepth: anInt [ 
+	^ self new maxDepth: anInt ; yourself
+]
+
+{ #category : #'as yet unclassified' }
 SAStateSerializer >> filterObserversOn: theObject [
 	| methods theClass |
 	theClass := theObject class.

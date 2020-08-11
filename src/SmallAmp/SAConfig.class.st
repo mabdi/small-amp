@@ -56,6 +56,7 @@ SAConfig class >> default [
 		overwrite: false;
 		excludeList: '../blacklist.txt';
 		timeBudget: 1800;
+		serializationMaxDepth: 3;
 		yourself
 ]
 

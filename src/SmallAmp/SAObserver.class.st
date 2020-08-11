@@ -6,14 +6,15 @@ Class {
 		'history',
 		'chekingFlaky',
 		'flankyIdx',
-		'flakyMem'
+		'flakyMem',
+		'serialDepth'
 	],
 	#category : #'SmallAmp-Helpers'
 }
 
 { #category : #'instance creation' }
-SAObserver class >> newForTarget: targetClasses [
-	^ self new newForTarget: targetClasses
+SAObserver class >> newForTarget: targetClasses serialDepth: anInt [
+	^ self new newForTarget: targetClasses ; serialDepth: anInt; yourself
 ]
 
 { #category : #adding }
@@ -62,7 +63,8 @@ SAObserver >> flakyMem [
 
 { #category : #'as yet unclassified' }
 SAObserver >> getASerializer [
-	^ SAStateSerializer new
+	^ SAStateSerializer
+		withDepth: serialDepth
 ]
 
 { #category : #accessing }
@@ -154,4 +156,14 @@ SAObserver >> resetFlakyDetection [
 	chekingFlaky := true.
 	flankyIdx := 0.
 	flakyMem removeAll
+]
+
+{ #category : #accessing }
+SAObserver >> serialDepth [
+	^ serialDepth
+]
+
+{ #category : #accessing }
+SAObserver >> serialDepth: anObject [
+	serialDepth := anObject
 ]

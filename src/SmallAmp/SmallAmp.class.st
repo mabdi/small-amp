@@ -44,7 +44,7 @@ Class {
 { #category : #'as yet unclassified' }
 SmallAmp class >> assertionsHere: caller for: anObject [
 	| ast observation hook asserts hookIndex newCode aMethod |
-	aMethod := (caller class lookupSelector: caller selector).
+	aMethod := caller class lookupSelector: caller selector.
 	ast := aMethod ast.
 	hook := nil.
 	hookIndex := -1.
@@ -54,18 +54,18 @@ SmallAmp class >> assertionsHere: caller for: anObject [
 				ifTrue: [ hook := s.
 					hookIndex := i ] ].
 	observation := anObject
-		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		smallAmpAcceptSerializerVisitor:
+			(SAStateSerializer withDepth: SAConfig default serializationMaxDepth )
 		atDepth: 0.
 	observation name: (hook arguments at: 2) formattedCode.
 	asserts := observation buildAssertions: SAAssertGenerator new.
-	asserts reverseDo: [:newNode | ast body addNode: newNode after: hook].
+	asserts
+		reverseDo: [ :newNode | ast body addNode: newNode after: hook ].
 	ast body removeNode: hook.
-	newCode := ast formattedCode .
-				Author
-				useAuthor: 'SmallAmp'
-				during: [ caller class
-						compile: newCode
-						classified: aMethod protocol ].
+	newCode := ast formattedCode.
+	Author
+		useAuthor: 'SmallAmp'
+		during: [ caller class compile: newCode classified: aMethod protocol ]
 ]
 
 { #category : #example }
