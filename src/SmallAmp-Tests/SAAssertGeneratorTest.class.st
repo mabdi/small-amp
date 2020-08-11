@@ -29,7 +29,8 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
 		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 11.
+	self assert: assertions class equals: OrderedCollection.
+	self assert: assertions size equals: 5.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
@@ -41,27 +42,9 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
 		equals: 'self assert: (foo at: 1) equals: 10'.
 	self
 		assertSourceCode: (assertions at: 4) formattedCode
-		equals: 'self assert: (foo at: 2) class equals: Point'.
+		equals: 'self assert: (foo at: 2) equals: 20 @ 10'.
 	self
 		assertSourceCode: (assertions at: 5) formattedCode
-		equals: 'self deny: (foo at: 2) isZero'.
-	self
-		assertSourceCode: (assertions at: 6) formattedCode
-		equals: 'self assert: (foo at: 2) y equals: 10'.
-	self
-		assertSourceCode: (assertions at: 7) formattedCode
-		equals: 'self deny: (foo at: 2) isFloatPoint'.
-	self
-		assertSourceCode: (assertions at: 8) formattedCode
-		equals: 'self assert: (foo at: 2) isIntegerPoint'.
-	self
-		assertSourceCode: (assertions at: 9) formattedCode
-		equals: 'self assert: (foo at: 2) x equals: 20'.
-	self
-		assertSourceCode: (assertions at: 10) formattedCode
-		equals: 'self assert: (foo at: 2) isPoint'.
-	self
-		assertSourceCode: (assertions at: 11) formattedCode
 		equals: 'self assert: (foo at: 3) equals: 30'
 ]
 
@@ -162,7 +145,8 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		atDepth: 0.
 	item name: 'foo'.
 	assertions := item buildAssertions: assertGenerator.
-	self assert: assertions size equals: 11.
+	self assert: assertions class equals: OrderedCollection.
+	self assert: assertions size equals: 5.
 	self
 		assertSourceCode: (assertions at: 1) formattedCode
 		equals: 'self assert: foo class equals: Array'.
@@ -177,25 +161,7 @@ SAAssertGeneratorTest >> testBuildAssertionCollectionValuesNonPrimitive [
 		equals: 'self assert: (foo at: 2) equals: 20'.
 	self
 		assertSourceCode: (assertions at: 5) formattedCode
-		equals: 'self assert: (foo at: 3) class equals: Point'.
-	self
-		assertSourceCode: (assertions at: 6) formattedCode
-		equals: 'self deny: (foo at: 3) isZero'.
-	self
-		assertSourceCode: (assertions at: 7) formattedCode
-		equals: 'self assert: (foo at: 3) y equals: 1'.
-	self
-		assertSourceCode: (assertions at: 8) formattedCode
-		equals: 'self deny: (foo at: 3) isFloatPoint'.
-	self
-		assertSourceCode: (assertions at: 9) formattedCode
-		equals: 'self assert: (foo at: 3) isIntegerPoint'.
-	self
-		assertSourceCode: (assertions at: 10) formattedCode
-		equals: 'self assert: (foo at: 3) x equals: 30'.
-	self
-		assertSourceCode: (assertions at: 11) formattedCode
-		equals: 'self assert: (foo at: 3) isPoint'
+		equals: 'self assert: (foo at: 3) equals: 30 @ 1'
 ]
 
 { #category : #tests }
@@ -422,6 +388,19 @@ SAAssertGeneratorTest >> testBuildAssertionsBlockClosureObservation [
 	self
 		assertSourceCode: (assertions at: 2) formattedCode
 		equals: 'self assert: foo sourceNode formattedCode equals: ''[ :a | a + 1 ]'''
+]
+
+{ #category : #test }
+SAAssertGeneratorTest >> testBuildAssertionsClass [
+	| item assertions |
+	item := SAObservationClass newFor: SmallAmp atDepth: 1.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions class equals: OrderedCollection.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo equals: SmallAmp'
 ]
 
 { #category : #test }

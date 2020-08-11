@@ -155,6 +155,14 @@ SAStateSerializer >> visitPrimitive: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitRBProgramNode: theObject atDepth: anInteger [
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	
+	^ SAObservationRBProgramNode newForClass: theObject class values: theObject atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitTrue: theObject atDepth: anInteger [
 	anInteger > self maxDepth ifTrue: [ ^ nil ].
 	^ SAObservationTrue

@@ -59,6 +59,23 @@ SAAssertGenerator >> assertBlockValueAsString: observation [
 	^ assertStatement
 ]
 
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> assertClass: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theValueNode := RBVariableNode named: observation theValue name.
+	(theValueNode asString
+		includesSubstring: '<an unprintable nonliteral value>')
+		ifTrue: [ SAUnprintableNonliteralValue new signal ].
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
 { #category : #asserting }
 SAAssertGenerator >> assertCollectionIncludeValues: observation [
 	| assertStatements |
@@ -280,6 +297,25 @@ SAAssertGenerator >> assertPrimitiveValueAsString: observation [
 ]
 
 { #category : #asserting }
+SAAssertGenerator >> assertRBProgramNode: observation [
+	| assertStatement theObject theValueNode |
+	theObject := RBVariableNode named: observation name.
+	theObject := RBMessageNode
+		receiver: theObject
+		selector: #formattedCode.
+	
+	theValueNode := RBLiteralValueNode
+		value: observation theValue formattedCode.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assertSourceCode:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
+	^ assertStatement
+]
+
+{ #category : #asserting }
 SAAssertGenerator >> assertTimeout: observation [
 	| assertStatement theMessage theTimeOut |
 	theMessage := RBVariableNode named: self class blockPlaceHolder.
@@ -333,6 +369,15 @@ SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 	asserts := OrderedCollection new.
 	(self assertType: observation) ifNotNil: [:s |asserts add: s].
 	asserts add: (self assertBlockValueAsString: observation).
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsClass: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	(self assertClass: observation)
+		ifNotNil: [ :s | asserts add: s ].
 	^ asserts
 ]
 
@@ -453,6 +498,15 @@ SAAssertGenerator >> buildAssertionsPrimitiveObservation: observation [
 					([ self assertPrimitiveValue: observation ]
 						on: SAUnprintableNonliteralValue
 						do: [ self assertPrimitiveValueAsString: observation ]) ].
+	asserts := asserts reject: #isNil.
+	^ asserts
+]
+
+{ #category : #'as yet unclassified' }
+SAAssertGenerator >> buildAssertionsRBProgramNode: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	asserts add: (self assertRBProgramNode: observation).
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]

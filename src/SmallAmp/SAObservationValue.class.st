@@ -13,14 +13,6 @@ Class {
 }
 
 { #category : #'instance creation' }
-SAObservationValue class >> newForClass: theObjectClass values: aCollection [
-	^ self new
-		  theValue: aCollection;
-		  theClass: theObjectClass;
-		  yourself
-]
-
-{ #category : #'instance creation' }
 SAObservationValue class >> newForClass: theObjectClass values: aCollection atDepth: anInt [
 	^ self new 
 		  theValue: aCollection;
