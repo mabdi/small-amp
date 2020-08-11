@@ -11,6 +11,11 @@ Object class >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
 ]
 
 { #category : #'*SmallAmp' }
+Object class >> smallAmpBuildAssertions: observation by: aGenerator [
+	^ aGenerator buildAssertionsObjectObservation: observation
+]
+
+{ #category : #'*SmallAmp' }
 Object >> smallAmpMutateWith: aMutator [
 	^ aMutator mutateObject: self
 ]

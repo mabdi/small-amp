@@ -211,6 +211,25 @@ SAAssertGenerator >> assertNil: observation [
 	^ assertStatement
 ]
 
+{ #category : #asserting }
+SAAssertGenerator >> assertPoint: observation [
+	| assertStatement theObject theValueNode |
+	
+	theObject := RBVariableNode named: observation name.
+	theValueNode :=RBMessageNode
+	receiver: (RBLiteralValueNode value:(observation theValue at: #x) theValue)
+	selector: #@
+	arguments: {(RBLiteralValueNode value:(observation theValue at: #y) theValue )}.
+	(theValueNode asString includesSubstring: '<an unprintable nonliteral value>') ifTrue: [SAUnprintableNonliteralValue new signal].
+	assertStatement := RBMessageNode
+		                   receiver: (RBSelfNode named: 'self')
+		                   selector: #assert:equals:
+		                   arguments: { 
+				                   theObject.
+				                   theValueNode }.
+	^ assertStatement
+]
+
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> assertPrimitiveAsUTCAsString: observation [
 	| assertStatement theObject theValueNode |
@@ -411,6 +430,14 @@ SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 		do:
 			[ :assertion | self appendMyName: observation name ToAssert: assertion ].
 	(self assertType: observation) ifNotNil: [:s |asserts addFirst: s].
+	^ asserts
+]
+
+{ #category : #asserting }
+SAAssertGenerator >> buildAssertionsPoint: observation [
+	| asserts |
+	asserts := OrderedCollection new.
+	(self assertPoint: observation) ifNotNil: [:s |asserts add: s].
 	^ asserts
 ]
 
