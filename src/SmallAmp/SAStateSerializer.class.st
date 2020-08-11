@@ -66,6 +66,11 @@ SAStateSerializer >> visitChar: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitClass: theObject atDepth: anInteger [
+	^ self visitPrimitive: theObject atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitCollection: theObject atDepth: anInteger [
 	| aCollection |
 	anInteger > self maxDepth
