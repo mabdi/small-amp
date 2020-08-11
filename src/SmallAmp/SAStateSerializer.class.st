@@ -120,6 +120,16 @@ SAStateSerializer >> visitFalse: theObject atDepth: anInteger [
 ]
 
 { #category : #visiting }
+SAStateSerializer >> visitFraction: theObject atDepth: anInteger [
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	^ SAObservationFraction
+		newForClass: theObject class
+		values: theObject
+		atDepth: anInteger
+]
+
+{ #category : #visiting }
 SAStateSerializer >> visitNumber: theObject atDepth: anInteger [
 		^ self visitPrimitive: theObject atDepth: anInteger
 ]

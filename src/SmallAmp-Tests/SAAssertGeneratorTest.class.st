@@ -424,6 +424,21 @@ SAAssertGeneratorTest >> testBuildAssertionsDateTimeObservation [
 ]
 
 { #category : #tests }
+SAAssertGeneratorTest >> testBuildAssertionsFractionPoint [
+	| item assertions |
+	item := 0 @ (5 / 2)
+		smallAmpAcceptSerializerVisitor: SAStateSerializer new
+		atDepth: 1.
+	item name: 'foo'.
+	assertions := item buildAssertions: assertGenerator.
+	self assert: assertions class equals: OrderedCollection.
+	self assert: assertions size equals: 1.
+	self
+		assertSourceCode: (assertions at: 1) formattedCode
+		equals: 'self assert: foo equals: (0 @ (5 / 2))'
+]
+
+{ #category : #tests }
 SAAssertGeneratorTest >> testBuildAssertionsTimeout [
 	| item assertions |
 	self skip: 'I dont generate timeout at the moment'
