@@ -43,19 +43,15 @@ Class {
 
 { #category : #'as yet unclassified' }
 SmallAmp class >> assertionsHere: caller for: anObject [
-	| ast observation hook asserts hookIndex newCode aMethod |
+	| ast observation asserts hook hookIndex newCode aMethod |
 	aMethod := caller class lookupSelector: caller selector.
 	ast := aMethod ast.
-	hook := nil.
 	hookIndex := -1.
-	ast statements
-		withIndexDo: [ :s :i | 
-			(s isMessage and: [ s receiver name = self name ])
-				ifTrue: [ hook := s.
-					hookIndex := i ] ].
+	hookIndex := ast statements
+		findFirst: [ :s | s isMessage and: [ s isVariable and: [s receiver name = self name] ] ].
+	hook := ast statements at: hookIndex.
 	observation := anObject
-		smallAmpAcceptSerializerVisitor:
-			(SAStateSerializer withDepth: SAConfig default serializationMaxDepth )
+		smallAmpAcceptSerializerVisitor: (SAStateSerializer withDepth: SAConfig default serializationMaxDepth)
 		atDepth: 0.
 	observation name: (hook arguments at: 2) formattedCode.
 	asserts := observation buildAssertions: SAAssertGenerator new.
