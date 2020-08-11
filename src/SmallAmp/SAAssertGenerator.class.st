@@ -48,8 +48,7 @@ SAAssertGenerator >> assertBlockValueAsString: observation [
 	theObject := RBMessageNode
 		receiver: (RBMessageNode receiver: theObject selector: #sourceNode)
 		selector: #formattedCode.
-	theValueNode := RBLiteralValueNode
-		value: observation theValue sourceNode formattedCode.
+	theValueNode := observation valueNode.
 	assertStatement := RBMessageNode
 		receiver: (RBSelfNode named: 'self')
 		selector: #assert:equals:
@@ -63,7 +62,7 @@ SAAssertGenerator >> assertBlockValueAsString: observation [
 SAAssertGenerator >> assertClass: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
-	theValueNode := RBVariableNode named: observation theValue name.
+	theValueNode := observation valueNode.
 	(theValueNode asString
 		includesSubstring: '<an unprintable nonliteral value>')
 		ifTrue: [ SAUnprintableNonliteralValue new signal ].
@@ -231,19 +230,20 @@ SAAssertGenerator >> assertNil: observation [
 { #category : #asserting }
 SAAssertGenerator >> assertPoint: observation [
 	| assertStatement theObject theValueNode |
-	
 	theObject := RBVariableNode named: observation name.
-	theValueNode :=RBMessageNode
-	receiver: (RBLiteralValueNode value:(observation theValue at: #x) theValue)
-	selector: #@
-	arguments: {(RBLiteralValueNode value:(observation theValue at: #y) theValue )}.
-	(theValueNode asString includesSubstring: '<an unprintable nonliteral value>') ifTrue: [SAUnprintableNonliteralValue new signal].
+	theValueNode := RBMessageNode
+		receiver: ( (observation theValue at: #x) valueNode)
+		selector: #@
+		arguments: {((observation theValue at: #y) valueNode)}.
+	(theValueNode asString
+		includesSubstring: '<an unprintable nonliteral value>')
+		ifTrue: [ SAUnprintableNonliteralValue new signal ].
 	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:
-		                   arguments: { 
-				                   theObject.
-				                   theValueNode }.
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
 	^ assertStatement
 ]
 
@@ -269,14 +269,16 @@ SAAssertGenerator >> assertPrimitiveAsUTCAsString: observation [
 SAAssertGenerator >> assertPrimitiveValue: observation [
 	| assertStatement theObject theValueNode |
 	theObject := RBVariableNode named: observation name.
-	theValueNode := RBLiteralValueNode value: observation theValue.
-	(theValueNode asString includesSubstring: '<an unprintable nonliteral value>') ifTrue: [SAUnprintableNonliteralValue new signal].
+	theValueNode := observation valueNode.
+	(theValueNode asString
+		includesSubstring: '<an unprintable nonliteral value>')
+		ifTrue: [ SAUnprintableNonliteralValue new signal ].
 	assertStatement := RBMessageNode
-		                   receiver: (RBSelfNode named: 'self')
-		                   selector: #assert:equals:
-		                   arguments: { 
-				                   theObject.
-				                   theValueNode }.
+		receiver: (RBSelfNode named: 'self')
+		selector: #assert:equals:
+		arguments:
+			{theObject.
+			theValueNode}.
 	^ assertStatement
 ]
 
@@ -303,9 +305,7 @@ SAAssertGenerator >> assertRBProgramNode: observation [
 	theObject := RBMessageNode
 		receiver: theObject
 		selector: #formattedCode.
-	
-	theValueNode := RBLiteralValueNode
-		value: observation theValue formattedCode.
+	theValueNode := observation valueNode .
 	assertStatement := RBMessageNode
 		receiver: (RBSelfNode named: 'self')
 		selector: #assertSourceCode:equals:
@@ -515,7 +515,7 @@ SAAssertGenerator >> buildAssertionsRBProgramNode: observation [
 SAAssertGenerator >> buildAssertionsTimeoutObservation: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	asserts add: (self assertTimeout: observation).
+   asserts add: (self assertTimeout: observation).
 	asserts := asserts reject: #isNil.
 	^ asserts
 ]

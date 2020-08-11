@@ -13,3 +13,8 @@ SAObservationNil class >> newAtDepth: anInteger [
 SAObservationNil >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsNilObservation: self
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationNil >> valueNode [
+	^ RBLiteralValueNode value: nil
+]

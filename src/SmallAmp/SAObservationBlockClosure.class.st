@@ -8,3 +8,9 @@ Class {
 SAObservationBlockClosure >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsBlockClosureObservation: self
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationBlockClosure >> valueNode [
+	^ RBLiteralValueNode
+		value: theValue sourceNode formattedCode
+]

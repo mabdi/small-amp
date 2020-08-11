@@ -18,3 +18,7 @@ SAObservationObject >> checkFlaky: anItem [
 			v ifNotNil: [ v checkFlaky: (anItem theValue at: key) ]
 			 ]
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationObject >> valueNode [
+]

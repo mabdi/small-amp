@@ -25,3 +25,8 @@ SAObservationPrimitive >> checkFlaky: anItem [
 SAObservationPrimitive >> isPrimitive [
 	^ true
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationPrimitive >> valueNode [
+	^ RBLiteralValueNode value: theValue 
+]

@@ -14,7 +14,7 @@ SAObservationTimeout class >> forTimeout: aMilliSec [
 
 { #category : #'as yet unclassified' }
 SAObservationTimeout >> buildAssertions: aGenerator [
-	^ aGenerator buildAssertionsTimeoutObservation: self
+	^ {}"aGenerator buildAssertionsTimeoutObservation: self"
 ]
 
 { #category : #accessing }

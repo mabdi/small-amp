@@ -8,3 +8,11 @@ Class {
 SAObservationFraction >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsFractionObservation: self
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationFraction >> valueNode [
+	^ RBMessageNode
+		receiver: (RBLiteralValueNode value: theValue numerator )
+		selector: #/
+		arguments: {(RBLiteralValueNode value: theValue denominator )}
+]

@@ -8,3 +8,9 @@ Class {
 SAObservationRBProgramNode >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsRBProgramNode: self
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationRBProgramNode >> valueNode [
+	^ RBLiteralValueNode
+		value: theValue formattedCode
+]

@@ -8,3 +8,8 @@ Class {
 SAObservationClass >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsClass: self
 ]
+
+{ #category : #'as yet unclassified' }
+SAObservationClass >> valueNode [
+	^ RBVariableNode named: theValue name
+]
