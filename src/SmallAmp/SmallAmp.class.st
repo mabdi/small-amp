@@ -48,7 +48,8 @@ SmallAmp class >> assertionsHere: caller for: anObject [
 	ast := aMethod ast.
 	hookIndex := -1.
 	hookIndex := ast statements
-		findFirst: [ :s | s isMessage and: [ s isVariable and: [s receiver name = self name] ] ].
+		findFirst:
+			[ :s | s isMessage and: [ s receiver isVariable and: [ s receiver name = self name ] ] ].
 	hook := ast statements at: hookIndex.
 	observation := anObject
 		smallAmpAcceptSerializerVisitor: (SAStateSerializer withDepth: SAConfig default serializationMaxDepth)
