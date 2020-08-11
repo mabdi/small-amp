@@ -482,7 +482,10 @@ SAAssertGenerator >> buildAssertionsObjectObservation: observation [
 SAAssertGenerator >> buildAssertionsPoint: observation [
 	| asserts |
 	asserts := OrderedCollection new.
-	(self assertPoint: observation) ifNotNil: [:s |asserts add: s].
+	observation theValue
+		at: #x
+		ifPresent: [ (self assertPoint: observation) ifNotNil: [ :s | asserts add: s ] ]
+		ifAbsent: [ (self assertType: observation) ifNotNil: [ :s | asserts add: s ]. ].
 	^ asserts
 ]
 

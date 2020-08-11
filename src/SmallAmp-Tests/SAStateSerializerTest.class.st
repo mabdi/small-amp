@@ -189,7 +189,7 @@ SAStateSerializerTest >> testFraction [
 		        smallAmpAcceptSerializerVisitor:
 		        self getASerializer
 		        atDepth: 0.
-	self assert: item class equals: SAObservationPrimitive.
+	self assert: item class equals: SAObservationFraction.
 	self assert: item theClass equals: Fraction.
 	self assert: item theValue equals: 1 / 2
 ]
