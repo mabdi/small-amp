@@ -10,14 +10,14 @@ CompiledMethod >> smallAmpIsAccessor [
 	" code from MethodClassifier>>#classifyAccessor:"
 
 	| names selector |
-	self protocol = #testing
-		ifTrue: [ ^ true ].
-	self protocol = #accessing
-		ifTrue: [ ^ true ].
-	self protocol = #private
+	(self protocol includesSubstring: #private)
 		ifTrue: [ ^ false ].
-	self protocol = #deprecated
+	(self protocol includesSubstring: #deprecated)
 		ifTrue: [ ^ false ].
+	(self protocol includesSubstring: #accessing)
+		ifTrue: [ ^ true ].
+	(self protocol includesSubstring: #testing)
+		ifTrue: [ ^ true ].
 	names := self methodClass allInstVarNames.
 	selector := self selector.
 	(selector endsWith: ':')
