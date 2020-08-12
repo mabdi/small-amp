@@ -9,6 +9,11 @@ SAObservationPrimitive class >> newFor: theObject atDepth: anInt [
 	^ self newForClass: theObject class values: theObject atDepth: anInt
 ]
 
+{ #category : #accessing }
+SAObservationPrimitive >> active: aBoolean [
+	active := aBoolean
+]
+
 { #category : #'as yet unclassified' }
 SAObservationPrimitive >> buildAssertions: aGenerator [
 active

@@ -4,6 +4,13 @@ Class {
 	#category : #'SmallAmp-Model'
 }
 
+{ #category : #accessing }
+SAObservationObject >> active: aBoolean [
+	active := aBoolean.
+	aBoolean
+		ifFalse: [ theValue do: [ :item | item active: aBoolean ] ]
+]
+
 { #category : #'as yet unclassified' }
 SAObservationObject >> buildAssertions: aGenerator [
 active

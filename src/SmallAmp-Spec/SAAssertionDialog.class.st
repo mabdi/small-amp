@@ -4,7 +4,9 @@ Class {
 	#instVars : [
 		'table',
 		'asserts',
-		'observation'
+		'observation',
+		'onMerge',
+		'mergeButton'
 	],
 	#category : #'SmallAmp-Spec-UI'
 }
@@ -14,6 +16,9 @@ SAAssertionDialog class >> defaultSpec [
 	^ SpBoxLayout newVertical
 		add: #table;
 		add: #asserts;
+		add: #mergeButton expand: false
+			fill: false
+			padding: 0;
 		yourself
 ]
 
@@ -52,6 +57,21 @@ SAAssertionDialog class >> openOn: anObservation [
 		yourself
 ]
 
+{ #category : #'instance creation' }
+SAAssertionDialog class >> openOn: anObservation onMerge: aBlock [ 
+	<script>
+	^ self new
+		observation: anObservation;
+		onMerge: aBlock;
+		openWithSpec;
+		yourself
+]
+
+{ #category : #accessing }
+SAAssertionDialog >> defaultMergeAction [
+	^ [ :text | Clipboard clipboardText: text ]
+]
+
 { #category : #initialization }
 SAAssertionDialog >> initializePresenters [
 	table := self newTreeTable.
@@ -63,7 +83,9 @@ SAAssertionDialog >> initializePresenters [
 						onActivation: [ :item | 
 							item active: true.
 							self refreshCode ];
-						onDesactivation: [ :item | item active: false. self refreshCode ];
+						onDesactivation: [ :item | 
+							item active: false.
+							self refreshCode ];
 						width: 20;
 						yourself);
 				addColumn: (SpStringTableColumn evaluated: #specTreeName);
@@ -76,7 +98,12 @@ SAAssertionDialog >> initializePresenters [
 						path: selections selectedPath ]" ].
 	asserts := self newCode.
 	asserts
-		whenBuiltDo: [ :ann | ann widget font: StandardFonts codeFont ]
+		whenBuiltDo: [ :ann | ann widget font: StandardFonts codeFont ].
+	mergeButton := self newButton.
+	mergeButton label: 'Merge'.
+	mergeButton
+		action: [ self onMerge value: asserts text. 
+			self window close ]
 ]
 
 { #category : #initialization }
@@ -107,6 +134,18 @@ SAAssertionDialog >> observation: anObject [
 	observation := anObject.
 	table roots: {observation}.
 	self refreshCode
+]
+
+{ #category : #accessing }
+SAAssertionDialog >> onMerge [
+	onMerge
+		ifNil: [ onMerge := self defaultMergeAction ].
+	^ onMerge
+]
+
+{ #category : #accessing }
+SAAssertionDialog >> onMerge: anObject [
+	onMerge := anObject
 ]
 
 { #category : #initialization }
