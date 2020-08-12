@@ -6,5 +6,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAObservationCompiledCode >> buildAssertions: aGenerator [
+active
+		ifFalse: [ ^ {} ].
 	^ aGenerator buildAssertionsCompiledCode: self
 ]

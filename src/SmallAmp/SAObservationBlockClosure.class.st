@@ -6,6 +6,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAObservationBlockClosure >> buildAssertions: aGenerator [
+active
+		ifFalse: [ ^ {} ].
 	^ aGenerator buildAssertionsBlockClosureObservation: self
 ]
 

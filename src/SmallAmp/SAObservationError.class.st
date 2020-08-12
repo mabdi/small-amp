@@ -16,8 +16,8 @@ SAObservationError class >> forError: exception [
 
 { #category : #'as yet unclassified' }
 SAObservationError >> buildAssertions: aGenerator [
+	active ifFalse: [ ^ {  } ].
 	^ aGenerator buildAssertionsErrorObservation: self
-
 ]
 
 { #category : #'instance creation' }

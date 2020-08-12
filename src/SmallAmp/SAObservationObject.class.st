@@ -6,7 +6,9 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAObservationObject >> buildAssertions: aGenerator [
-	^ theClass smallAmpBuildAssertions: self by: aGenerator.
+active
+		ifFalse: [ ^ {} ].
+	^ theClass smallAmpBuildAssertions: self by: aGenerator
 ]
 
 { #category : #adding }

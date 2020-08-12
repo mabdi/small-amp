@@ -3,10 +3,21 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'timestamp'
+		'timestamp',
+		'active'
 	],
 	#category : #'SmallAmp-Model'
 }
+
+{ #category : #accessing }
+SAObservationAbstract >> active [
+	^ active
+]
+
+{ #category : #accessing }
+SAObservationAbstract >> active: anObject [
+	active := anObject
+]
 
 { #category : #'as yet unclassified' }
 SAObservationAbstract >> buildAssertions: aGenerator [
@@ -26,6 +37,7 @@ SAObservationAbstract >> id: anObject [
 { #category : #initialization }
 SAObservationAbstract >> initialize [
 	super initialize.
+	active := true.
 	timestamp := (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
 ]
 

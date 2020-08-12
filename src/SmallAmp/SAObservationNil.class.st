@@ -11,6 +11,8 @@ SAObservationNil class >> newAtDepth: anInteger [
 
 { #category : #'as yet unclassified' }
 SAObservationNil >> buildAssertions: aGenerator [
+active
+		ifFalse: [ ^ {} ].
 	^ aGenerator buildAssertionsNilObservation: self
 ]
 

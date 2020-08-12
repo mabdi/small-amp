@@ -6,6 +6,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAObservationRBProgramNode >> buildAssertions: aGenerator [
+active
+		ifFalse: [ ^ {} ].
 	^ aGenerator buildAssertionsRBProgramNode: self
 ]
 

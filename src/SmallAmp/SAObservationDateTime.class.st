@@ -6,5 +6,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAObservationDateTime >> buildAssertions: aGenerator [
-	^ aGenerator buildAssertionsDateTimeObservation:  self
+active
+		ifFalse: [ ^ {} ].
+	^ aGenerator buildAssertionsDateTimeObservation: self
 ]

@@ -11,6 +11,8 @@ SAObservationPrimitive class >> newFor: theObject atDepth: anInt [
 
 { #category : #'as yet unclassified' }
 SAObservationPrimitive >> buildAssertions: aGenerator [
+active
+		ifFalse: [ ^ {} ].
 	^ aGenerator buildAssertionsPrimitiveObservation: self
 ]
 
