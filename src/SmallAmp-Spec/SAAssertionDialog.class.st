@@ -82,9 +82,11 @@ SAAssertionDialog >> initializePresenters [
 					((SpCheckBoxTableColumn title: ' ' evaluated: [ :item | item active ])
 						onActivation: [ :item | 
 							item active: true.
+							self refreshTable.
 							self refreshCode ];
 						onDesactivation: [ :item | 
 							item active: false.
+							self refreshTable.
 							self refreshCode ];
 						width: 20;
 						yourself);
@@ -92,6 +94,7 @@ SAAssertionDialog >> initializePresenters [
 				yourself);
 		children: #specTreeChildren;
 		whenActivatedDo: [ :item |  ];
+		contextMenu: self menu;
 		whenSelectionChangedDo: [ :selections | "selections selectedItem
 				ifNotNil: [ self
 						itemSelected: selections selectedItem
@@ -102,7 +105,7 @@ SAAssertionDialog >> initializePresenters [
 	mergeButton := self newButton.
 	mergeButton label: 'Merge'.
 	mergeButton
-		action: [ self onMerge value: asserts text. 
+		action: [ self onMerge value: asserts text.
 			self window close ]
 ]
 
@@ -122,6 +125,23 @@ SAAssertionDialog >> itemSelected: anObservation path: aPath [
 		statements: (anObservation buildAssertions: SAAssertGenerator new).
 	assertsCode := assertsCode formattedCode.
 	asserts text: assertsCode
+]
+
+{ #category : #api }
+SAAssertionDialog >> menu [
+	^ self newMenu
+		addItem: [ :anItem | 
+			anItem
+				name: 'Select All Childs';
+				visibleIf: [ table selectedItem specTreeChildren isNotEmpty ];
+				action: [ table selectedItem specTreeChildren do: [ :ch | ch active: true ].
+					self refreshTable ] ];
+		addItem: [ :anItem | 
+			anItem
+				name: 'Deselect All Childs';
+				visibleIf: [ table selectedItem specTreeChildren isNotEmpty ];
+				action: [ table selectedItem specTreeChildren do: [ :ch | ch active: false ].
+					self refreshTable ] ]
 ]
 
 { #category : #accessing }
@@ -155,4 +175,10 @@ SAAssertionDialog >> refreshCode [
 		statements: (observation buildAssertions: SAAssertGenerator new).
 	assertsCode := assertsCode formattedCode.
 	asserts text: assertsCode
+]
+
+{ #category : #updating }
+SAAssertionDialog >> refreshTable [
+	table needRebuild: true.
+	table buildWithSpec
 ]

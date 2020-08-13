@@ -24,7 +24,7 @@ SAObservationObject >> checkFlaky: anItem [
 { #category : #accessing }
 SAObservationObject >> theValue: anObject [
 	super theValue: anObject.
-	(anObject reject: #isNil) do: [ :item | item parent: self ]
+	(self theValue reject: #isNil) do: [ :item | item parent: self ].
 ]
 
 { #category : #'as yet unclassified' }
