@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'id',
 		'timestamp',
-		'active'
+		'active',
+		'parent'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -49,6 +50,16 @@ SAObservationAbstract >> isPrimitive [
 { #category : #testing }
 SAObservationAbstract >> isValueObservation [
 	^ false
+]
+
+{ #category : #accessing }
+SAObservationAbstract >> parent [
+	^ parent
+]
+
+{ #category : #accessing }
+SAObservationAbstract >> parent: anObject [
+	parent := anObject
 ]
 
 { #category : #accessing }

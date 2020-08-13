@@ -1,6 +1,6 @@
 Class {
 	#name : #SAObservationRBProgramNode,
-	#superclass : #SAObservationObject,
+	#superclass : #SAObservationValue,
 	#category : #'SmallAmp-Model'
 }
 

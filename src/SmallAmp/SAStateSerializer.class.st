@@ -136,28 +136,26 @@ SAStateSerializer >> visitNumber: theObject atDepth: anInteger [
 
 { #category : #visiting }
 SAStateSerializer >> visitObject: theObject atDepth: anInteger [
-| result methods |
-anInteger > self maxDepth
-ifTrue: [ ^ nil ].
-result := Dictionary new.
-methods := self filterObserversOn: theObject.
-methods
-do: [ :l | 
-| retVal v |
-
-[ 
-retVal := theObject perform: l selector.
-retVal == theObject
-ifFalse: [ v := retVal
-smallAmpAcceptSerializerVisitor: self
-atDepth: anInteger + 1 ] ]
-on: Error
-do: [ :ex | nil ].
-v ifNotNil: [ result at: l selector put: v ] ].
-^ SAObservationObject
-newForClass: theObject class
-values: result
-atDepth: anInteger
+	| result methods |
+	anInteger > self maxDepth
+		ifTrue: [ ^ nil ].
+	result := Dictionary new.
+	methods := self filterObserversOn: theObject.
+	methods
+		do: [ :l | 
+			| retVal v |
+			[ retVal := theObject perform: l selector.
+			retVal == theObject
+				ifFalse: [ v := retVal
+						smallAmpAcceptSerializerVisitor: self
+						atDepth: anInteger + 1 ] ]
+				on: Error
+				do: [ :ex | nil ].
+			v ifNotNil: [ result at: l selector put: v ] ].
+	^ SAObservationObject
+		newForClass: theObject class
+		values: result
+		atDepth: anInteger
 ]
 
 { #category : #visiting }

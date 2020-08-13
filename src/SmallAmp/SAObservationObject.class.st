@@ -4,13 +4,6 @@ Class {
 	#category : #'SmallAmp-Model'
 }
 
-{ #category : #accessing }
-SAObservationObject >> active: aBoolean [
-	active := aBoolean.
-	aBoolean
-		ifFalse: [ theValue do: [ :item | item active: aBoolean ] ]
-]
-
 { #category : #'as yet unclassified' }
 SAObservationObject >> buildAssertions: aGenerator [
 active
@@ -26,6 +19,12 @@ SAObservationObject >> checkFlaky: anItem [
 			v := self theValue at: key.
 			v ifNotNil: [ v checkFlaky: (anItem theValue at: key) ]
 			 ]
+]
+
+{ #category : #accessing }
+SAObservationObject >> theValue: anObject [
+	super theValue: anObject.
+	(anObject reject: #isNil) do: [ :item | item parent: self ]
 ]
 
 { #category : #'as yet unclassified' }

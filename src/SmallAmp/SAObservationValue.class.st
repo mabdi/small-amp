@@ -22,6 +22,11 @@ SAObservationValue class >> newForClass: theObjectClass values: aCollection atDe
 ]
 
 { #category : #accessing }
+SAObservationValue >> active [
+	^ active and: [ parent ifNotNil: [parent active] ifNil: [ true ] ]
+]
+
+{ #category : #accessing }
 SAObservationValue >> depth [
 	^ depth
 ]

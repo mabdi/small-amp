@@ -1,17 +1,12 @@
 Class {
 	#name : #SAObservationPrimitive,
-	#superclass : #SAObservationObject,
+	#superclass : #SAObservationValue,
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #'instance creation' }
 SAObservationPrimitive class >> newFor: theObject atDepth: anInt [
 	^ self newForClass: theObject class values: theObject atDepth: anInt
-]
-
-{ #category : #accessing }
-SAObservationPrimitive >> active: aBoolean [
-	active := aBoolean
 ]
 
 { #category : #'as yet unclassified' }
