@@ -50,11 +50,6 @@ SAResultItem class >> fromDictionaryObject: aJsonObj [
 				collect: #asClass)
 ]
 
-{ #category : #reporting }
-SAResultItem >> aliveMutantsInOriginal [
-^ self originalAnalysis generalResult aliveMutants
-]
-
 { #category : #accessing }
 SAResultItem >> amplifiedAnalysis [
 	^ amplifiedAnalysis
@@ -77,23 +72,18 @@ SAResultItem >> amplifiedClass: anObject [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethods [
-	^ self amplifiedClass methods
-		select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
+	^ self amplifiedClass smallAmpAmplifiedMethods
 ]
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethodsAssertionDensity [
 	self amplifiedMethods ifEmpty: [ ^ 0 ].
-	^ ((self amplifiedMethods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
-		inject: 0
-		into: [ :s :i | s + i ]) / self amplifiedMethods size
-		printShowingDecimalPlaces: 2
+	^ amplifiedClass smallAmpAssertionDensity 
 ]
 
 { #category : #reporting }
-SAResultItem >> amplifiedMutationScore [
-	^ amplifiedAnalysis generalResult mutationScore
+SAResultItem >> amplifiedScore [
+	^ amplifiedAnalysis smallAmpScore 
 ]
 
 { #category : #reporting }
@@ -124,11 +114,11 @@ SAResultItem >> asDictionaryObject [
 		key: #amplifiedMethods
 		addTo: result.
 	self
-		safeFail: [ self originalMutationScore ]
+		safeFail: [ self originalScore ]
 		key: #mutationScoreBefore
 		addTo: result.
 	self
-		safeFail: [ self amplifiedMutationScore ]
+		safeFail: [ self amplifiedScore ]
 		key: #mutationScoreAfter
 		addTo: result.
 	"self
@@ -221,19 +211,19 @@ SAResultItem >> asDictionaryObject [
 		key: #numberOfAllMutationsInOriginal
 		addTo: result.
 	self
-		safeFail: [ (self aliveMutantsInOriginal
+		safeFail: [ (self notCoveredInOriginal
 				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
-		key: #mutantsAliveInOriginal
+		key: #notCoveredInOriginal
 		addTo: result.
 	self
-		safeFail: [ (self killedMutantsInAmplified
-				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
-		key: #killedInAmplified
+		safeFail: [ (self newCovered collect: [ :m | m mutant asDictionaryObject ])
+				asArray ]
+		key: #newCovered
 		addTo: result.
 	self
-		safeFail: [ (self stillAliveMutants
+		safeFail: [ (self notCoveredInAmplified
 				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
-		key: #stillAliveMutants
+		key: #notCoveredInAmplified
 		addTo: result.
 	^ result
 ]
@@ -271,13 +261,6 @@ SAResultItem >> directTestingOriginal [
 
 { #category : #accessing }
 SAResultItem >> failedSelectorInOriginal [
-	| result |
-	failedSelectorInOriginal
-		ifNil: [ result := testClass suite run.
-			failedSelectorInOriginal:=
-			(result failures , result expectedDefects
-				collect: [ :failed | failed class lookupSelector: failed selector ])
-				asOrderedCollection. ].
 	^ failedSelectorInOriginal
 ]
 
@@ -286,31 +269,10 @@ SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 	failedSelectorInOriginal := aListOfFaileds 
 ]
 
-{ #category : #private }
-SAResultItem >> filterJustAddedMethods: newClass basedOn: originalClass [
-	^ newClass methods
-		reject: [ :m | originalClass selectors includes: m selector ]
-]
-
-{ #category : #private }
-SAResultItem >> filterJustKilledMutants: newKilledMutants basedOn: originalKilledMutants [
-	^ newKilledMutants
-		reject: [ :m | 
-			(originalKilledMutants collect: [ :x | x mutant modifiedSource ])
-				includes: m mutant modifiedSource ]
-]
-
 { #category : #initialization }
 SAResultItem >> initialize [
 	logs := SALogger new.
 	timeBudgetFinished := false
-]
-
-{ #category : #reporting }
-SAResultItem >> killedMutantsInAmplified [
-	^ self
-		filterJustKilledMutants: self amplifiedAnalysis  generalResult killedMutants
-		basedOn: self originalAnalysis generalResult killedMutants
 ]
 
 { #category : #accessing }
@@ -340,6 +302,7 @@ SAResultItem >> markDownOn: stream [
 
 { #category : #private }
 SAResultItem >> markDownOn: stream class: theClass analysis: analysis [
+	self flag: #todo.
 	stream nextPutAll: '#TestMethods: '.
 	stream nextPutAll: theClass methods size asString.
 	stream nextPutAll: '<br>'.
@@ -349,13 +312,10 @@ SAResultItem >> markDownOn: stream class: theClass analysis: analysis [
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: '#KilledMutants: '.
 	stream
-		nextPutAll:
-			analysis generalResult numberOfKilledOrTerminatedMutants
-				asString.
+		nextPutAll: analysis generalResult numberOfKilledOrTerminatedMutants asString.
 	stream nextPutAll: '<br>'.
 	stream nextPutAll: 'Score: %'.
-	stream
-		nextPutAll: analysis generalResult mutationScore asString.
+	stream nextPutAll: analysis generalResult mutationScore asString
 ]
 
 { #category : #reporting }
@@ -411,34 +371,19 @@ SAResultItem >> methodsNotProfiled [
 								| (k beginsWith: '#' , c class name , '#' , m selector) ] ] ]
 ]
 
-{ #category : #evaluation }
-SAResultItem >> mutalkRunMutated [
-	| analysis1 |
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: {amplifiedClass}
-		mutating: targetClasses
-		using: MutantOperator contents
-		with:
-			(IgnoreFailingTestsMethodsEvaluationStrategy
-				newWith: self failedSelectorInOriginal)
-		with: SmallAmpMutationsGenerationStrategy new.
-	analysis1 runSmallAmp.
-	amplifiedAnalysis := analysis1
+{ #category : #reporting }
+SAResultItem >> newCovered [
+	^ amplifiedAnalysis smallAmpNewCovered: originalAnalysis
 ]
 
-{ #category : #evaluation }
-SAResultItem >> mutalkRunOriginal [
-	| analysis1 |
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: {testClass}
-		mutating: targetClasses
-		using: MutantOperator contents
-		with:
-			(IgnoreFailingTestsMethodsEvaluationStrategy
-				newWith: self failedSelectorInOriginal)
-		with: (SmallAmpMutationsGenerationStrategy new).
-	analysis1 runSmallAmp.
-	originalAnalysis := analysis1
+{ #category : #reporting }
+SAResultItem >> notCoveredInAmplified [
+	^ amplifiedAnalysis smallAmpUncovered
+]
+
+{ #category : #reporting }
+SAResultItem >> notCoveredInOriginal [
+	^ self originalAnalysis smallAmpUncovered
 ]
 
 { #category : #reporting }
@@ -464,15 +409,12 @@ SAResultItem >> originalMethods [
 { #category : #reporting }
 SAResultItem >> originalMethodsAssertionDensity [
 	self originalMethods ifEmpty: [ ^ 0 ].
-	^ (((self originalMethods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
-		inject: 0
-		into: [ :s :i | s + i ]) / self originalMethods size) printShowingDecimalPlaces: 2
+	^ testClass smallAmpAssertionDensity 
 ]
 
 { #category : #reporting }
-SAResultItem >> originalMutationScore [
-	^ originalAnalysis generalResult mutationScore
+SAResultItem >> originalScore [
+	^ originalAnalysis smallAmpScore 
 ]
 
 { #category : #reporting }
@@ -486,11 +428,19 @@ SAResultItem >> originalTestCoverage [
 ]
 
 { #category : #'as yet unclassified' }
-SAResultItem >> regenerate [
+SAResultItem >> regenerate: selection [
+	self failedSelectorInOriginal: testClass smallAmpTestsToIgnore.
 	self
-		mutalkRunOriginal;
-		mutalkRunMutated;
-		failedSelectorInOriginal
+		amplifiedAnalysis:
+			(selection
+				analysisFor: {amplifiedClass}
+				targets: targetClasses
+				ignore: failedSelectorInOriginal).
+	self originalAnalysis:
+			(selection
+				initialAnalysisFor: {testClass}
+				targets: targetClasses
+				ignore:  failedSelectorInOriginal)
 ]
 
 { #category : #accessing }
@@ -541,7 +491,7 @@ SAResultItem >> saveResultToFileAs: testClassName [
 
 { #category : #reporting }
 SAResultItem >> stillAliveMutants [
-	^ amplifiedAnalysis generalResult aliveMutants
+	^ amplifiedAnalysis smallAmpUncovered 
 ]
 
 { #category : #accessing }

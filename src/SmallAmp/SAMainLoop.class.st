@@ -8,8 +8,8 @@ Class {
 		'config',
 		'finalResult',
 		'resultPeople',
-		'uncovered',
-		'testRunTimeoutMillis'
+		'testRunTimeoutMillis',
+		'selection'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -50,10 +50,11 @@ SAMainLoop >> amplify [
 				nextPutAll: gen asString;
 				lf;
 				flush.
-			skip := uncovered isEmpty.
+			skip := selection uncovered isEmpty.
 			config timeBudget > 0
 				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget
-						ifTrue: [ skip := true. finalResult timeBudgetFinished:true ] ].
+						ifTrue: [ skip := true.
+							finalResult timeBudgetFinished: true ] ].
 			skip
 				ifFalse: [ self normalize.
 					self inputAmplification.
@@ -65,6 +66,7 @@ SAMainLoop >> amplify [
 	self oracleReduction.
 	self simplification.
 	self prettifying.
+	self finalSteps.
 	^ finalResult
 ]
 
@@ -148,15 +150,24 @@ SAMainLoop >> discardFailingTests [
 				yourself ]
 ]
 
+{ #category : #actions }
+SAMainLoop >> finalSteps [
+	finalResult
+		amplifiedAnalysis:
+			(selection
+				analysisFor: {finalResult amplifiedClass }
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal)
+]
+
 { #category : #'as yet unclassified' }
 SAMainLoop >> initialSteps [
-finalResult logs
+	finalResult logs
 		recoredTag: #initialSteps
-		toRun:
-	[self discardFailingTests.
-	finalResult mutalkRunOriginal.
-	uncovered := finalResult originalAnalysis generalResult aliveMutants.
-	self methodProfiling.]
+		toRun: [ self discardFailingTests.
+			self setupSelection.
+			
+			self methodProfiling ]
 ]
 
 { #category : #initialization }
@@ -225,7 +236,9 @@ SAMainLoop >> methodReduction [
 		toRun: [ p := population.
 			self methodReductions
 				do: [ :reducer | 
-					reducer uncovered: uncovered; testRunTimeoutMillis: testRunTimeoutMillis .
+					reducer
+						uncovered: selection uncovered;
+						testRunTimeoutMillis: testRunTimeoutMillis.
 					p := reducer reduceMethods: p ]
 				displayingProgress: 'Method Reduction' , ' (' , size , ')'.
 			population := p ]
@@ -263,7 +276,7 @@ SAMainLoop >> oracleReduction [
 				uncovered: finalResult originalAnalysis generalResult aliveMutants.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 			finalResult amplifiedClass: reducer makeReducedResult.
-			finalResult mutalkRunMutated ]
+			 ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -308,21 +321,24 @@ SAMainLoop >> selection [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ 
-			population ifEmpty: [ ^ self ].
+		toRun: [ population ifEmpty: [ ^ self ].
 			selectedTests := OrderedCollection new.
-			self selections
-				do: [ :sel | 
-					selectedTests addAll: (sel select: population uncovered: uncovered).
-					uncovered := sel uncovered ]
-				displayingProgress: 'Selection' , ' (' , self selections size asString , ')'.
+			
+				 
+					selectedTests addAll: (selection select: population).
 			population := selectedTests ]
 ]
 
-{ #category : #accessing }
-SAMainLoop >> selections [
-	^ config selections collect: [ :selection | 
-		  selection initializeWith: config ]
+{ #category : #'as yet unclassified' }
+SAMainLoop >> setupSelection [
+	selection := config selection initializeWith: config.
+	finalResult
+		originalAnalysis:
+			(selection
+				initialAnalysisFor: {testClass}
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal).
+	
 ]
 
 { #category : #'as yet unclassified' }

@@ -1,35 +1,6 @@
 Extension { #name : #SAResult }
 
 { #category : #'*SmallAmp-DrTests' }
-SAResult >> aliveMutants [
-	| subs |
-	subs := self results values
-		collect: [ :x | 
-			DTTreeNode new
-				name: x testClass name;
-				subResults:
-					{(DTTreeNode new
-						name: 'Alive mutants in original:';
-						subResults: (x aliveMutantsInOriginal collect: #asResultForDrTest);
-						yourself).
-					(DTTreeNode new
-						name: 'Killed mutants in amplified';
-						subResults: (x killedMutantsInAmplified collect: #asResultForDrTest);
-						yourself).
-					(DTTreeNode new
-						name: 'Still alive mutants in amplified';
-						subResults:
-							(x stillAliveMutants 
-								collect: #asResultForDrTest);
-						yourself)};
-				yourself ].
-	^ DTTreeNode new
-		name: 'Mutants';
-		subResults: subs;
-		yourself
-]
-
-{ #category : #'*SmallAmp-DrTests' }
 SAResult >> amplifiedClasses [
 	| subs |
 	subs := self results values
@@ -53,7 +24,7 @@ SAResult >> amplifiedClasses [
 ]
 
 { #category : #'*SmallAmp-DrTests' }
-SAResult >> mutationScores [
+SAResult >> coverage [
 	| subs |
 	subs := self results values
 		collect: [ :x | 
@@ -61,20 +32,20 @@ SAResult >> mutationScores [
 				name: x testClass name;
 				subResults:
 					{(DTTreeNode new
-						name:
-							'Original: ' , x testClass name , ': %'
-								, x originalMutationScore asString;
-						subResults: {};
+						name: 'Not covered in original:';
+						subResults: (x notCoveredInOriginal collect: #asResultForDrTest);
 						yourself).
 					(DTTreeNode new
-						name:
-							'Amplified: ' , x amplifiedClass name , ': %'
-								, x amplifiedMutationScore asString;
-						subResults: {};
+						name: 'Newly covered in amplified';
+						subResults: (x newCovered collect: #asResultForDrTest);
+						yourself).
+					(DTTreeNode new
+						name: 'Not covered in amplified';
+						subResults: (x notCoveredInAmplified collect: #asResultForDrTest);
 						yourself)};
 				yourself ].
 	^ DTTreeNode new
-		name: 'Mutation scores';
+		name: 'Coverage';
 		subResults: subs;
 		yourself
 ]
@@ -90,6 +61,33 @@ SAResult >> notProfiledMethods [
 				yourself ].
 	^ DTTreeNode new
 		name: 'Methods failed to be profiled:';
+		subResults: subs;
+		yourself
+]
+
+{ #category : #'*SmallAmp-DrTests' }
+SAResult >> scores [
+	| subs |
+	subs := self results values
+		collect: [ :x | 
+			DTTreeNode new
+				name: x testClass name;
+				subResults:
+					{(DTTreeNode new
+						name:
+							'Original: ' , x testClass name , ': %'
+								, x originalScore asString;
+						subResults: {};
+						yourself).
+					(DTTreeNode new
+						name:
+							'Amplified: ' , x amplifiedClass name , ': %'
+								, x amplifiedScore asString;
+						subResults: {};
+						yourself)};
+				yourself ].
+	^ DTTreeNode new
+		name: 'Scores';
 		subResults: subs;
 		yourself
 ]

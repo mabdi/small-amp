@@ -2,7 +2,8 @@ Class {
 	#name : #SAAbstractSelection,
 	#superclass : #Object,
 	#instVars : [
-		'config'
+		'config',
+		'uncovered'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -25,13 +26,18 @@ SAAbstractSelection >> closeAllWindowsBut: openWindows [
 ]
 
 { #category : #enumerating }
-SAAbstractSelection >> select: aPopulation uncovered: uncoveredList [
+SAAbstractSelection >> select: aPopulation [
 	self subclassResponsibility
 ]
 
 { #category : #accessing }
 SAAbstractSelection >> uncovered [
-	^ self subclassResponsibility 
+	^ uncovered 
+]
+
+{ #category : #accessing }
+SAAbstractSelection >> uncovered: alist [ 
+	uncovered := alist 
 ]
 
 { #category : #'instance creation' }
