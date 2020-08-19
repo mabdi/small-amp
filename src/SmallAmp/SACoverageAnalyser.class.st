@@ -11,7 +11,11 @@ Class {
 		'branchesCovered',
 		'allMethods',
 		'allStatements',
-		'allBranches'
+		'allBranches',
+		'ignoreList',
+		'level',
+		'currentTestMethod',
+		'nodes'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -61,6 +65,37 @@ SACoverageAnalyser >> classesAndMetaclasses [
 	^ classesAndMetaclasses
 ]
 
+{ #category : #accessing }
+SACoverageAnalyser >> covered [
+	^ (nodes reject: [ :x | x isEmpty ])
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> ignoreList [
+	^ ignoreList
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> ignoreList: anObject [
+	ignoreList := anObject
+]
+
+{ #category : #evaluating }
+SACoverageAnalyser >> initialize [
+	ignoreList := OrderedCollection new.
+	level := #branch
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> level [
+	^ level
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> level: anObject [
+	level := anObject
+]
+
 { #category : #private }
 SACoverageAnalyser >> methods [
 	^ self classesAndMetaclasses
@@ -81,6 +116,16 @@ SACoverageAnalyser >> methodsCoverage [
 { #category : #accessing }
 SACoverageAnalyser >> methodsCovered [
 	^ methodsCovered
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> nodes [
+	^ nodes
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> nodes: anObject [
+	nodes := anObject
 ]
 
 { #category : #evaluating }
@@ -115,14 +160,69 @@ SACoverageAnalyser >> run [
 	
 ]
 
+{ #category : #evaluating }
+SACoverageAnalyser >> runCoverage [
+	| link |
+	link := MetaLink new
+		metaObject: self;
+		selector: #tagNodeExecuted:;
+		arguments: #(node);
+		yourself.
+	[ nodes keys do: [ :n | n link: link ].
+	[ self runTests ]
+		ensure: [ link uninstall ] ] valueUnpreemptively
+]
+
+{ #category : #'as yet unclassified' }
+SACoverageAnalyser >> runFor: unCovered [
+	
+	nodes := IdentityDictionary  newFrom: (unCovered 
+		collect: [ :x | x -> Set new ]).
+	^ self runCoverage
+]
+
 { #category : #private }
 SACoverageAnalyser >> runTests [
 	| suite |
+	TestCaseStarted.
 	testRunningElapsedTime := Time
 		millisecondsToRun: [ suite := TestSuite named: 'Test Suite for Coverage'.
 			testCases do: [ :each | each addToSuiteFromSelectors: suite ].
+			self ignoreList
+				do: [ :m | 
+					self halt.
+					suite tests remove: m ].
+			testCases
+				do:
+					[ :each | each announcer when: TestCaseStarted send: #testCaseStarted: to: self ].
 			suite run.
-			 ]
+			testCases do: [ :each | each announcer unsubscribe: self ] ]
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> setNodes [
+	| scopeMethods b |
+	scopeMethods := self methods.
+	b := {(#method -> [ :m | m ast ]).
+	(#branch -> [ :m | m ast allSequenceNodes ]).
+	(#statement -> [ :m | m ast allSequenceNodes statements ])}
+		asDictionary at: self level.
+	nodes := IdentityDictionary  newFrom: ((scopeMethods flatCollect: b) collect: [ :x | x ->  Set new ]) 
+]
+
+{ #category : #'as yet unclassified' }
+SACoverageAnalyser >> smallAmpNewCovered: oldAnalysis [
+	^ self covered keys reject: [ :m | oldAnalysis covered keys includes: m ]
+]
+
+{ #category : #'as yet unclassified' }
+SACoverageAnalyser >> smallAmpScore [
+	^ 100.0 *(1  -  (self uncovered size / self nodes size))
+]
+
+{ #category : #'as yet unclassified' }
+SACoverageAnalyser >> smallAmpUncovered [
+	^ self uncovered 
 ]
 
 { #category : #accessing }
@@ -138,6 +238,18 @@ SACoverageAnalyser >> statementsCovered [
 	^ statementsCovered
 ]
 
+{ #category : #'as yet unclassified' }
+SACoverageAnalyser >> tagNodeExecuted: node [
+	(nodes at: node) add: currentTestMethod
+]
+
+{ #category : #tests }
+SACoverageAnalyser >> testCaseStarted: anAnnouncement [
+	currentTestMethod := anAnnouncement testCase.
+
+	
+]
+
 { #category : #accessing }
 SACoverageAnalyser >> testCases [ ^ testCases
 ]
@@ -150,4 +262,9 @@ SACoverageAnalyser >> testCases: aCollectionOfTestCases [
 { #category : #accessing }
 SACoverageAnalyser >> testRunningElapsedTime [
 ^testRunningElapsedTime
+]
+
+{ #category : #accessing }
+SACoverageAnalyser >> uncovered [
+	^ (nodes select: [ :x | x isEmpty  ]) keys
 ]

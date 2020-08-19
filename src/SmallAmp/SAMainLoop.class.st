@@ -273,7 +273,7 @@ SAMainLoop >> oracleReduction [
 				with: generatedClass
 				from: testClass
 				target: targetClasses
-				uncovered: finalResult originalAnalysis generalResult aliveMutants.
+				uncovered: finalResult notCoveredInOriginal.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 			finalResult amplifiedClass: reducer makeReducedResult.
 			 ]

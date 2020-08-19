@@ -141,7 +141,7 @@ SmallAmp >> amplifyAll [
 					instance amplifiedClass fileOut ] ]
 				on: Error
 				do:
-					[ :ex | ('Error in processing ' , item key name , ': ' , ex asString) traceCr ] ]
+					[ :ex | ex signal. ('Error in processing ' , item key name , ': ' , ex asString) traceCr ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]

@@ -39,9 +39,8 @@ SAConfig class >> default [
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
+		selection: SACodeCoverageSelection ;
 		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
@@ -162,7 +161,7 @@ SAConfig >> methodReductions: anObject [
 
 { #category : #accessing }
 SAConfig >> oracleReducion [
-	^ oracleReducion
+	^ oracleReducion ifNil: [ selection defaultOracleReduction ]
 ]
 
 { #category : #accessing }
