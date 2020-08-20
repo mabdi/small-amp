@@ -184,14 +184,12 @@ SACoverageAnalyser >> runFor: unCovered [
 { #category : #private }
 SACoverageAnalyser >> runTests [
 	| suite |
-	TestCaseStarted.
 	testRunningElapsedTime := Time
 		millisecondsToRun: [ suite := TestSuite named: 'Test Suite for Coverage'.
 			testCases do: [ :each | each addToSuiteFromSelectors: suite ].
 			self ignoreList
 				do: [ :m | 
-					self halt.
-					suite tests remove: m ].
+					suite tests removeAllSuchThat: [ :item | item selector = m selector ] ].
 			testCases
 				do:
 					[ :each | each announcer when: TestCaseStarted send: #testCaseStarted: to: self ].

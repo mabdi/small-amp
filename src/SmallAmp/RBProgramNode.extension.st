@@ -9,8 +9,3 @@ RBProgramNode >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
 RBProgramNode >> smallAmpNormalizeWith: aNormalizer assignTo: aVariable [
 	^ aNormalizer normalizeNode: self assignTo: aVariable
 ]
-
-{ #category : #'*SmallAmp' }
-RBProgramNode >> smallAmpTagExecuted [
-	^ self propertyAt: #tagExecutedSmallAmp put: true
-]
