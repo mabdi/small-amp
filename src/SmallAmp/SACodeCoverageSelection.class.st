@@ -45,7 +45,7 @@ SACodeCoverageSelection >> initialAnalysisFor: testClasses targets: targetClasse
 		analysisFor: testClasses
 		targets: targetClasses
 		ignore: aListOfMethods.
-	uncovered := analysis uncovered.	
+	uncovered := analysis uncovered asSet.
 	^ analysis
 ]
 
@@ -94,7 +94,7 @@ SACodeCoverageSelection >> select: aPopulation [
 	| analysisList result newCovered newCovered_tmp |
 	result := OrderedCollection new.
 	analysisList := self runCoverage: aPopulation.
-	uncovered := analysisList flatCollect: #uncovered.
+	uncovered := (analysisList flatCollect: #uncovered) asSet.
 	newCovered_tmp := analysisList collect: #covered.
 	newCovered := Dictionary new.
 	(newCovered_tmp flatCollect: #keys)
@@ -104,9 +104,10 @@ SACodeCoverageSelection >> select: aPopulation [
 				do: [ :dic | dic at: k ifPresent: [ :x | (newCovered at: k) addAll: x ] ] ].
 	result := newCovered
 		collect: [ :item | 
-			
-					(self
-						chooseBestFrom: (aPopulation select: [ :p | (item collect: #selector) includes: p selector ])
-						notIncludedIn: result) ].
+			self
+				chooseBestFrom:
+					(aPopulation
+						select: [ :p | (item collect: #selector) includes: p selector ])
+				notIncludedIn: result ].
 	^ result reject: #isNil
 ]
