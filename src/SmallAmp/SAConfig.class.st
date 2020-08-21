@@ -39,7 +39,7 @@ SAConfig class >> default [
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
-		selection: SACodeCoverageSelection ;
+		selection: SACodeCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
@@ -47,7 +47,7 @@ SAConfig class >> default [
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
-		debug: false;
+		debug: true;
 		lite: false;
 		saveToFile: false;
 		runSandboxed: false;

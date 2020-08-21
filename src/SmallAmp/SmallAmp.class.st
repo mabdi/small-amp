@@ -94,7 +94,7 @@ SmallAmp class >> menuCommandOn: aBuilder [
 		item: #'Open Ui (DrTests)';
 		parent: #SmallAmp)
 		action: [ dt := DrTests new.
-			dt pluginsDropList selectItem: SADrTestsPlugin.
+			dt pluginsDropList selectItem: SAMutationPlugin.
 			dt openWithSpec ].
 	(aBuilder
 		item: #'Browse Temp Package';

@@ -8,6 +8,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #cleanup }
+SAAbstractSelection class >> defaultInfoPragma [
+	^ #smallAmpCoveres:
+]
+
 { #category : #'as yet unclassified' }
 SAAbstractSelection class >> defaultOracleReduction [
 	^ SANoOracleReduction 
@@ -16,6 +21,24 @@ SAAbstractSelection class >> defaultOracleReduction [
 { #category : #initialization }
 SAAbstractSelection class >> initializeWith: aConfig [
 	^ self new with: aConfig
+]
+
+{ #category : #cleanup }
+SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
+	| result |
+	result := OrderedCollection new.
+	coveredToMethod
+		keysAndValuesDo: [ :k :v | 
+			| ast |
+			ast := SAASTHelper new parsedMethodFrom: v testMethod.
+			ast
+				addPragma:
+					(RBPragmaNode
+						selector: self class defaultInfoPragma
+						arguments: {(RBLiteralValueNode value: (self infoPragmaFrom: k))}).
+			v testMethod: ast formattedCode.
+			result add: v ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
@@ -33,6 +56,11 @@ SAAbstractSelection >> closeAllWindowsBut: openWindows [
 	| actualWindows |
 	actualWindows := self allOpenedWindows.
 	(actualWindows copyWithoutAll: openWindows) do: #delete
+]
+
+{ #category : #cleanup }
+SAAbstractSelection >> infoPragmaFrom: aCovered [
+	^ self subclassResponsibility
 ]
 
 { #category : #'as yet unclassified' }

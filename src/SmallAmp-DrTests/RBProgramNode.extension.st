@@ -21,5 +21,5 @@ RBProgramNode >> drTestsBrowse [
 
 { #category : #'*SmallAmp-DrTests' }
 RBProgramNode >> drTestsName [
-	^ self printString
+	^ self smallAmpInfoText
 ]

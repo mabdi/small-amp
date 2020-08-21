@@ -44,26 +44,10 @@ SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 	^ self getAssertTransformer rewriteAllAssertsIn: aParseTree replaceBlock: b
 ]
 
-{ #category : #accessing }
-SAMuTalkFirstFailOracleReduction >> astHelper [
-	^ SAASTHelper new
-]
-
 { #category : #cleanup }
 SAMuTalkFirstFailOracleReduction >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
 		self astHelper removeClass: generatedClass source: self class name ]
-]
-
-{ #category : #'as yet unclassified' }
-SAMuTalkFirstFailOracleReduction >> createDuplicateClass [
-	| l methods |
-	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
-	methods := l value: newTestClass.
-	^ self astHelper
-		buildTestClassWith: methods
-		using: testClass
-		
 ]
 
 { #category : #'as yet unclassified' }

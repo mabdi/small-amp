@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SACodeCoverageSelection class >> defaultOracleReduction [
+	^ SANoOracleReduction 
+]
+
+{ #category : #'as yet unclassified' }
 SACodeCoverageSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	^ SACoverageAnalyser new
 		classes: targetClasses;
@@ -36,6 +41,11 @@ SACodeCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
 SACodeCoverageSelection >> cleanUp: generatedClass [
 	generatedClass testSelectors
 		do: [ :sel | generatedClass removeSelector: sel ]
+]
+
+{ #category : #cleanup }
+SACodeCoverageSelection >> infoPragmaFrom: aCovered [
+	^ aCovered smallAmpInfoText
 ]
 
 { #category : #'as yet unclassified' }
@@ -109,5 +119,6 @@ SACodeCoverageSelection >> select: aPopulation [
 					(aPopulation
 						select: [ :p | (item collect: #selector) includes: p selector ])
 				notIncludedIn: result ].
+	result  := self addInfoToSelectedMethods: result.
 	^ result reject: #isNil
 ]

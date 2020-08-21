@@ -21,6 +21,22 @@ SAAbstractOracleReduction class >> initializeWith: aConfig [
 ]
 
 { #category : #accessing }
+SAAbstractOracleReduction >> astHelper [
+	^ SAASTHelper new
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractOracleReduction >> createDuplicateClass [
+	| l methods |
+	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
+	methods := l value: newTestClass.
+	^ self astHelper
+		buildTestClassWith: methods
+		using: testClass
+		
+]
+
+{ #category : #accessing }
 SAAbstractOracleReduction >> ignoredTestMethods [
 	^ ignoredTestMethods
 ]
