@@ -15,19 +15,9 @@ Class {
 	#category : #'SmallAmp-DrTests'
 }
 
-{ #category : #'api - accessing' }
-SADrTestsPlugin class >> pluginName [
-	^ 'Test Amplification (SmallAmp)'
-]
-
-{ #category : #'api - accessing' }
-SADrTestsPlugin class >> pluginResultClass [
-	^ SADrTestsResult 
-]
-
-{ #category : #'api - accessing' }
-SADrTestsPlugin class >> weight [
-	^ 3
+{ #category : #testing }
+SADrTestsPlugin class >> isAbstract [
+	^ self = SADrTestsPlugin
 ]
 
 { #category : #api }

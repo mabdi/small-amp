@@ -29,8 +29,8 @@ SADrTestsResult >> buildTreeForUI [
 	^ DTTreeNode new
 		subResults:
 			{smallAmpResult amplifiedClasses.
-			smallAmpResult mutationScores.
-			smallAmpResult aliveMutants.
+			smallAmpResult scores.
+			smallAmpResult coverage .
 			smallAmpResult skippedTestMethods.
 			smallAmpResult notProfiledMethods.
 			smallAmpResult timeInformations}
@@ -77,8 +77,8 @@ SADrTestsResult >> color [
 			(smallAmpResult results values
 				collect: [ :r | 
 					getDegree
-						value: r originalMutationScore
-						value: r amplifiedMutationScore ]) max
+						value: r originalScore
+						value: r amplifiedScore ]) max
 ]
 
 { #category : #accessing }

@@ -8,7 +8,7 @@ Class {
 		'iterations',
 		'debug',
 		'lite',
-		'selections',
+		'selection',
 		'oracleReducion',
 		'profiler',
 		'statementTimeOut',
@@ -39,16 +39,15 @@ SAConfig class >> default [
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
-		selections: {SAMutationCoverageSelection};
+		selection: SACodeCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
-		debug: false;
+		debug: true;
 		lite: false;
 		saveToFile: false;
 		runSandboxed: false;
@@ -162,7 +161,7 @@ SAConfig >> methodReductions: anObject [
 
 { #category : #accessing }
 SAConfig >> oracleReducion [
-	^ oracleReducion
+	^ oracleReducion ifNil: [ selection defaultOracleReduction ]
 ]
 
 { #category : #accessing }
@@ -222,13 +221,13 @@ SAConfig >> saveToFile: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> selections [
-	^ selections
+SAConfig >> selection [
+	^ selection
 ]
 
 { #category : #accessing }
-SAConfig >> selections: aListOfSelections [
-	selections := aListOfSelections
+SAConfig >> selection: aSelectionClass [
+	selection := aSelectionClass
 ]
 
 { #category : #accessing }

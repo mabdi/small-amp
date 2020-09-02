@@ -94,7 +94,7 @@ SmallAmp class >> menuCommandOn: aBuilder [
 		item: #'Open Ui (DrTests)';
 		parent: #SmallAmp)
 		action: [ dt := DrTests new.
-			dt pluginsDropList selectItem: SADrTestsPlugin.
+			dt pluginsDropList selectItem: SAMutationPlugin.
 			dt openWithSpec ].
 	(aBuilder
 		item: #'Browse Temp Package';
@@ -140,8 +140,10 @@ SmallAmp >> amplifyAll [
 				ifTrue: [ instance saveResultToFileAs: item key asString.
 					instance amplifiedClass fileOut ] ]
 				on: Error
-				do:
-					[ :ex | ('Error in processing ' , item key name , ': ' , ex asString) traceCr ] ]
+				do: [ :ex | 
+					config debug ifTrue: [ex signal].
+					('Error in processing ' , item key name , ': ' , ex asString)
+						traceCr ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]

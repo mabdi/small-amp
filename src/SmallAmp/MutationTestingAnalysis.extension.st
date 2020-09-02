@@ -114,6 +114,27 @@ MutationTestingAnalysis >> runSmallAmpVerbose [
 ]
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> smallAmpNewCovered: oldAnalysis [
+	| g1 g2 |
+	g1 := self generalResult.
+	g2 := oldAnalysis generalResult.
+	^ g1 killedMutants
+		reject: [ :m | 
+			(g2 killedMutants collect: [ :x | x mutant modifiedSource ])
+				includes: m mutant modifiedSource ]
+]
+
+{ #category : #'*SmallAmp' }
+MutationTestingAnalysis >> smallAmpScore [
+	^ self generalResult mutationScore
+]
+
+{ #category : #'*SmallAmp' }
+MutationTestingAnalysis >> smallAmpUncovered [
+	^ self generalResult aliveMutants
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> ui [ 
 	| alive browser |
 	alive := self generalResult aliveMutants.

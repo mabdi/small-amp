@@ -209,13 +209,6 @@ SACommandLineHandler >> metricsEval: repoName [
 	tests := classes select: #isTestCase.
 	targetedTests := tests
 		select: [ :s | s smallAmpTargetClasses isNotNil ].
-	"targetedTests := targetedTests
-		select: [ :ts | 
-			| mr |
-			[ mr := self runMutalk: ts.
-			mr generalResult mutationScore < 100 ]
-				on: Exception
-				do: [ false ] ]."
 	testsuite := TestSuite new.
 	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
 	testrun := testsuite run.
