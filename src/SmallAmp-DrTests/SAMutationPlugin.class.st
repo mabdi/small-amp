@@ -16,7 +16,7 @@ SAMutationPlugin class >> pluginResultClass [
 
 { #category : #'api - accessing' }
 SAMutationPlugin class >> weight [
-	^ 3
+	^ 71
 ]
 
 { #category : #'as yet unclassified' }

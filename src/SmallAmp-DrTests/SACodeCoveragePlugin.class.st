@@ -16,7 +16,7 @@ SACodeCoveragePlugin class >> pluginResultClass [
 
 { #category : #'api - accessing' }
 SACodeCoveragePlugin class >> weight [
-	^ 4
+	^ 70
 ]
 
 { #category : #'as yet unclassified' }
