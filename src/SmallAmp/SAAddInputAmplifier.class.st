@@ -79,17 +79,15 @@ SAAddInputAmplifier >> createMessageNodeFor: method type: class reveiver: aName 
 
 { #category : #removing }
 SAAddInputAmplifier >> generateNewStatementsAfter: statement [
-	| msg theType methods nodes |
+	| msg nodes returnVal |
 	statement isAssignment
-		ifTrue: [ msg := statement value ].
+		ifTrue: [ msg := statement value.
+			returnVal := statement variable ].
 	statement isMessage
 		ifTrue: [ msg := statement ].
-	theType := variableTypes at: testMethodModel selector , ':', msg receiver name.
-	methods := theType methods
-		reject: [ :m | msg selector = m selector or: [ self isNotSafeToSelect: m ] ].
-	nodes := methods
-		collect:
-			[ :m | self createMessageNodeFor: m type: theType reveiver: msg receiver name ].
+	nodes := OrderedCollection new. 
+	nodes addAll: (self nodesFor: msg receiver name).
+	returnVal  ifNotNil: [nodes addAll: (self nodesFor: returnVal name)].
 	nodes := nodes reject: #isNil.
 	^ nodes
 ]
@@ -102,6 +100,17 @@ SAAddInputAmplifier >> isNotSafeToSelect: method [
 { #category : #'as yet unclassified' }
 SAAddInputAmplifier >> namingPrefix [
 	^ 'A'
+]
+
+{ #category : #private }
+SAAddInputAmplifier >> nodesFor: variableName [
+	| theType methods |
+	theType := variableTypes at: testMethodModel selector , ':', variableName.
+	methods := theType methods
+		reject: [ :m | self isNotSafeToSelect: m ].
+	^ methods
+		collect:
+			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ].
 ]
 
 { #category : #removing }

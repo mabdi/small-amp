@@ -26,8 +26,8 @@ SAVariableTypeProfiler >> buildMetalink [
 	| l |
 	l := MetaLink new
 		metaObject: self;
-		control: #before;
-		selector: #executeBeforeNode:value:;
+		control: #after;
+		selector: #executeAfterNode:value:;
 		arguments: #(node value);
 		yourself.
 	links add: l.
@@ -39,6 +39,14 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 	config debug
 		ifFalse:
 			[ self astHelper removeClass: generatedClass source: self class name ]
+]
+
+{ #category : #removing }
+SAVariableTypeProfiler >> executeAfterNode: node value: val [
+	[ val class inheritsFrom: Object ]  on: Error do: [ ^ self ].
+	self variablesTypes
+		at: node methodNode selector , ':' , node name
+		put: val class
 ]
 
 { #category : #removing }

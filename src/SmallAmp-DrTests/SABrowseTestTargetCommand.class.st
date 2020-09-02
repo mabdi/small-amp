@@ -6,7 +6,7 @@ Class {
 
 { #category : #testing }
 SABrowseTestTargetCommand >> canBeExecuted [
-	^ self plugin class = SADrTestsPlugin  and: [self selectedItems size = 1]
+	^ (self plugin class allSuperclasses includes: SADrTestsPlugin)  and: [self selectedItems size = 1]
 ]
 
 { #category : #testing }
