@@ -17,7 +17,7 @@ SAObservationObject >> checkFlaky: anItem [
 		keysDo: [ :key | 
 			| v |
 			v := self theValue at: key.
-			v ifNotNil: [ v checkFlaky: (anItem theValue at: key) ]
+			v ifNotNil: [ v checkFlaky: (anItem theValue at: key ifAbsent: [ v isFlaky: true ]) ]
 			 ]
 ]
 
