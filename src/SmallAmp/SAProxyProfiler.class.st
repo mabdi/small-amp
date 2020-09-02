@@ -52,7 +52,7 @@ SAProxyProfiler >> preCall: aSelector with: anArray in: aReceiver [
 							'#' , aReceiver class name , '#' , aSelector , '#' , index asString
 								
 						ifAbsentPut: [ Set new ].
-					smaplesList add: sample ] ]
+					smaplesList add: sample copy ] ]
 ]
 
 { #category : #'as yet unclassified' }
