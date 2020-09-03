@@ -40,22 +40,28 @@ SAAddInputAmplifierTest >> setUp [
 
 { #category : #tests }
 SAAddInputAmplifierTest >> testAdd1 [
-	| res |
+	| res codes |
 	res := item2Line inputAmplifyBy: amplifierNoProfile.
 	self assert: res size equals: 9.
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testDeposit_A(\d+)'
+				matchesReplacedWith: 'testDeposit_A' ].
+	codes sort.
 	self
-		assertMethodSourceCode: (res at: 1) asString
+		assertMethodSourceCode: (codes at: 8) asString
 		equals:
-			'testDeposit_A0
+			'testDeposit_A
 	| b |
 	b := FakeSmallBank new.
 	b initialize.
 	b deposit: 10.
 	b deposit: 100'.
 	self
-		assertMethodSourceCode: (res at: 9) asString
+		assertMethodSourceCode: (codes at: 3) asString
 		equals:
-			'testDeposit_A8
+			'testDeposit_A
 	| b |
 	b := FakeSmallBank new.
 	b deposit: 10.
@@ -65,21 +71,29 @@ SAAddInputAmplifierTest >> testAdd1 [
 
 { #category : #tests }
 SAAddInputAmplifierTest >> testAdd2 [
-	| res |
+	| res codes |
 	res := item2Line inputAmplifyBy: amplifierProfile.
 	self assert: res size equals: 18.
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testDeposit_A(\d+)'
+				matchesReplacedWith: 'testDeposit_A' ].
+	codes sort.
+	
 	self
-		assertMethodSourceCode: (res at: 3) asString
+		assertMethodSourceCode: (codes at: 16) asString
 		equals:
-			'testDeposit_A2
+			'testDeposit_A
 	| b |
 	b := FakeSmallBank new.
 	b loadFrom: FakeSmallBank new.
 	b deposit: 10.
 	b deposit: 100'.
 	self
-		assertMethodSourceCode: (res at: 4) asString
-		equals: 'testDeposit_A3
+		assertMethodSourceCode: (codes at: 18) asString
+		equals:
+			'testDeposit_A
 	| b |
 	b := FakeSmallBank new.
 	b withdraw: 30.
