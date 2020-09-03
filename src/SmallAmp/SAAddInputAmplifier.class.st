@@ -64,13 +64,13 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 SAAddInputAmplifier >> createMessageNodeFor: method type: class reveiver: aName [
 	| valueNodes |
 	valueNodes := OrderedCollection new.
-	1 to: method numArgs do: [ :i | 
-		valueNodes
-			add:
-				(RBLiteralValueNode value: (config profiler samples
-					at: '#' , class name , '#' , method selector , '#' , i asString
-					ifAbsent: [ ^ nil ]) atRandom) ].
-	.		
+	valueNodes
+		addAll:
+			((1 to: method numArgs)
+				collect: [ :i | 
+					(self
+						getArgumentNodeFor: '#' , class name , '#' , method selector , '#' , i asString)
+						ifNil: [ ^ nil ] ]).
 	^ RBMessageNode
 		receiver: (RBVariableNode named: aName)
 		selector: method selector
@@ -90,6 +90,20 @@ SAAddInputAmplifier >> generateNewStatementsAfter: statement [
 	returnVal  ifNotNil: [nodes addAll: (self nodesFor: returnVal name)].
 	nodes := nodes reject: #isNil.
 	^ nodes
+]
+
+{ #category : #'as yet unclassified' }
+SAAddInputAmplifier >> getArgumentNodeFor: aKey [
+	config profiler samples
+		at: aKey
+		ifPresent: [ :aSet | ^ RBLiteralValueNode value: aSet atRandom ]
+		ifAbsent: [ ^ config profiler profile
+				at: aKey
+				ifPresent: [ :aClass | 
+					^ RBMessageNode
+						receiver: (RBVariableNode named: aClass name)
+						selector: #new ]
+				ifAbsent: [ ^ nil ] ]
 ]
 
 { #category : #testing }
