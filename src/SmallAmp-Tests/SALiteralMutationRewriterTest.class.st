@@ -56,7 +56,7 @@ SALiteralMutationRewriterTest >> testIntegerDouble [
 SALiteralMutationRewriterTest >> testLiteralArray [
 	| res |
 	res := SALiteralMutationRewriter runWith: 'foo |a| a set:#(0 1 2 3)'.
-	self assert: res size equals: 29. "continue to mutation in children"
+	self assert: res size equals: 32. "continue to mutation in children"
 	self
 		assertMethodSourceCode: (res at: 1) asString
 		equals: 'foo |a| a set:#()'

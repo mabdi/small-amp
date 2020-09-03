@@ -70,16 +70,22 @@ SALiteralMutator >> mutateFalse: aValue [
 ]
 
 { #category : #'as yet unclassified' }
-SALiteralMutator >> mutateInteger: aValue [
+SALiteralMutator >> mutateFloat: aValue [
 	| nodes |
 	nodes := {(aValue + 1).
 	(aValue - 1).
+	(aValue * -1).
 	(aValue * 2).
 	(aValue / 2) asInteger.
-	0} asOrderedCollection.
+	Float zero.
+	Float nan.
+	Float infinity.
+	Float negativeInfinity.
+	Float negativeZero} asOrderedCollection.
 	nodes := (nodes reject: [ :x | x = aValue ])
 		collect: [ :q | RBLiteralValueNode value: q ].
-	nodes
+
+	"nodes
 		add:
 			(RBMessageNode
 				receiver: (RBVariableNode named: #SmallInteger)
@@ -88,7 +94,34 @@ SALiteralMutator >> mutateInteger: aValue [
 		add:
 			(RBMessageNode
 				receiver: (RBVariableNode named: #SmallInteger)
-				selector: #minVal).
+				selector: #minVal)."
+	^ nodes
+]
+
+{ #category : #'as yet unclassified' }
+SALiteralMutator >> mutateInteger: aValue [
+	| nodes |
+	nodes := {(aValue + 1).
+	(aValue - 1).
+	(aValue * -1).
+	(aValue * 2).
+	(aValue / 2) asInteger.
+	0.
+	SmallInteger maxVal.
+	SmallInteger minVal} asOrderedCollection.
+	nodes := (nodes reject: [ :x | x = aValue ])
+		collect: [ :q | RBLiteralValueNode value: q ].
+
+	"nodes
+		add:
+			(RBMessageNode
+				receiver: (RBVariableNode named: #SmallInteger)
+				selector: #maxVal).
+	nodes
+		add:
+			(RBMessageNode
+				receiver: (RBVariableNode named: #SmallInteger)
+				selector: #minVal)."
 	^ nodes
 ]
 
@@ -139,6 +172,20 @@ SALiteralMutator >> mutateLiteralArrayNode: aNode [
 SALiteralMutator >> mutateNode: aNode [
 	aNode isLiteralNode ifFalse: [ ^ {  } ].
 	^ aNode value smallAmpMutateWith: self. 
+]
+
+{ #category : #'as yet unclassified' }
+SALiteralMutator >> mutateNumber: aValue [
+	| nodes |
+	nodes := {(aValue + 1).
+	(aValue - 1).
+	(aValue * -1).
+	(aValue * 2).
+	(aValue / 2).
+	0} asOrderedCollection.
+	nodes := (nodes reject: [ :x | x = aValue ])
+		collect: [ :q | RBLiteralValueNode value: q ].
+	^ nodes
 ]
 
 { #category : #'as yet unclassified' }

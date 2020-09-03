@@ -4,3 +4,8 @@ Extension { #name : #Number }
 Number >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
 	^ aVisitor visitNumber: self atDepth: anInteger
 ]
+
+{ #category : #'*SmallAmp' }
+Number >> smallAmpMutateWith: aMutator [
+	^ aMutator mutateNumber: self
+]
