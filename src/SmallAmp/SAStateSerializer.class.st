@@ -2,7 +2,8 @@ Class {
 	#name : #SAStateSerializer,
 	#superclass : #Object,
 	#instVars : [
-		'maxDepth'
+		'maxDepth',
+		'maxSuperClass'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -43,7 +44,12 @@ SAStateSerializer >> maxDepth: anInt [
 
 { #category : #accessing }
 SAStateSerializer >> maxSuperClass [
-	^ 2
+	^ maxSuperClass ifNil: [ maxSuperClass:= 2]
+]
+
+{ #category : #accessing }
+SAStateSerializer >> maxSuperClass: anInt [
+	maxSuperClass:= anInt 
 ]
 
 { #category : #visiting }
