@@ -59,7 +59,9 @@ SAMainLoop >> amplify [
 						ifTrue: [ skip := true.
 							finalResult timeBudgetFinished: true ] ].
 			skip
-				ifFalse: [ self normalize.
+				ifFalse: [ 
+					self setupPopulation.
+					self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.
@@ -189,17 +191,24 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	| newcodes |
+	| newcodes newcodesize |
 	finalResult logs
 		recoredTag: #inputAmplification
-		toRun: 
-	[newcodes := OrderedCollection new.
-	population
-		do: [ :tcase | 
-			self inputAmplifiers
-				do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-	population addAll: newcodes]
+		toRun: [ newcodes := OrderedCollection new.
+			population
+				do: [ :tcase | 
+					self inputAmplifiers
+						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
+			newcodesize := newcodes size.
+			(1 to: newcodesize)
+				do: [ :i | | amplifier tcase newInputs |
+					amplifier := self inputAmplifiers atRandom.
+					tcase := newcodes atRandom.
+					newInputs := tcase inputAmplifyBy: amplifier.
+					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
+				displayingProgress: 'Input Amplification (x2) (' , newcodesize asString , ')'.
+			population addAll: newcodes ]
 ]
 
 { #category : #accessing }
@@ -338,6 +347,15 @@ SAMainLoop >> selection [
 				 
 					selectedTests addAll: (selection select: population).
 			population := selectedTests ]
+]
+
+{ #category : #actions }
+SAMainLoop >> setupPopulation [
+	population := elites
+		collect: [ :item | 
+			| c |
+			c := item clone.
+			c ]
 ]
 
 { #category : #'as yet unclassified' }
