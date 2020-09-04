@@ -9,7 +9,8 @@ Class {
 		'finalResult',
 		'resultPeople',
 		'testRunTimeoutMillis',
-		'selection'
+		'selection',
+		'assertAmplificationClassCache'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -88,7 +89,13 @@ SAMainLoop >> assertionAmplification [
 			population
 				do: [ :tcase | 
 					self assertionAmplifiers
-						do: [ :amplifier | amplifier testRunTimeoutMillis: testRunTimeoutMillis.tcase assertionAmplifyBy: amplifier ] ]
+						do: [ :amplifier | 
+							" dirty  but necessary. recreating a temp class is very time cosuming "
+							assertAmplificationClassCache
+								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+							tcase assertionAmplifyBy: amplifier.
+							assertAmplificationClassCache := amplifier generatedClass ] ]
 				displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
 			self closeAllWindowsBut: allWindows.
 			population := population

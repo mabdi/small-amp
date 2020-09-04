@@ -163,6 +163,16 @@ SADefaultAssertionAmplifier >> flackyTestRepeat [
 	^ config flackyTestRepeat
 ]
 
+{ #category : #accessing }
+SADefaultAssertionAmplifier >> generatedClass [
+	^ generatedClass
+]
+
+{ #category : #accessing }
+SADefaultAssertionAmplifier >> generatedClass: anObject [
+	generatedClass := anObject
+]
+
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> ignoreFlakyValues [
 	self flackyTestRepeat
