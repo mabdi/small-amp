@@ -290,8 +290,9 @@ SmallAmp >> initializeWith: aConfig [
 SmallAmp >> preRunChecks [
 	CompiledMethod compilerClass compiler compilationContext encoderClass
 		= EncoderForSistaV1
-		ifFalse:
-			[ Warning new signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ]
+		ifFalse: [ Warning new
+				signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ].
+	
 ]
 
 { #category : #actions }

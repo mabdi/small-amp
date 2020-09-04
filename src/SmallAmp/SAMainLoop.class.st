@@ -152,10 +152,11 @@ SAMainLoop >> discardFailingTests [
 
 { #category : #actions }
 SAMainLoop >> finalSteps [
+	self astHelper moveClassToFinal: finalResult amplifiedClass .
 	finalResult
 		amplifiedAnalysis:
 			(selection
-				analysisFor: {finalResult amplifiedClass }
+				analysisFor: {finalResult amplifiedClass}
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal)
 ]

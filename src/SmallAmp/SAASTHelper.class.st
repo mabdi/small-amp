@@ -108,6 +108,11 @@ SAASTHelper >> createTempPackage [
 				createPackageNamed: self defaultTempPackage ].
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> defaultFinalPackage [
+	^ 'SmallAmpFinalClasses'
+]
+
 { #category : #'method operations' }
 SAASTHelper >> defaultPragma [
 	^ self class defaultPragma
@@ -152,6 +157,17 @@ SAASTHelper >> getId [
 SAASTHelper >> killAllMetalinksOn: aClass [ 
 	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
 
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> moveClassToFinal: aClass [
+	| package |
+	(RPackageOrganizer default
+		includesPackageNamed: self defaultFinalPackage)
+		ifFalse: [ RPackageOrganizer default
+				createPackageNamed: self defaultFinalPackage ].
+	package := RPackageOrganizer default packageNamed: self defaultFinalPackage.
+   package addClass: aClass .
 ]
 
 { #category : #'method operations' }
