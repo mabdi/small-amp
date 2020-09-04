@@ -114,6 +114,11 @@ MutationTestingAnalysis >> runSmallAmpVerbose [
 ]
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> smallAmpCovered [
+	^ self generalResult killedOrTerminatedMutants
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> smallAmpNewCovered: oldAnalysis [
 	| g1 g2 |
 	g1 := self generalResult.

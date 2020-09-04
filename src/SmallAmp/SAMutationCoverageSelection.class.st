@@ -53,6 +53,11 @@ SAMutationCoverageSelection >> cleanUp: generatedClass [
 		do: [ :sel | generatedClass removeSelector: sel ]
 ]
 
+{ #category : #cleanup }
+SAMutationCoverageSelection >> infoPragmaFrom: aCovered [
+	^ aCovered smallAmpInfoText
+]
+
 { #category : #'as yet unclassified' }
 SAMutationCoverageSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
@@ -159,7 +164,7 @@ SAMutationCoverageSelection >> mutalkRunClass: newTestClass targetClasses: targe
 { #category : #enumerating }
 SAMutationCoverageSelection >> select: aPopulation [
 	| analysisList alives result newKills |
-	result := OrderedCollection new.
+	result := Dictionary new.
 	analysisList := self mutalkRun: aPopulation.
 	alives := analysisList
 		flatCollect: [ :analysis | analysis generalResult aliveMutants ].
@@ -183,6 +188,7 @@ SAMutationCoverageSelection >> select: aPopulation [
 									selected := self
 										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
 										notIncludedIn: result.
-									selected ifNotNil: [ result add: selected ] ] ] ] ].
+									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	result := self addInfoToSelectedMethods: result.
 	^ result reject: #isNil
 ]

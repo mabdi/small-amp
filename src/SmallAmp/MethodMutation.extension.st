@@ -25,6 +25,17 @@ MethodMutation >> smallAmpCommentText [
 ]
 
 { #category : #'*SmallAmp' }
+MethodMutation >> smallAmpDecoratorText [
+	^ '#'
+		join:
+			{operator class name.
+			self originalClass name.
+			self originalMethod selector.
+			nodeToMutate start.
+			nodeToMutate stop}
+]
+
+{ #category : #'*SmallAmp' }
 MethodMutation >> uninstallDeep [
 	"UnInstall the mutant recompiling the original method into the class."
 
