@@ -119,12 +119,13 @@ SAAddInputAmplifier >> namingPrefix [
 { #category : #private }
 SAAddInputAmplifier >> nodesFor: variableName [
 	| theType methods |
-	theType := variableTypes at: testMethodModel selector , ':', variableName.
-	methods := theType methods
-		reject: [ :m | self isNotSafeToSelect: m ].
+	theType := variableTypes
+		at: testMethodModel selector , ':' , variableName
+		ifAbsent: [nil class].
+	methods := theType methods reject: [ :m | self isNotSafeToSelect: m ].
 	^ methods
 		collect:
-			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ].
+			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ]
 ]
 
 { #category : #removing }

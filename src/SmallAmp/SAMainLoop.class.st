@@ -191,23 +191,36 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	| newcodes newcodesize |
+	| newcodes halfPop |
 	finalResult logs
 		recoredTag: #inputAmplification
-		toRun: [ newcodes := OrderedCollection new.
+		toRun: [ halfPop := config maxPop / 2.
+			newcodes := OrderedCollection new.
 			population
 				do: [ :tcase | 
 					self inputAmplifiers
 						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-			newcodesize := newcodes size.
-			(1 to: newcodesize)
-				do: [ :i | | amplifier tcase newInputs |
+
+			"(1 to: config maxPop)
+				do: [ :i | 
+					| tcase amplifier newInputs |
+					tcase := population atRandom.
+					amplifier := self inputAmplifiers atRandom.
+					newInputs := tcase inputAmplifyBy: amplifier.
+					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
+				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'."
+			newcodes := newcodes shuffle first: (halfPop min: newcodes size).
+			(1 to: halfPop)
+				do: [ :i | 
+					| amplifier tcase newInputs |
 					amplifier := self inputAmplifiers atRandom.
 					tcase := newcodes atRandom.
 					newInputs := tcase inputAmplifyBy: amplifier.
-					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
-				displayingProgress: 'Input Amplification (x2) (' , newcodesize asString , ')'.
+					newInputs
+						ifNotEmpty:
+							[ newcodes add: (newInputs atRandom) ] ]
+				displayingProgress: 'Input Amplification (x2) (' , halfPop asString , ')'.
 			population addAll: newcodes ]
 ]
 

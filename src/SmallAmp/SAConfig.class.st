@@ -34,28 +34,28 @@ SAConfig class >> default [
 	^ SAConfig new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
+		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selection: SACodeCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
+		methodReductions: {SANoMethodReduction};
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
-		debug: true;
+		debug: false;
 		lite: false;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
-		timeBudget: 1800;
-		serializationMaxDepth: 3;
+		timeBudget: 21600;
+		serializationMaxDepth: 2;
 		yourself
 ]
 
