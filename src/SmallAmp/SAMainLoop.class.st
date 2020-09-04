@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'testClass',
 		'targetClasses',
+		'elites',
 		'population',
 		'config',
 		'finalResult',
@@ -24,14 +25,15 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 
 { #category : #adding }
 SAMainLoop >> addPopulationToResult [
-	resultPeople
-		addAll:
-			(population
-				collect: [ :item | 
-					| c |
-					c := item clone.
-					c signAsSmallAmp.
-					c ])
+	| newElites |
+	newElites := population
+		collect: [ :item | 
+			| c |
+			c := item clone.
+			c signAsSmallAmp.
+			c ].
+	resultPeople addAll: newElites.
+	elites addAll: newElites
 ]
 
 { #category : #'as yet unclassified' }
@@ -141,7 +143,8 @@ SAMainLoop >> discardFailingTests [
 		asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
-		testRunTimeoutMillis := { 1000. testRunTimeoutMillis } max.
+	testRunTimeoutMillis := {1000.
+	testRunTimeoutMillis} max.
 	testMethods := result expectedPasses
 		collect:
 			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
@@ -150,7 +153,7 @@ SAMainLoop >> discardFailingTests [
 			(result failures , result expectedDefects
 				collect: [ :failed | failed class lookupSelector: failed selector ])
 				asOrderedCollection.
-	population := testMethods
+	elites := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
 				selectorAppend: '_amp';
