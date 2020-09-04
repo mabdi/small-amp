@@ -180,7 +180,7 @@ SAMuTalkFirstFailOracleReduction >> synthesisCommentFrom: toComment [
 				do: [ :m | 
 					when := self
 						synthesisWhenFor:
-							(particularResults detect: [ :x | x mutant = m ]) mutantEvaluation
+							(particularResults detect: [ :x | x mutant = m ] ifNone: [ ^ nil]) mutantEvaluation
 								observation.
 					s
 						nextPutAll: '- ';
