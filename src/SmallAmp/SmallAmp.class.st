@@ -173,11 +173,11 @@ SmallAmp >> amplifyAllSandboxed [
 						nextPutAll: ' ';
 						nextPutAll: '--nosave' ].
 			output := OSPlatform current resultOfCommand: cmd.
-			(FileLocator imageDirectory / (tcase, '.log')) exists
-		ifTrue: [ (FileLocator imageDirectory / (tcase, '.log')) delete ].
-	(FileLocator imageDirectory / (tcase, '.log')) writeStream
-		nextPutAll: output ;
-		close.
+			(FileLocator imageDirectory / (tcase , '.log')) exists
+				ifTrue: [ (FileLocator imageDirectory / (tcase , '.log')) delete ].
+			(FileLocator imageDirectory / (tcase , '.log')) writeStream
+				nextPutAll: output;
+				close.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ json := STONJSON
 						fromString:
@@ -185,8 +185,8 @@ SmallAmp >> amplifyAllSandboxed [
 								contents.
 					(FileLocator imageDirectory
 						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
-					instance := SAResultItem fromDictionaryObject: json.
-					res addResult: instance for: item ]
+					"instance := SAResultItem fromDictionaryObject: json.
+					res addResult: instance for: item" ]
 				ifFalse: [ 'unfinished run' traceCr ] ]
 				on: Error
 				do: [ :ex | 

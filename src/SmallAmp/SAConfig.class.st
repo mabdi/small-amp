@@ -41,7 +41,7 @@ SAConfig class >> default [
 		profiler: SAProxyProfiler new;
 		selection: SACodeCoverageSelection;
 		methodReductions: {SANoMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		oracleReducion: SANoOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
@@ -51,12 +51,12 @@ SAConfig class >> default [
 		debug: false;
 		lite: false;
 		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
+		runSandboxed: true;
+		enableExclude: true;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
-		serializationMaxDepth: 2;
+		serializationMaxDepth: 3;
 		yourself
 ]
 
