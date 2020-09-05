@@ -157,6 +157,7 @@ SmallAmp >> amplifyAllSandboxed [
 		do: [ :item | 
 			| instance tcase |
 			tcase := item key name.
+			('Processing ' , tcase) traceCr.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
 			[ cmd := String
@@ -184,7 +185,7 @@ SmallAmp >> amplifyAllSandboxed [
 							(FileLocator imageDirectory / (tcase , '.json')) asFileReference
 								contents.
 					(FileLocator imageDirectory
-						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
+						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn
 					"instance := SAResultItem fromDictionaryObject: json.
 					res addResult: instance for: item" ]
 				ifFalse: [ 'unfinished run' traceCr ] ]
