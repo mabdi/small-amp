@@ -242,7 +242,7 @@ SACommandLineHandler >> metricsEval: repoName [
 		lf;
 		close.
 	(FileLocator imageDirectory / self todoFile) writeStream
-		nextPutAll: (Character lf join: targetedTests);
+		nextPutAll: (Character lf join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ] ));
 		lf;
 		close.
 	(FileLocator imageDirectory / 'allTests.txt') writeStream
