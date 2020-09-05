@@ -70,7 +70,7 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> ampTodo [
 	| classes sa |
-	classes := (self todoFile asFileReference contents splitOn: String lf)
+	classes := ((self todoFile asFileReference contents splitOn: String lf) reject: #isEmpty)
 		collect: #asClass.
 	sa := SmallAmp initializeDefault.
 	classes do: [ :cls | sa testCase: cls ].
