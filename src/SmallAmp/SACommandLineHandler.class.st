@@ -70,9 +70,8 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> ampTodo [
 	| classes sa |
-	classes := OrderedCollection new.
-	self todoFile asFileReference
-		readStream: [ :stream | classes add: stream nextLine asClass ].
+	classes := (self todoFile asFileReference contents splitOn: String lf)
+		collect: #asClass.
 	sa := SmallAmp initializeDefault.
 	classes do: [ :cls | sa testCase: cls ].
 	sa amplifyAll.
