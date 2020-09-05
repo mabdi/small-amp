@@ -46,13 +46,15 @@ SACommandLineHandler >> activate [
 		ifTrue: [ IceRepository pullRepoNamed: 'small-amp'.
 			('Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp'))
 				traceCr.
-				Smalltalk snapshot: true andQuit: true ].
+			Smalltalk snapshot: true andQuit: true ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'xinfo')
 		ifTrue: [ self extraInformation ].
 	(self hasOption: 'amp')
 		ifTrue: [ self evalAmp ].
+	(self hasOption: 'amptodo')
+		ifTrue: [ self ampTodo ].
 	(self hasOption: 'clearTemp')
 		ifTrue: [ self clearTempClasses ].
 	self end
@@ -63,6 +65,18 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 	(IceRepository registry detect: [ :r | r name = repoName ] ifFound: [ :r | ^ (r workingCopy packages select: [ :p | p isLoaded ])
 		flatCollect: [ :p | p package asPackage definedClasses ] ] ifNone: [ self error: 'repo not installed. ' , repoName])
 		
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> ampTodo [
+	| classes sa |
+	classes := OrderedCollection new.
+	self todoFile asFileReference
+		readStream: [ :stream | classes add: stream nextLine asClass ].
+	sa := SmallAmp initializeDefault.
+	classes do: [ :cls | sa testCase: cls ].
+	sa amplifyAll.
+	Smalltalk snapshot: true andQuit: true
 ]
 
 { #category : #activation }
@@ -227,7 +241,7 @@ SACommandLineHandler >> metricsEval: repoName [
 		nextPutAll: stat;
 		lf;
 		close.
-	(FileLocator imageDirectory / 'todo.txt') writeStream
+	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
 		close.
@@ -256,4 +270,9 @@ SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
 				flush.
 			'N/A' ].
 	aDictionary at: aKey put: theValue
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> todoFile [
+	^ 'todo.txt'
 ]
