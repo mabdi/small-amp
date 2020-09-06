@@ -123,7 +123,8 @@ SAAddInputAmplifier >> nodesFor: variableName [
 	| theType methods |
 	theType := variableTypes
 		at: testMethodModel selector , ':' , variableName
-		ifAbsent: [nil class].
+		ifAbsent: [ nil class ].
+	theType isMeta ifTrue: [ ^ {  } ].
 	methods := theType methods reject: [ :m | self isNotSafeToSelect: m ].
 	^ methods
 		collect:
