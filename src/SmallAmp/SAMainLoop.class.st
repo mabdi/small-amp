@@ -155,6 +155,7 @@ SAMainLoop >> discardFailingTests [
 			(result failures , result expectedDefects
 				collect: [ :failed | failed class lookupSelector: failed selector ])
 				asOrderedCollection.
+	testMethods ifEmpty: [ SANoGreenTest new signal ].
 	elites := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
@@ -382,7 +383,7 @@ SAMainLoop >> setupSelection [
 				initialAnalysisFor: {testClass}
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal).
-	
+	selection uncovered ifEmpty: [ SANoUncovered new signal  ]
 ]
 
 { #category : #'as yet unclassified' }
