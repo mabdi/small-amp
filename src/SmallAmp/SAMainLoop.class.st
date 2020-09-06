@@ -196,7 +196,7 @@ SAMainLoop >> inputAmplification [
 		recoredTag: #inputAmplification
 		toRun: [ | popsize |
 			popsize := config maxPopPerMethod
-				ifNotNil: [ :permethod | permethod * population min: config maxPop ]
+				ifNotNil: [ :permethod | permethod * population size min: config maxPop ]
 				ifNil: [ config maxPop ].
 			halfPop := popsize / 2.
 			newcodes := OrderedCollection new.
