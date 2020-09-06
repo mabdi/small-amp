@@ -194,7 +194,11 @@ SAMainLoop >> inputAmplification [
 	| newcodes halfPop |
 	finalResult logs
 		recoredTag: #inputAmplification
-		toRun: [ halfPop := config maxPop / 2.
+		toRun: [ | popsize |
+			popsize := config maxPopPerMethod
+				ifNotNil: [ :permethod | permethod * population min: config maxPop ]
+				ifNil: [ config maxPop ].
+			halfPop := popsize / 2.
 			newcodes := OrderedCollection new.
 			population
 				do: [ :tcase | 
@@ -217,9 +221,7 @@ SAMainLoop >> inputAmplification [
 					amplifier := self inputAmplifiers atRandom.
 					tcase := newcodes atRandom.
 					newInputs := tcase inputAmplifyBy: amplifier.
-					newInputs
-						ifNotEmpty:
-							[ newcodes add: (newInputs atRandom) ] ]
+					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
 				displayingProgress: 'Input Amplification (x2) (' , halfPop asString , ')'.
 			population addAll: newcodes ]
 ]

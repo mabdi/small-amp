@@ -24,14 +24,15 @@ Class {
 		'excludeList',
 		'enableExclude',
 		'overwrite',
-		'timeBudget'
+		'timeBudget',
+		'maxPopPerMethod'
 	],
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ SAConfig new
+	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
@@ -47,7 +48,8 @@ SAConfig class >> default [
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
-		maxPop: 200;
+		maxPop: 2000;
+		maxPopPerMethod: 40;
 		debug: false;
 		lite: false;
 		saveToFile: false;
@@ -148,6 +150,16 @@ SAConfig >> maxPop [
 { #category : #accessing }
 SAConfig >> maxPop: anObject [
 	maxPop := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> maxPopPerMethod [
+	^ maxPopPerMethod
+]
+
+{ #category : #accessing }
+SAConfig >> maxPopPerMethod: anObject [
+	maxPopPerMethod := anObject
 ]
 
 { #category : #accessing }
