@@ -40,7 +40,7 @@ SAConfig class >> default [
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
-		selection: SACodeCoverageSelection;
+		selection: SAMutationCoverageSelection;
 		methodReductions: {SANoMethodReduction};
 		oracleReducion: SANoOracleReduction;
 		simplifier: SADefaultSimplification;
