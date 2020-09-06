@@ -10,10 +10,12 @@ Class {
 { #category : #removing }
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
-	self profileVariableTypes.
+	results := OrderedCollection new.
+	
+	[self profileVariableTypes] on: Error do: [^ results].
 	aMethodAST := SAASTHelper new
 		parsedMethodFrom: testMethodModel testMethod.
-	results := OrderedCollection new.
+	
 	aMethodAST statements
 		doWithIndex:
 			[ :statement :index | results addAll: (self applyMessageAdd: index on: aMethodAST) ].
