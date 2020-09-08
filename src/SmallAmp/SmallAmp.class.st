@@ -134,14 +134,15 @@ SmallAmp >> amplifyAll [
 		do: [ :item | 
 			| instance |
 			('Processing ' , item key name) traceCr.
-			[ instance := self amplify: item key target: item value.
+			[ [instance := self amplify: item key target: item value.
 			res addResult: instance for: item.
 			config saveToFile
 				ifTrue: [ instance saveResultToFileAs: item key asString.
-					instance amplifiedClass fileOut ] ]
+					instance amplifiedClass fileOut ] ] on: SANoGreenTest, SANoUncovered do: [:x | x asString traceCr]]
 				on: Error
 				do: [ :ex | 
-					config debug ifTrue: [ex signal].
+					config debug
+						ifTrue: [ ex signal ].
 					('Error in processing ' , item key name , ': ' , ex asString)
 						traceCr ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
