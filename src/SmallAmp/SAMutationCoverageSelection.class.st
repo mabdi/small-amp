@@ -147,7 +147,9 @@ SAMutationCoverageSelection >> mutalkRunClass: newTestClass targetClasses: targe
 				mutants: (uncovered collect: #mutant)).
 	wins := self allOpenedWindows.
 	result := analysis1 runSmallAmpVerbose.
-	config debug ifTrue: [ result ifTrue: [ self halt ] ].
+	config debug
+		ifTrue: [ result
+				ifFalse: [ self halt ] ].
 	targetClasses
 		do: [ :targetClass | self astHelper enableDeprecationsOn: targetClass ].
 	self cleanUp: newTestClass.
