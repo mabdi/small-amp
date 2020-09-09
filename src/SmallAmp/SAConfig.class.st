@@ -51,7 +51,7 @@ SAConfig class >> default [
 		maxPop: 2000;
 		maxPopPerMethod: 40;
 		debug: false;
-		mainloop: SAMainLoop;
+		mainloop: SAMainLoopKeepSeed;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
