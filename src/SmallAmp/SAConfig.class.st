@@ -34,7 +34,7 @@ Class {
 SAConfig class >> default [
 	^ self new
 		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		assertionAmplifiers: {SAMetalinkAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
@@ -51,7 +51,7 @@ SAConfig class >> default [
 		maxPop: 2000;
 		maxPopPerMethod: 40;
 		debug: false;
-		mainloop: SAMainLoopKeepSeed;
+		mainloop: SAMainLoop;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
