@@ -71,14 +71,6 @@ SAMainLoop >> amplify [
 	^ finalResult
 ]
 
-{ #category : #actions }
-SAMainLoop >> amplifyLite [
-	self initialSteps.
-	self liteAmplification.
-	self oracleReduction.
-	^ finalResult
-]
-
 { #category : #private }
 SAMainLoop >> assertionAmplification [
 	| allWindows |
@@ -141,7 +133,8 @@ SAMainLoop >> discardFailingTests [
 		asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
-		testRunTimeoutMillis := { 1000. testRunTimeoutMillis } max.
+	testRunTimeoutMillis := {1000.
+	testRunTimeoutMillis} max.
 	testMethods := result expectedPasses
 		collect:
 			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
@@ -150,6 +143,7 @@ SAMainLoop >> discardFailingTests [
 			(result failures , result expectedDefects
 				collect: [ :failed | failed class lookupSelector: failed selector ])
 				asOrderedCollection.
+	testMethods ifEmpty: [ SANoGreenTest new signal ].
 	population := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
@@ -203,27 +197,6 @@ SAMainLoop >> inputAmplification [
 SAMainLoop >> inputAmplifiers [
 	^  config inputAmplifiers
 				collect: [ :amplifier | amplifier initializeWith: config ] 
-]
-
-{ #category : #private }
-SAMainLoop >> liteAmplification [
-	| aPopulation old_Pop |
-	finalResult logs
-		recoredTag: #liteAmplification
-		toRun: [ aPopulation := population
-				collect: [ :tcase | tcase renamedCopy: '_amp' ].
-			aPopulation do: [ :tcase | tcase strip ].
-			aPopulation
-				do: [ :tcase | 
-					self assertionAmplifiers
-						do: [ :amplifier | amplifier testRunTimeoutMillis: testRunTimeoutMillis . tcase assertionAmplifyBy: amplifier ] ]
-				displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
-			old_Pop := population.
-			population := aPopulation reject: [ :x | x testMethod isNil ].
-			self selection.
-			self cleanUpAndAddToResult.
-			"population addAll: old_Pop ???"
-			population := old_Pop ]
 ]
 
 { #category : #private }
@@ -346,7 +319,7 @@ SAMainLoop >> setupSelection [
 				initialAnalysisFor: {testClass}
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal).
-	
+	selection uncovered ifEmpty: [ SANoUncovered new signal  ]
 ]
 
 { #category : #'as yet unclassified' }

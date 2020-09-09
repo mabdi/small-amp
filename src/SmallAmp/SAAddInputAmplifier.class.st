@@ -10,10 +10,15 @@ Class {
 { #category : #removing }
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
-	self profileVariableTypes.
+	results := OrderedCollection new.
+	[ self profileVariableTypes ]
+		on: Exception
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ ^ results ] ].
 	aMethodAST := SAASTHelper new
 		parsedMethodFrom: testMethodModel testMethod.
-	results := OrderedCollection new.
 	aMethodAST statements
 		doWithIndex:
 			[ :statement :index | results addAll: (self applyMessageAdd: index on: aMethodAST) ].
@@ -119,12 +124,16 @@ SAAddInputAmplifier >> namingPrefix [
 { #category : #private }
 SAAddInputAmplifier >> nodesFor: variableName [
 	| theType methods |
-	theType := variableTypes at: testMethodModel selector , ':', variableName.
-	methods := theType methods
-		reject: [ :m | self isNotSafeToSelect: m ].
+	theType := variableTypes
+		at: testMethodModel selector , ':' , variableName
+		ifAbsent: [ nil class ].
+	theType isMeta
+		ifTrue: [ ^ {} ].
+	theType = nil class ifTrue: [ ^ {  } ].
+	methods := theType methods reject: [ :m | self isNotSafeToSelect: m ].
 	^ methods
 		collect:
-			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ].
+			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ]
 ]
 
 { #category : #removing }

@@ -22,7 +22,12 @@ SAAbstractInputAmplifier >> amplifyInputs [
 { #category : #removing }
 SAAbstractInputAmplifier >> amplifyInputsFor: aTestMethodModel [
 	testMethodModel := aTestMethodModel.
-	^ self amplifyInputs
+	[ ^ self amplifyInputs ]
+		on: Error
+		do: [ :x | 
+			config debug
+				ifTrue: [ self halt ].
+			^ {} ]
 ]
 
 { #category : #'as yet unclassified' }

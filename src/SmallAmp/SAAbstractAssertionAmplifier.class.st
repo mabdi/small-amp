@@ -23,7 +23,9 @@ SAAbstractAssertionAmplifier >> amplifyAssertions [
 { #category : #'as yet unclassified' }
 SAAbstractAssertionAmplifier >> amplifyAssertionsFor: aTestModel [
 	testMethodModel := aTestModel.
-	^ self amplifyAssertions
+	[ ^ self amplifyAssertions ]
+		on: Error
+		do: [ :x | config debug ifTrue: [self halt]. ^ nil ]
 ]
 
 { #category : #accessing }

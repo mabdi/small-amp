@@ -149,12 +149,11 @@ SADefaultPrettification >> renameInsideMethod: aMethodSrc profiles: varTypes [
 	| src newNames ast |
 	src := SAASTHelper new cleanUp: aMethodSrc.
 	ast := SAASTHelper new parsedMethodFrom: src.
-	newNames := (ast temporaries
+	newNames := ast temporaries
 		select: [ :tv | tv name matchesRegex: SAASTHelper tempPattern ]
 		thenCollect: [ :t | 
 			t name
-				-> (varTypes at: ast selector , ':' , t name) canonicalArgumentName ])
-		.
+				-> (varTypes at: ast selector , ':' , t name ifAbsent: [nil class]) canonicalArgumentName ].
 	^ self renameTemp: newNames in: ast
 ]
 

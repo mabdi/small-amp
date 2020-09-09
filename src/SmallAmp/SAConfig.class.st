@@ -7,7 +7,6 @@ Class {
 		'assertionAmplifiers',
 		'iterations',
 		'debug',
-		'lite',
 		'selection',
 		'oracleReducion',
 		'profiler',
@@ -24,37 +23,41 @@ Class {
 		'excludeList',
 		'enableExclude',
 		'overwrite',
-		'timeBudget'
+		'timeBudget',
+		'maxPopPerMethod',
+		'mainloop'
 	],
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ SAConfig new
+	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 3;
+		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
-		selection: SACodeCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
+		selection: SAMutationCoverageSelection;
+		methodReductions: {SANoMethodReduction};
+		oracleReducion: SANoOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
-		maxPop: 200;
-		debug: true;
-		lite: false;
+		maxPop: 2000;
+		maxPopPerMethod: 40;
+		debug: false;
+		mainloop: SAMainLoopKeepSeed;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
-		timeBudget: 1800;
+		timeBudget: 21600;
 		serializationMaxDepth: 3;
 		yourself
 ]
@@ -130,13 +133,13 @@ SAConfig >> iterations: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> lite [
-	^ lite ifNil: [ lite:= false ]
+SAConfig >> mainloop [
+	^ mainloop
 ]
 
 { #category : #accessing }
-SAConfig >> lite: anObject [
-	lite := anObject
+SAConfig >> mainloop: anObject [
+	mainloop := anObject
 ]
 
 { #category : #accessing }
@@ -147,6 +150,16 @@ SAConfig >> maxPop [
 { #category : #accessing }
 SAConfig >> maxPop: anObject [
 	maxPop := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> maxPopPerMethod [
+	^ maxPopPerMethod
+]
+
+{ #category : #accessing }
+SAConfig >> maxPopPerMethod: anObject [
+	maxPopPerMethod := anObject
 ]
 
 { #category : #accessing }

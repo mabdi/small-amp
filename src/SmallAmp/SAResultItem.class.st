@@ -100,6 +100,7 @@ SAResultItem >> amplifiedTestCoverage [
 SAResultItem >> asDictionaryObject [
 	| result |
 	result := Dictionary new.
+	result at: #unixtime put: DateAndTime now asUnixTime.
 	self safeFail: [ testClass name ] key: #testCase addTo: result.
 	self
 		safeFail: [ (targetClasses collect: #name) asArray ]

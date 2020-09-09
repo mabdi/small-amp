@@ -235,11 +235,11 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
-	
-	^ [ [  generatedClass run: testMethodModel selector ]
+	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
+
+	^ [ [ generatedClass run: testMethodModel selector ]
 		on: Exception
-		do: [ :x | 
-			x isResumable
+		do: [ :x | x isResumable
 				ifTrue: [ x resume ]
 				ifFalse: [ nil ] ] ]
 		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds

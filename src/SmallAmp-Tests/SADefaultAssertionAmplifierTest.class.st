@@ -33,13 +33,14 @@ SADefaultAssertionAmplifierTest >> testCase1 [
 { #category : #tests }
 SADefaultAssertionAmplifierTest >> testCase2 [
 	| src sourceCodeWithAssertions testModel |
-	src := 'testFoo | x y | x:= TestObject new. x showError. y:= x field1 * 2'.
+	src := 'testFoo | x y | x:= SATestObject new. x showError. y:= x field1 * 2'.
 	testModel := SATestMethod
 		with: src
 		class: SmallBankTest
 		targets: {SATestObject}.
 	sourceCodeWithAssertions := ins amplifyAssertionsFor: testModel.
-	self deny: (sourceCodeWithAssertions includesSubstring: 'y:= x field1 * 2')
+	self
+		deny: (sourceCodeWithAssertions includesSubstring: 'y:= x field1 * 2')
 ]
 
 { #category : #tests }

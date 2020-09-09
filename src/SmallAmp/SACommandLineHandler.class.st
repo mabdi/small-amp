@@ -46,13 +46,15 @@ SACommandLineHandler >> activate [
 		ifTrue: [ IceRepository pullRepoNamed: 'small-amp'.
 			('Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp'))
 				traceCr.
-				Smalltalk snapshot: true andQuit: true ].
+			Smalltalk snapshot: true andQuit: true ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'xinfo')
 		ifTrue: [ self extraInformation ].
 	(self hasOption: 'amp')
 		ifTrue: [ self evalAmp ].
+	(self hasOption: 'amptodo')
+		ifTrue: [ self ampTodo ].
 	(self hasOption: 'clearTemp')
 		ifTrue: [ self clearTempClasses ].
 	self end
@@ -63,6 +65,18 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 	(IceRepository registry detect: [ :r | r name = repoName ] ifFound: [ :r | ^ (r workingCopy packages select: [ :p | p isLoaded ])
 		flatCollect: [ :p | p package asPackage definedClasses ] ] ifNone: [ self error: 'repo not installed. ' , repoName])
 		
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> ampTodo [
+	| classes sa |
+	classes := ((self todoFile asFileReference contents
+		splitOn: String lf) reject: #isEmpty)
+		collect: [ :line | self class environment at: line trim asSymbol ].
+	sa := SmallAmp initializeDefault.
+	classes do: [ :cls | sa testCase: cls ].
+	sa amplifyAll.
+	Smalltalk snapshot: true andQuit: true
 ]
 
 { #category : #activation }
@@ -227,8 +241,8 @@ SACommandLineHandler >> metricsEval: repoName [
 		nextPutAll: stat;
 		lf;
 		close.
-	(FileLocator imageDirectory / 'todo.txt') writeStream
-		nextPutAll: (Character lf join: targetedTests);
+	(FileLocator imageDirectory / self todoFile) writeStream
+		nextPutAll: (Character lf join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ] ));
 		lf;
 		close.
 	(FileLocator imageDirectory / 'allTests.txt') writeStream
@@ -256,4 +270,9 @@ SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
 				flush.
 			'N/A' ].
 	aDictionary at: aKey put: theValue
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> todoFile [
+	^ 'todo.txt'
 ]

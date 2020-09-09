@@ -117,10 +117,8 @@ SmallAmp class >> menuCommandOn: aBuilder [
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
 	| sa |
-	sa := SAMainLoop with: config for: aTestClass targets: targetClasses.
-	^ config lite
-		ifTrue: [ sa amplifyLite  ]
-		ifFalse: [ sa amplify ]
+	sa := config mainloop with: config for: aTestClass targets: targetClasses.
+			^ sa amplify
 ]
 
 { #category : #actions }
@@ -134,14 +132,15 @@ SmallAmp >> amplifyAll [
 		do: [ :item | 
 			| instance |
 			('Processing ' , item key name) traceCr.
-			[ instance := self amplify: item key target: item value.
+			[ [instance := self amplify: item key target: item value.
 			res addResult: instance for: item.
 			config saveToFile
 				ifTrue: [ instance saveResultToFileAs: item key asString.
-					instance amplifiedClass fileOut ] ]
+					instance amplifiedClass fileOut ] ] on: SANoGreenTest, SANoUncovered do: [:x | x asString traceCr]]
 				on: Error
 				do: [ :ex | 
-					config debug ifTrue: [ex signal].
+					config debug
+						ifTrue: [ ex signal ].
 					('Error in processing ' , item key name , ': ' , ex asString)
 						traceCr ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
@@ -157,6 +156,7 @@ SmallAmp >> amplifyAllSandboxed [
 		do: [ :item | 
 			| instance tcase |
 			tcase := item key name.
+			('Processing ' , tcase) traceCr.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
 			[ cmd := String
@@ -173,20 +173,20 @@ SmallAmp >> amplifyAllSandboxed [
 						nextPutAll: ' ';
 						nextPutAll: '--nosave' ].
 			output := OSPlatform current resultOfCommand: cmd.
-			(FileLocator imageDirectory / (tcase, '.log')) exists
-		ifTrue: [ (FileLocator imageDirectory / (tcase, '.log')) delete ].
-	(FileLocator imageDirectory / (tcase, '.log')) writeStream
-		nextPutAll: output ;
-		close.
+			(FileLocator imageDirectory / (tcase , '.log')) exists
+				ifTrue: [ (FileLocator imageDirectory / (tcase , '.log')) delete ].
+			(FileLocator imageDirectory / (tcase , '.log')) writeStream
+				nextPutAll: output;
+				close.
 			(FileLocator imageDirectory / (tcase , '.json')) exists
 				ifTrue: [ json := STONJSON
 						fromString:
 							(FileLocator imageDirectory / (tcase , '.json')) asFileReference
 								contents.
 					(FileLocator imageDirectory
-						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn.
-					instance := SAResultItem fromDictionaryObject: json.
-					res addResult: instance for: item ]
+						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn
+					"instance := SAResultItem fromDictionaryObject: json.
+					res addResult: instance for: item" ]
 				ifFalse: [ 'unfinished run' traceCr ] ]
 				on: Error
 				do: [ :ex | 
