@@ -7,7 +7,7 @@ Class {
 		'assertionAmplifiers',
 		'iterations',
 		'debug',
-		'lite',
+		'mode',
 		'selection',
 		'oracleReducion',
 		'profiler',
@@ -51,7 +51,9 @@ SAConfig class >> default [
 		maxPop: 2000;
 		maxPopPerMethod: 40;
 		debug: false;
-		lite: false;
+		"mode: #lite;"
+		mode: #keepSeeds;
+		"mode: #random;"
 		saveToFile: false;
 		runSandboxed: true;
 		enableExclude: true;
@@ -133,16 +135,6 @@ SAConfig >> iterations: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> lite [
-	^ lite ifNil: [ lite:= false ]
-]
-
-{ #category : #accessing }
-SAConfig >> lite: anObject [
-	lite := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> maxPop [
 	^ maxPop
 ]
@@ -170,6 +162,16 @@ SAConfig >> methodReductions [
 { #category : #accessing }
 SAConfig >> methodReductions: anObject [
 	methodReductions := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> mode [
+	^ mode
+]
+
+{ #category : #accessing }
+SAConfig >> mode: anObject [
+	mode := anObject
 ]
 
 { #category : #accessing }

@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'testClass',
 		'targetClasses',
-		'elites',
 		'population',
 		'config',
 		'finalResult',
@@ -25,15 +24,14 @@ SAMainLoop class >> with: aConfig for: aTestClass targets: targetClasses [
 
 { #category : #adding }
 SAMainLoop >> addPopulationToResult [
-	| newElites |
-	newElites := population
-		collect: [ :item | 
-			| c |
-			c := item clone.
-			c signAsSmallAmp.
-			c ].
-	resultPeople addAll: newElites.
-	elites addAll: newElites
+	resultPeople
+		addAll:
+			(population
+				collect: [ :item | 
+					| c |
+					c := item clone.
+					c signAsSmallAmp.
+					c ])
 ]
 
 { #category : #'as yet unclassified' }
@@ -59,9 +57,7 @@ SAMainLoop >> amplify [
 						ifTrue: [ skip := true.
 							finalResult timeBudgetFinished: true ] ].
 			skip
-				ifFalse: [ 
-					self setupPopulation.
-					self normalize.
+				ifFalse: [ self normalize.
 					self inputAmplification.
 					self methodReduction.
 					self assertionAmplification.
@@ -72,14 +68,6 @@ SAMainLoop >> amplify [
 	self simplification.
 	self prettifying.
 	self finalSteps.
-	^ finalResult
-]
-
-{ #category : #actions }
-SAMainLoop >> amplifyLite [
-	self initialSteps.
-	self liteAmplification.
-	self oracleReduction.
 	^ finalResult
 ]
 
@@ -156,7 +144,7 @@ SAMainLoop >> discardFailingTests [
 				collect: [ :failed | failed class lookupSelector: failed selector ])
 				asOrderedCollection.
 	testMethods ifEmpty: [ SANoGreenTest new signal ].
-	elites := testMethods
+	population := testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
 				selectorAppend: '_amp';
@@ -192,66 +180,23 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	| newcodes halfPop |
+	| newcodes |
 	finalResult logs
 		recoredTag: #inputAmplification
-		toRun: [ | popsize |
-			popsize := config maxPopPerMethod
-				ifNotNil: [ :permethod | permethod * population size min: config maxPop ]
-				ifNil: [ config maxPop ].
-			halfPop := popsize / 2.
-			newcodes := OrderedCollection new.
-			population
-				do: [ :tcase | 
-					self inputAmplifiers
-						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-
-			"(1 to: config maxPop)
-				do: [ :i | 
-					| tcase amplifier newInputs |
-					tcase := population atRandom.
-					amplifier := self inputAmplifiers atRandom.
-					newInputs := tcase inputAmplifyBy: amplifier.
-					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
-				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'."
-			newcodes := newcodes shuffle first: (halfPop min: newcodes size).
-			(1 to: halfPop)
-				do: [ :i | 
-					| amplifier tcase newInputs |
-					amplifier := self inputAmplifiers atRandom.
-					tcase := newcodes atRandom.
-					newInputs := tcase inputAmplifyBy: amplifier.
-					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
-				displayingProgress: 'Input Amplification (x2) (' , halfPop asString , ')'.
-			population addAll: newcodes ]
+		toRun: 
+	[newcodes := OrderedCollection new.
+	population
+		do: [ :tcase | 
+			self inputAmplifiers
+				do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+		displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
+	population addAll: newcodes]
 ]
 
 { #category : #accessing }
 SAMainLoop >> inputAmplifiers [
 	^  config inputAmplifiers
 				collect: [ :amplifier | amplifier initializeWith: config ] 
-]
-
-{ #category : #private }
-SAMainLoop >> liteAmplification [
-	| aPopulation old_Pop |
-	finalResult logs
-		recoredTag: #liteAmplification
-		toRun: [ aPopulation := population
-				collect: [ :tcase | tcase renamedCopy: '_amp' ].
-			aPopulation do: [ :tcase | tcase strip ].
-			aPopulation
-				do: [ :tcase | 
-					self assertionAmplifiers
-						do: [ :amplifier | amplifier testRunTimeoutMillis: testRunTimeoutMillis . tcase assertionAmplifyBy: amplifier ] ]
-				displayingProgress: 'Assertion Amplification' , ' (' , aPopulation size asString , ')'.
-			old_Pop := population.
-			population := aPopulation reject: [ :x | x testMethod isNil ].
-			self selection.
-			self cleanUpAndAddToResult.
-			"population addAll: old_Pop ???"
-			population := old_Pop ]
 ]
 
 { #category : #private }
@@ -363,15 +308,6 @@ SAMainLoop >> selection [
 				 
 					selectedTests addAll: (selection select: population).
 			population := selectedTests ]
-]
-
-{ #category : #actions }
-SAMainLoop >> setupPopulation [
-	population := elites
-		collect: [ :item | 
-			| c |
-			c := item clone.
-			c ]
 ]
 
 { #category : #'as yet unclassified' }
