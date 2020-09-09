@@ -53,8 +53,8 @@ SAConfig class >> default [
 		debug: false;
 		mainloop: SAMainLoopKeepSeed;
 		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
+		runSandboxed: true;
+		enableExclude: true;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
