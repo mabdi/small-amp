@@ -21,6 +21,7 @@ SADuplicateInputAmplifier >> applyMessageDuplicate: index on: aMethod [
 	| statement mClone theCode |
 	mClone := aMethod copy.
 	statement := mClone statements at: index.
+	statement isAssignment ifTrue: [ statement := statement value ].
 	mClone statements add: statement afterIndex: index.
 	theCode := mClone formattedCode.
 	(theCode includesSubstring: '<an unprintable nonliteral value>')

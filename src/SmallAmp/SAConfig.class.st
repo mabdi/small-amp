@@ -38,7 +38,11 @@ SAConfig class >> default [
 		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
-			SAAddInputAmplifier};
+			SAAddInputAmplifier.
+			SANullifyInputAmplifier.
+			SARemoveInputAmplifier.
+			SAUniqLiteralsInputAmplifier.
+			SARotateLiteralsInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SANoMethodReduction};
