@@ -113,7 +113,8 @@ SAAddInputAmplifier >> getArgumentNodeFor: aKey [
 
 { #category : #testing }
 SAAddInputAmplifier >> isNotSafeToSelect: method [
-	^ {#private. #deprecated} includes: method protocol	"#initialization ."
+	^ {#private . #deprecated . #initialization}
+		includes: method protocol
 ]
 
 { #category : #'as yet unclassified' }

@@ -31,8 +31,14 @@ SAUniqLiteralsInputAmplifierTest >> setUp [
 
 { #category : #tests }
 SAUniqLiteralsInputAmplifierTest >> testItem1 [
-	| res |
+	| res codes |
 	res := item2Line inputAmplifyBy: amplifier.
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testDeposit_U(\d+)'
+				matchesReplacedWith: 'testDeposit_A' ].
+	codes := codes sort.
 	self
 		assertMethodSourceCode: (res at: 1) asString
 		equals:

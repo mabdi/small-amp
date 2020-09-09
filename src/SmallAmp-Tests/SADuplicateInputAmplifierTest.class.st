@@ -39,7 +39,7 @@ SADuplicateInputAmplifierTest >> testDuplicate [
 			'testDeposit_D0
 	| b |
 	b := SmallBank new.
-	b := SmallBank new.
+	SmallBank new.
 	b deposit: 10.
 	b deposit: 100'
 ]
