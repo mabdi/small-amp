@@ -117,10 +117,11 @@ SmallAmp class >> menuCommandOn: aBuilder [
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
 	| sa mainLoop |
-	sa := SAMainLoop with: config for: aTestClass targets: targetClasses.
-	mainLoop := {(#lite -> [ :ml | ml amplifyLite ]).
-	(#random -> [ :ml | ml amplifyRandom ]).
-	(#keepSeeds -> [ :ml | ml amplifyKeepSeeds ])} asDictionary.
+	
+	mainLoop := {(#lite -> [ :ml | SAMainLoopLite ]).
+	(#random -> [ :ml | SAMainLoop ]).
+	(#keepSeeds -> [ :ml | SAMainLoopKeepSeed  ])} asDictionary.
+	sa := mainLoop with: config for: aTestClass targets: targetClasses.
 	mainLoop
 		at: config mode
 		ifPresent: [ :block | ^ block value: sa ]

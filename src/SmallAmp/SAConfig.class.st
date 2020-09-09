@@ -7,7 +7,6 @@ Class {
 		'assertionAmplifiers',
 		'iterations',
 		'debug',
-		'mode',
 		'selection',
 		'oracleReducion',
 		'profiler',
@@ -25,7 +24,8 @@ Class {
 		'enableExclude',
 		'overwrite',
 		'timeBudget',
-		'maxPopPerMethod'
+		'maxPopPerMethod',
+		'mainloop'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -51,12 +51,10 @@ SAConfig class >> default [
 		maxPop: 2000;
 		maxPopPerMethod: 40;
 		debug: false;
-		"mode: #lite;"
-		mode: #keepSeeds;
-		"mode: #random;"
+		mainloop: SAMainLoop;
 		saveToFile: false;
-		runSandboxed: true;
-		enableExclude: true;
+		runSandboxed: false;
+		enableExclude: false;
 		overwrite: false;
 		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
@@ -135,6 +133,16 @@ SAConfig >> iterations: anObject [
 ]
 
 { #category : #accessing }
+SAConfig >> mainloop [
+	^ mainloop
+]
+
+{ #category : #accessing }
+SAConfig >> mainloop: anObject [
+	mainloop := anObject
+]
+
+{ #category : #accessing }
 SAConfig >> maxPop [
 	^ maxPop
 ]
@@ -162,16 +170,6 @@ SAConfig >> methodReductions [
 { #category : #accessing }
 SAConfig >> methodReductions: anObject [
 	methodReductions := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> mode [
-	^ mode
-]
-
-{ #category : #accessing }
-SAConfig >> mode: anObject [
-	mode := anObject
 ]
 
 { #category : #accessing }
