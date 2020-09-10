@@ -32,6 +32,123 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
+	^ self limitedDspot 
+]
+
+{ #category : #accessing }
+SAConfig class >> defaultSandboxed [
+	| c |
+	c := self default.
+	c runSandboxed: true.
+	^ c
+]
+
+{ #category : #accessing }
+SAConfig class >> dspot [
+	^ self new
+		iterations: 5;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationCoverageSelection;
+		methodReductions: {SANoMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 200;
+		maxPopPerMethod: 10;
+		debug: false;
+		mainloop: SAMainLoop;
+		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
+SAConfig class >> limitedAllAmplifiers [
+	^ self new
+		iterations: 5;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier.
+			SANullifyInputAmplifier.
+			SARemoveInputAmplifier.
+			SAUniqLiteralsInputAmplifier.
+			SARotateLiteralsInputAmplifier};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationCoverageSelection;
+		methodReductions: {SAMaxPopMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 200;
+		maxPopPerMethod: 10;
+		debug: false;
+		mainloop: SAMainLoop;
+		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
+SAConfig class >> limitedDspot [
+	^ self new
+		iterations: 5;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier
+			"SANullifyInputAmplifier.
+			SARemoveInputAmplifier.
+			SAUniqLiteralsInputAmplifier.
+			SARotateLiteralsInputAmplifier"};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationCoverageSelection;
+		methodReductions: {SAMaxPopMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 200;
+		maxPopPerMethod: 10;
+		debug: false;
+		mainloop: SAMainLoop;
+		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
+SAConfig class >> twoWave [
 	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
@@ -46,14 +163,14 @@ SAConfig class >> default [
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SANoMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction ;
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
-		maxPop: 2000;
-		maxPopPerMethod: 40;
+		maxPop: 200;
+		maxPopPerMethod: 50;
 		debug: false;
 		mainloop: SAMainLoopKeepSeed;
 		saveToFile: false;
