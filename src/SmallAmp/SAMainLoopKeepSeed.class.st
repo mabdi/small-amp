@@ -99,19 +99,13 @@ SAMainLoopKeepSeed >> inputAmplification [
 			newcodes := OrderedCollection new.
 			population
 				do: [ :tcase | 
-					self inputAmplifiers
-						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+					| inputs |
+					inputs := self inputAmplifiers
+						flatCollect: [ :amplifier | tcase inputAmplifyBy: amplifier ].
+					newcodes
+						addAll: (inputs shuffle first: ((config maxPopPerMethod /2) min: inputs size)) ]
 				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-
-			"(1 to: config maxPop)
-				do: [ :i | 
-					| tcase amplifier newInputs |
-					tcase := population atRandom.
-					amplifier := self inputAmplifiers atRandom.
-					newInputs := tcase inputAmplifyBy: amplifier.
-					newInputs ifNotEmpty: [ newcodes add: newInputs atRandom ] ]
-				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'."
-			newcodes := newcodes shuffle first: (halfPop min: newcodes size).
+				newcodes := newcodes shuffle first: (halfPop min: newcodes size).
 			(1 to: halfPop)
 				do: [ :i | 
 					| amplifier tcase newInputs |

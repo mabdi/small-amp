@@ -46,7 +46,7 @@ SAConfig class >> default [
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SANoMethodReduction};
-		oracleReducion: SANoOracleReduction;
+		oracleReducion: SAMuTalkFirstFailOracleReduction ;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
