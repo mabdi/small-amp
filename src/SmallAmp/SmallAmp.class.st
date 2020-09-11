@@ -65,6 +65,39 @@ SmallAmp class >> assertionsHere: caller for: anObject [
 		during: [ caller class compile: newCode classified: aMethod protocol ]
 ]
 
+{ #category : #'as yet unclassified' }
+SmallAmp class >> eval [
+	| results clss cnfs sa |
+	results := OrderedCollection new.
+	clss := {SmallBankTest}.
+	cnfs := {('dspot' -> SAConfig dspot).
+	('random1' -> SAConfig limitedAllAmplifiers).
+	('random2' -> SAConfig limitedAllAmplifiers).
+	('random3' -> SAConfig limitedAllAmplifiers).
+	('twoWave1' -> SAConfig twoWave).
+	('twoWave2' -> SAConfig twoWave).
+	('twoWave3' -> SAConfig twoWave)}.
+	results := clss
+		flatCollect: [ :cls | 
+			cnfs
+				collect: [ :cnfPair | 
+					| res |
+					sa := SmallAmp initializeWith: cnfPair value.
+					sa testCase: cls.
+					res := sa amplifyAll.
+					res results
+						keysAndValuesDo: [ :k :v | 
+							v saveResultToFileAs: k.
+							v amplifiedClass fileOut ].
+					OSPlatform current resultOfCommand: 'mkdir ' , cnfPair key.
+					OSPlatform current
+						resultOfCommand: 'mkdir ' , cnfPair key , '/' , cls name.
+					OSPlatform current
+						resultOfCommand: 'mv ' , cls name , '* ' , cnfPair key , '/' , cls name , '/'.
+					res ] ].
+	^ results
+]
+
 { #category : #example }
 SmallAmp class >> example [
 	| result |
