@@ -6,13 +6,22 @@ MutationTestingAnalysis >> generateResultsLogger [
 	mutations
 		do: [ :aMutation | 
 			logger logStartEvaluating: aMutation.
-			particularResults
+			[particularResults
 				add:
 					(MutantEvaluationLogger
 						for: aMutation
 						using: testCases
 						following: mutantsEvaluationStrategy
-						andConsidering: self coverageAnalysisResult) value  ]
+						andConsidering: self coverageAnalysisResult) value]
+					on: Error
+				do: [ Stdio stdout
+						nextPutAll: 'Mutation generation failed: ';
+						nextPutAll: aMutation description;
+						nextPutAll: 'Method: ';
+						nextPutAll: aMutation originalMethod name asString;
+						lf;
+						flush ]
+					 ]
 		displayingProgress: 'Evaluating mutants'.
 	^ particularResults
 ]
