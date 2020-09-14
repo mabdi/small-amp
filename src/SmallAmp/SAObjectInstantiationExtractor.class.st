@@ -23,12 +23,13 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 	"self halt."
 	instVars := instVars
 		collect: [ :v | (theObject instVarNamed: v name) class ].
-	tempVars := tempVars collect: [ :v | (theContext tempNamed: v name) class ].
+	tempVars := tempVars
+		collect: [ :v | (theContext tempNamed: v name) class ].
 	theNode variable isTemp
 		ifTrue: [ leftHandSide := theContext tempNamed: theNode variable name ].
 	theNode variable isInstance
 		ifTrue: [ leftHandSide := theObject instVarNamed: theNode variable name ].
-	leftHandSide ifNil: [ self halt ].
+	leftHandSide ifNil: [ "self halt" ].
 	patterns at: leftHandSide class name ifAbsentPut: [ Set new ].
 	(patterns at: leftHandSide class name)
 		add:
@@ -69,9 +70,9 @@ SAObjectInstantiationExtractor >> patterns [
 
 { #category : #running }
 SAObjectInstantiationExtractor >> run [
-	self installMetalinks.
-	self runTestClass.
-	self uninstallMetalinks
+	[self installMetalinks.
+	self runTestClass.]  ensure: [ self uninstallMetalinks ]
+	
 ]
 
 { #category : #'as yet unclassified' }
