@@ -65,8 +65,8 @@ SAMainLoop >> amplify [
 					self cleanUpAndAddToResult ] ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	self oracleReduction.
-	self simplification.
-	self prettifying.
+	"self simplification.
+	self prettifying."
 	self finalSteps.
 	^ finalResult
 ]
