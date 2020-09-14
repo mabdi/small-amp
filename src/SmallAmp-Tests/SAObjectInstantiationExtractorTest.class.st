@@ -27,6 +27,6 @@ SAObjectInstantiationExtractorTest >> testNumber2 [
 	instance run.
 	self
 		assert: instance patterns keys sort
-		equals: #(#Fraction #SAConfig #SmallAmp)
+		equals: #(#BlockClosure #Fraction #SAConfig #SmallAmp)
 	
 ]

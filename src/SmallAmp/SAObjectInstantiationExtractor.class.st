@@ -12,19 +12,21 @@ Class {
 
 { #category : #running }
 SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: theContext object: theObject [
-	| instVars tempVars leftHandSide |
+	| argVars instVars tempVars leftHandSide |
 	"skip x:= 10"
 	theNode value isLiteralNode & theNode value isLiteralArray not
 		ifTrue: [ ^ self ].
 	theNode value isVariable
 		ifTrue: [ ^ self ].
 	instVars := theNode value allVariables select: #isInstance.
-	tempVars := theNode value allVariables select: #isTemp.
-	"self halt."
+	tempVars := (theNode value allVariables select: #isTemp)
+		reject: #isArgument.
+	argVars := theNode value allVariables select: #isArgument.
+	
 	instVars := instVars
-		collect: [ :v | (theObject instVarNamed: v name) class ].
+		collect: [ :v | v name -> (theObject instVarNamed: v name) class ].
 	tempVars := tempVars
-		collect: [ :v | (theContext tempNamed: v name) class ].
+		collect: [ :v | v name -> (theContext tempNamed: v name) class ].
 	theNode variable isTemp
 		ifTrue: [ leftHandSide := theContext tempNamed: theNode variable name ].
 	theNode variable isInstance
@@ -34,8 +36,9 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 	(patterns at: leftHandSide class name)
 		add:
 			{(#node -> theNode value copy).
-			(#instVars -> instVars).
-			(#tempVars -> tempVars)} asDictionary
+			(#instVars -> instVars asDictionary).
+			"(#argVars -> argVars asDictionary)."
+			(#tempVars -> tempVars asDictionary)} asDictionary
 ]
 
 { #category : #initialization }

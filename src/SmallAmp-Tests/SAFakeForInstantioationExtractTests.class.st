@@ -19,12 +19,13 @@ SAFakeForInstantioationExtractTests >> setUp [
 
 { #category : #tests }
 SAFakeForInstantioationExtractTests >> testN1 [
-	| sa x y z t q |
+	| sa x f y z t q |
 	x := 1 / 2.
 	y := 10.
 	z := 9 / y.
 	w := 3 / a.
 	t := y.
-	q :=  w.
+	q := w.
+	f := [ :cvb | q + t + a+ 10 ].
 	sa := SmallAmp initializeWith: cnf
 ]
