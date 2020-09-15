@@ -25,11 +25,17 @@ SAVariableTypeProfiler >> astHelper [
 SAVariableTypeProfiler >> buildMetalink [
 	| l |
 	l := MetaLink new
-		metaObject: self;
+		metaObject: [ :node :context | self halt ];
 		control: #after;
-		selector: #executeAfterNode:context:object:;
-		arguments: #(node context object);
+		selector: #value:value:;
+		arguments: #(node context);
 		yourself.
+	"l := MetaLink new
+		metaObject: [ :n :c | self halt ];
+		control: #after;
+		selector: #value:value:;
+		arguments: #(node context);
+		yourself."
 	links add: l.
 	^ l
 ]
@@ -52,6 +58,15 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 	config debug
 		ifFalse:
 			[ self astHelper removeClass: generatedClass source: self class name ]
+]
+
+{ #category : #removing }
+SAVariableTypeProfiler >> executeAfterNode: node context: theContext [
+	self halt.
+	self
+		executeAfterNode: node
+		context: theContext
+		object: theContext receiver
 ]
 
 { #category : #removing }
