@@ -4,3 +4,8 @@ Extension { #name : #BlockClosure }
 BlockClosure >> smallAmpAcceptSerializerVisitor: aVisitor atDepth: anInteger [
 	^ aVisitor visitBlockClosure: self atDepth: anInteger
 ]
+
+{ #category : #'*SmallAmp' }
+BlockClosure class >> smallAmpDefaultInstantiation [
+	^ RBBlockNode body: (RBSequenceNode statements: {})
+]

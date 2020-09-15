@@ -27,8 +27,21 @@ SAVariableTypeProfiler >> buildMetalink [
 	l := MetaLink new
 		metaObject: self;
 		control: #after;
-		selector: #executeAfterNode:value:;
-		arguments: #(node value);
+		selector: #executeAfterNode:context:object:;
+		arguments: #(node context object);
+		yourself.
+	links add: l.
+	^ l
+]
+
+{ #category : #removing }
+SAVariableTypeProfiler >> buildMetalinkStartMethod [
+	| l |
+	l := MetaLink new
+		metaObject: self;
+		control: #after;
+		selector: #executeStartMethodNode:object:;
+		arguments: #(node object);
 		yourself.
 	links add: l.
 	^ l
@@ -42,11 +55,25 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 ]
 
 { #category : #removing }
-SAVariableTypeProfiler >> executeAfterNode: node value: val [
-	[ val class inheritsFrom: Object ]  on: Error do: [ ^ self ].
-	self variablesTypes
-		at: node methodNode selector , ':' , node name
-		put: val class
+SAVariableTypeProfiler >> executeAfterNode: node context: theContext object: theObject [
+	| val |
+	self halt.
+	node isWrite
+		ifFalse: [ ^ self ].
+	"[ val class inheritsFrom: Object ]
+		on: Error
+		do: [ ^ self ]."
+	node isSelf
+		ifTrue: [ ^ self ].
+	node isTemp
+		ifTrue: [ val := theContext tempNamed: node name ].
+	node isInstance
+		ifTrue: [ val := theObject instVarNamed: node name ].
+	self halt.
+	val
+		ifNotNil: [ self variablesTypes
+				at: node methodNode selector , ':' , node name
+				put: val class ]
 ]
 
 { #category : #removing }
@@ -60,18 +87,28 @@ SAVariableTypeProfiler >> executeBeforeNode: node value: val [
 ]
 
 { #category : #removing }
+SAVariableTypeProfiler >> executeStartMethodNode: node object: anObject [
+	self halt.
+	anObject class allInstVarNames
+		do: [ :instVar | 
+			self variablesTypes
+				at: node methodNode selector , ':' , instVar , ':inst'
+				put: (anObject instVarNamed: instVar) class ]
+]
+
+{ #category : #removing }
 SAVariableTypeProfiler >> initialize [ 
 	links := OrderedCollection new
 ]
 
 { #category : #removing }
 SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
+	method ast body link: self buildMetalinkStartMethod.
 	method ast allChildren
-		select: #isVariable
-		thenDo: [ :node | 
-			"(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
-				ifTrue: [ self error: 'Sth is wrong' ]."
-			node link: self buildMetalink ]
+		select: #isAssignment
+		thenDo:
+			[ :node | "(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
+				ifTrue: [ self error: 'Sth is wrong' ]." node link: self buildMetalink ]
 ]
 
 { #category : #running }
@@ -82,7 +119,9 @@ SAVariableTypeProfiler >> run [
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
-	[ generatedClass suite run ]
+	self halt.
+	generatedClass suite run.
+	[ "generatedClass suite run" ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'variable profiling timeout' ] ]
 		ensure: [ links do: #uninstall.
