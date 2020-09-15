@@ -25,17 +25,11 @@ SAVariableTypeProfiler >> astHelper [
 SAVariableTypeProfiler >> buildMetalink [
 	| l |
 	l := MetaLink new
-		metaObject: [ :node :context | self halt ];
+		metaObject: self;
 		control: #after;
-		selector: #value:value:;
-		arguments: #(node context);
+		selector: #executeAfterNode:context:object:;
+		arguments: #(node node node);
 		yourself.
-	"l := MetaLink new
-		metaObject: [ :n :c | self halt ];
-		control: #after;
-		selector: #value:value:;
-		arguments: #(node context);
-		yourself."
 	links add: l.
 	^ l
 ]
@@ -62,7 +56,6 @@ SAVariableTypeProfiler >> cleanUp: generatedClass [
 
 { #category : #removing }
 SAVariableTypeProfiler >> executeAfterNode: node context: theContext [
-	self halt.
 	self
 		executeAfterNode: node
 		context: theContext
@@ -70,25 +63,33 @@ SAVariableTypeProfiler >> executeAfterNode: node context: theContext [
 ]
 
 { #category : #removing }
-SAVariableTypeProfiler >> executeAfterNode: node context: theContext object: theObject [
-	| val |
-	self halt.
-	node isWrite
-		ifFalse: [ ^ self ].
-	"[ val class inheritsFrom: Object ]
-		on: Error
-		do: [ ^ self ]."
-	node isSelf
-		ifTrue: [ ^ self ].
+SAVariableTypeProfiler >> executeAfterNode: node context: theContextFake object: theObjectFake [
+	| theObject type theContext |
+	"the context is not passed for an unknown reason. :("
+	theContext := thisContext sender.
+	theObject := theContext receiver.
+	[self halt.
+	node isGlobal
+		ifTrue: [ type := self class environment at: node name ].
 	node isTemp
-		ifTrue: [ val := theContext tempNamed: node name ].
+		ifTrue: [ type := theContext tempNamed: node name ].
 	node isInstance
-		ifTrue: [ val := theObject instVarNamed: node name ].
-	self halt.
-	val
+		ifTrue: [ type := theObject instVarNamed: node name ].
+	type
 		ifNotNil: [ self variablesTypes
 				at: node methodNode selector , ':' , node name
-				put: val class ]
+				put: type ]] on: Error do: [ :x | self halt ] 
+]
+
+{ #category : #'as yet unclassified' }
+SAVariableTypeProfiler >> executeAfterNode: node value: val [
+	[ val class inheritsFrom: Object ]
+		on: Error
+		do: [ ^ self ].
+	self halt.
+	self variablesTypes
+		at: node methodNode selector , ':' , node name
+		put: val class
 ]
 
 { #category : #removing }
@@ -103,7 +104,7 @@ SAVariableTypeProfiler >> executeBeforeNode: node value: val [
 
 { #category : #removing }
 SAVariableTypeProfiler >> executeStartMethodNode: node object: anObject [
-	self halt.
+	
 	anObject class allInstVarNames
 		do: [ :instVar | 
 			self variablesTypes
@@ -120,7 +121,7 @@ SAVariableTypeProfiler >> initialize [
 SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 	method ast body link: self buildMetalinkStartMethod.
 	method ast allChildren
-		select: #isAssignment
+		select: #isVariable
 		thenDo:
 			[ :node | "(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
 				ifTrue: [ self error: 'Sth is wrong' ]." node link: self buildMetalink ]
@@ -134,7 +135,6 @@ SAVariableTypeProfiler >> run [
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
-	self halt.
 	generatedClass suite run.
 	[ "generatedClass suite run" ]
 		valueWithin: config testRunTimeOut milliSeconds

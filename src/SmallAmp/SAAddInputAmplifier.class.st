@@ -11,13 +11,14 @@ Class {
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
 	results := OrderedCollection new.
-self profileVariableTypes.	
-[ "self profileVariableTypes" ]
+	self profileVariableTypes.
+	[ "self profileVariableTypes" ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
 				ifTrue: [ x resume ]
 				ifFalse: [ ^ results ] ].
+	self halt.
 	aMethodAST := SAASTHelper new
 		parsedMethodFrom: testMethodModel testMethod.
 	results addAll: (self applySetupMessageAddOn: aMethodAST).
