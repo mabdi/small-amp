@@ -16,6 +16,11 @@ SAVariableTypeProfiler class >> initializeWith: aConfig [
 	^ self new with: aConfig
 ]
 
+{ #category : #'as yet unclassified' }
+SAVariableTypeProfiler class >> instanceVariablesKey [
+	^ #instanceVariables
+]
+
 { #category : #removing }
 SAVariableTypeProfiler >> astHelper [
 	^ SAASTHelper new
@@ -28,7 +33,7 @@ SAVariableTypeProfiler >> buildMetalink [
 		metaObject: self;
 		control: #after;
 		selector: #executeAfterNode:context:object:;
-		arguments: #(node node node);
+		arguments: #(node context object);
 		yourself.
 	links add: l.
 	^ l
@@ -63,22 +68,21 @@ SAVariableTypeProfiler >> executeAfterNode: node context: theContext [
 ]
 
 { #category : #removing }
-SAVariableTypeProfiler >> executeAfterNode: node context: theContextFake object: theObjectFake [
-	| theObject type theContext |
-	"the context is not passed for an unknown reason. :("
-	theContext := thisContext sender.
-	theObject := theContext receiver.
-	[self halt.
+SAVariableTypeProfiler >> executeAfterNode: node context: theContext object: theObject [
+	| type |
+	self variablesTypes
+		at: self class instanceVariablesKey
+		ifAbsent: [ self profileInstanceVariables: theObject ].
 	node isGlobal
-		ifTrue: [ type := self class environment at: node name ].
+		ifTrue: [ "type := self class environment at: node name" ^ self ].	"don't waist resources by keeping Globals"
 	node isTemp
-		ifTrue: [ type := theContext tempNamed: node name ].
+		ifTrue: [ type := (theContext tempNamed: node name) class ].
 	node isInstance
-		ifTrue: [ type := theObject instVarNamed: node name ].
+		ifTrue: [ type := (theObject instVarNamed: node name) class ].
 	type
 		ifNotNil: [ self variablesTypes
 				at: node methodNode selector , ':' , node name
-				put: type ]] on: Error do: [ :x | self halt ] 
+				put: type ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -119,12 +123,23 @@ SAVariableTypeProfiler >> initialize [
 
 { #category : #removing }
 SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
-	method ast body link: self buildMetalinkStartMethod.
+	"method ast body link: self buildMetalinkStartMethod."
 	method ast allChildren
 		select: #isVariable
 		thenDo:
 			[ :node | "(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
 				ifTrue: [ self error: 'Sth is wrong' ]." node link: self buildMetalink ]
+]
+
+{ #category : #'as yet unclassified' }
+SAVariableTypeProfiler >> profileInstanceVariables: theObject [ 
+	| allInstances allSupers types |
+	allSupers := theObject class allSuperclassesIncluding: TestCase.
+	allSupers remove: TestCase.
+	allInstances := allSupers flatCollect: #instVarNames.
+	types := allInstances
+		collect: [ :instVar | instVar -> (theObject instVarNamed: instVar) class ].
+	self variablesTypes at: self class instanceVariablesKey put: types
 ]
 
 { #category : #running }
@@ -135,8 +150,8 @@ SAVariableTypeProfiler >> run [
 		using: testClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
-	generatedClass suite run.
-	[ "generatedClass suite run" ]
+	
+	[ generatedClass suite run ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'variable profiling timeout' ] ]
 		ensure: [ links do: #uninstall.

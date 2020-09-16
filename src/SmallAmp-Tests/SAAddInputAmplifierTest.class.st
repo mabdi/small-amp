@@ -15,24 +15,6 @@ Class {
 	#category : #'SmallAmp-Tests-Core'
 }
 
-{ #category : #'as yet unclassified' }
-SAAddInputAmplifierTest >> makeClassFrom: arrayOfTestMethods [
-	^ self makeClassFrom: arrayOfTestMethods  instanceVars: '' 
-]
-
-{ #category : #'as yet unclassified' }
-SAAddInputAmplifierTest >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
-	| cls |
-	cls := TestCase
-		subclass: ('TempTestClass' , SAASTHelper instanceId asString) asSymbol
-		instanceVariableNames: instanceVars
-		classVariableNames: ''
-		package: SAASTHelper new defaultTempPackage.
-	arrayOfTestMethods do: [ :aTestMethod | cls compile: aTestMethod ].
-	toRemove add: cls.
-	^ cls
-]
-
 { #category : #running }
 SAAddInputAmplifierTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
@@ -128,7 +110,7 @@ SAAddInputAmplifierTest >> testAdd2 [
 { #category : #tests }
 SAAddInputAmplifierTest >> testInstanceVaribale [
 	| res item cls codes |
-	cls := self
+	cls := SAASTHelper new
 		makeClassFrom:
 			{'setUp f := FakeSmallBank new' . 'testO1 self assert: f balance equals: 0'}
 		instanceVars: 'f'.
