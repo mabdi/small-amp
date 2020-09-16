@@ -160,6 +160,23 @@ SAASTHelper >> killAllMetalinksOn: aClass [
 ]
 
 { #category : #'as yet unclassified' }
+SAASTHelper >> makeClassFrom: arrayOfTestMethods [
+	^ self makeClassFrom: arrayOfTestMethods  instanceVars: '' 
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
+	| cls |
+	cls := TestCase
+		subclass: ('TempTestClass' , self class instanceId asString) asSymbol
+		instanceVariableNames: instanceVars
+		classVariableNames: ''
+		package: self defaultTempPackage.
+	arrayOfTestMethods do: [ :aTestMethod | cls compile: aTestMethod ].
+	^ cls
+]
+
+{ #category : #'as yet unclassified' }
 SAASTHelper >> moveClassToFinal: aClass [
 	| package |
 	(RPackageOrganizer default

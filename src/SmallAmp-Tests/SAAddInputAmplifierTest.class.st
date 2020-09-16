@@ -9,7 +9,8 @@ Class {
 		'item2Line',
 		'config',
 		'amplifierNoProfile',
-		'amplifierProfile'
+		'amplifierProfile',
+		'toRemove'
 	],
 	#category : #'SmallAmp-Tests-Core'
 }
@@ -35,7 +36,13 @@ SAAddInputAmplifierTest >> setUp [
 		class: test
 		targets: target.
 	item1Line strip.
-	item2Line strip
+	item2Line strip.
+	toRemove := OrderedCollection new.
+]
+
+{ #category : #running }
+SAAddInputAmplifierTest >> tearDown [ 
+	toRemove do: #removeFromSystem
 ]
 
 { #category : #tests }
@@ -98,4 +105,41 @@ SAAddInputAmplifierTest >> testAdd2 [
 	b rand.
 	b deposit: 10.
 	b deposit: 100'
+]
+
+{ #category : #tests }
+SAAddInputAmplifierTest >> testInstanceVaribale [
+	| res item cls codes |
+	cls := SAASTHelper new
+		makeClassFrom:
+			{'setUp f := FakeSmallBank new' . 'testO1 self assert: f balance equals: 0'}
+		instanceVars: 'f'.
+	item := SATestMethod
+		with: (cls >> #testO1) sourceCode
+		class: cls
+		targets: {FakeSmallBank}.
+	res := item inputAmplifyBy: amplifierProfile.
+	self assert: res size equals: 5.
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testO1_A(\d+)'
+				matchesReplacedWith: 'testO1_A' ].
+	codes sort.
+	self
+		assertMethodSourceCode: codes first asString
+		equals:
+			'testO1_A
+	f balance.
+	self assert: f balance equals: 0'
+]
+
+{ #category : #test }
+SAAddInputAmplifierTest >> testIsVariableGlobal [
+	self deny: (amplifierNoProfile isVariableGlobal: 'salam').
+	self
+		deny: (amplifierNoProfile isVariableGlobal: 'IdontExistsClassFooBar').
+	self
+		assert: (amplifierNoProfile isVariableGlobal: self class name).
+		
 ]

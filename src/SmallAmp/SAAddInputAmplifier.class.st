@@ -11,7 +11,8 @@ Class {
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
 	results := OrderedCollection new.
-	[ self profileVariableTypes ]
+	self profileVariableTypes.
+	[ "self profileVariableTypes" ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
@@ -19,6 +20,7 @@ SAAddInputAmplifier >> amplifyInputs [
 				ifFalse: [ ^ results ] ].
 	aMethodAST := SAASTHelper new
 		parsedMethodFrom: testMethodModel testMethod.
+	results addAll: (self applySetupMessageAddOn: aMethodAST).
 	aMethodAST statements
 		doWithIndex:
 			[ :statement :index | results addAll: (self applyMessageAdd: index on: aMethodAST) ].
@@ -40,15 +42,49 @@ SAAddInputAmplifier >> applyMessageAdd: index on: aMethod [
 			theCode := mClone formattedCode.
 			(theCode includesSubstring: '<an unprintable nonliteral value>')
 				ifTrue: [ self error: 'sth is wrong. you shouldnt be here!' ].
-			results add: theCode ].
-	
+			theCode
+			"results add: theCode" ].
+	^ results
+]
+
+{ #category : #removing }
+SAAddInputAmplifier >> applySetupMessageAddOn: aMethodAST [
+	| nodes instanceVars mClone theCode results |
+	"check instance variables"
+	nodes := OrderedCollection new.
+	instanceVars := OrderedCollection new.
+	(variableTypes at: SAVariableTypeProfiler instanceVariablesKey)
+		do: [ :pair | 
+			| type |
+			type := pair value.
+			(testMethodModel testTargets
+				anySatisfy: [ :c | type = c | (type inheritsFrom: c) | (type = c class) ])
+				ifTrue: [ instanceVars add: pair ] ].
+	instanceVars
+		do: [ :pair | 
+			| methods |
+			methods := pair value methods
+				reject: [ :m | self isNotSafeToSelect: m ].
+			nodes
+				addAll:
+					(methods
+						collect:
+							[ :m | self createMessageNodeFor: m type: pair value reveiver: pair key ]) ].
+	nodes := nodes reject: #isNil.
+	results := nodes
+		collect: [ :stmt | 
+			mClone := aMethodAST copy.
+			mClone statements addFirst: stmt.
+			theCode := mClone formattedCode.
+			(theCode includesSubstring: '<an unprintable nonliteral value>')
+				ifTrue: [ self error: 'sth is wrong. you shouldnt be here!' ].
+			theCode ].
 	^ results
 ]
 
 { #category : #removing }
 SAAddInputAmplifier >> checkSafeToAddAfter: statement [
-	| msg key|
-
+	| msg key |
 	msg := statement.
 	statement isAssignment
 		ifTrue: [ msg := statement value ].
@@ -56,7 +92,12 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 		ifFalse: [ ^ false ].
 	msg receiver isVariable
 		ifFalse: [ ^ false ].
-			key := testMethodModel selector , ':' , msg receiver name.
+	(self isVariableGlobal: msg receiver name)
+		ifTrue: [ | c2 |
+			c2 := self class environment at: msg receiver name.
+			^ testMethodModel testTargets
+				anySatisfy: [ :c | c2 = c | (c2 inheritsFrom: c) | (c2 = c class) ] ].
+	key := testMethodModel selector , ':' , msg receiver name.
 	^ testMethodModel testTargets
 		anySatisfy: [ :c | 
 			variableTypes
@@ -105,9 +146,7 @@ SAAddInputAmplifier >> getArgumentNodeFor: aKey [
 		ifAbsent: [ ^ config profiler profile
 				at: aKey
 				ifPresent: [ :aClass | 
-					^ RBMessageNode
-						receiver: (RBVariableNode named: aClass name)
-						selector: #new ]
+					^ aClass smallAmpDefaultInstantiation ]
 				ifAbsent: [ ^ nil ] ]
 ]
 
@@ -115,6 +154,13 @@ SAAddInputAmplifier >> getArgumentNodeFor: aKey [
 SAAddInputAmplifier >> isNotSafeToSelect: method [
 	^ {#private . #deprecated . #initialization}
 		includes: method protocol
+]
+
+{ #category : #removing }
+SAAddInputAmplifier >> isVariableGlobal: aName [
+	aName first isLowercase
+		ifTrue: [ ^ false ].
+	self class environment at: aName ifPresent: [^ true] ifAbsent: [ ^ false ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -130,7 +176,8 @@ SAAddInputAmplifier >> nodesFor: variableName [
 		ifAbsent: [ nil class ].
 	theType isMeta
 		ifTrue: [ ^ {} ].
-	theType = nil class ifTrue: [ ^ {  } ].
+	theType = nil class
+		ifTrue: [ ^ {} ].
 	methods := theType methods reject: [ :m | self isNotSafeToSelect: m ].
 	^ methods
 		collect:

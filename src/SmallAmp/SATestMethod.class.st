@@ -85,7 +85,9 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 				renamedCopy: '_' , anAmplifier namingPrefix , idx asString.
 			cp
 				testMethod:
-					(self astHelper renameMethodName: mtd append: '_' , anAmplifier namingPrefix , idx asString)
+					(self astHelper
+						renameMethodName: mtd
+						append: '_' , anAmplifier namingPrefix , idx asString)
 						formattedCode.
 			idx := idx + 1.
 			cp ]
