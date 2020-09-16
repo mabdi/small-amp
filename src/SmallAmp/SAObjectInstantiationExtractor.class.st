@@ -12,7 +12,7 @@ Class {
 
 { #category : #running }
 SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: theContext object: theObject [
-	| argVars instVars tempVars leftHandSide |
+	| val argVars instVars tempVars leftHandSide samples |
 	"skip x:= 10"
 	theNode value isLiteralNode & theNode value isLiteralArray not
 		ifTrue: [ ^ self ].
@@ -22,11 +22,19 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 	tempVars := (theNode value allVariables select: #isTemp)
 		reject: #isArgument.
 	argVars := theNode value allVariables select: #isArgument.
-	
+	samples := Dictionary new.
 	instVars := instVars
-		collect: [ :v | v name -> (theObject instVarNamed: v name) class ].
+		collect: [ :v | 
+			val := theObject instVarNamed: v name.
+			val isLiteral
+				ifTrue: [ samples at: v name put: val ].
+			v name -> val class ].
 	tempVars := tempVars
-		collect: [ :v | v name -> (theContext tempNamed: v name) class ].
+		collect: [ :v | 
+			val := theContext tempNamed: v name.
+			val isLiteral
+				ifTrue: [ samples at: v name put: val ].
+			v name -> val class ].
 	theNode variable isTemp
 		ifTrue: [ leftHandSide := theContext tempNamed: theNode variable name ].
 	theNode variable isInstance
@@ -38,6 +46,7 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 			{(#node -> theNode value copy).
 			(#instVars -> instVars asDictionary).
 			"(#argVars -> argVars asDictionary)."
+			(#samples -> samples).
 			(#tempVars -> tempVars asDictionary)} asDictionary
 ]
 

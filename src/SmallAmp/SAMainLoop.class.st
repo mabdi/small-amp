@@ -10,7 +10,8 @@ Class {
 		'resultPeople',
 		'testRunTimeoutMillis',
 		'selection',
-		'assertAmplificationClassCache'
+		'assertAmplificationClassCache',
+		'instantiationExtractor'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -59,6 +60,7 @@ SAMainLoop >> amplify [
 			skip
 				ifFalse: [ self normalize.
 					self inputAmplification.
+					self inputTransplantation.
 					self methodReduction.
 					self assertionAmplification.
 					self selection.
@@ -200,12 +202,32 @@ SAMainLoop >> inputAmplifiers [
 ]
 
 { #category : #private }
+SAMainLoop >> inputTransplantation [
+	| newcodes transplantor |
+	finalResult logs
+		recoredTag: #inputTransplantation
+		toRun: [ newcodes := OrderedCollection new.
+			transplantor := SAInstantiationTransplanter initializeWith: config.
+			transplantor instantiationPatterns: instantiationExtractor patterns.
+			population
+				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
+				displayingProgress: 'Input inputTransplantation' , ' (' , population size asString , ')'.
+			population addAll: newcodes ]
+]
+
+{ #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
 		ifNotNil: [ config profiler reset.
-			self flag: #TODO "why wee need cache profiles in config?".
+			self flag: #TODO.	"why wee need cache profiles in config?"
 			config profiler profileClasses: targetClasses byRunning: testClass.
-			finalResult runProfile: config profiler ]
+			finalResult runProfile: config profiler ].
+		
+	
+		instantiationExtractor := SAObjectInstantiationExtractor new.
+	instantiationExtractor testClass: testClass.
+	instantiationExtractor run.
+	
 ]
 
 { #category : #accessing }

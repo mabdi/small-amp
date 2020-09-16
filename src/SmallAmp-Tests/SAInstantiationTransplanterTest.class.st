@@ -1,0 +1,202 @@
+"
+A SAInstantiationTransplanterTest is a test class for testing the behavior of SAInstantiationTransplanter
+"
+Class {
+	#name : #SAInstantiationTransplanterTest,
+	#superclass : #TestCase,
+	#instVars : [
+		'config',
+		'transplanter',
+		'cls'
+	],
+	#category : #'SmallAmp-Tests-Core'
+}
+
+{ #category : #'as yet unclassified' }
+SAInstantiationTransplanterTest >> genClass1 [
+	cls := SAASTHelper new
+		makeClassFrom:
+			{'testO0 | s0 | 1+1. s0 := ''Hi''' . 'testO1 | s1 | s1 := 1 asString'.
+			'testO2 | s2 | 1 + 1. s2 := String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
+			'testO3 | s1 | s1 := '':'' join: { ''Foo''. ''Bar'' } '}
+		instanceVars: ''.
+]
+
+{ #category : #'as yet unclassified' }
+SAInstantiationTransplanterTest >> genClass2 [
+	cls := SAASTHelper new
+		makeClassFrom:
+			{'setUp z := ''voila''. x:= 10' . 'testO0 | s0 | 1+x. s0 := ''Hi'''.
+			'testO4 | s0 | 1+x. s0 := z' . 'testO1 | s1 | s1 := x asString'.
+			'testO1 | s1 c | c := 15. s1 := c asString'.
+			'testO2 | s2 | 1 + 1. s2 := String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
+			'testO3 '}
+		instanceVars: 'x z'
+]
+
+{ #category : #running }
+SAInstantiationTransplanterTest >> setUp [
+	"Hooks that subclasses may override to define the fixture of test."
+
+	config := SAConfig default.
+	transplanter := SAInstantiationTransplanter 
+		initializeWith: config.
+	
+]
+
+{ #category : #sorting }
+SAInstantiationTransplanterTest >> sortResult: res [
+	| codes |
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testO\d_T(\d+)'
+				matchesReplacedWith: 'test' ].
+	codes sort.
+	^ codes
+]
+
+{ #category : #running }
+SAInstantiationTransplanterTest >> tearDown [ 
+	cls ifNotNil: [
+	cls removeFromSystem].
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testCase1 [
+	| aSAObjectInstantiationExtractor item res codes |
+	self genClass1.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: cls.
+	aSAObjectInstantiationExtractor run.
+	transplanter
+		instantiationPatterns: aSAObjectInstantiationExtractor patterns.
+	item := SATestMethod
+		with: (cls >> #testO1) sourceCode
+		class: cls
+		targets: {ByteString}.
+	res := item inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s1 |
+	s1 := '':'' join: {''Foo'' . ''Bar''}'.
+	self
+		assertMethodSourceCode: codes second
+		equals:
+			'test
+	| s1 |
+	s1 := 1 asString'.
+	self
+		assertMethodSourceCode: codes third
+		equals:
+			'test
+	| s1 |
+	s1 := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ]'.
+	item := SATestMethod
+		with: (cls >> #testO0) sourceCode
+		class: cls
+		targets: {ByteString}.
+	res := item inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s0 |
+	1 + 1.
+	s0 := '':'' join: {''Foo'' . ''Bar''}'.
+	item := SATestMethod
+		with: (cls >> #testO2) sourceCode
+		class: cls
+		targets: {ByteString}.
+	res := item inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s2 |
+	1 + 1.
+	s2 := '':'' join: {''Foo'' . ''Bar''}.
+	4 + 1.
+	''ss'' size'.
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testCase2 [
+	| aSAObjectInstantiationExtractor items res codes |
+	self genClass2.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: cls.
+	aSAObjectInstantiationExtractor run.
+	transplanter
+		instantiationPatterns: aSAObjectInstantiationExtractor patterns.
+	items := #( testO0 testO1 testO2 testO3 testO4) collect: [ :sel | SATestMethod
+		with: (cls >> sel) sourceCode
+		class: cls
+		targets: {ByteString}].
+	res := items first inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s1 |
+	s1 := '':'' join: {''Foo'' . ''Bar''}'.
+	self
+		assertMethodSourceCode: codes second
+		equals:
+			'test
+	| s1 |
+	s1 := 1 asString'.
+	self
+		assertMethodSourceCode: codes third
+		equals:
+			'test
+	| s1 |
+	s1 := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ]'.
+	res := items second inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s0 |
+	1 + 1.
+	s0 := '':'' join: {''Foo'' . ''Bar''}'.
+	res := items third inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	self assert: codes size equals: 3.
+	self
+		assertMethodSourceCode: codes first
+		equals:
+			'test
+	| s2 |
+	1 + 1.
+	s2 := '':'' join: {''Foo'' . ''Bar''}.
+	4 + 1.
+	''ss'' size'.
+	res := (items at: 4) inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	res := (items at: 5) inputAmplifyBy: transplanter.
+	codes := self sortResult: res.
+	
+]
