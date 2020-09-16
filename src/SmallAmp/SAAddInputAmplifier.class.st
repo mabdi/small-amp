@@ -18,7 +18,6 @@ SAAddInputAmplifier >> amplifyInputs [
 			x isResumable
 				ifTrue: [ x resume ]
 				ifFalse: [ ^ results ] ].
-	self halt.
 	aMethodAST := SAASTHelper new
 		parsedMethodFrom: testMethodModel testMethod.
 	results addAll: (self applySetupMessageAddOn: aMethodAST).
@@ -33,11 +32,9 @@ SAAddInputAmplifier >> applyMessageAdd: index on: aMethod [
 	| newStatements statement mClone theCode results |
 	results := OrderedCollection new.
 	statement := aMethod statements at: index.
-	self halt.
 	(self checkSafeToAddAfter: statement)
 		ifFalse: [ ^ results ].
 	newStatements := self generateNewStatementsAfter: statement.
-	self halt.
 	results := newStatements
 		collect: [ :stmt | 
 			mClone := aMethod copy.
@@ -56,11 +53,13 @@ SAAddInputAmplifier >> applySetupMessageAddOn: aMethodAST [
 	"check instance variables"
 	nodes := OrderedCollection new.
 	instanceVars := OrderedCollection new.
-	variableTypes
-		keysAndValuesDo: [ :instVarName :type | 
+	(variableTypes at: SAVariableTypeProfiler instanceVariablesKey)
+		do: [ :pair | 
+			| type |
+			type := pair value.
 			(testMethodModel testTargets
 				anySatisfy: [ :c | type = c | (type inheritsFrom: c) | (type = c class) ])
-				ifTrue: [ instanceVars add: (instVarName splitOn: ':') second -> type ] ].
+				ifTrue: [ instanceVars add: pair ] ].
 	instanceVars
 		do: [ :pair | 
 			| methods |
@@ -93,6 +92,11 @@ SAAddInputAmplifier >> checkSafeToAddAfter: statement [
 		ifFalse: [ ^ false ].
 	msg receiver isVariable
 		ifFalse: [ ^ false ].
+	(self isVariableGlobal: msg receiver name)
+		ifTrue: [ | c2 |
+			c2 := self class environment at: msg receiver name.
+			^ testMethodModel testTargets
+				anySatisfy: [ :c | c2 = c | (c2 inheritsFrom: c) | (c2 = c class) ] ].
 	key := testMethodModel selector , ':' , msg receiver name.
 	^ testMethodModel testTargets
 		anySatisfy: [ :c | 
@@ -150,6 +154,13 @@ SAAddInputAmplifier >> getArgumentNodeFor: aKey [
 SAAddInputAmplifier >> isNotSafeToSelect: method [
 	^ {#private . #deprecated . #initialization}
 		includes: method protocol
+]
+
+{ #category : #removing }
+SAAddInputAmplifier >> isVariableGlobal: aName [
+	aName first isLowercase
+		ifTrue: [ ^ false ].
+	self class environment at: aName ifPresent: [^ true] ifAbsent: [ ^ false ]
 ]
 
 { #category : #'as yet unclassified' }

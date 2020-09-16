@@ -133,3 +133,13 @@ SAAddInputAmplifierTest >> testInstanceVaribale [
 	f balance.
 	self assert: f balance equals: 0'
 ]
+
+{ #category : #test }
+SAAddInputAmplifierTest >> testIsVariableGlobal [
+	self deny: (amplifierNoProfile isVariableGlobal: 'salam').
+	self
+		deny: (amplifierNoProfile isVariableGlobal: 'IdontExistsClassFooBar').
+	self
+		assert: (amplifierNoProfile isVariableGlobal: self class name).
+		
+]
