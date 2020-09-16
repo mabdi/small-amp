@@ -23,22 +23,24 @@ SAInstantiationTransplanter >> amplifyInputs [
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanter >> genNodeFromPattern: pattern assignTo: aName [
-	| assignment existingTemps toAddTemps  statements |
-	self halt.
+	| assignment existingTemps toAddTemps statements |
 	statements := OrderedCollection new.
 	assignment := RBAssignmentNode
 		variable: (RBVariableNode named: aName)
 		value: (pattern at: #node).
 	existingTemps := aMethodAST body temporaries collect: #name.
-	toAddTemps := (pattern at: #tempVars) keys reject: [ :v | existingTemps includes: v ].
+	toAddTemps := (pattern at: #tempVars) keys
+		reject: [ :v | existingTemps includes: v ].
 	toAddTemps := toAddTemps collect: [ :t | RBVariableNode named: t ].
-	(pattern at: #tempVars) keysAndValuesDo: [ :key :val | 
-		|value |
-		((pattern at: #samples) includesKey: key) ifTrue: [value := RBLiteralValueNode value: (pattern at: #samples) ] ifFalse: [value := val smallAmpDefaultInstantiation ].
-		statements add: (RBAssignmentNode
-		variable: (RBVariableNode named: key)
-		value: value).
-		].
+	(pattern at: #tempVars)
+		keysAndValuesDo: [ :key :val | 
+			| value |
+			((pattern at: #samples) includesKey: key)
+				ifTrue:
+					[ value := RBLiteralValueNode value: ((pattern at: #samples) at: key) ]
+				ifFalse: [ value := val smallAmpDefaultInstantiation ].
+			statements
+				add: (RBAssignmentNode variable: (RBVariableNode named: key) value: value) ].
 	statements addLast: assignment.
 	^ RBSequenceNode temporaries: toAddTemps statements: statements
 ]
@@ -95,6 +97,7 @@ SAInstantiationTransplanter >> transplantAssignments [
 			nodes
 				collect: [ :node | 
 					newMethod := aMethodAST copy.
+					
 					node temporaries do: [ :t | newMethod body addTemporaryNamed: t name ].
 					node statements
 						do: [ :s | newMethod body statements add: s afterIndex: index ].
