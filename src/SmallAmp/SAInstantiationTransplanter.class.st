@@ -97,10 +97,10 @@ SAInstantiationTransplanter >> transplantAssignments [
 			nodes
 				collect: [ :node | 
 					newMethod := aMethodAST copy.
-					
-					node temporaries do: [ :t | newMethod body addTemporaryNamed: t name ].
+					node temporaries
+						do: [ :t | newMethod body addTemporaryNamed: t name ].
 					node statements
-						do: [ :s | newMethod body statements add: s afterIndex: index ].
+						reverseDo: [ :s | newMethod body statements add: s afterIndex: index ].
 					newMethod body statements removeAt: index.
 					newMethod formattedCode ] ]
 ]
