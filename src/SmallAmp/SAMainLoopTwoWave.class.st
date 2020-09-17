@@ -1,5 +1,5 @@
 Class {
-	#name : #SAMainLoopKeepSeed,
+	#name : #SAMainLoopTwoWave,
 	#superclass : #SAMainLoop,
 	#instVars : [
 		'seeds'
@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #adding }
-SAMainLoopKeepSeed >> addPopulationToResult [
+SAMainLoopTwoWave >> addPopulationToResult [
 	| newElites |
 	newElites := population
 		collect: [ :item | 
@@ -21,7 +21,7 @@ SAMainLoopKeepSeed >> addPopulationToResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopKeepSeed >> amplify [
+SAMainLoopTwoWave >> amplify [
 	| ts_start skip |
 	ts_start := DateAndTime now.
 	self initialSteps.
@@ -57,7 +57,7 @@ SAMainLoopKeepSeed >> amplify [
 ]
 
 { #category : #cleanup }
-SAMainLoopKeepSeed >> cleanUpAndAddToResult [
+SAMainLoopTwoWave >> cleanUpAndAddToResult [
 	finalResult logs
 		recoredTag: #cleanUpAndAddToResult
 		toRun: [ population := population collect: [ :obj | obj cleanedUpCopy ].
@@ -65,7 +65,7 @@ SAMainLoopKeepSeed >> cleanUpAndAddToResult [
 ]
 
 { #category : #actions }
-SAMainLoopKeepSeed >> discardFailingTests [
+SAMainLoopTwoWave >> discardFailingTests [
 	| result testMethods |
 	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
 		asMilliSeconds ]
@@ -90,7 +90,7 @@ SAMainLoopKeepSeed >> discardFailingTests [
 ]
 
 { #category : #private }
-SAMainLoopKeepSeed >> inputAmplificationFrom: pop [
+SAMainLoopTwoWave >> inputAmplificationFrom: pop [
 	| newcodes halfPop |
 	finalResult logs
 		recoredTag: #inputAmplification
@@ -121,7 +121,7 @@ SAMainLoopKeepSeed >> inputAmplificationFrom: pop [
 ]
 
 { #category : #private }
-SAMainLoopKeepSeed >> inputTransplantationFrom: pop [
+SAMainLoopTwoWave >> inputTransplantationFrom: pop [
 	| newcodes transplantor |
 	finalResult logs
 		recoredTag: #inputTransplantation
@@ -135,7 +135,7 @@ SAMainLoopKeepSeed >> inputTransplantationFrom: pop [
 ]
 
 { #category : #actions }
-SAMainLoopKeepSeed >> setupPopulation [
+SAMainLoopTwoWave >> setupPopulation [
 	population := seeds
 		collect: [ :item | 
 			| c |

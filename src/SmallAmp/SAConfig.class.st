@@ -64,7 +64,7 @@ SAConfig class >> dspot [
 		maxPop: 200;
 		maxPopPerMethod: 10;
 		debug: false;
-		mainloop: SAMainLoop;
+		mainloop: SAMainLoopDspot;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
@@ -76,7 +76,7 @@ SAConfig class >> dspot [
 ]
 
 { #category : #accessing }
-SAConfig class >> limitedAllAmplifiers [
+SAConfig class >> oneWave [
 	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
@@ -84,7 +84,6 @@ SAConfig class >> limitedAllAmplifiers [
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier.
-			SANullifyInputAmplifier.
 			SARemoveInputAmplifier.
 			SAUniqLiteralsInputAmplifier.
 			SARotateLiteralsInputAmplifier};
@@ -100,43 +99,7 @@ SAConfig class >> limitedAllAmplifiers [
 		maxPop: 200;
 		maxPopPerMethod: 10;
 		debug: false;
-		mainloop: SAMainLoop;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
-]
-
-{ #category : #accessing }
-SAConfig class >> limitedDspot [
-	^ self new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier
-			"SANullifyInputAmplifier.
-			SARemoveInputAmplifier.
-			SAUniqLiteralsInputAmplifier.
-			SARotateLiteralsInputAmplifier"};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 200;
-		maxPopPerMethod: 10;
-		debug: false;
-		mainloop: SAMainLoop;
+		mainloop: SAMainLoopOneWave;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
@@ -156,7 +119,6 @@ SAConfig class >> twoWave [
 		inputAmplifiers:
 			{SALiteralInputAmplifier.
 			SAAddInputAmplifier.
-			SANullifyInputAmplifier.
 			SARemoveInputAmplifier.
 			SAUniqLiteralsInputAmplifier.
 			SARotateLiteralsInputAmplifier};
@@ -172,7 +134,7 @@ SAConfig class >> twoWave [
 		maxPop: 200;
 		maxPopPerMethod: 50;
 		debug: false;
-		mainloop: SAMainLoopKeepSeed;
+		mainloop: SAMainLoopTwoWave;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
