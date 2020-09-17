@@ -117,6 +117,20 @@ SAMainLoopKeepSeed >> inputAmplification [
 			population addAll: newcodes ]
 ]
 
+{ #category : #private }
+SAMainLoopKeepSeed >> inputTransplantation [
+	| newcodes transplantor |
+	finalResult logs
+		recoredTag: #inputTransplantation
+		toRun: [ newcodes := OrderedCollection new.
+			transplantor := SAInstantiationTransplanter initializeWith: config.
+			transplantor instantiationPatterns: instantiationExtractor patterns.
+			population
+				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
+				displayingProgress: 'Input inputTransplantation' , ' (' , population size asString , ')'.
+			population addAll: newcodes ]
+]
+
 { #category : #actions }
 SAMainLoopKeepSeed >> setupPopulation [
 	population := seeds

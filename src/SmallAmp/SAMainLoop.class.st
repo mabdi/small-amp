@@ -58,9 +58,11 @@ SAMainLoop >> amplify [
 						ifTrue: [ skip := true.
 							finalResult timeBudgetFinished: true ] ].
 			skip
-				ifFalse: [ self normalize.
-					self inputAmplification.
-					self inputTransplantation.
+				ifFalse: [ | pop |
+					self normalize.
+					pop := population collect: #clone.
+					self inputAmplificationFrom: pop.
+					self inputTransplantationFrom: pop.
 					self methodReduction.
 					self assertionAmplification.
 					self selection.
@@ -195,6 +197,20 @@ SAMainLoop >> inputAmplification [
 	population addAll: newcodes]
 ]
 
+{ #category : #private }
+SAMainLoop >> inputAmplificationFrom: pop [
+	| newcodes |
+	finalResult logs
+		recoredTag: #inputAmplification
+		toRun: [ newcodes := OrderedCollection new.
+			pop
+				do: [ :tcase | 
+					self inputAmplifiers
+						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+				displayingProgress: 'Input Amplification' , ' (' , pop size asString , ')'.
+			population addAll: newcodes ]
+]
+
 { #category : #accessing }
 SAMainLoop >> inputAmplifiers [
 	^  config inputAmplifiers
@@ -212,6 +228,20 @@ SAMainLoop >> inputTransplantation [
 			population
 				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
 				displayingProgress: 'Input inputTransplantation' , ' (' , population size asString , ')'.
+			population addAll: newcodes ]
+]
+
+{ #category : #private }
+SAMainLoop >> inputTransplantationFrom: aPopulation [
+	| newcodes transplantor |
+	finalResult logs
+		recoredTag: #inputTransplantation
+		toRun: [ newcodes := OrderedCollection new.
+			transplantor := SAInstantiationTransplanter initializeWith: config.
+			transplantor instantiationPatterns: instantiationExtractor patterns.
+			aPopulation
+				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
+				displayingProgress: 'Input inputTransplantation' , ' (' , aPopulation size asString , ')'.
 			population addAll: newcodes ]
 ]
 
