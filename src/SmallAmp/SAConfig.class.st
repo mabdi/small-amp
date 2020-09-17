@@ -32,7 +32,7 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ self limitedAllAmplifiers
+	^ self twoWave 
 ]
 
 { #category : #accessing }
@@ -162,7 +162,7 @@ SAConfig class >> twoWave [
 			SARotateLiteralsInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
-		methodReductions: {SANoMethodReduction};
+		methodReductions: {SAMaxPopMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
