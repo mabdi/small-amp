@@ -184,17 +184,7 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	| newcodes |
-	finalResult logs
-		recoredTag: #inputAmplification
-		toRun: 
-	[newcodes := OrderedCollection new.
-	population
-		do: [ :tcase | 
-			self inputAmplifiers
-				do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-	population addAll: newcodes]
+	^ self inputAmplificationFrom: population
 ]
 
 { #category : #private }
@@ -219,16 +209,7 @@ SAMainLoop >> inputAmplifiers [
 
 { #category : #private }
 SAMainLoop >> inputTransplantation [
-	| newcodes transplantor |
-	finalResult logs
-		recoredTag: #inputTransplantation
-		toRun: [ newcodes := OrderedCollection new.
-			transplantor := SAInstantiationTransplanter initializeWith: config.
-			transplantor instantiationPatterns: instantiationExtractor patterns.
-			population
-				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
-				displayingProgress: 'Input inputTransplantation' , ' (' , population size asString , ')'.
-			population addAll: newcodes ]
+	^ self inputTransplantationFrom: population 
 ]
 
 { #category : #private }

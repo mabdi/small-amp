@@ -38,9 +38,12 @@ SAMainLoopKeepSeed >> amplify [
 						ifTrue: [ skip := true.
 							finalResult timeBudgetFinished: true ] ].
 			skip
-				ifFalse: [ self setupPopulation.
+				ifFalse: [ | pop |
+					self setupPopulation.
 					self normalize.
-					self inputAmplification.
+					pop := population collect: #clone.
+					self inputAmplificationFrom: pop.
+					self inputTransplantationFrom: pop.
 					self methodReduction.
 					self assertionAmplification.
 					self selection.
@@ -87,25 +90,25 @@ SAMainLoopKeepSeed >> discardFailingTests [
 ]
 
 { #category : #private }
-SAMainLoopKeepSeed >> inputAmplification [
+SAMainLoopKeepSeed >> inputAmplificationFrom: pop [
 	| newcodes halfPop |
 	finalResult logs
 		recoredTag: #inputAmplification
 		toRun: [ | popsize |
 			popsize := config maxPopPerMethod
-				ifNotNil: [ :permethod | permethod * population size min: config maxPop ]
+				ifNotNil: [ :permethod | permethod * pop  size min: config maxPop ]
 				ifNil: [ config maxPop ].
 			halfPop := popsize / 2.
 			newcodes := OrderedCollection new.
-			population
+			pop
 				do: [ :tcase | 
 					| inputs |
 					inputs := self inputAmplifiers
 						flatCollect: [ :amplifier | tcase inputAmplifyBy: amplifier ].
 					newcodes
-						addAll: (inputs shuffle first: ((config maxPopPerMethod /2) min: inputs size)) ]
-				displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-				newcodes := newcodes shuffle first: (halfPop min: newcodes size).
+						addAll: (inputs shuffle first: (config maxPopPerMethod / 2 min: inputs size)) ]
+				displayingProgress: 'Input Amplification' , ' (' , pop  size asString , ')'.
+			newcodes := newcodes shuffle first: (halfPop min: newcodes size).
 			(1 to: halfPop)
 				do: [ :i | 
 					| amplifier tcase newInputs |
@@ -118,16 +121,16 @@ SAMainLoopKeepSeed >> inputAmplification [
 ]
 
 { #category : #private }
-SAMainLoopKeepSeed >> inputTransplantation [
+SAMainLoopKeepSeed >> inputTransplantationFrom: pop [
 	| newcodes transplantor |
 	finalResult logs
 		recoredTag: #inputTransplantation
 		toRun: [ newcodes := OrderedCollection new.
 			transplantor := SAInstantiationTransplanter initializeWith: config.
 			transplantor instantiationPatterns: instantiationExtractor patterns.
-			population
+			pop
 				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
-				displayingProgress: 'Input inputTransplantation' , ' (' , population size asString , ')'.
+				displayingProgress: 'Input inputTransplantation' , ' (' , pop size asString , ')'.
 			population addAll: newcodes ]
 ]
 
