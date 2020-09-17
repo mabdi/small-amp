@@ -32,7 +32,7 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ self limitedDspot 
+	^ self limitedAllAmplifiers
 ]
 
 { #category : #accessing }

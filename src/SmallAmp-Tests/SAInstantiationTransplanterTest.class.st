@@ -163,7 +163,7 @@ SAInstantiationTransplanterTest >> testCase2 [
 				targets: {ByteString} ].
 	res := items first inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 3.
+	self assert: codes size equals: 6.
 	self
 		assertMethodSourceCode: codes first
 		equals:
@@ -176,6 +176,15 @@ SAInstantiationTransplanterTest >> testCase2 [
 		assertMethodSourceCode: codes second
 		equals:
 			'test
+	| s0 c |
+	c := 15.
+	z := c asString.
+	1 + x.
+	s0 := ''Hi'''.
+	self
+		assertMethodSourceCode: codes third
+		equals:
+			'test
 	| s0 |
 	1 + x.
 	s0 := String
@@ -184,20 +193,18 @@ SAInstantiationTransplanterTest >> testCase2 [
 				nextPutAll: ''Foo'';
 				lf;
 				nextPutAll: ''Bar'' ]'.
-	self
-		assertMethodSourceCode: codes third
-		equals:
-			'test
-	| s0 |
-	1 + x.
-	s0 := x asString'.
 	res := items second inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 3.
+	self assert: codes size equals: 6.
+	"String streamContents: [ :x | codes do: [ :c | c storeOn: x . x nextPutAll: '.'].  ]"
 	{'test
 	| s1 c |
 	c := 15.
 	s1 := c asString' . 'test
+	| s1 c |
+	c := 15.
+	z := c asString.
+	s1 := x asString' . 'test
 	| s1 |
 	s1 := String
 		streamContents: [ :stream | 
@@ -206,17 +213,40 @@ SAInstantiationTransplanterTest >> testCase2 [
 				lf;
 				nextPutAll: ''Bar'' ]' . 'test
 	| s1 |
+	s1 := x asString' . 'test
+	| s1 |
+	z := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
+	s1 := x asString' . 'test
+	| s1 |
+	z := x asString.
 	s1 := x asString'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
 	res := items third inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 3.
+	self assert: codes size equals: 6.
 	{'test
 	| s2 c |
 	1 + 1.
 	c := 15.
 	s2 := c asString.
+	4 + 1.
+	''ss'' size' . 'test
+	| s2 c |
+	c := 15.
+	z := c asString.
+	1 + 1.
+	s2 := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
 	4 + 1.
 	''ss'' size' . 'test
 	| s2 |
@@ -233,23 +263,55 @@ SAInstantiationTransplanterTest >> testCase2 [
 	1 + 1.
 	s2 := x asString.
 	4 + 1.
+	''ss'' size' . 'test
+	| s2 |
+	z := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
+	1 + 1.
+	s2 := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
+	4 + 1.
+	''ss'' size' . 'test
+	| s2 |
+	z := x asString.
+	1 + 1.
+	s2 := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
+	4 + 1.
 	''ss'' size'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
 	res := (items at: 4) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 0.
-	{ }
+	self assert: codes size equals: 3.
+	{}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
 	res := (items at: 5) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 3.
+	self assert: codes size equals: 6.
 	{'test
 	| s0 c |
 	1 + x.
 	c := 15.
 	s0 := c asString' . 'test
+	| s0 c |
+	c := 15.
+	z := c asString.
+	1 + x.
+	s0 := z' . 'test
 	| s0 |
 	1 + x.
 	s0 := String
@@ -260,12 +322,25 @@ SAInstantiationTransplanterTest >> testCase2 [
 				nextPutAll: ''Bar'' ]' . 'test
 	| s0 |
 	1 + x.
-	s0 := x asString'}
+	s0 := x asString' . 'test
+	| s0 |
+	z := String
+		streamContents: [ :stream | 
+			stream
+				nextPutAll: ''Foo'';
+				lf;
+				nextPutAll: ''Bar'' ].
+	1 + x.
+	s0 := z' . 'test
+	| s0 |
+	z := x asString.
+	1 + x.
+	s0 := z'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
 	res := (items at: 6) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
-	self assert: codes size equals: 3.
+	self assert: codes size equals: 6.
 	{'test
 	| s1 c |
 	c := 15.
@@ -283,7 +358,7 @@ SAInstantiationTransplanterTest >> testCase2 [
 	c := 15.
 	s1 := x asString'}
 		doWithIndex:
-			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
+			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ]
 ]
 
 { #category : #tests }

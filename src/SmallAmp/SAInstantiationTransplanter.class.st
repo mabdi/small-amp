@@ -91,9 +91,16 @@ SAInstantiationTransplanter >> transplantAssignments [
 				ifAbsent: [ false ] ].
 	^ selectedPoints
 		flatCollect: [ :point | 
-			| nodes index |
+			| nodes index type |
 			index := point parent statements indexOf: point.
-			nodes := self transplantVarName: point variable name.
+			type := variableTypes
+		at:
+			(':'
+				join:
+					{aMethodAST selector.
+					point variable name}).
+	
+			nodes := self transplantVarName: point variable name type: type.
 			nodes
 				collect: [ :node | 
 					newMethod := aMethodAST copy.
@@ -107,21 +114,32 @@ SAInstantiationTransplanter >> transplantAssignments [
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanter >> transplantInstanceVariables [
-	[ | newMethod inScopeVars |
+	| newMethod inScopeVars |
 	inScopeVars := (variableTypes
 		at: SAVariableTypeProfiler instanceVariablesKey)
 		select: [ :pair | self isInScope: pair value ].
+	
 	^ inScopeVars
-		do: [ :pair | 
-			newMethod := aMethodAST copy.
-			newMethod body addFirst: [  ] ] ].
-	^ {  }
+		flatCollect: [ :pair | 
+			| nodes |
+			nodes := self transplantVarName: pair key type: pair value.
+			nodes
+				collect: [ :node | 
+					newMethod := aMethodAST copy.
+					node temporaries
+						do: [ :t | newMethod body addTemporaryNamed: t name ].
+					node statements
+						reverseDo: [ :s | newMethod body statements addFirst: s ].
+					newMethod formattedCode ] ]
 ]
 
 { #category : #'as yet unclassified' }
-SAInstantiationTransplanter >> transplantVarName: aName [
-	| type patterns |
-	type := variableTypes at: (':' join: {aMethodAST selector. aName}).
-	patterns := instantiationPatterns at: type asString ifAbsent: [ ^ {  } ]. 
-	^ patterns collect: [ :p | self genNodeFromPattern: p assignTo: aName ] 
+SAInstantiationTransplanter >> transplantVarName: aName type: type [
+	| patterns |
+	patterns := instantiationPatterns
+		at: type asString
+		ifAbsent: [ ^ {} ].
+	patterns size = 1 ifTrue: [ ^ {  } ].
+	^ patterns
+		collect: [ :p | self genNodeFromPattern: p assignTo: aName ]
 ]
