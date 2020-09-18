@@ -6,8 +6,6 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
-	| ts_start skip |
-	ts_start := DateAndTime now.
 	self initialSteps.
 	self assertionAmplification.
 	self selection.
@@ -19,23 +17,30 @@ SAMainLoopDspot >> amplify [
 				nextPutAll: gen asString;
 				lf;
 				flush.
-			skip := selection uncovered isEmpty.
-			config timeBudget > 0
-				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget
-						ifTrue: [ skip := true.
-							finalResult timeBudgetFinished: true ] ].
-			skip
-				ifFalse: [ self normalize.
-					self inputAmplification.
-					self assertionAmplification.
-					self selection.
-					self cleanUpAndAddToResult ] ]
+			self normalize.
+			self inputAmplification.
+			self assertionAmplification.
+			self selection.
+			self cleanUpAndAddToResult ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	self oracleReduction.
-	self simplification.
-	self prettifying.
 	self finalSteps.
 	^ finalResult
+]
+
+{ #category : #actions }
+SAMainLoopDspot >> finalSteps [
+	|generatedClass|
+	generatedClass := self astHelper
+				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
+				using: testClass.
+	finalResult amplifiedClass: generatedClass.
+	self astHelper moveClassToFinal: finalResult amplifiedClass.
+	finalResult
+		amplifiedAnalysis:
+			(selection
+				analysisFor: {finalResult amplifiedClass}
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal)
 ]
 
 { #category : #private }
