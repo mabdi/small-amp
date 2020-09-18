@@ -9,6 +9,9 @@ SAMainLoopDspot >> amplify [
 	| ts_start skip |
 	ts_start := DateAndTime now.
 	self initialSteps.
+	self assertionAmplification.
+	self selection.
+	self cleanUpAndAddToResult.
 	(1 to: config iterations)
 		do: [ :gen | 
 			Stdio stdout
