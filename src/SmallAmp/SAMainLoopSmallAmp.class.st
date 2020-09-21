@@ -109,7 +109,7 @@ SAMainLoopSmallAmp >> methodProfilingBy: aPopulation [
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass.
 	typeData
-		ifNil: [ typeData := SAProxyProfiler new.
+		ifNil: [ typeData := SAProxyProfiler initializeWith: config.
 			finalResult runProfile: typeData ].
 	typeData profileClasses: targetClasses byRunning: generatedClass.
 	instantiationExtractor
