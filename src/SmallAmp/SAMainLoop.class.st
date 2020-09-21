@@ -203,12 +203,9 @@ SAMainLoop >> methodProfiling [
 			self flag: #TODO.	"why wee need cache profiles in config?"
 			config profiler profileClasses: targetClasses byRunning: testClass.
 			finalResult runProfile: config profiler ].
-		
-	
-		instantiationExtractor := SAObjectInstantiationExtractor new.
+	instantiationExtractor := SAObjectInstantiationExtractor new.
 	instantiationExtractor testClass: testClass.
-	instantiationExtractor run.
-	
+	instantiationExtractor run
 ]
 
 { #category : #accessing }

@@ -59,6 +59,7 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 
 { #category : #accessing }
 SAMainLoopDspot >> inputAmplifiers [
-	^ { SAAddInputAmplifier. SALiteralInputAmplifier  }
+	^ {SAAddInputAmplifier.
+	SADspotLiteralInputAmplifier}
 		collect: [ :amplifier | amplifier initializeWith: config ]
 ]

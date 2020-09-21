@@ -1,6 +1,9 @@
 Class {
 	#name : #SALiteralInputAmplifier,
 	#superclass : #SAAbstractInputAmplifier,
+	#instVars : [
+		'mappings'
+	],
 	#category : #'SmallAmp-Core'
 }
 

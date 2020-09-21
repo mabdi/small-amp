@@ -61,6 +61,11 @@ SAInstantiationTransplanter >> isInScope: aType [
 				anySatisfy: [ :c | aType = c | (aType inheritsFrom: c) | (aType = c class) ]
 ]
 
+{ #category : #testing }
+SAInstantiationTransplanter >> isTransplantation [
+	^ true
+]
+
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanter >> namingPrefix [
 	^ 'T'

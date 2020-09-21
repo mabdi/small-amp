@@ -25,7 +25,8 @@ Class {
 		'overwrite',
 		'timeBudget',
 		'maxPopPerMethod',
-		'mainloop'
+		'mainloop',
+		'waves'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -50,7 +51,7 @@ SAConfig class >> dspot [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{SALiteralInputAmplifier.
+			{SADspotLiteralInputAmplifier.
 			SAAddInputAmplifier};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
@@ -132,9 +133,10 @@ SAConfig class >> twoWave [
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
+		waves: 3;
 		maxPopPerMethod: 50;
-		debug: false;
-		mainloop: SAMainLoopTwoWave;
+		debug: true;
+		mainloop: SAMainLoopSmallAmp;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
@@ -384,4 +386,14 @@ SAConfig >> timeBudget [
 { #category : #accessing }
 SAConfig >> timeBudget: anObject [
 	timeBudget := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> waves [
+	^ waves
+]
+
+{ #category : #accessing }
+SAConfig >> waves: anObject [
+	waves := anObject
 ]

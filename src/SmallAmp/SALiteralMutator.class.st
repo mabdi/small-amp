@@ -76,12 +76,13 @@ SALiteralMutator >> mutateFloat: aValue [
 	(aValue - 1).
 	(aValue * -1).
 	(aValue * 2).
-	(aValue / 2) asInteger.
+	(aValue / 2).
 	0.0.
-	-0.0.
+	-0.0
 	"Float nan.
 	Float infinity.
-	Float negativeInfinity"} asOrderedCollection.
+	Float negativeInfinity"}
+		asOrderedCollection.
 	nodes := (nodes reject: [ :x | x = aValue ])
 		collect: [ :q | RBLiteralValueNode value: q ].
 

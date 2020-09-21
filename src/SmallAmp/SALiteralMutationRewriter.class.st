@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'mappings',
 		'mutator',
-		'testBody'
+		'testBody',
+		'aMethodAST'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -36,7 +37,14 @@ SALiteralMutationRewriter >> mutationsOfArrayNode: anArrayNode [
 
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> mutationsOfLiteralNode: aLiteralNode [
-	^ mutator mutateNode: aLiteralNode
+	| nodes sameTypeNodes |
+	nodes := mutator mutateNode: aLiteralNode.
+	aLiteralNode value isNumber ifTrue: 
+	[sameTypeNodes := aMethodAST allChildren
+		select: [ :n | n isLiteralNode and: [ n value class = aLiteralNode value class ] ].
+	sameTypeNodes reject: [ :x | x value = aLiteralNode value ].
+	sameTypeNodes ifNotEmpty: [ nodes add: sameTypeNodes atRandom ]].
+	^ nodes
 ]
 
 { #category : #accessing }
@@ -63,14 +71,12 @@ SALiteralMutationRewriter >> replaceMappings: map on: aMethod [
 
 { #category : #'as yet unclassified' }
 SALiteralMutationRewriter >> run [
-	| results aMethodAST |
-	
+	| results |
 	aMethodAST := SAASTHelper new parsedMethodFrom: testBody.
 	self visitNode: aMethodAST.
 	results := OrderedCollection new.
 	mappings
-		do:
-			[ :map | results addAll: (self replaceMappings: map on: aMethodAST) ].
+		do: [ :map | results addAll: (self replaceMappings: map on: aMethodAST) ].
 	^ results
 ]
 

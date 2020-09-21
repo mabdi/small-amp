@@ -46,6 +46,23 @@ SALiteralMutationRewriterTest >> testInteger [
 ]
 
 { #category : #tests }
+SALiteralMutationRewriterTest >> testInteger2 [
+	| res N |
+	res := SALiteralMutationRewriter
+		runWith: 'foo |a b c| a:=10.b:=20.c:=30'.
+	N := 9.	"+1 -1 *2 /2 *-1 0 intMax intMin rand"
+	self assert: res size equals: 3 * N.
+	self
+		assertMethodSourceCode: (res at: 1) asString
+		equals:
+			'foo
+	| a b c |
+	a := 11.
+	b:=20.
+	c:=30'
+]
+
+{ #category : #tests }
 SALiteralMutationRewriterTest >> testIntegerDouble [
 	| res |
 	res := SALiteralMutationRewriter runWith: 'foo |a| a:=10. b:=10'.
@@ -55,8 +72,9 @@ SALiteralMutationRewriterTest >> testIntegerDouble [
 { #category : #tests }
 SALiteralMutationRewriterTest >> testLiteralArray [
 	| res |
-	res := SALiteralMutationRewriter runWith: 'foo |a| a set:#(0 1 2 3)'.
-	self assert: res size equals: 32. "continue to mutation in children"
+	res := SALiteralMutationRewriter
+		runWith: 'foo |a| a set:#(10 11 12 13)'.
+	self assert: res size equals: 4 * 9 + 4.	"continue to mutation in children"
 	self
 		assertMethodSourceCode: (res at: 1) asString
 		equals: 'foo |a| a set:#()'
