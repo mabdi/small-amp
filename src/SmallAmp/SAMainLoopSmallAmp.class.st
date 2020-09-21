@@ -2,7 +2,8 @@ Class {
 	#name : #SAMainLoopSmallAmp,
 	#superclass : #SAMainLoop,
 	#instVars : [
-		'seeds'
+		'seeds',
+		'typeData'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -78,10 +79,12 @@ SAMainLoopSmallAmp >> inputAmplificationFrom: pop [
 						* (1 / config inputAmplifiers size)) asInteger max: 1.
 					amplifier isTransplantation
 						ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-					tmp := pop
+					tmp := pop.
+					pop size > share ifTrue: [tmp := pop shuffle takeFirst: share].
+					tmp := tmp
 						flatCollect: [ :tcase | tcase inputAmplifyBy: amplifier ].
 					newcodes addAll: (tmp shuffle takeFirst: share) ]
-			displayingProgress: 'Input Amplification (', pop size asString ,')'.
+				displayingProgress: 'Input Amplification (' , self inputAmplifiers size asString , ')'.
 			population addAll: newcodes ]
 ]
 
@@ -103,14 +106,14 @@ SAMainLoopSmallAmp >> inputTransplantationFrom: pop [
 SAMainLoopSmallAmp >> methodProfilingBy: aPopulation [
 	| generatedClass |
 	generatedClass := self astHelper
-				buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-				using: testClass.
-	config profiler
-		ifNotNil: [ config profiler reset.
-			self flag: #TODO.	"why wee need cache profiles in config?"
-			config profiler profileClasses: targetClasses byRunning: generatedClass.
-			finalResult runProfile: config profiler ].
-	instantiationExtractor := SAObjectInstantiationExtractor new.
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass.
+	typeData
+		ifNil: [ typeData := SAProxyProfiler new.
+			finalResult runProfile: typeData ].
+	typeData profileClasses: targetClasses byRunning: generatedClass.
+	instantiationExtractor
+		ifNil: [ instantiationExtractor := SAObjectInstantiationExtractor new ].
 	instantiationExtractor testClass: generatedClass.
 	instantiationExtractor run
 ]
