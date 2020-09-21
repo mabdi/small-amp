@@ -112,7 +112,7 @@ SAConfig class >> oneWave [
 ]
 
 { #category : #accessing }
-SAConfig class >> twoWave [
+SAConfig class >> smallAmp [
 	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
@@ -138,6 +138,41 @@ SAConfig class >> twoWave [
 		maxPopPerMethod: 50;
 		debug: true;
 		mainloop: SAMainLoopSmallAmp;
+		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
+SAConfig class >> twoWave [
+	^ self new
+		iterations: 5;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{SALiteralInputAmplifier.
+			SAAddInputAmplifier.
+			SARemoveInputAmplifier.
+			SAUniqLiteralsInputAmplifier.
+			SARotateLiteralsInputAmplifier};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationCoverageSelection;
+		methodReductions: {SAMaxPopMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 200;
+		maxPopPerMethod: 50;
+		debug: false;
+		mainloop: SAMainLoopTwoWave;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
