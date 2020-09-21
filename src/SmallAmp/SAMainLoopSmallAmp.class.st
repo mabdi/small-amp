@@ -89,20 +89,6 @@ SAMainLoopSmallAmp >> inputAmplificationFrom: pop [
 ]
 
 { #category : #private }
-SAMainLoopSmallAmp >> inputTransplantationFrom: pop [
-	| newcodes transplantor |
-	finalResult logs
-		recoredTag: #inputTransplantation
-		toRun: [ newcodes := OrderedCollection new.
-			transplantor := SAInstantiationTransplanter initializeWith: config.
-			transplantor instantiationPatterns: instantiationExtractor patterns.
-			pop
-				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
-				displayingProgress: 'Input inputTransplantation' , ' (' , pop size asString , ')'.
-			population addAll: newcodes ]
-]
-
-{ #category : #private }
 SAMainLoopSmallAmp >> methodProfilingBy: aPopulation [
 	| generatedClass |
 	generatedClass := self astHelper

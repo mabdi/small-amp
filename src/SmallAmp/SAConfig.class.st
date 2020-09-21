@@ -122,7 +122,8 @@ SAConfig class >> twoWave [
 			SAAddInputAmplifier.
 			SARemoveInputAmplifier.
 			SAUniqLiteralsInputAmplifier.
-			SARotateLiteralsInputAmplifier};
+			SARotateLiteralsInputAmplifier.
+			SAInstantiationTransplanter};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
