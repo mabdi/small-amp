@@ -127,7 +127,7 @@ SAConfig class >> twoWave [
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		oracleReducion: SANoOracleReduction;
 		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
