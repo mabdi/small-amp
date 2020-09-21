@@ -173,8 +173,8 @@ SAMainLoop >> inputAmplificationFrom: pop [
 
 { #category : #accessing }
 SAMainLoop >> inputAmplifiers [
-	^  config inputAmplifiers
-				collect: [ :amplifier | amplifier initializeWith: config ] 
+	^ config inputAmplifiers
+		collect: [ :amplifier | amplifier key initializeWith: config ]
 ]
 
 { #category : #private }

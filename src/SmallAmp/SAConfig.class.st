@@ -33,7 +33,7 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ self twoWave 
+	^ self smallAmp
 ]
 
 { #category : #accessing }
@@ -51,8 +51,8 @@ SAConfig class >> dspot [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{SADspotLiteralInputAmplifier.
-			SAAddInputAmplifier};
+			{SADspotLiteralInputAmplifier -> 1.
+			SAAddInputAmplifier -> 1};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SANoMethodReduction};
@@ -77,53 +77,18 @@ SAConfig class >> dspot [
 ]
 
 { #category : #accessing }
-SAConfig class >> oneWave [
-	^ self new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier.
-			SARemoveInputAmplifier.
-			SAUniqLiteralsInputAmplifier.
-			SARotateLiteralsInputAmplifier};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 200;
-		maxPopPerMethod: 10;
-		debug: false;
-		mainloop: SAMainLoopOneWave;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
-]
-
-{ #category : #accessing }
 SAConfig class >> smallAmp [
 	^ self new
 		iterations: 5;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier.
-			SARemoveInputAmplifier.
-			SAUniqLiteralsInputAmplifier.
-			SARotateLiteralsInputAmplifier.
-			SAInstantiationTransplanter};
+			{(SALiteralInputAmplifier -> 10).
+			(SAAddInputAmplifier -> 10).
+			(SARemoveInputAmplifier -> 10).
+			(SAUniqLiteralsInputAmplifier -> 10).
+			(SARotateLiteralsInputAmplifier -> 10).
+			(SAInstantiationTransplanter -> 10)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
@@ -134,7 +99,7 @@ SAConfig class >> smallAmp [
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 200;
-		waves: 3;
+		waves: {2 . 1 . 1};
 		maxPopPerMethod: 50;
 		debug: true;
 		mainloop: SAMainLoopSmallAmp;
@@ -155,11 +120,11 @@ SAConfig class >> twoWave [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{SALiteralInputAmplifier.
-			SAAddInputAmplifier.
-			SARemoveInputAmplifier.
-			SAUniqLiteralsInputAmplifier.
-			SARotateLiteralsInputAmplifier};
+			{SALiteralInputAmplifier -> 1.
+			SAAddInputAmplifier -> 1.
+			SARemoveInputAmplifier -> 1.
+			SAUniqLiteralsInputAmplifier -> 1.
+			SARotateLiteralsInputAmplifier -> 1};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageSelection;
 		methodReductions: {SAMaxPopMethodReduction};
