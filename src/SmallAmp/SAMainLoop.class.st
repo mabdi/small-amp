@@ -47,12 +47,17 @@ SAMainLoop >> amplify [
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
+	population := self assertionAmplificationFor: population
+]
+
+{ #category : #private }
+SAMainLoop >> assertionAmplificationFor: aList [
 	| allWindows |
 	finalResult logs
 		recoredTag: #assertionAmplification
 		toRun:
 			[ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
-			population
+			aList
 				do: [ :tcase | 
 					self assertionAmplifiers
 						do: [ :amplifier | 
@@ -62,9 +67,9 @@ SAMainLoop >> assertionAmplification [
 							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
 							tcase assertionAmplifyBy: amplifier.
 							assertAmplificationClassCache := amplifier generatedClass ] ]
-				displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
+				displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 			self closeAllWindowsBut: allWindows.
-			population := population
+			^ aList
 				reject: [ :tcase | tcase testMethod isNil ] ]
 ]
 
@@ -299,15 +304,19 @@ SAMainLoop >> regenerateMethod: aMethodName [
 
 { #category : #actions }
 SAMainLoop >> selection [
+	population := self selectionFrom: population. 
+	
+]
+
+{ #category : #actions }
+SAMainLoop >> selectionFrom: aList [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ population ifEmpty: [ ^ self ].
+		toRun: [ aList ifEmpty: [ ^ self ].
 			selectedTests := OrderedCollection new.
-			
-				 
-					selectedTests addAll: (selection select: population).
-			population := selectedTests ]
+			selectedTests addAll: (selection select: aList).
+			^ selectedTests ]
 ]
 
 { #category : #'as yet unclassified' }
