@@ -313,7 +313,7 @@ SAMainLoop >> selectionFrom: aList [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ aList ifEmpty: [ ^ self ].
+		toRun: [ aList ifEmpty: [ ^ {  } ].
 			selectedTests := OrderedCollection new.
 			selectedTests addAll: (selection select: aList).
 			^ selectedTests ]

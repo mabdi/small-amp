@@ -12,6 +12,8 @@ Class {
 SAMainLoopDspot >> amplify [
 	theATS := OrderedCollection new.
 	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
@@ -23,11 +25,11 @@ SAMainLoopDspot >> amplify [
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	| theV theU theTMP |
 	theV := OrderedCollection with: aTestMethod.
+	theV do: #strip.
 	theV := self assertionAmplificationFor: theV.
 	theU := self selectionFrom: theV.
 	theATS addAll: theU.
 	theTMP := theV.
-	self cleanUpAndAddToResult.
 	(1 to: config iterations)
 		do: [ :gen | 
 			theV := OrderedCollection new.
@@ -45,7 +47,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 					| c |
 					c := item clone.
 					c signAsSmallAmp.
-					c ]).
+					c ])
 ]
 
 { #category : #actions }
@@ -96,16 +98,16 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 		recoredTag: #inputAmplification
 		toRun: [ newcodes := OrderedCollection new.
 			tmp := pop size > config maxPop
-				ifTrue: [ pop shuffle takeFirst: config maxPop ]
-				ifFalse: [ pop ].
+				ifTrue: [ (pop shuffle takeFirst: config maxPop) collect: #clone ]
+				ifFalse: [ pop collect: #clone ].
 			tmp
-				do: [ :tcase |
+				do: [ :tcase | 
 					tcase strip.
-					tcase normalize .
+					tcase normalize.
 					self inputAmplifiers
 						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 				displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
-			^ newcodes ]
+			^ newcodes shuffle takeFirst: config maxPop  ]
 ]
 
 { #category : #accessing }
@@ -113,4 +115,13 @@ SAMainLoopDspot >> inputAmplifiers [
 	^ {SAAddInputAmplifier.
 	SADspotLiteralInputAmplifier}
 		collect: [ :amplifier | amplifier initializeWith: config ]
+]
+
+{ #category : #actions }
+SAMainLoopDspot >> selectionFrom: aList [
+	finalResult logs
+		recoredTag: #selection
+		toRun: [ aList ifEmpty: [ ^ {} ].
+			
+			^ selection select: aList ]
 ]

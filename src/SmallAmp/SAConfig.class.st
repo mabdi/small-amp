@@ -33,7 +33,7 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ self smallAmp
+	^ self dspot
 ]
 
 { #category : #accessing }
@@ -47,14 +47,14 @@ SAConfig class >> defaultSandboxed [
 { #category : #accessing }
 SAConfig class >> dspot [
 	^ self new
-		iterations: 5;
+		iterations: 3;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{SADspotLiteralInputAmplifier -> 1.
-			SAAddInputAmplifier -> 1};
+			{(SADspotLiteralInputAmplifier -> 1).
+			(SAAddInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
+		selection: SAMutationCoverageDSpotSelection;
 		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		simplifier: SADefaultSimplification;
@@ -64,7 +64,7 @@ SAConfig class >> dspot [
 		statementTimeOut: 2000;
 		maxPop: 200;
 		maxPopPerMethod: 10;
-		debug: false;
+		debug: true;
 		mainloop: SAMainLoopDspot;
 		saveToFile: false;
 		runSandboxed: false;

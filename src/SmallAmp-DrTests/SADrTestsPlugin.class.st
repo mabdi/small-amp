@@ -94,7 +94,6 @@ SADrTestsPlugin >> secondListLabel [
 SADrTestsPlugin >> smallAmpDefaultConfig [
 	| c |
 	c := SAConfig default.
-	c iterations: 5.
 	^ c
 ]
 
