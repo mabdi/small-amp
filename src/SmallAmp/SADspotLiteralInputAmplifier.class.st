@@ -82,7 +82,7 @@ SADspotLiteralInputAmplifier >> amplifyNumbers [
 SADspotLiteralInputAmplifier >> amplifyStrings [
 	| nodes |
 	nodes := aMethodAST allChildren
-		select: [ :n | n isLiteralNode and: [ n value isByteString ] ].
+		select: [ :n | n isLiteralNode and: [ n value isString and: [n value isByteString] ] ].
 	mappings
 		addAll:
 			(nodes
@@ -90,14 +90,12 @@ SADspotLiteralInputAmplifier >> amplifyStrings [
 					{(n
 						-> (RBLiteralValueNode value: (self addARandomCharacterTo: n value))).
 					(n
-						->
-							(RBLiteralValueNode value: (self removeARandomCharacterFrom: n value))).
+						-> (RBLiteralValueNode value: (self removeARandomCharacterFrom: n value))).
 					(n
 						->
 							(RBLiteralValueNode value: (self replaceARandomCharacterFrom: n value))).
 					(n
-						->
-							(RBLiteralValueNode value: (self newRandomStringSameSize: n value)))} ]).
+						-> (RBLiteralValueNode value: (self newRandomStringSameSize: n value)))} ]).
 	mappings := mappings reject: #isNil
 ]
 
