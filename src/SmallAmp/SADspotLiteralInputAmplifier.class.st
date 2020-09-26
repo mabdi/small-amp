@@ -82,7 +82,9 @@ SADspotLiteralInputAmplifier >> amplifyNumbers [
 SADspotLiteralInputAmplifier >> amplifyStrings [
 	| nodes |
 	nodes := aMethodAST allChildren
-		select: [ :n | n isLiteralNode and: [ n value isString and: [n value isByteString] ] ].
+		select: [ :n | 
+			n isLiteralNode
+				and: [ n value isKindOf:  ByteString ] ].
 	mappings
 		addAll:
 			(nodes
