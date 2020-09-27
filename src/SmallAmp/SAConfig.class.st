@@ -52,7 +52,12 @@ SAConfig class >> dspot [
 		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{(SADspotLiteralInputAmplifier -> 1).
-			(SAAddInputAmplifier -> 1)};
+			(SARemoveInputAmplifier -> 1).
+			(SADuplicateInputAmplifier -> 1).
+			(SARotateLiteralsInputAmplifier -> 1).
+			(SAUniqLiteralsInputAmplifier -> 1).
+			(SAInstantiationTransplanter ->1).
+			(SANullifyInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
 		methodReductions: {SANoMethodReduction};

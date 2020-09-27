@@ -105,16 +105,11 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 					tcase strip.
 					tcase normalize.
 					self inputAmplifiers
-						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+						do: [ :amplifier | amplifier isTransplantation
+						ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
+					newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 				displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
-			^ newcodes shuffle takeFirst: config maxPop  ]
-]
-
-{ #category : #accessing }
-SAMainLoopDspot >> inputAmplifiers [
-	^ {SAAddInputAmplifier.
-	SADspotLiteralInputAmplifier}
-		collect: [ :amplifier | amplifier initializeWith: config ]
+			^ newcodes shuffle takeFirst: config maxPop ]
 ]
 
 { #category : #actions }
