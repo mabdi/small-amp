@@ -107,22 +107,25 @@ SAMainLoopDspot >> initTs [
 
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [
-	| newcodes tmp |
+	| newcodes tmp amps |
+	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
-			tmp := pop size > config maxPop
-				ifTrue: [ (pop shuffle takeFirst: config maxPop) collect: #clone ]
-				ifFalse: [ pop collect: #clone ].
-			tmp
-				do: [ :tcase | 
-					tcase strip.
-					tcase normalize.
-					self inputAmplifiers
-						do: [ :amplifier | 
-							amplifier isTransplantation
-								ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-							newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-				displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
-			^ newcodes shuffle takeFirst: config maxPop 
+	tmp := pop size > config maxPop
+		ifTrue: [ (pop shuffle takeFirst: config maxPop) collect: #clone ]
+		ifFalse: [ pop collect: #clone ].
+	tmp
+		do: [ :tcase | 
+			| tmp2 |
+			tmp2 := (config maxPop + 1 / tmp size) ceiling.
+			tcase strip.
+			tcase normalize.
+			(amps shuffle takeFirst: (tmp2 min: amps size))
+				do: [ :amplifier | 
+					amplifier isTransplantation
+						ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
+					newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+		displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
+	^ newcodes shuffle takeFirst: config maxPop
 ]
 
 { #category : #actions }

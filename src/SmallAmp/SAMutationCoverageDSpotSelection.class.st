@@ -113,15 +113,12 @@ SAMutationCoverageDSpotSelection >> matrixFromMutalk: aResult [
 
 { #category : #'as yet unclassified' }
 SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
-	| testClasses testClass targetClasses pages |
+	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	pages := self split: aPopulation page: 100.
-	testClasses := pages
-		collect: [ :aPage | 
-			self astHelper
-				buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-				using: testClass ].
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
 	^ self mutalkRunClass: testClasses targetClasses: targetClasses
 ]
 
