@@ -57,7 +57,8 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		instanceVariableNames: ''
 		classVariableNames: ''
 		package: self defaultTempPackage.
-	tempClass class
+	self
+		onClass: tempClass class
 		compile:
 			'allTestSelectors
 		| answer |
@@ -68,7 +69,7 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		do: [ :item | 
 			| ast |
 			ast := self parsedMethodFrom: item.
-			tempClass compile: ast formattedCode ].
+			self  onClass:  tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
@@ -207,6 +208,12 @@ SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
 			ast := self parsedMethodFrom: item.
 			tempClass compile: ast formattedCode ].
 	^ tempClass
+]
+
+{ #category : #compiling }
+SAASTHelper >> onClass: aClass compile: aMethod [
+	SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass compile: aMethod ]
 ]
 
 { #category : #'method operations' }

@@ -79,14 +79,17 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 				buildTestClassWith: {}
 				using: aClass.
 			generatedClass class addInstVarNamed: 'observer'.
-			generatedClass class
+			self astHelper
+				onClass: generatedClass class
 				compile:
 					'observer ^ observer ifNil: [ observer := SAObserver newForTarget: '
 						, testMethodModel testTargets asString , ' serialDepth: '
 						, config serializationMaxDepth asString , ' ]'.
-			generatedClass class compile: 'observerReset  observer := nil ' ].
+			self astHelper
+				onClass: generatedClass class
+				compile: 'observerReset  observer := nil ' ].
 	generatedClass observerReset.
-	generatedClass compile: aMethod formattedCode.
+	self astHelper onClass:generatedClass compile: aMethod formattedCode.
 	^ generatedClass
 ]
 
@@ -122,7 +125,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 		toRun: [ allWindows := self allOpenedWindows ]."
 	self class timing
 		recoredTag: #checkPassingCompile
-		toRun: [ generatedClass compile: sourceCodeWithAssertions ].
+		toRun: [ self astHelper onClass:generatedClass compile: sourceCodeWithAssertions ].
 	self class timing
 		recoredTag: #checkPassingHasPassed
 		toRun: [ r := [ [ (generatedClass run: testMethodModel selector) hasPassed ]
