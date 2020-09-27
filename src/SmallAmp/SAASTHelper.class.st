@@ -50,6 +50,29 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 ]
 
 { #category : #'method operations' }
+SAASTHelper >> buildTestClassAndLogWith: aCollection using: testClass [
+	| tempClass |
+	tempClass := testClass
+		subclass: (testClass name asString , self getId asString) asSymbol
+		instanceVariableNames: ''
+		classVariableNames: ''
+		package: self defaultTempPackage.
+	tempClass class
+		compile:
+			'allTestSelectors
+		| answer |
+		answer := Set withAll: self testSelectors.
+		answer addAll: self superclass allTestSelectors.
+		^ answer asSortedCollection asOrderedCollection'.
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			tempClass compile: ast formattedCode ].
+	^ tempClass
+]
+
+{ #category : #'method operations' }
 SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 	| tempClass |
 	tempClass := testClass
@@ -213,7 +236,14 @@ SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
 { #category : #compiling }
 SAASTHelper >> onClass: aClass compile: aMethod [
 	SystemAnnouncer uniqueInstance
-		suspendAllWhile: [ aClass compile: aMethod ]
+		suspendAllWhile: [ aClass compile: aMethod.
+			"
+			aClass
+				compile: aMethod
+				classified: Protocol unclassified
+				withStamp: nil
+				notifying: nil
+				logSource: false" ]
 ]
 
 { #category : #'method operations' }
@@ -247,7 +277,11 @@ SAASTHelper >> removeAssertions: aMethod [
 
 { #category : #removing }
 SAASTHelper >> removeClass: theClass source: sid [
-	theClass removeFromSystem
+	"theClass removeFromSystem"
+
+	theClass superclass addObsoleteSubclass: theClass.
+	theClass environment forgetClass: theClass logged: false.
+	theClass obsolete
 ]
 
 { #category : #'method operations' }

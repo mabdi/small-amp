@@ -68,7 +68,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 SAMainLoopDspot >> finalSteps [
 	| generatedClass |
 	generatedClass := self astHelper
-		buildTestClassWith: (resultPeople collect: #testMethod)
+		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
 	self astHelper moveClassToFinal: finalResult amplifiedClass.
