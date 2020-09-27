@@ -24,7 +24,7 @@ SAUniqLiteralsInputAmplifier >> amplifyInputs [
 { #category : #removing }
 SAUniqLiteralsInputAmplifier >> getAllLiterals: aMethodAST [
 	| nodes result |
-	nodes := (aMethodAST allChildren select: #isLiteralNode)
+	nodes := (aMethodAST body allChildren select: #isLiteralNode)
 		reject: #isLiteralArray.
 	result := Dictionary new.
 	nodes

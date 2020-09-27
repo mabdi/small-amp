@@ -19,15 +19,13 @@ SADspotLiteralInputAmplifier >> addARandomCharacterTo: aString [
 { #category : #removing }
 SADspotLiteralInputAmplifier >> amplifyBooleans [
 	| nodes |
-	nodes := aMethodAST allChildren
+	nodes := aMethodAST body allChildren
 		select: [ :n | 
 			n isLiteralNode
 				and: [ True = n value class | (False = n value class) ] ].
 	mappings
 		addAll:
-			(nodes
-				collect: [ :n | 
-					n -> (RBLiteralValueNode value: n value not) ])
+			(nodes collect: [ :n | n -> (RBLiteralValueNode value: n value not) ])
 ]
 
 { #category : #removing }
@@ -58,7 +56,7 @@ SADspotLiteralInputAmplifier >> amplifyInputs [
 { #category : #removing }
 SADspotLiteralInputAmplifier >> amplifyNumbers [
 	| nodes sameTypeNodes half |
-	nodes := aMethodAST allChildren
+	nodes := aMethodAST body allChildren
 		select: [ :n | n isLiteralNode and: [ n value isNumber ] ].
 	mappings
 		addAll:
@@ -67,7 +65,7 @@ SADspotLiteralInputAmplifier >> amplifyNumbers [
 					sameTypeNodes := nodes reject: [ :n2 | n2 == n ].
 					half := n value isInteger
 						ifTrue: [ (n value / 2) asInteger ]
-						ifFalse: [ (n value / 2) ].
+						ifFalse: [ n value / 2 ].
 					{(n -> (RBLiteralValueNode value: n value - 1)).
 					(n -> (RBLiteralValueNode value: n value + 1)).
 					(n -> (RBLiteralValueNode value: n value * 2)).
@@ -81,10 +79,9 @@ SADspotLiteralInputAmplifier >> amplifyNumbers [
 { #category : #removing }
 SADspotLiteralInputAmplifier >> amplifyStrings [
 	| nodes |
-	nodes := aMethodAST allChildren
-		select: [ :n | 
-			n isLiteralNode
-				and: [ n value isKindOf:  ByteString ] ].
+	nodes := aMethodAST body allChildren
+		select:
+			[ :n | n isLiteralNode and: [ n value isKindOf: ByteString ] ].
 	mappings
 		addAll:
 			(nodes
