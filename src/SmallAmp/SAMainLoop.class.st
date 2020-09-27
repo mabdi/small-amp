@@ -47,16 +47,18 @@ SAMainLoop >> amplify [
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
+finalResult logs
+		recoredTag: #assertionAmplification
+		toRun:
+			[ 
 	population := self assertionAmplificationFor: population
+	]
 ]
 
 { #category : #private }
 SAMainLoop >> assertionAmplificationFor: aList [
 	| allWindows |
-	finalResult logs
-		recoredTag: #assertionAmplification
-		toRun:
-			[ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
+	allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
 			aList
 				do: [ :tcase | 
 					self assertionAmplifiers
@@ -69,8 +71,7 @@ SAMainLoop >> assertionAmplificationFor: aList [
 							assertAmplificationClassCache := amplifier generatedClass ] ]
 				displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 			self closeAllWindowsBut: allWindows.
-			^ aList
-				reject: [ :tcase | tcase testMethod isNil ] ]
+			^ aList reject: [ :tcase | tcase testMethod isNil ] 
 ]
 
 { #category : #asserting }
@@ -159,7 +160,10 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	^ self inputAmplificationFrom: population
+	finalResult logs
+		recoredTag: #inputAmplification
+		toRun: [ 
+	^ self inputAmplificationFrom: population]
 ]
 
 { #category : #private }

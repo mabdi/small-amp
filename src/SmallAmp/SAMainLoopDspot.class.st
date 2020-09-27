@@ -11,13 +11,17 @@ Class {
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
 	theATS := OrderedCollection new.
-	theTS := self initTs.
-	self setupSelection.
-	self methodProfiling.
+	finalResult logs
+		recoredTag: #init
+		toRun: [ theTS := self initTs.
+			self setupSelection.
+			self methodProfiling ].
 	theTS
 		do: [ :aTestMethod | self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
-	self finalSteps.
+	finalResult logs
+		recoredTag: #finalize
+		toRun: [  self finalSteps].
 	^ finalResult
 ]
 
@@ -25,17 +29,27 @@ SAMainLoopDspot >> amplify [
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	| theV theU theTMP |
 	theV := OrderedCollection with: aTestMethod.
-	theV do: #strip.
-	theV := self assertionAmplificationFor: theV.
-	theU := self selectionFrom: theV.
+	
+	finalResult logs
+		recoredTag: #assertionAmplification
+		toRun: [ theV do: #strip.theV := self assertionAmplificationFor: theV ].
+	finalResult logs
+		recoredTag: #selection
+		toRun: [ theU := self selectionFrom: theV ].
 	theATS addAll: theU.
 	theTMP := theV.
 	(1 to: config iterations)
 		do: [ :gen | 
 			theV := OrderedCollection new.
-			theV := self inputAmplificationFrom: theTMP.
-			theV := self assertionAmplificationFor: theV.
-			theU := self selectionFrom: theV.
+			finalResult logs
+				recoredTag: #inputAmplification
+				toRun: [ theV := self inputAmplificationFrom: theTMP ].
+			finalResult logs
+				recoredTag: #assertionAmplification
+				toRun: [ theV := self assertionAmplificationFor: theV ].
+			finalResult logs
+				recoredTag: #selection
+				toRun: [ theU := self selectionFrom: theV ].
 			theATS addAll: theU.
 			theTMP := theV ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
@@ -94,9 +108,7 @@ SAMainLoopDspot >> initTs [
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [
 	| newcodes tmp |
-	finalResult logs
-		recoredTag: #inputAmplification
-		toRun: [ newcodes := OrderedCollection new.
+	newcodes := OrderedCollection new.
 			tmp := pop size > config maxPop
 				ifTrue: [ (pop shuffle takeFirst: config maxPop) collect: #clone ]
 				ifFalse: [ pop collect: #clone ].
@@ -105,18 +117,16 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 					tcase strip.
 					tcase normalize.
 					self inputAmplifiers
-						do: [ :amplifier | amplifier isTransplantation
-						ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-					newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+						do: [ :amplifier | 
+							amplifier isTransplantation
+								ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
+							newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 				displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
-			^ newcodes shuffle takeFirst: config maxPop ]
+			^ newcodes shuffle takeFirst: config maxPop 
 ]
 
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
-	finalResult logs
-		recoredTag: #selection
-		toRun: [ aList ifEmpty: [ ^ {} ].
-			
-			^ selection select: aList ]
+	aList ifEmpty: [ ^ {} ].
+			^ selection select: aList 
 ]
