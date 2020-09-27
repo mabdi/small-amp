@@ -78,7 +78,9 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 		ifNil: [ generatedClass := self astHelper
 				buildTestClassWith: {}
 				using: aClass.
-			generatedClass class addInstVarNamed: 'observer'.
+				SystemAnnouncer uniqueInstance
+		suspendAllWhile: 
+			[generatedClass class addInstVarNamed: 'observer'].
 			self astHelper
 				onClass: generatedClass class
 				compile:
@@ -89,7 +91,7 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 				onClass: generatedClass class
 				compile: 'observerReset  observer := nil ' ].
 	generatedClass observerReset.
-	self astHelper onClass:generatedClass compile: aMethod formattedCode.
+	self astHelper onClass: generatedClass compile: aMethod formattedCode.
 	^ generatedClass
 ]
 

@@ -173,7 +173,7 @@ SAASTHelper >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
 		instanceVariableNames: instanceVars
 		classVariableNames: ''
 		package: self defaultTempPackage.
-	arrayOfTestMethods do: [ :aTestMethod | cls compile: aTestMethod ].
+	arrayOfTestMethods do: [ :aTestMethod | self onClass: cls compile: aTestMethod ].
 	^ cls
 ]
 
