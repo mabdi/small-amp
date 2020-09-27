@@ -58,20 +58,20 @@ finalResult logs
 { #category : #private }
 SAMainLoop >> assertionAmplificationFor: aList [
 	| allWindows |
-	allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
-			aList
-				do: [ :tcase | 
-					self assertionAmplifiers
-						do: [ :amplifier | 
-							" dirty  but necessary. recreating a temp class is very time cosuming "
-							assertAmplificationClassCache
-								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
-							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
-							tcase assertionAmplifyBy: amplifier.
-							assertAmplificationClassCache := amplifier generatedClass ] ]
-				displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
-			self closeAllWindowsBut: allWindows.
-			^ aList reject: [ :tcase | tcase testMethod isNil ] 
+	"allWindows := self allOpenedWindows."	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
+	aList
+		do: [ :tcase | 
+			self assertionAmplifiers
+				do: [ :amplifier | 
+					" dirty  but necessary. recreating a temp class is very time cosuming "
+					assertAmplificationClassCache
+						ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+					amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+					tcase assertionAmplifyBy: amplifier.
+					assertAmplificationClassCache := amplifier generatedClass ] ]
+		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
+	"self closeAllWindowsBut: allWindows."
+	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
 
 { #category : #asserting }

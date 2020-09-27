@@ -135,15 +135,15 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 		with:
 			(SmallAmpMutationsGenerationStrategy new
 				mutants: (uncovered collect: #mutant)).
-	wins := self allOpenedWindows.
+	"wins := self allOpenedWindows."
 	result := analysis1 runSmallAmpVerbose.
 	config debug
 		ifTrue: [ result
 				ifFalse: [ self halt ] ].
 	targetClasses
 		do: [ :targetClass | self astHelper enableDeprecationsOn: targetClass ].
-	testClasses do: [:newTestClass | self cleanUp: newTestClass].
-	self closeAllWindowsBut: wins.
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
+	"self closeAllWindowsBut: wins."
 	Stdio stdout
 		nextPutAll: Time nowUTC print24;
 		nextPutAll: String space;
