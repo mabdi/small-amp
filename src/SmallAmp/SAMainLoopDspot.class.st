@@ -17,11 +17,9 @@ SAMainLoopDspot >> amplify [
 			self setupSelection.
 			self methodProfiling ].
 	theTS
-		do: [ :aTestMethod | self amplifyATestMethod: aTestMethod ]
+		do: [ :aTestMethod | SALogger  logConsole: aTestMethod selector.self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
-	finalResult logs
-		recoredTag: #finalize
-		toRun: [  self finalSteps].
+	finalResult logs recoredTag: #finalize toRun: [ self finalSteps ].
 	^ finalResult
 ]
 
