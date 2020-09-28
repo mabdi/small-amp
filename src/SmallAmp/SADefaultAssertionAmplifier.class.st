@@ -26,24 +26,17 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
-	Stdio stdout
-		nextPutAll: 'assert amplification: ';
-		nextPutAll: aMethodAST selector;
-		lf;
-		flush.
 	self normalizeMethod: aMethodAST.
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
 	self insertObservers: aMethodAST.
-	self
-				buildANewClassFor: aMethodAST
-				basedOn: testMethodModel testClass.
+	self buildANewClassFor: aMethodAST basedOn: testMethodModel testClass.
 	self runTestClass ifNil: [ ^ nil ].
 	self ignoreFlakyValues.
 	sourceCodeWithAssertions := self
-				insertAsserts: sourceCodeWithoutObservers
-				using: generatedClass observer.
+		insertAsserts: sourceCodeWithoutObservers
+		using: generatedClass observer.
 	(self checkPassing: sourceCodeWithAssertions)
-				ifFalse: [ ^ nil ].
+		ifFalse: [ ^ nil ].
 	self cleanUp.
 	^ sourceCodeWithAssertions
 ]
@@ -111,28 +104,24 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	"self class timing
 		recoredTag: #checkPassingAllOpen
 		toRun: [ allWindows := self allOpenedWindows ]."
-	self class timing
-		recoredTag: #checkPassingCompile
-		toRun: [ self astHelper onClass:generatedClass compile: sourceCodeWithAssertions ].
-	self class timing
-		recoredTag: #checkPassingHasPassed
-		toRun: [ r := [ [ (generatedClass run: testMethodModel selector) hasPassed ]
-				on: Exception
-				do: [ :x | 
-					x isResumable
-						ifTrue: [ x resume ]
-						ifFalse: [ false ] ] ]
-				valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
-				onTimeout: [ false ] ].
+	self astHelper
+		onClass: generatedClass
+		compile: sourceCodeWithAssertions.
+	r := [ [ (generatedClass run: testMethodModel selector) hasPassed ]
+		on: Exception
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ false ] ] ]
+		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
+		onTimeout: [ false ].
 	"self class timing
 		recoredTag: #checkPassingCloseAll
 		toRun: [ self closeAllWindowsBut: allWindows ]."
 	r
-		ifFalse: [ self class timing
-				recoredTag: #checkPassingLoggin
-				toRun: [ self
+		ifFalse: [ self
 						log4debug: #AssertAmplifyCheckPassing
-						what: sourceCodeWithAssertions ] ].
+						what: sourceCodeWithAssertions ].
 	^ r
 ]
 
