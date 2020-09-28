@@ -33,15 +33,8 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	^ self dspot
-]
-
-{ #category : #accessing }
-SAConfig class >> defaultSandboxed [
-	| c |
-	c := self default.
-	c runSandboxed: true.
-	^ c
+	"debugOn sandBoxOn"
+	^ self dspot 
 ]
 
 { #category : #accessing }
@@ -54,9 +47,10 @@ SAConfig class >> dspot [
 			{(SADspotLiteralInputAmplifier -> 1).
 			(SARemoveInputAmplifier -> 1).
 			(SADuplicateInputAmplifier -> 1).
+			(SAAddInputAmplifier -> 1).
 			(SARotateLiteralsInputAmplifier -> 1).
 			(SAUniqLiteralsInputAmplifier -> 1).
-			(SAInstantiationTransplanter ->1).
+			(SAInstantiationTransplanter -> 1).
 			(SANullifyInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
@@ -67,82 +61,10 @@ SAConfig class >> dspot [
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
-		maxPop: 200;
+		maxPop: 100;
 		maxPopPerMethod: 10;
-		debug: true;
-		mainloop: SAMainLoopDspot;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
-]
-
-{ #category : #accessing }
-SAConfig class >> smallAmp [
-	^ self new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{(SALiteralInputAmplifier -> 10).
-			(SAAddInputAmplifier -> 10).
-			(SARemoveInputAmplifier -> 10).
-			(SAUniqLiteralsInputAmplifier -> 10).
-			(SARotateLiteralsInputAmplifier -> 10).
-			(SAInstantiationTransplanter -> 10)};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SANoOracleReduction;
-		simplifier: SADefaultSimplification;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 200;
-		waves: {2 . 1 . 1};
-		maxPopPerMethod: 50;
-		debug: true;
-		mainloop: SAMainLoopSmallAmp;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
-]
-
-{ #category : #accessing }
-SAConfig class >> twoWave [
-	^ self new
-		iterations: 5;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{SALiteralInputAmplifier -> 1.
-			SAAddInputAmplifier -> 1.
-			SARemoveInputAmplifier -> 1.
-			SAUniqLiteralsInputAmplifier -> 1.
-			SARotateLiteralsInputAmplifier -> 1};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageSelection;
-		methodReductions: {SAMaxPopMethodReduction};
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 200;
-		maxPopPerMethod: 50;
 		debug: false;
-		mainloop: SAMainLoopTwoWave;
+		mainloop: SAMainLoopDspot;
 		saveToFile: false;
 		runSandboxed: false;
 		enableExclude: false;
@@ -171,6 +93,11 @@ SAConfig >> debug [
 { #category : #accessing }
 SAConfig >> debug: anObject [
 	debug := anObject
+]
+
+{ #category : #'as yet unclassified' }
+SAConfig >> debugOn [
+	self debug: true
 ]
 
 { #category : #accessing }
@@ -312,6 +239,11 @@ SAConfig >> runSandboxed [
 { #category : #accessing }
 SAConfig >> runSandboxed: anObject [
 	runSandboxed := anObject
+]
+
+{ #category : #'as yet unclassified' }
+SAConfig >> sandBoxOn [
+	self runSandboxed: true
 ]
 
 { #category : #accessing }
