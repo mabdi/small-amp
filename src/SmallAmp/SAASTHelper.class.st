@@ -120,7 +120,7 @@ SAASTHelper >> cleanUp: aSourceCode [
 SAASTHelper >> clearTempClasses [
 	<script: 'SAASTHelper new clearTempClasses '>
 	(self defaultTempPackage asPackageIfAbsent: [ ^ true ]) classes
-		do: [ :item | item removeFromSystem ]
+		do: [ :item | self removeClass: item source: 'ClearTemp' ]
 		displayingProgress: 'Clear temp classes.'
 ]
 
