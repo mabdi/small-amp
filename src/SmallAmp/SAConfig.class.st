@@ -34,11 +34,48 @@ Class {
 { #category : #accessing }
 SAConfig class >> default [
 	"debugOn sandBoxOn"
-	^ self dspot 
+
+	^ self dspotAllamps
+		maxPop: 100;
+		yourself
 ]
 
 { #category : #accessing }
 SAConfig class >> dspot [
+	^ self new
+		iterations: 3;
+		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{(SADspotLiteralInputAmplifier -> 1).
+			(SARemoveInputAmplifier -> 1).
+			(SADuplicateInputAmplifier -> 1).
+			(SAAddInputAmplifier -> 1)};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationCoverageDSpotSelection;
+		methodReductions: {SANoMethodReduction};
+		oracleReducion: SAMuTalkFirstFailOracleReduction;
+		simplifier: SADefaultSimplification;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 100;
+		maxPopPerMethod: 10;
+		debug: false;
+		mainloop: SAMainLoopDspot;
+		saveToFile: false;
+		runSandboxed: false;
+		enableExclude: false;
+		overwrite: false;
+		excludeList: '../blacklist.txt';
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
+SAConfig class >> dspotAllamps [
 	^ self new
 		iterations: 3;
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
