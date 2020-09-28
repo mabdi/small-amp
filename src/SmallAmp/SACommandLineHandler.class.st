@@ -94,16 +94,18 @@ SACommandLineHandler >> end [
 		ifFalse: [ self exitSuccess ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SACommandLineHandler >> evalAmp [
 	| testClass |
 	self arguments
 		detect: [ :arg | arg beginsWith: '--amp=' ]
-		ifFound: [ :arg | testClass := (arg allButFirst: '--amp=' size) asClass ].
+		ifFound: [ :arg | 
+			testClass := self class environment
+				at: (arg allButFirst: '--amp=' size) ].
 	SmallAmp initializeDefault
 		testCase: testClass;
 		amplifyEval.
-	Smalltalk snapshot: false andQuit: true.
+	Smalltalk snapshot: false andQuit: true
 ]
 
 { #category : #'as yet unclassified' }

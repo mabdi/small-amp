@@ -31,34 +31,20 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 		nextPutAll: aMethodAST selector;
 		lf;
 		flush.
-	self class timing
-		recoredTag: #normalizeMethod
-		toRun: [ self normalizeMethod: aMethodAST ].
+	self normalizeMethod: aMethodAST.
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
-	self class timing
-		recoredTag: #insertObservers
-		toRun: [ self insertObservers: aMethodAST ].
-	self class timing
-		recoredTag: #buildANewClassFor
-		toRun: [ self
+	self insertObservers: aMethodAST.
+	self
 				buildANewClassFor: aMethodAST
-				basedOn: testMethodModel testClass ].
-	self class timing
-		recoredTag: #runTestClass
-		toRun: [ self runTestClass ifNil: [ ^ nil ] ].
-	self class timing
-		recoredTag: #ignoreFlakyValues
-		toRun: [ self ignoreFlakyValues ].
-	self class timing
-		recoredTag: #insertAsserts
-		toRun: [ sourceCodeWithAssertions := self
+				basedOn: testMethodModel testClass.
+	self runTestClass ifNil: [ ^ nil ].
+	self ignoreFlakyValues.
+	sourceCodeWithAssertions := self
 				insertAsserts: sourceCodeWithoutObservers
-				using: generatedClass observer ].
-	self class timing
-		recoredTag: #checkPassing
-		toRun: [ (self checkPassing: sourceCodeWithAssertions)
-				ifFalse: [ ^ nil ] ].
-	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
+				using: generatedClass observer.
+	(self checkPassing: sourceCodeWithAssertions)
+				ifFalse: [ ^ nil ].
+	self cleanUp.
 	^ sourceCodeWithAssertions
 ]
 

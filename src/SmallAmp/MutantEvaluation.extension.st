@@ -56,10 +56,6 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 { #category : #'*SmallAmp' }
 MutantEvaluation >> valueSmallAmp [
 	| testResults |
-	Stdio stdout
-		nextPutAll: mutation originalMethod name asString;
-		lf;
-		flush.
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
 	self testResultsSmallAmp ]
@@ -73,10 +69,6 @@ MutantEvaluation >> valueSmallAmp [
 { #category : #'*SmallAmp' }
 MutantEvaluation >> valueSmallAmpVerbose [
 	| testResults |
-	Stdio stdout
-		nextPutAll: mutation originalMethod name asString;
-		lf;
-		flush.
 	self initializeCoverageResultIfNil.
 	testResults := [ mutation install.
 	self testResultsSmallAmpVerbose ]
