@@ -79,6 +79,31 @@ SAASTHelperTest >> testOldBuildTestClassAndRun [
 ]
 
 { #category : #test }
+SAASTHelperTest >> testRunSafelyTimeOut [
+	 
+			[(SAASTHelper new
+				runSafely: [ 200 milliSeconds wait.
+					self deny: true ]
+				timeOut: 100 milliSeconds)] on: SAUnsafeRunKilled  do: [ self assert: true ]
+		
+]
+
+{ #category : #test }
+SAASTHelperTest >> testRunSafelyTimeOutSemaphor [
+	| semaphor |
+	semaphor := Semaphore new.
+	[ 1 seconds wait.
+	semaphor signal.
+	self assert: false ] forkAt: Processor activePriority + 1.
+	[ SAASTHelper new
+		runSafely: [ semaphor wait.
+			self assert: false ]
+		timeOut: 100 milliSeconds ]
+		on: SAUnsafeRunKilled
+		do: [ self assert: true ]
+]
+
+{ #category : #test }
 SAASTHelperTest >> testStrip [
 	| sourceCode expectingCode result |
 	sourceCode := 'foo

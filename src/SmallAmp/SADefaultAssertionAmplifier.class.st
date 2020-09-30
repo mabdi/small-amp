@@ -95,33 +95,20 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r allWindows |
-	"passingCheckClass
-		ifNil: [ passingCheckClass := self astHelper
-				buildTestClassWith: {sourceCodeWithAssertions}
-				using: testMethodModel testClass ]
-		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ]."
-	"self class timing
-		recoredTag: #checkPassingAllOpen
-		toRun: [ allWindows := self allOpenedWindows ]."
+	| r  |
 	self astHelper
 		onClass: generatedClass
 		compile: sourceCodeWithAssertions.
-	r := [ [ (generatedClass run: testMethodModel selector) hasPassed ]
-		on: Exception
-		do: [ :x | 
-			x isResumable
-				ifTrue: [ x resume ]
-				ifFalse: [ false ] ] ]
-		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
-		onTimeout: [ false ].
-	"self class timing
-		recoredTag: #checkPassingCloseAll
-		toRun: [ self closeAllWindowsBut: allWindows ]."
+	r := SAASTHelper new
+		runSafelyTestClass: generatedClass
+		selector: testMethodModel selector
+		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds.
+	r ifNil: [ ^ false ].
+	r := r hasPassed .
 	r
 		ifFalse: [ self
-						log4debug: #AssertAmplifyCheckPassing
-						what: sourceCodeWithAssertions ].
+				log4debug: #AssertAmplifyCheckPassing
+				what: sourceCodeWithAssertions ].
 	^ r
 ]
 
@@ -216,14 +203,12 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
+	^ SAASTHelper new
+		runSafelyTestClass: generatedClass
+		selector: testMethodModel selector
+		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
+		
 
-	^ [ [ generatedClass run: testMethodModel selector ]
-		on: Exception
-		do: [ :x | x isResumable
-				ifTrue: [ x resume ]
-				ifFalse: [ nil ] ] ]
-		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
-		onTimeout: [ nil ]
 ]
 
 { #category : #'as yet unclassified' }

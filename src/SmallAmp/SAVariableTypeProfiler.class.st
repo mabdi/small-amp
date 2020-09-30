@@ -158,12 +158,13 @@ SAVariableTypeProfiler >> profileInstanceVariables: theObject [
 { #category : #running }
 SAVariableTypeProfiler >> run [
 	| generatedClass |
-	[ generatedClass := self generatTheTempClass .
+	[ generatedClass := self generatTheTempClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
-	[ generatedClass suite run ]
-		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'variable profiling timeout' ] ]
+	
+	SAASTHelper new
+		runSafelyTestClass: generatedClass
+		timeOut: config testRunTimeOut milliSeconds ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]
