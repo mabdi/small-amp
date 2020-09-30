@@ -2,7 +2,8 @@ Class {
 	#name : #SAASTHelper,
 	#superclass : #Object,
 	#classInstVars : [
-		'instanceId'
+		'instanceId',
+		'unsafeProcess'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -22,6 +23,13 @@ SAASTHelper class >> instanceId [
 { #category : #'as yet unclassified' }
 SAASTHelper class >> tempPattern [
 	^ 'tmp_([a-z0-9A-Z]+)\d+'
+]
+
+{ #category : #accessing }
+SAASTHelper class >> unsafeProcess [
+	^ unsafeProcess ifNil: [ unsafeProcess := [ ] newProcess
+		name: 'SmallAmp unsafe run';
+		priority: Processor userBackgroundPriority + 1 ]
 ]
 
 { #category : #adding }
@@ -315,17 +323,39 @@ SAASTHelper >> renameTempVars: anStr [
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> runSafely: aBlock timeOut: aDuration [
-	| retval semaphor p |
-	^ [ semaphor := Semaphore new.
-	p := [ retval := aBlock value.
-	semaphor signal ] newProcess
-		name: 'SmallAmp unsafe run';
-		priority: Processor userSchedulingPriority -1.
-	p resume.
-	semaphor wait.
-	retval ]
+	self flag: #todo.	"use  semaphor to be able to kill process"
+	^ aBlock
 		valueWithin: aDuration
 		onTimeout: [ SAUnsafeRunKilled new signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyNotWorking: aBlock timeOut: aDuration [
+	| retval semaphor p unsafePriority watcherPriority |
+	unsafePriority := Processor activeProcess priority - 3.
+	watcherPriority := unsafePriority + 1.
+	'1' traceCrAt: watcherPriority.
+	semaphor := Semaphore new.
+	'2' traceCrAt: watcherPriority.
+	p := [ '3' traceCrAt: watcherPriority.
+	Processor yield.
+	retval := aBlock value.
+	'4' traceCrAt: watcherPriority.
+	semaphor signal.
+	'5' traceCrAt: watcherPriority ] newProcess
+		name: 'SmallAmp unsafe run';
+		priority: unsafePriority.
+	'6' traceCrAt: watcherPriority.
+	^ [ [ '7' traceCrAt: watcherPriority.
+	p resume.
+	'8' traceCrAt: watcherPriority.
+	semaphor wait.
+	'9' traceCrAt: watcherPriority.
+	retval ] valueAt: watcherPriority ]
+		valueWithin: aDuration
+		onTimeout: [ '10' traceCrAt: watcherPriority.
+			p terminate.
+			SAUnsafeRunKilled new signal ]
 ]
 
 { #category : #'as yet unclassified' }

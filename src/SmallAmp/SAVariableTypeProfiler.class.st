@@ -162,12 +162,9 @@ SAVariableTypeProfiler >> run [
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
 	
-	SAASTHelper new runSafelyTestClass: generatedClass timeOut: config testRunTimeOut milliSeconds.
-
-		
-		
-		
-		 ]
+	SAASTHelper new
+		runSafelyTestClass: generatedClass
+		timeOut: config testRunTimeOut milliSeconds ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]

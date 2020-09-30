@@ -10,12 +10,12 @@ MutantEvaluation >> runTestsSmallAmp [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ SAASTHelper new runSafely: ([ suite runStoppingOnFirstFailOrError ]
+	^ [ SAASTHelper new runSafely: [[ suite runStoppingOnFirstFailOrError ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
 				ifTrue: [ x resume ]
-				ifFalse: [ x signal ] ]) timeOut: 3 seconds  ]
+				ifFalse: [ x signal ] ]] timeOut: 3 seconds  ]
 		on: Exception
 		do: [ :ex | nil ]
 ]
@@ -32,12 +32,12 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 				collect: [ :each | each testCase ]).
 	^ [ SAASTHelper new
 		runSafely:
-			([ suite run ]
+			[[ suite run ]
 				on: Exception
 				do: [ :x | 
 					x isResumable
 						ifTrue: [ x resume ]
-						ifFalse: [ x signal ] ])
+						ifFalse: [ x signal ] ]]
 		timeOut: 3 seconds ]
 		on: Exception
 		do: [ :ex | nil ]
