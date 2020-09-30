@@ -90,15 +90,8 @@ SAObjectInstantiationExtractor >> run [
 { #category : #'as yet unclassified' }
 SAObjectInstantiationExtractor >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
-	testClass buildSuite run.
-	^ [ [ "testClass buildSuite run" ]
-		on: Exception
-		do: [ :x | 
-			x isResumable
-				ifTrue: [ x resume ]
-				ifFalse: [ nil ] ] ]
-		valueWithin: 3000 milliSeconds
-		onTimeout: [ nil ]
+	^ SAASTHelper new runSafelyTestClass: testClass timeOut: 3000 milliSeconds.
+
 ]
 
 { #category : #accessing }

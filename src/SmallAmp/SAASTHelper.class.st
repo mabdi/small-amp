@@ -313,6 +313,49 @@ SAASTHelper >> renameTempVars: anStr [
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
 ]
 
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafely: aBlock timeOut: aDuration [
+	| retval semaphor p |
+	^ [ semaphor := Semaphore new.
+	p := [ retval := aBlock value.
+	semaphor signal ] newProcess
+		name: 'SmallAmp unsafe run';
+		priority: Processor userSchedulingPriority -1.
+	p resume.
+	semaphor wait.
+	retval ]
+		valueWithin: aDuration
+		onTimeout: [ SAUnsafeRunKilled new signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyTestClass: aTestClass selector: aSelector timeOut: aTimeOut [
+	^ [ self
+		runSafely: [ [ aTestClass run: aSelector ]
+				on: Exception
+				do: [ :x | 
+					x isResumable
+						ifTrue: [ x resume ]
+						ifFalse: [ ^ nil ] ] ]
+		timeOut: aTimeOut ]
+		on: SAUnsafeRunKilled
+		do: [ ^ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyTestClass: aTestClass timeOut: aTimeOut [
+	^ [ self
+		runSafely: [ [ aTestClass buildSuite run ]
+				on: Exception
+				do: [ :x | 
+					x isResumable
+						ifTrue: [ x resume ]
+						ifFalse: [ ^ nil ] ] ]
+		timeOut: aTimeOut ]
+		on: SAUnsafeRunKilled
+		do: [ ^ nil ]
+]
+
 { #category : #'method operations' }
 SAASTHelper >> signAsSmallAmp: src [
 	| ast |
