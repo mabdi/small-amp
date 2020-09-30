@@ -37,7 +37,6 @@ SAConfig class >> default [
 
 	^ self dspotAllamps
 		maxPop: 100;
-		debugOn; 
 		yourself
 ]
 

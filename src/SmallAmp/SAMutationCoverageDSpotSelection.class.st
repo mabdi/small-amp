@@ -144,13 +144,6 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 		do: [ :targetClass | self astHelper enableDeprecationsOn: targetClass ].
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	"self closeAllWindowsBut: wins."
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: 'Mutalk ran ';
-		nextPutAll: result asString;
-		lf;
-		flush.
 	^ analysis1
 ]
 
