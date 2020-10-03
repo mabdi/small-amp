@@ -12,7 +12,8 @@ Class {
 		'runProfile',
 		'amplifiedCoverage',
 		'originalCoverage',
-		'timeBudgetFinished'
+		'timeBudgetFinished',
+		'numberOfOriginalTestMethods'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -226,6 +227,11 @@ SAResultItem >> asDictionaryObject [
 				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
 		key: #notCoveredInAmplified
 		addTo: result.
+	self
+		safeFail: [ self numberOfOriginalTestMethods  ]
+		key: #numberOfOriginalTestMethods
+		addTo: result.
+	
 	^ result
 ]
 
@@ -390,6 +396,16 @@ SAResultItem >> notCoveredInOriginal [
 { #category : #reporting }
 SAResultItem >> numberOfAllMutationsInOriginal [
 	^ self originalAnalysis generalResult numberOfEvaluatedMutants
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfOriginalTestMethods [
+	^ numberOfOriginalTestMethods
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfOriginalTestMethods: anObject [
+	numberOfOriginalTestMethods := anObject
 ]
 
 { #category : #accessing }

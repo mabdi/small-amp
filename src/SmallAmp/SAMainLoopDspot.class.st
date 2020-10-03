@@ -96,6 +96,7 @@ SAMainLoopDspot >> initTs [
 				collect: [ :failed | failed class lookupSelector: failed selector ])
 				asOrderedCollection.
 	testMethods ifEmpty: [ SANoGreenTest new signal ].
+	finalResult numberOfOriginalTestMethods: testMethods size.
 	^ testMethods
 		collect: [ :tcase | 
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
