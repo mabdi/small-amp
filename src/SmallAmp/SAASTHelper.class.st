@@ -96,11 +96,17 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		answer := Set withAll: self testSelectors.
 		answer addAll: self superclass allTestSelectors.
 		^ answer asSortedCollection asOrderedCollection'.
+	self
+		onClass: tempClass class
+		compile:
+			'defaultTimeLimit
+	^ 3 seconds '.
+
 	aCollection
 		do: [ :item | 
 			| ast |
 			ast := self parsedMethodFrom: item.
-			self  onClass:  tempClass compile: ast formattedCode ].
+			self onClass: tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
