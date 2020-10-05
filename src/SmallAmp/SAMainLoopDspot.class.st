@@ -70,18 +70,13 @@ SAMainLoopDspot >> cacheSelectedTests: aList for: aSelector [
 	| fileName data tmp |
 	config saveToFile
 		ifFalse: [ ^ self ].
-	
-	fileName := FileLocator imageDirectory / 'smallAmp'.
-	fileName ensureCreateDirectory.
-	fileName := fileName / (aSelector , '.json').
+	fileName := self fileNameForSelector: aSelector.
 	fileName exists
 		ifTrue: [ fileName delete ].
 	tmp := (aList
-				collect: [ :m | ZnBase64Encoder new encode: m testMethod asByteArray ]) asArray.
-	data := {(#methods
-		->
-			(tmp))}
-		asDictionary.
+		collect: [ :m | ZnBase64Encoder new encode: m testMethod asByteArray ])
+		asArray.
+	data := {(#methods -> tmp)} asDictionary.
 	fileName writeStream
 		nextPutAll: (STONJSON toStringPretty: data);
 		close
@@ -92,12 +87,10 @@ SAMainLoopDspot >> checkCachedFor: aSelector [
 	| theATS fileName data |
 	config saveToFile
 		ifFalse: [ ^ false ].
-	fileName := FileLocator imageDirectory / 'smallAmp'.
-	fileName ensureCreateDirectory.
-	fileName := fileName / (aSelector , '.json').
+	fileName := self fileNameForSelector: aSelector .
 	fileName exists
 		ifTrue: [ fileName
-						readStreamDo: [ :readStream | data := STONJSON fromStream: readStream ] ]
+				readStreamDo: [ :readStream | data := STONJSON fromStream: readStream ] ]
 		ifFalse: [ ^ false ].
 	theATS := (data at: #methods ifAbsent: [ ^ false ])
 		collect: [ :item | 
@@ -107,6 +100,17 @@ SAMainLoopDspot >> checkCachedFor: aSelector [
 				targets: targetClasses ].
 	resultPeople addAll: theATS.
 	^ true
+]
+
+{ #category : #private }
+SAMainLoopDspot >> fileNameForSelector: aSelector [
+	| fileName |
+	fileName := FileLocator imageDirectory / 'smallAmp'.
+	fileName ensureCreateDirectory.
+	fileName := fileName / testClass name.
+	fileName ensureCreateDirectory.
+	fileName := fileName / (aSelector , '.json').
+	^ fileName
 ]
 
 { #category : #actions }
