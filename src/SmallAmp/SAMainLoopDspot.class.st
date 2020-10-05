@@ -2,7 +2,6 @@ Class {
 	#name : #SAMainLoopDspot,
 	#superclass : #SAMainLoop,
 	#instVars : [
-		'theATS',
 		'theTS'
 	],
 	#category : #'SmallAmp-Core'
@@ -10,14 +9,16 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
-	theATS := OrderedCollection new.
+	
 	finalResult logs
 		recoredTag: #init
 		toRun: [ theTS := self initTs.
 			self setupSelection.
 			self methodProfiling ].
 	theTS
-		do: [ :aTestMethod | SALogger  logConsole: aTestMethod selector.self amplifyATestMethod: aTestMethod ]
+		do: [ :aTestMethod | 
+			SALogger logConsole: aTestMethod selector.
+			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	finalResult logs recoredTag: #finalize toRun: [ self finalSteps ].
 	^ finalResult
@@ -25,16 +26,19 @@ SAMainLoopDspot >> amplify [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
-	| theV theU theTMP |
+	| theATS theV theU theTMP |
+	(self checkCachedFor: aTestMethod selector)
+		ifTrue: [ ^ false ].
+	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
-	
 	finalResult logs
 		recoredTag: #assertionAmplification
-		toRun: [ theV do: #strip.theV := self assertionAmplificationFor: theV ].
+		toRun: [ theV do: #strip.
+			theV := self assertionAmplificationFor: theV ].
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ theU := self selectionFrom: theV ].
-	theATS addAll: theU.
+		toRun: [ theU := self selectionFrom: theV.
+			theATS addAll: theU ].
 	theTMP := theV.
 	(1 to: config iterations)
 		do: [ :gen | 
@@ -47,19 +51,62 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 				toRun: [ theV := self assertionAmplificationFor: theV ].
 			finalResult logs
 				recoredTag: #selection
-				toRun: [ theU := self selectionFrom: theV ].
-			theATS addAll: theU.
+				toRun: [ theU := self selectionFrom: theV.
+					theATS addAll: theU ].
 			theTMP := theV ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	theATS := theATS collect: #cleanedUpCopy.
-	resultPeople
-		addAll:
-			(theATS
-				collect: [ :item | 
-					| c |
-					c := item clone.
-					c signAsSmallAmp.
-					c ])
+	theATS := theATS
+		collect: [ :item | 
+			| c |
+			c := item cleanedUpCopy.
+			c signAsSmallAmp.
+			c ].
+	self cacheSelectedTests: theATS for: aTestMethod selector.
+	resultPeople addAll: theATS
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> cacheSelectedTests: aList for: aSelector [
+	| fileName data tmp |
+	config saveToFile
+		ifFalse: [ ^ self ].
+	
+	fileName := FileLocator imageDirectory / 'smallAmp'.
+	fileName ensureCreateDirectory.
+	fileName := fileName / (aSelector , '.json').
+	fileName exists
+		ifTrue: [ fileName delete ].
+	tmp := (aList
+				collect: [ :m | ZnBase64Encoder new encode: m testMethod asByteArray ]) asArray.
+	data := {(#methods
+		->
+			(tmp))}
+		asDictionary.
+	fileName writeStream
+		nextPutAll: (STONJSON toStringPretty: data);
+		close
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> checkCachedFor: aSelector [
+	| theATS fileName data |
+	config saveToFile
+		ifFalse: [ ^ false ].
+	fileName := FileLocator imageDirectory / 'smallAmp'.
+	fileName ensureCreateDirectory.
+	fileName := fileName / (aSelector , '.json').
+	fileName exists
+		ifTrue: [ fileName
+						readStreamDo: [ :readStream | data := STONJSON fromStream: readStream ] ]
+		ifFalse: [ ^ false ].
+	theATS := (data at: #methods ifAbsent: [ ^ false ])
+		collect: [ :item | 
+			SATestMethod
+				with: (ZnBase64Encoder new decode: item) asString
+				class: testClass
+				targets: targetClasses ].
+	resultPeople addAll: theATS.
+	^ true
 ]
 
 { #category : #actions }
