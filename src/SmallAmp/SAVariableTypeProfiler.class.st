@@ -119,12 +119,14 @@ SAVariableTypeProfiler >> executeStartMethodNode: node object: anObject [
 
 { #category : #running }
 SAVariableTypeProfiler >> generatTheTempClass [
-	| generatedClass |
+	| generatedClass testMethodsToGenerate |
+	testMethodsToGenerate := OrderedCollection new.
+	testMethodsToGenerate addAll: testMethods.
+	testMethodsToGenerate add: 'testSmallAmpFakeMethod self'.
 	generatedClass := self astHelper
-		buildTestClassWith: testMethods
+		buildTestClassWith: testMethodsToGenerate
 		using: testClass.
-	generatedClass compile: 'testSmallAmpFakeMethod self'.
-	^ generatedClass 
+	^ generatedClass
 ]
 
 { #category : #removing }

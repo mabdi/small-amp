@@ -116,7 +116,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 SADefaultAssertionAmplifier >> cleanUp [
 	config debug
 		ifTrue: [ ^ self ].
-	generatedClass removeSelector: testMethodModel selector.	"self astHelper removeClass: generatedClass source: self class name"
+	self astHelper onClass: generatedClass removeSelector: testMethodModel selector	"self astHelper removeClass: generatedClass source: self class name"
 ]
 
 { #category : #cleanup }

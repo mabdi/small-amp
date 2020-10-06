@@ -171,14 +171,13 @@ SAASTHelper >> disableDeprecationsOn: aClass [
 			str := m
 				replaceNode: m body
 				withNode: (RBSequenceNode statements: #()).
-			aClass compile: str formattedCode ]
+			self onClass: aClass compile: str formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> enableDeprecationsOn: aClass [
-
 	(Object methodsInProtocol: #deprecation)
-		do: [ :m | aClass removeSelector: m selector ]
+		do: [ :m | self onClass: aClass removeSelector: m selector ]
 ]
 
 { #category : #'method operations' }
@@ -251,6 +250,19 @@ SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
 SAASTHelper >> onClass: aClass compile: aMethod [
 	SystemAnnouncer uniqueInstance
 		suspendAllWhile: [ aClass compile: aMethod.
+			"
+			aClass
+				compile: aMethod
+				classified: Protocol unclassified
+				withStamp: nil
+				notifying: nil
+				logSource: false" ]
+]
+
+{ #category : #compiling }
+SAASTHelper >> onClass: aClass removeSelector: aSelector [
+	SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass removeSelector: aSelector
 			"
 			aClass
 				compile: aMethod

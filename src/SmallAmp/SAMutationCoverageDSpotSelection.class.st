@@ -50,7 +50,7 @@ SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: resul
 { #category : #cleanup }
 SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
 	generatedClass testSelectors
-		do: [ :sel | generatedClass removeSelector: sel ]
+		do: [ :sel | self astHelper onClass: generatedClass removeSelector: sel ]
 ]
 
 { #category : #cleanup }
