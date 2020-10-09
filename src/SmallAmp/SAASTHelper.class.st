@@ -163,7 +163,12 @@ SAASTHelper >> defaultTempPackage [
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> disableDeprecationsOn: aClass [
-	| methods str |
+	Deprecation
+		activateTransformations: false;
+		raiseWarning: false;
+		showWarning: false
+
+	"| methods str |
 	methods := (Object methodsInProtocol: #deprecation)
 		collect: [ :m | m ast copy ].
 	methods
@@ -171,13 +176,32 @@ SAASTHelper >> disableDeprecationsOn: aClass [
 			str := m
 				replaceNode: m body
 				withNode: (RBSequenceNode statements: #()).
-			self onClass: aClass compile: str formattedCode ]
+			self onClass: aClass compile: str formattedCode ]"
+]
+
+{ #category : #accessing }
+SAASTHelper >> disableDeprecationsWhile: aBlock [
+	| activateTransformations raiseWarning showWarning |
+	activateTransformations := Deprecation activateTransformations.
+	raiseWarning := Deprecation raiseWarning.
+	showWarning := Deprecation showWarning.
+	^ [ Deprecation
+		activateTransformations: false;
+		raiseWarning: false;
+		showWarning: false.
+	aBlock value ]
+		ensure: [ Deprecation
+				activateTransformations: activateTransformations;
+				raiseWarning: raiseWarning;
+				showWarning: showWarning ]
 ]
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> enableDeprecationsOn: aClass [
-	(Object methodsInProtocol: #deprecation)
-		do: [ :m | self onClass: aClass removeSelector: m selector ]
+	Deprecation
+		activateTransformations: true;
+		raiseWarning: true;
+		showWarning: true
 ]
 
 { #category : #'method operations' }

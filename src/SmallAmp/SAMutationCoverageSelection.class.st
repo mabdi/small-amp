@@ -135,9 +135,8 @@ SAMutationCoverageSelection >> mutalkRun: aPopulation [
 { #category : #'as yet unclassified' }
 SAMutationCoverageSelection >> mutalkRunClass: newTestClass targetClasses: targetClasses [
 	| analysis1 result wins |
-	targetClasses
-		do: [ :targetClass | self astHelper disableDeprecationsOn: targetClass ].
-	analysis1 := MutationTestingAnalysis
+	self astHelper disableDeprecationsWhile: 
+	[analysis1 := MutationTestingAnalysis
 		testCasesFrom: {newTestClass}
 		mutating: targetClasses
 		using: MutantOperator contents
@@ -149,9 +148,7 @@ SAMutationCoverageSelection >> mutalkRunClass: newTestClass targetClasses: targe
 	result := analysis1 runSmallAmpVerbose.
 	config debug
 		ifTrue: [ result
-				ifFalse: [ self halt ] ].
-	targetClasses
-		do: [ :targetClass | self astHelper enableDeprecationsOn: targetClass ].
+				ifFalse: [ self halt ] ]].
 	self cleanUp: newTestClass.
 	self closeAllWindowsBut: wins.
 	Stdio stdout

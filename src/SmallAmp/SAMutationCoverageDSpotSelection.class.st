@@ -49,8 +49,7 @@ SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: resul
 
 { #category : #cleanup }
 SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
-	generatedClass testSelectors
-		do: [ :sel | self astHelper onClass: generatedClass removeSelector: sel ]
+	self astHelper removeClass: generatedClass source: self class name.
 ]
 
 { #category : #cleanup }
@@ -124,26 +123,21 @@ SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
 
 { #category : #'as yet unclassified' }
 SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
-	| analysis1 result wins |
-	targetClasses
-		do: [ :targetClass | self astHelper disableDeprecationsOn: targetClass ].
-	analysis1 := MutationTestingAnalysis
-		testCasesFrom: testClasses
-		mutating: targetClasses
-		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new
-		with:
-			(SmallAmpMutationsGenerationStrategy new
-				mutants: (uncovered collect: #mutant)).
-	"wins := self allOpenedWindows."
-	result := analysis1 runSmallAmpVerbose.
-	config debug
-		ifTrue: [ result
-				ifFalse: [ self halt ] ].
-	targetClasses
-		do: [ :targetClass | self astHelper enableDeprecationsOn: targetClass ].
+	| analysis1 result |
+	self astHelper
+		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with:
+					(SmallAmpMutationsGenerationStrategy new
+						mutants: (uncovered collect: #mutant)).
+			result := analysis1 runSmallAmpVerbose.
+			config debug
+				ifTrue: [ result
+						ifFalse: [ self halt ] ] ].
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
-	"self closeAllWindowsBut: wins."
 	^ analysis1
 ]
 
