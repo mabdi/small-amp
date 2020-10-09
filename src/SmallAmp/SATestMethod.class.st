@@ -110,6 +110,14 @@ SATestMethod >> printOn: aStream [
 ]
 
 { #category : #removing }
+SATestMethod >> removeAssertionsAndExtract [
+	| m |
+	m := SAAssertTransform
+		transformAllAsserts: (self astHelper parsedMethodFrom: testMethod).
+	testMethod := m formattedCode
+]
+
+{ #category : #removing }
 SATestMethod >> renamedCopy: postfix [
 	| obj |
 	obj := self class

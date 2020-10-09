@@ -34,6 +34,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	finalResult logs
 		recoredTag: #assertionAmplification
 		toRun: [ theV do: #strip.
+			"theV do: #removeAssertionsAndExtract."
 			theV := self assertionAmplificationFor: theV ].
 	finalResult logs
 		recoredTag: #selection
