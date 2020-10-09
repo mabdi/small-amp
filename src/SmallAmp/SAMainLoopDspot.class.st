@@ -122,6 +122,7 @@ SAMainLoopDspot >> finalSteps [
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
 	self astHelper moveClassToFinal: finalResult amplifiedClass.
+	"self makeReadable."
 	finalResult
 		amplifiedAnalysis:
 			(selection
@@ -177,6 +178,21 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 					newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 		displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
 	^ newcodes shuffle takeFirst: config maxPop
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> makeReadable [
+	| readable reducer prettifier |
+	reducer := (config oracleReducion initializeWith: config)
+		with: finalResult amplifiedClass
+		from: testClass
+		target: targetClasses
+		uncovered: finalResult notCoveredInOriginal.
+	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
+	readable := reducer makeReducedResult.
+	prettifier := config prettifier initializeWith: config.
+	prettifier prettify: readable.
+	self astHelper moveClassToFinal: readable.
 ]
 
 { #category : #actions }
