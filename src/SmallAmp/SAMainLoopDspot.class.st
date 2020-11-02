@@ -26,7 +26,7 @@ SAMainLoopDspot >> amplify [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
-	| theATS theV theU theTMP |
+	| theATS theV theU |
 	(self checkCachedFor: aTestMethod selector)
 		ifTrue: [ ^ false ].
 	theATS := OrderedCollection new.
@@ -35,26 +35,24 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 		recoredTag: #assertionAmplification
 		toRun: [ theV do: #strip.
 			"theV do: #removeAssertionsAndExtract."
-			theV := self assertionAmplificationFor: theV ].
+			theU := self assertionAmplificationFor: theV ].
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ theU := self selectionFrom: theV.
+		toRun: [ theU := self selectionFrom: theU.
 			theATS addAll: theU ].
-	theTMP := theV.
 	(1 to: config iterations)
 		do: [ :gen | 
 			theV := OrderedCollection new.
 			finalResult logs
 				recoredTag: #inputAmplification
-				toRun: [ theV := self inputAmplificationFrom: theTMP ].
+				toRun: [ theV := self inputAmplificationFrom: theV ].
 			finalResult logs
 				recoredTag: #assertionAmplification
-				toRun: [ theV := self assertionAmplificationFor: theV ].
+				toRun: [ theU := self assertionAmplificationFor: theV ].
 			finalResult logs
 				recoredTag: #selection
-				toRun: [ theU := self selectionFrom: theV.
-					theATS addAll: theU ].
-			theTMP := theV ]
+				toRun: [ theU := self selectionFrom: theU.
+					theATS addAll: theU ]. ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	theATS := theATS
 		collect: [ :item | 
@@ -159,24 +157,34 @@ SAMainLoopDspot >> initTs [
 
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [
-	| newcodes tmp amps |
+	| applyTransformation newcodes tmp amps |
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
-	tmp := pop size > config maxPop
-		ifTrue: [ (pop shuffle takeFirst: config maxPop) collect: #clone ]
-		ifFalse: [ pop collect: #clone ].
+	applyTransformation := [ :amplifier :tcase | 
+	amplifier isTransplantation
+		ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
+	newcodes addAll: (tcase inputAmplifyBy: amplifier) ].
+	tmp := (pop collect: #clone)
+		do: [ :tcase | 
+			tcase strip.
+			tcase normalize ].
+	amps
+		do: [ :amp | 
+			| tmp2 |
+			tmp2 := (config maxPop / 2 / amps size) ceiling.
+			(pop shuffle takeFirst: (tmp2 min: pop size))
+				do: [ :tcase | applyTransformation value: amp value: tcase ] ]
+		displayingProgress: 'Input Amplification half 1' , ' (' , amps size asString , ')'.
+	tmp := (pop size > (config maxPop / 2)) 
+		ifTrue: [ tmp shuffle takeFirst: config maxPop / 2 ]
+		ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 
 			| tmp2 |
-			tmp2 := (config maxPop + 1 / tmp size) ceiling.
-			tcase strip.
-			tcase normalize.
+			tmp2 := ((config maxPop / 2 + 1) / tmp size) ceiling.
 			(amps shuffle takeFirst: (tmp2 min: amps size))
-				do: [ :amplifier | 
-					amplifier isTransplantation
-						ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-					newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification' , ' (' , tmp size asString , ')'.
+				do: [ :amp | applyTransformation value: amp value: tcase ] ]
+		displayingProgress: 'Input Amplification half 2' , ' (' , tmp size asString , ')'.
 	^ newcodes shuffle takeFirst: config maxPop
 ]
 

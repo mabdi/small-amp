@@ -37,7 +37,8 @@ SAConfig class >> default [
 
 	^ self dspotAllamps
 		maxPop: 100;
-		saveToFile: true;
+		saveToFile: false;
+		debugOn;
 		yourself
 ]
 
