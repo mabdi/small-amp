@@ -35,7 +35,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 		recoredTag: #assertionAmplification
 		toRun: [ theV do: #strip.
 			"theV do: #removeAssertionsAndExtract."
-			theU := self assertionAmplificationFor: theV ].
+			theU := self assertionAmplificationFor: (theV collect: #clone) ].
 	finalResult logs
 		recoredTag: #selection
 		toRun: [ theU := self selectionFrom: theU.
@@ -48,11 +48,11 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 				toRun: [ theV := self inputAmplificationFrom: theV ].
 			finalResult logs
 				recoredTag: #assertionAmplification
-				toRun: [ theU := self assertionAmplificationFor: theV ].
+				toRun: [ theU := self assertionAmplificationFor: (theV collect: #clone) ].
 			finalResult logs
 				recoredTag: #selection
 				toRun: [ theU := self selectionFrom: theU.
-					theATS addAll: theU ]. ]
+					theATS addAll: theU ] ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	theATS := theATS
 		collect: [ :item | 
