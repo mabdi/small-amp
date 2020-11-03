@@ -73,6 +73,7 @@ SAVariableTypeProfiler >> executeAfterNode: node context: theContext object: the
 	self variablesTypes
 		at: self class instanceVariablesKey
 		ifAbsent: [ self profileInstanceVariables: theObject ].
+	node isVariable ifFalse: [ ^ self ].
 	node isGlobal
 		ifTrue: [ "type := self class environment at: node name" ^ self ].	"don't waist resources by keeping Globals"
 	node isTemp
@@ -116,6 +117,18 @@ SAVariableTypeProfiler >> executeStartMethodNode: node object: anObject [
 				put: (anObject instVarNamed: instVar) class ]
 ]
 
+{ #category : #running }
+SAVariableTypeProfiler >> generatTheTempClass [
+	| generatedClass testMethodsToGenerate |
+	testMethodsToGenerate := OrderedCollection new.
+	testMethodsToGenerate addAll: testMethods.
+	testMethodsToGenerate add: 'testSmallAmpFakeMethod self'.
+	generatedClass := self astHelper
+		buildTestClassWith: testMethodsToGenerate
+		using: testClass.
+	^ generatedClass
+]
+
 { #category : #removing }
 SAVariableTypeProfiler >> initialize [ 
 	links := OrderedCollection new
@@ -124,11 +137,13 @@ SAVariableTypeProfiler >> initialize [
 { #category : #removing }
 SAVariableTypeProfiler >> installMetaLinksOnMethod: method [
 	"method ast body link: self buildMetalinkStartMethod."
+
 	method ast allChildren
 		select: #isVariable
 		thenDo:
 			[ :node | "(node links anySatisfy: [ :any | any metaObject isKindOf: self class ])
-				ifTrue: [ self error: 'Sth is wrong' ]." node link: self buildMetalink ]
+				ifTrue: [ self error: 'Sth is wrong' ]." node link: self buildMetalink ].
+	
 ]
 
 { #category : #'as yet unclassified' }
@@ -145,15 +160,13 @@ SAVariableTypeProfiler >> profileInstanceVariables: theObject [
 { #category : #running }
 SAVariableTypeProfiler >> run [
 	| generatedClass |
-	[ generatedClass := self astHelper
-		buildTestClassWith: testMethods
-		using: testClass.
+	[ generatedClass := self generatTheTempClass.
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
 	
-	[ generatedClass suite run ]
-		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'variable profiling timeout' ] ]
+	SAASTHelper new
+		runSafelyTestClass: generatedClass
+		timeOut: config testRunTimeOut milliSeconds ]
 		ensure: [ links do: #uninstall.
 			self cleanUp: generatedClass ]
 ]

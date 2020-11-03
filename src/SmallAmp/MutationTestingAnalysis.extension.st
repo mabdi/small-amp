@@ -1,6 +1,18 @@
 Extension { #name : #MutationTestingAnalysis }
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> discardFailings [
+	| fails |
+	fails := OrderedCollection new.
+	(mutantsEvaluationStrategy testCasesToEvaluate: testCases for: self)
+		do: [ :aTestCase | 
+			[ aTestCase run ]
+				on: TestsWithErrorsException
+				do: [ :ex | fails add: aTestCase ] ].
+	testCases := testCases reject: [ :t  | fails includes: t ]
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> generateResultsLogger [
 	particularResults := OrderedCollection new.
 	mutations
@@ -82,10 +94,7 @@ MutationTestingAnalysis >> runSmallAmp [
 	those classes) and execute all mutants in the set of testClases.
 	We obtain a result for each mutant generated"
 
-	^ [ (mutantsEvaluationStrategy
-		testCasesToEvaluate: testCases
-		for: self) do: [ :aTestCase | aTestCase run ].
-	logger logAnalysisStartFor: self.
+	^ [self discardFailings. logger logAnalysisStartFor: self.
 	elapsedTime := Time
 		millisecondsToRun: [ self generateCoverageAnalysis.
 			self generateMutations.
@@ -105,10 +114,7 @@ MutationTestingAnalysis >> runSmallAmpVerbose [
 	those classes) and execute all mutants in the set of testClases.
 	We obtain a result for each mutant generated"
 
-	^ [ (mutantsEvaluationStrategy
-		testCasesToEvaluate: testCases
-		for: self) do: [ :aTestCase | aTestCase run ].
-	logger logAnalysisStartFor: self.
+	^ [ self discardFailings.logger logAnalysisStartFor: self.
 	elapsedTime := Time
 		millisecondsToRun: [ self generateCoverageAnalysis.
 			self generateMutations.

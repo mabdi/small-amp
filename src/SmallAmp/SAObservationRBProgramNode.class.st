@@ -11,6 +11,14 @@ active
 	^ aGenerator buildAssertionsRBProgramNode: self
 ]
 
+{ #category : #adding }
+SAObservationRBProgramNode >> checkFlaky: anItem [
+	anItem theClass = self theClass
+		ifFalse: [ self isFlaky: true ].
+	anItem theValue dump = self theValue dump
+		ifFalse: [ self isFlaky: true ]
+]
+
 { #category : #'as yet unclassified' }
 SAObservationRBProgramNode >> valueNode [
 	^ RBLiteralValueNode

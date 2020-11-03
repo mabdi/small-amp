@@ -81,3 +81,23 @@ SAVariableTypeProfilerTest >> testCase3 [
 	self assert: (variableTypes at: #'testO1:x') equals: SmallInteger.
 	testClass removeFromSystem
 ]
+
+{ #category : #tests }
+SAVariableTypeProfilerTest >> testCase4 [
+	| testClass variableTypes |
+	testClass := SAASTHelper new
+		makeClassFrom: {'setUp f := FakeSmallBank new' . 'testO1 '}
+		instanceVars: 'f'.
+	variableTypes := profiler
+		testMethods:
+			(testClass allTestSelectors
+				collect: [ :s | (testClass lookupSelector: s) sourceCode ]);
+		testClass: testClass;
+		run;
+		variablesTypes.
+	self
+		assert: (variableTypes at: SAVariableTypeProfiler instanceVariablesKey)
+		equals: {(#f -> FakeSmallBank)} asOrderedCollection.
+	
+	testClass removeFromSystem
+]

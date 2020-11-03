@@ -15,6 +15,16 @@ SALogger class >> debugWatchings [
 	^ debugWatchings ifNil: [ debugWatchings := OrderedCollection new ]
 ]
 
+{ #category : #'as yet unclassified' }
+SALogger class >> logConsole: aString [
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: aString;
+		lf;
+		flush
+]
+
 { #category : #'accessing structure variables' }
 SALogger class >> timestamp [
 	^ (DateAndTime now - DateAndTime unixEpoch) asMilliSeconds
@@ -38,10 +48,8 @@ SALogger >> logs [
 
 { #category : #initialization }
 SALogger >> recoredTag: aTag toRun: aBlock [
-	Stdio stdout
-		nextPutAll: 'Recording millisecondsToRun:';
-		nextPutAll: aTag asString; lf;
-		flush.
+	self class logConsole: aTag asString.
+	
 	logs add: aTag -> (Time millisecondsToRun: aBlock)
 ]
 

@@ -1,16 +1,16 @@
 Class {
-	#name : #SAMutationCoverageSelection,
+	#name : #SAMutationCoverageDSpotSelection,
 	#superclass : #SAAbstractSelection,
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection class >> defaultOracleReduction [
+SAMutationCoverageDSpotSelection class >> defaultOracleReduction [
 	^ SAMuTalkFirstFailOracleReduction 
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SAMutationCoverageDSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: testClasses
@@ -25,12 +25,12 @@ SAMutationCoverageSelection >> analysisFor: testClasses targets: targetClasses i
 ]
 
 { #category : #accessing }
-SAMutationCoverageSelection >> astHelper [
+SAMutationCoverageDSpotSelection >> astHelper [
 	^ SAASTHelper new
 ]
 
 { #category : #enumerating }
-SAMutationCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
+SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: result [
 	"first select shortest methods
 	Then, select minimum change,"
 
@@ -48,18 +48,17 @@ SAMutationCoverageSelection >> chooseBestFrom: theList notIncludedIn: result [
 ]
 
 { #category : #cleanup }
-SAMutationCoverageSelection >> cleanUp: generatedClass [
-	generatedClass testSelectors
-		do: [ :sel | generatedClass removeSelector: sel ]
+SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
+	self astHelper removeClass: generatedClass source: self class name.
 ]
 
 { #category : #cleanup }
-SAMutationCoverageSelection >> infoPragmaFrom: aCovered [
+SAMutationCoverageDSpotSelection >> infoPragmaFrom: aCovered [
 	^ aCovered smallAmpInfoText
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := self analysisFor: testClasses targets: targetClasses ignore: aListOfMethods.
 	uncovered := analysis1 generalResult aliveMutants.
@@ -67,7 +66,7 @@ SAMutationCoverageSelection >> initialAnalysisFor: testClasses targets: targetCl
 ]
 
 { #category : #'private-debugging' }
-SAMutationCoverageSelection >> matrixFromMutalk: aResult [
+SAMutationCoverageDSpotSelection >> matrixFromMutalk: aResult [
 	| matrix instance selectors muts |
 	muts := OrderedCollection new.
 	selectors := OrderedCollection new.
@@ -112,63 +111,44 @@ SAMutationCoverageSelection >> matrixFromMutalk: aResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection >> mutalkRun: aPopulation [
-	| testClass targetClasses newTestClass pages |
+SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
+	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	newTestClass := nil.
-	pages := self split: aPopulation page: 100.
-	^ pages
-		collect: [ :aPage | 
-			newTestClass
-				ifNil: [ newTestClass := self astHelper
-						buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-						using: testClass ]
-				ifNotNil: [ :cls | 
-					aPage
-						do:
-							[ :item | cls compile: item testMethod ] ].
-			self mutalkRunClass: newTestClass targetClasses: targetClasses ]
-		displayingProgress: 'Running Mutalk'
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
+	^ self mutalkRunClass: testClasses targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageSelection >> mutalkRunClass: newTestClass targetClasses: targetClasses [
-	| analysis1 result wins |
-	self astHelper disableDeprecationsWhile: 
-	[analysis1 := MutationTestingAnalysis
-		testCasesFrom: {newTestClass}
-		mutating: targetClasses
-		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new
-		with:
-			(SmallAmpMutationsGenerationStrategy new
-				mutants: (uncovered collect: #mutant)).
-	wins := self allOpenedWindows.
-	result := analysis1 runSmallAmpVerbose.
-	config debug
-		ifTrue: [ result
-				ifFalse: [ self halt ] ]].
-	self cleanUp: newTestClass.
-	self closeAllWindowsBut: wins.
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: 'Mutalk ran ';
-		nextPutAll: result asString;
-		lf;
-		flush.
+SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
+	| analysis1 result |
+	self astHelper
+		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with:
+					(SmallAmpMutationsGenerationStrategy new
+						mutants: (uncovered collect: #mutant)).
+			result := analysis1 runSmallAmpVerbose.
+			config debug
+				ifTrue: [ result
+						ifFalse: [ self halt ] ] ].
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	^ analysis1
 ]
 
 { #category : #enumerating }
-SAMutationCoverageSelection >> select: aPopulation [
-	| analysisList alives result newKills |
+SAMutationCoverageDSpotSelection >> select: aPopulation [
+	| analysisResult alives result newKills |
 	result := Dictionary new.
-	analysisList := self mutalkRun: aPopulation.
-	alives := analysisList
-		flatCollect: [ :analysis | analysis generalResult aliveMutants ].
-	newKills := uncovered
+	analysisResult := self mutalkRun: aPopulation.
+	alives := analysisResult generalResult aliveMutants.
+	newKills := 
+	uncovered
 		reject: [ :s | 
 			alives
 				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
@@ -176,7 +156,7 @@ SAMutationCoverageSelection >> select: aPopulation [
 		select: [ :s | 
 			alives
 				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
-	(analysisList flatCollect: [ :analysis | analysis particularResults ])
+	analysisResult particularResults
 		do: [ :item | 
 			newKills
 				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]

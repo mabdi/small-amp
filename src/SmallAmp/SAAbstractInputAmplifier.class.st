@@ -30,6 +30,11 @@ SAAbstractInputAmplifier >> amplifyInputsFor: aTestMethodModel [
 			^ {} ]
 ]
 
+{ #category : #testing }
+SAAbstractInputAmplifier >> isTransplantation [
+	^ false
+]
+
 { #category : #'as yet unclassified' }
 SAAbstractInputAmplifier >> namingPrefix [
 	^ self class name

@@ -23,6 +23,5 @@ SAMutationPlugin class >> weight [
 SAMutationPlugin >> smallAmpDefaultConfig [
 	| c |
 	c := super smallAmpDefaultConfig.
-	c selection: SAMutationCoverageSelection.
 	^ c
 ]

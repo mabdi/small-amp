@@ -14,22 +14,21 @@ SARotateLiteralsInputAmplifier >> amplifyInputs [
 	literals
 		keysAndValuesDo: [ :type :vals | 
 			vals size > 1
-				ifTrue: [ vals allButLast 
-						doWithIndex: [ :v :index | 
-							results
-								add:
-									(self
-										transform: aMethodAST copy
-										type: type
-										values: vals
-										startFrom: index) ] ] ].
+				ifTrue: [ 1 to: vals size - 1 do: [ :offset | 
+						results
+							add:
+								(self
+									transform: aMethodAST copy
+									type: type
+									values: vals
+									startFrom: offset) ] ] ].
 	^ results collect: #formattedCode
 ]
 
 { #category : #removing }
 SARotateLiteralsInputAmplifier >> getAllLiterals: aMethodAST [
 	| nodes result |
-	nodes := (aMethodAST allChildren select: #isLiteralNode)
+	nodes := (aMethodAST body allChildren select: #isLiteralNode)
 		reject: #isLiteralArray.
 	result := Dictionary new.
 	nodes
@@ -47,7 +46,7 @@ SARotateLiteralsInputAmplifier >> namingPrefix [
 { #category : #removing }
 SARotateLiteralsInputAmplifier >> transform: aMethodAST type: type value: value [
 	| nodes |
-	nodes := ((aMethodAST allChildren select: #isLiteralNode)
+	nodes := ((aMethodAST body allChildren select: #isLiteralNode)
 		reject: #isLiteralArray) select: [ :n | n value class = type ].
 	nodes
 		do:
@@ -58,15 +57,14 @@ SARotateLiteralsInputAmplifier >> transform: aMethodAST type: type value: value 
 { #category : #removing }
 SARotateLiteralsInputAmplifier >> transform: aMethodAST type: type values: vals startFrom: index [
 	| nodes |
-	nodes := ((aMethodAST allChildren select: #isLiteralNode)
+	nodes := ((aMethodAST body allChildren select: #isLiteralNode)
 		reject: #isLiteralArray) select: [ :n | n value class = type ].
-	
 	nodes
 		doWithIndex: [ :n :i | 
 			n parent
 				replaceNode: n
 				withNode:
 					(RBLiteralValueNode
-						value: (vals at: 1 + ((i - 1 + index) % vals size))) ].
+						value: (vals at: 1 + ((i -1 + index) % vals size))) ].
 	^ aMethodAST
 ]

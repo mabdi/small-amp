@@ -43,3 +43,37 @@ SARotateLiteralsInputAmplifierTest >> testItem1 [
 	b deposit: 100.
 	b deposit: 10'
 ]
+
+{ #category : #tests }
+SARotateLiteralsInputAmplifierTest >> testItem2 [
+	| res cls item codes |
+	cls := SAASTHelper new
+		makeClassFrom:
+			{'testq <foo: #abc> ''-'' join: {#l123 asString. #rty asString. ''ssss''. ''vvvv''}'}
+		instanceVars: ''.
+	item := SATestMethod
+		with: (cls >> #testq) sourceCode
+		class: cls
+		targets: {FakeSmallBank}.
+	res := item inputAmplifyBy: amplifier.
+	codes := res
+		collect: [ :r | 
+			r testMethod
+				copyWithRegex: 'testq_O(\d+)'
+				matchesReplacedWith: 'testq' ].
+	codes sort.
+	self assert: res size equals: 3.
+	self
+		assertMethodSourceCode: (codes at: 1) asString
+		equals:
+			'testq <foo: #abc> ''-'' join: { #rty asString. #l123 asString. ''ssss''. ''vvvv''}'.
+	self
+		assertMethodSourceCode: (codes at: 2) asString
+		equals:
+			'testq <foo: #abc> ''ssss'' join: {#l123 asString. #rty asString. ''vvvv''. ''-''}'.
+	self
+		assertMethodSourceCode: (codes at: 3) asString
+		equals:
+			'testq <foo: #abc> ''vvvv'' join: {#l123 asString. #rty asString. ''-''. ''ssss''}'.
+	cls removeFromSystem
+]

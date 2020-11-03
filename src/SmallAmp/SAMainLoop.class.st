@@ -10,7 +10,8 @@ Class {
 		'resultPeople',
 		'testRunTimeoutMillis',
 		'selection',
-		'assertAmplificationClassCache'
+		'assertAmplificationClassCache',
+		'instantiationExtractor'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -41,57 +42,36 @@ SAMainLoop >> allOpenedWindows [
 
 { #category : #actions }
 SAMainLoop >> amplify [
-	| ts_start skip |
-	ts_start := DateAndTime now.
-	self initialSteps.
-	(1 to: config iterations)
-		do: [ :gen | 
-			Stdio stdout
-				nextPutAll: 'New generation started: ';
-				nextPutAll: gen asString;
-				lf;
-				flush.
-			skip := selection uncovered isEmpty.
-			config timeBudget > 0
-				ifTrue: [ (DateAndTime now - ts_start) asSeconds > config timeBudget
-						ifTrue: [ skip := true.
-							finalResult timeBudgetFinished: true ] ].
-			skip
-				ifFalse: [ self normalize.
-					self inputAmplification.
-					self methodReduction.
-					self assertionAmplification.
-					self selection.
-					self cleanUpAndAddToResult ] ]
-		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	self oracleReduction.
-	self simplification.
-	self prettifying.
-	self finalSteps.
-	^ finalResult
+	^ self subclassResponsibility  
 ]
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
-	| allWindows |
-	finalResult logs
+finalResult logs
 		recoredTag: #assertionAmplification
 		toRun:
-			[ allWindows := self allOpenedWindows.	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
-			population
-				do: [ :tcase | 
-					self assertionAmplifiers
-						do: [ :amplifier | 
-							" dirty  but necessary. recreating a temp class is very time cosuming "
-							assertAmplificationClassCache
-								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
-							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
-							tcase assertionAmplifyBy: amplifier.
-							assertAmplificationClassCache := amplifier generatedClass ] ]
-				displayingProgress: 'Assertion Amplification' , ' (' , population size asString , ')'.
-			self closeAllWindowsBut: allWindows.
-			population := population
-				reject: [ :tcase | tcase testMethod isNil ] ]
+			[ 
+	population := self assertionAmplificationFor: population
+	]
+]
+
+{ #category : #private }
+SAMainLoop >> assertionAmplificationFor: aList [
+	| allWindows |
+	"allWindows := self allOpenedWindows."	"this operation is an expensive op. time consuming. I moved from a-ampilier to here."
+	aList
+		do: [ :tcase | 
+			self assertionAmplifiers
+				do: [ :amplifier | 
+					" dirty  but necessary. recreating a temp class is very time cosuming "
+					assertAmplificationClassCache
+						ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+					amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+					tcase assertionAmplifyBy: amplifier.
+					assertAmplificationClassCache := amplifier generatedClass ] ]
+		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
+	"self closeAllWindowsBut: allWindows."
+	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
 
 { #category : #asserting }
@@ -180,32 +160,61 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
+	finalResult logs
+		recoredTag: #inputAmplification
+		toRun: [ 
+	^ self inputAmplificationFrom: population]
+]
+
+{ #category : #private }
+SAMainLoop >> inputAmplificationFrom: pop [
 	| newcodes |
 	finalResult logs
 		recoredTag: #inputAmplification
-		toRun: 
-	[newcodes := OrderedCollection new.
-	population
-		do: [ :tcase | 
-			self inputAmplifiers
-				do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
-		displayingProgress: 'Input Amplification' , ' (' , population size asString , ')'.
-	population addAll: newcodes]
+		toRun: [ newcodes := OrderedCollection new.
+			pop
+				do: [ :tcase | 
+					self inputAmplifiers
+						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
+				displayingProgress: 'Input Amplification' , ' (' , pop size asString , ')'.
+			population addAll: newcodes ]
 ]
 
 { #category : #accessing }
 SAMainLoop >> inputAmplifiers [
-	^  config inputAmplifiers
-				collect: [ :amplifier | amplifier initializeWith: config ] 
+	^ config inputAmplifiers
+		collect: [ :amplifier | amplifier key initializeWith: config ]
+]
+
+{ #category : #private }
+SAMainLoop >> inputTransplantation [
+	^ self inputTransplantationFrom: population 
+]
+
+{ #category : #private }
+SAMainLoop >> inputTransplantationFrom: aPopulation [
+	| newcodes transplantor |
+	finalResult logs
+		recoredTag: #inputTransplantation
+		toRun: [ newcodes := OrderedCollection new.
+			transplantor := SAInstantiationTransplanter initializeWith: config.
+			transplantor instantiationPatterns: instantiationExtractor patterns.
+			aPopulation
+				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
+				displayingProgress: 'Input inputTransplantation' , ' (' , aPopulation size asString , ')'.
+			population addAll: newcodes ]
 ]
 
 { #category : #private }
 SAMainLoop >> methodProfiling [
 	config profiler
 		ifNotNil: [ config profiler reset.
-			self flag: #TODO "why wee need cache profiles in config?".
+			self flag: #TODO.	"why wee need cache profiles in config?"
 			config profiler profileClasses: targetClasses byRunning: testClass.
-			finalResult runProfile: config profiler ]
+			finalResult runProfile: config profiler ].
+	instantiationExtractor := SAObjectInstantiationExtractor new.
+	instantiationExtractor testClass: testClass.
+	instantiationExtractor run
 ]
 
 { #category : #accessing }
@@ -299,15 +308,19 @@ SAMainLoop >> regenerateMethod: aMethodName [
 
 { #category : #actions }
 SAMainLoop >> selection [
+	population := self selectionFrom: population. 
+	
+]
+
+{ #category : #actions }
+SAMainLoop >> selectionFrom: aList [
 	| selectedTests |
 	finalResult logs
 		recoredTag: #selection
-		toRun: [ population ifEmpty: [ ^ self ].
+		toRun: [ aList ifEmpty: [ ^ {  } ].
 			selectedTests := OrderedCollection new.
-			
-				 
-					selectedTests addAll: (selection select: population).
-			population := selectedTests ]
+			selectedTests addAll: (selection select: aList).
+			^ selectedTests ]
 ]
 
 { #category : #'as yet unclassified' }

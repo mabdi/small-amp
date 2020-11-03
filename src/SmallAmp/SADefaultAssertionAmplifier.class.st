@@ -26,39 +26,18 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
-	Stdio stdout
-		nextPutAll: 'assert amplification: ';
-		nextPutAll: aMethodAST selector;
-		lf;
-		flush.
-	self class timing
-		recoredTag: #normalizeMethod
-		toRun: [ self normalizeMethod: aMethodAST ].
+	self normalizeMethod: aMethodAST.
 	sourceCodeWithoutObservers := aMethodAST formattedCode.
-	self class timing
-		recoredTag: #insertObservers
-		toRun: [ self insertObservers: aMethodAST ].
-	self class timing
-		recoredTag: #buildANewClassFor
-		toRun: [ self
-				buildANewClassFor: aMethodAST
-				basedOn: testMethodModel testClass ].
-	self class timing
-		recoredTag: #runTestClass
-		toRun: [ self runTestClass ifNil: [ ^ nil ] ].
-	self class timing
-		recoredTag: #ignoreFlakyValues
-		toRun: [ self ignoreFlakyValues ].
-	self class timing
-		recoredTag: #insertAsserts
-		toRun: [ sourceCodeWithAssertions := self
-				insertAsserts: sourceCodeWithoutObservers
-				using: generatedClass observer ].
-	self class timing
-		recoredTag: #checkPassing
-		toRun: [ (self checkPassing: sourceCodeWithAssertions)
-				ifFalse: [ ^ nil ] ].
-	self class timing recoredTag: #cleanUp toRun: [ self cleanUp ].
+	self insertObservers: aMethodAST.
+	self buildANewClassFor: aMethodAST basedOn: testMethodModel testClass.
+	self runTestClass ifNil: [ ^ nil ].
+	self ignoreFlakyValues.
+	sourceCodeWithAssertions := self
+		insertAsserts: sourceCodeWithoutObservers
+		using: generatedClass observer.
+	(self checkPassing: sourceCodeWithAssertions)
+		ifFalse: [ ^ nil ].
+	self cleanUp.
 	^ sourceCodeWithAssertions
 ]
 
@@ -78,15 +57,20 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 		ifNil: [ generatedClass := self astHelper
 				buildTestClassWith: {}
 				using: aClass.
-			generatedClass class addInstVarNamed: 'observer'.
-			generatedClass class
+				SystemAnnouncer uniqueInstance
+		suspendAllWhile: 
+			[generatedClass class addInstVarNamed: 'observer'].
+			self astHelper
+				onClass: generatedClass class
 				compile:
 					'observer ^ observer ifNil: [ observer := SAObserver newForTarget: '
 						, testMethodModel testTargets asString , ' serialDepth: '
 						, config serializationMaxDepth asString , ' ]'.
-			generatedClass class compile: 'observerReset  observer := nil ' ].
+			self astHelper
+				onClass: generatedClass class
+				compile: 'observerReset  observer := nil ' ].
 	generatedClass observerReset.
-	generatedClass compile: aMethod formattedCode.
+	self astHelper onClass: generatedClass compile: aMethod formattedCode.
 	^ generatedClass
 ]
 
@@ -111,37 +95,20 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r allWindows |
-	"passingCheckClass
-		ifNil: [ passingCheckClass := self astHelper
-				buildTestClassWith: {sourceCodeWithAssertions}
-				using: testMethodModel testClass ]
-		ifNotNil: [ passingCheckClass compile: sourceCodeWithAssertions ]."
-	"self class timing
-		recoredTag: #checkPassingAllOpen
-		toRun: [ allWindows := self allOpenedWindows ]."
-	self class timing
-		recoredTag: #checkPassingCompile
-		toRun: [ generatedClass compile: sourceCodeWithAssertions ].
-	self class timing
-		recoredTag: #checkPassingHasPassed
-		toRun: [ r := [ [ (generatedClass run: testMethodModel selector) hasPassed ]
-				on: Exception
-				do: [ :x | 
-					x isResumable
-						ifTrue: [ x resume ]
-						ifFalse: [ false ] ] ]
-				valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
-				onTimeout: [ false ] ].
-	"self class timing
-		recoredTag: #checkPassingCloseAll
-		toRun: [ self closeAllWindowsBut: allWindows ]."
+	| r  |
+	self astHelper
+		onClass: generatedClass
+		compile: sourceCodeWithAssertions.
+	r := SAASTHelper new
+		runSafelyTestClass: generatedClass
+		selector: testMethodModel selector
+		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds.
+	r ifNil: [ ^ false ].
+	r := r hasPassed .
 	r
-		ifFalse: [ self class timing
-				recoredTag: #checkPassingLoggin
-				toRun: [ self
-						log4debug: #AssertAmplifyCheckPassing
-						what: sourceCodeWithAssertions ] ].
+		ifFalse: [ self
+				log4debug: #AssertAmplifyCheckPassing
+				what: sourceCodeWithAssertions ].
 	^ r
 ]
 
@@ -149,7 +116,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 SADefaultAssertionAmplifier >> cleanUp [
 	config debug
 		ifTrue: [ ^ self ].
-	generatedClass removeSelector: testMethodModel selector.	"self astHelper removeClass: generatedClass source: self class name"
+	self astHelper onClass: generatedClass removeSelector: testMethodModel selector	"self astHelper removeClass: generatedClass source: self class name"
 ]
 
 { #category : #cleanup }
@@ -236,14 +203,12 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
+	^ SAASTHelper new
+		runSafelyTestClass: generatedClass
+		selector: testMethodModel selector
+		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
+		
 
-	^ [ [ generatedClass run: testMethodModel selector ]
-		on: Exception
-		do: [ :x | x isResumable
-				ifTrue: [ x resume ]
-				ifFalse: [ nil ] ] ]
-		valueWithin: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds
-		onTimeout: [ nil ]
 ]
 
 { #category : #'as yet unclassified' }

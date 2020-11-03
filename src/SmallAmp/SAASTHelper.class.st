@@ -2,7 +2,8 @@ Class {
 	#name : #SAASTHelper,
 	#superclass : #Object,
 	#classInstVars : [
-		'instanceId'
+		'instanceId',
+		'unsafeProcess'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -22,6 +23,13 @@ SAASTHelper class >> instanceId [
 { #category : #'as yet unclassified' }
 SAASTHelper class >> tempPattern [
 	^ 'tmp_([a-z0-9A-Z]+)\d+'
+]
+
+{ #category : #accessing }
+SAASTHelper class >> unsafeProcess [
+	^ unsafeProcess ifNil: [ unsafeProcess := [ ] newProcess
+		name: 'SmallAmp unsafe run';
+		priority: Processor userBackgroundPriority + 1 ]
 ]
 
 { #category : #adding }
@@ -50,7 +58,7 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> buildTestClassWith: aCollection using: testClass [
+SAASTHelper >> buildTestClassAndLogWith: aCollection using: testClass [
 	| tempClass |
 	tempClass := testClass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -69,6 +77,36 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 			| ast |
 			ast := self parsedMethodFrom: item.
 			tempClass compile: ast formattedCode ].
+	^ tempClass
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> buildTestClassWith: aCollection using: testClass [
+	| tempClass |
+	tempClass := testClass
+		subclass: (testClass name asString , self getId asString) asSymbol
+		instanceVariableNames: ''
+		classVariableNames: ''
+		package: self defaultTempPackage.
+	self
+		onClass: tempClass class
+		compile:
+			'allTestSelectors
+		| answer |
+		answer := Set withAll: self testSelectors.
+		answer addAll: self superclass allTestSelectors.
+		^ answer asSortedCollection asOrderedCollection'.
+	self
+		onClass: tempClass class
+		compile:
+			'defaultTimeLimit
+	^ 3 seconds '.
+
+	aCollection
+		do: [ :item | 
+			| ast |
+			ast := self parsedMethodFrom: item.
+			self onClass: tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
@@ -96,7 +134,7 @@ SAASTHelper >> cleanUp: aSourceCode [
 SAASTHelper >> clearTempClasses [
 	<script: 'SAASTHelper new clearTempClasses '>
 	(self defaultTempPackage asPackageIfAbsent: [ ^ true ]) classes
-		do: [ :item | item removeFromSystem ]
+		do: [ :item | self removeClass: item source: 'ClearTemp' ]
 		displayingProgress: 'Clear temp classes.'
 ]
 
@@ -125,7 +163,12 @@ SAASTHelper >> defaultTempPackage [
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> disableDeprecationsOn: aClass [
-	| methods str |
+	Deprecation
+		activateTransformations: false;
+		raiseWarning: false;
+		showWarning: false
+
+	"| methods str |
 	methods := (Object methodsInProtocol: #deprecation)
 		collect: [ :m | m ast copy ].
 	methods
@@ -133,14 +176,32 @@ SAASTHelper >> disableDeprecationsOn: aClass [
 			str := m
 				replaceNode: m body
 				withNode: (RBSequenceNode statements: #()).
-			aClass compile: str formattedCode ]
+			self onClass: aClass compile: str formattedCode ]"
+]
+
+{ #category : #accessing }
+SAASTHelper >> disableDeprecationsWhile: aBlock [
+	| activateTransformations raiseWarning showWarning |
+	activateTransformations := Deprecation activateTransformations.
+	raiseWarning := Deprecation raiseWarning.
+	showWarning := Deprecation showWarning.
+	^ [ Deprecation
+		activateTransformations: false;
+		raiseWarning: false;
+		showWarning: false.
+	aBlock value ]
+		ensure: [ Deprecation
+				activateTransformations: activateTransformations;
+				raiseWarning: raiseWarning;
+				showWarning: showWarning ]
 ]
 
 { #category : #'as yet unclassified' }
 SAASTHelper >> enableDeprecationsOn: aClass [
-
-	(Object methodsInProtocol: #deprecation)
-		do: [ :m | aClass removeSelector: m selector ]
+	Deprecation
+		activateTransformations: true;
+		raiseWarning: true;
+		showWarning: true
 ]
 
 { #category : #'method operations' }
@@ -172,7 +233,7 @@ SAASTHelper >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
 		instanceVariableNames: instanceVars
 		classVariableNames: ''
 		package: self defaultTempPackage.
-	arrayOfTestMethods do: [ :aTestMethod | cls compile: aTestMethod ].
+	arrayOfTestMethods do: [ :aTestMethod | self onClass: cls compile: aTestMethod ].
 	^ cls
 ]
 
@@ -209,6 +270,32 @@ SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
 	^ tempClass
 ]
 
+{ #category : #compiling }
+SAASTHelper >> onClass: aClass compile: aMethod [
+	SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass compile: aMethod.
+			"
+			aClass
+				compile: aMethod
+				classified: Protocol unclassified
+				withStamp: nil
+				notifying: nil
+				logSource: false" ]
+]
+
+{ #category : #compiling }
+SAASTHelper >> onClass: aClass removeSelector: aSelector [
+	SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass removeSelector: aSelector
+			"
+			aClass
+				compile: aMethod
+				classified: Protocol unclassified
+				withStamp: nil
+				notifying: nil
+				logSource: false" ]
+]
+
 { #category : #'method operations' }
 SAASTHelper >> parsedMethodFrom: aSourceCode [
 	^ self parserClass parseMethod: aSourceCode
@@ -240,7 +327,11 @@ SAASTHelper >> removeAssertions: aMethod [
 
 { #category : #removing }
 SAASTHelper >> removeClass: theClass source: sid [
-	theClass removeFromSystem
+	"theClass removeFromSystem"
+
+	theClass superclass addObsoleteSubclass: theClass.
+	theClass environment forgetClass: theClass logged: false.
+	theClass obsolete
 ]
 
 { #category : #'method operations' }
@@ -270,6 +361,71 @@ SAASTHelper >> renameTempVars: anStr [
 	^ anStr
 		copyWithRegex: self class tempPattern
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafely: aBlock timeOut: aDuration [
+	self flag: #todo.	"use  semaphor to be able to kill process"
+	^ aBlock
+		valueWithin: aDuration
+		onTimeout: [ SAUnsafeRunKilled new signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyNotWorking: aBlock timeOut: aDuration [
+	| retval semaphor p unsafePriority watcherPriority |
+	unsafePriority := Processor activeProcess priority - 3.
+	watcherPriority := unsafePriority + 1.
+	'1' traceCrAt: watcherPriority.
+	semaphor := Semaphore new.
+	'2' traceCrAt: watcherPriority.
+	p := [ '3' traceCrAt: watcherPriority.
+	Processor yield.
+	retval := aBlock value.
+	'4' traceCrAt: watcherPriority.
+	semaphor signal.
+	'5' traceCrAt: watcherPriority ] newProcess
+		name: 'SmallAmp unsafe run';
+		priority: unsafePriority.
+	'6' traceCrAt: watcherPriority.
+	^ [ [ '7' traceCrAt: watcherPriority.
+	p resume.
+	'8' traceCrAt: watcherPriority.
+	semaphor wait.
+	'9' traceCrAt: watcherPriority.
+	retval ] valueAt: watcherPriority ]
+		valueWithin: aDuration
+		onTimeout: [ '10' traceCrAt: watcherPriority.
+			p terminate.
+			SAUnsafeRunKilled new signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyTestClass: aTestClass selector: aSelector timeOut: aTimeOut [
+	^ [ self
+		runSafely: [ [ aTestClass run: aSelector ]
+				on: Exception
+				do: [ :x | 
+					x isResumable
+						ifTrue: [ x resume ]
+						ifFalse: [ ^ nil ] ] ]
+		timeOut: aTimeOut ]
+		on: SAUnsafeRunKilled
+		do: [ ^ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> runSafelyTestClass: aTestClass timeOut: aTimeOut [
+	^ [ self
+		runSafely: [ [ aTestClass buildSuite run ]
+				on: Exception
+				do: [ :x | 
+					x isResumable
+						ifTrue: [ x resume ]
+						ifFalse: [ ^ nil ] ] ]
+		timeOut: aTimeOut ]
+		on: SAUnsafeRunKilled
+		do: [ ^ nil ]
 ]
 
 { #category : #'method operations' }
