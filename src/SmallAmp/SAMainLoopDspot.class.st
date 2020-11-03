@@ -42,7 +42,6 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 			theATS addAll: theU ].
 	(1 to: config iterations)
 		do: [ :gen | 
-			theV := OrderedCollection new.
 			finalResult logs
 				recoredTag: #inputAmplification
 				toRun: [ theV := self inputAmplificationFrom: theV ].
