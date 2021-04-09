@@ -99,6 +99,14 @@ SACommandLineHandler >> clearTempClasses [
 	SAASTHelper new clearTempClasses 
 ]
 
+{ #category : #actions }
+SACommandLineHandler >> commitIdFor: repoName [
+	| clsIceRepository |
+	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
+	clsIceRepository
+		ifNotNil: [ ^ clsIceRepository latestCommitIdFor: repoName ]
+]
+
 { #category : #accessing }
 SACommandLineHandler >> end [
 	| noquit nosave |
@@ -235,7 +243,7 @@ SACommandLineHandler >> extraInformationFor: amplified [
 SACommandLineHandler >> metricsEval: repoName [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
 	classes := self allClassesForRepo: repoName.
-	commitId := IceRepository latestCommitIdFor: repoName.
+	commitId := self commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
 	targetedTests := tests
@@ -259,7 +267,9 @@ SACommandLineHandler >> metricsEval: repoName [
 		lf;
 		close.
 	(FileLocator imageDirectory / self todoFile) writeStream
-		nextPutAll: (Character lf join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ] ));
+		nextPutAll:
+			(Character lf
+				join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ]));
 		lf;
 		close.
 	(FileLocator imageDirectory / 'allTests.txt') writeStream
