@@ -62,9 +62,24 @@ SACommandLineHandler >> activate [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> allClassesForRepo: repoName [
-	(IceRepository registry detect: [ :r | r name = repoName ] ifFound: [ :r | ^ (r workingCopy packages select: [ :p | p isLoaded ])
-		flatCollect: [ :p | p package asPackage definedClasses ] ] ifNone: [ self error: 'repo not installed. ' , repoName])
-		
+	| clsIceRepository clsMetacelloProjectRegistration |
+	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
+	clsMetacelloProjectRegistration := Smalltalk
+		at: #MetacelloProjectRegistration
+		ifAbsent: [ nil ].
+	clsIceRepository
+		ifNotNil: [ clsIceRepository registry
+				detect: [ :r | r name = repoName ]
+				ifFound: [ :r | 
+					^ (r workingCopy packages select: [ :p | p isLoaded ])
+						flatCollect: [ :p | p package asPackage definedClasses ] ] ].
+	clsMetacelloProjectRegistration
+		ifNotNil: [ |reg| 
+			reg := clsMetacelloProjectRegistration
+				registrationForClassNamed: repoName
+				ifAbsent: [  ].
+			reg ifNotNil: [ ^ reg currentlyLoadedClassesInProject ] ].
+	self error: 'repo not installed. ' , repoName
 ]
 
 { #category : #'as yet unclassified' }
