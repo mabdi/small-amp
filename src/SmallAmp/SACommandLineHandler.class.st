@@ -72,13 +72,13 @@ SACommandLineHandler >> allClassesForRepo: repoName [
 				detect: [ :r | r name = repoName ]
 				ifFound: [ :r | 
 					^ (r workingCopy packages select: [ :p | p isLoaded ])
-						flatCollect: [ :p | p package asPackage definedClasses ] ] ].
+						flatCollect: [ :p | p package asPackage definedClasses asOrderedCollection ] ] ].
 	clsMetacelloProjectRegistration
-		ifNotNil: [ |reg| 
+		ifNotNil: [ | reg |
 			reg := clsMetacelloProjectRegistration
 				registrationForClassNamed: repoName
 				ifAbsent: [  ].
-			reg ifNotNil: [ ^ reg currentlyLoadedClassesInProject ] ].
+			reg ifNotNil: [ ^ reg currentlyLoadedClassesInProject asOrderedCollection ] ].
 	self error: 'repo not installed. ' , repoName
 ]
 
