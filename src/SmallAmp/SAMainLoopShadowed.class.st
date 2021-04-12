@@ -11,53 +11,15 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAMainLoopShadowed >> assertAmplificationStep [
-	theU := self assertionAmplificationFor: (theV collect: #clone).
-	
-]
-
-{ #category : #actions }
-SAMainLoopShadowed >> finalSteps [
-	| generatedClass |
-	generatedClass := self astHelper
-		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
-		using: testClass.
-	finalResult amplifiedClass: generatedClass.
-	self astHelper moveClassToFinal: finalResult amplifiedClass.
-	"self makeReadable."
-	finalResult
-		amplifiedAnalysis:
-			(selection
-				analysisFor: {finalResult amplifiedClass}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal)
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopShadowed >> finalizeAmplifyATestMethodStep [
-	theATS := theATS
-		collect: [ :item | 
-			| c |
-			c := item cleanedUpCopy.
-			c signAsSmallAmp.
-			c ].
-	resultPeople addAll: theATS
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopShadowed >> initAmplifyATestMethod: aTestMethod [
-	theATS := OrderedCollection new.
-	theV := OrderedCollection with: aTestMethod.
-	theU := OrderedCollection new.
-	theV do: #strip.
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopShadowed >> initStep [
-			theTS := self initTs.
-			self setupSelection.
-			self methodProfiling.
-	self flag: #todo	"write theTS to file -- accessible from runner"
+SAMainLoopShadowed >> getTestModelFromTSBySelector: selector [
+	| x |
+	x := theTS select: [ :m | m selector = selector ].
+	x
+		ifEmpty: [ self
+				error: 'Selector not found in TS: ' , selector , ' ts: ' , theTS asString ].
+	x size > 1
+		ifTrue: [ self error ].
+	^ x first
 ]
 
 { #category : #actions }
@@ -120,11 +82,6 @@ SAMainLoopShadowed >> inputAmplificationFrom: pop [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopShadowed >> inputAmplificationStep [
-				theV := self inputAmplificationFrom: theV
-]
-
-{ #category : #'as yet unclassified' }
 SAMainLoopShadowed >> makeReadable [
 	| readable reducer prettifier |
 	reducer := (config oracleReducion initializeWith: config)
@@ -146,19 +103,65 @@ SAMainLoopShadowed >> selectionFrom: aList [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopShadowed >> selectionStep [
-	theU := self selectionFrom: theU.
-	theATS addAll: theU
+SAMainLoopShadowed >> stepAssertAmplification [
+	theU := self assertionAmplificationFor: (theV collect: #clone)
 ]
 
-{ #category : #tests }
-SAMainLoopShadowed >> testModelFromTSBySelector: selector [
-	| x |
-	x := theTS select: [ :m | m selector = selector ].
-	x
-		ifEmpty: [ self
-				error: 'Selector not found in TS: ' , selector , ' ts: ' , theTS asString ].
-	x size > 1
-		ifTrue: [ self error ].
-	^  x first
+{ #category : #actions }
+SAMainLoopShadowed >> stepFinalize [
+	| generatedClass |
+	generatedClass := self astHelper
+		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
+		using: testClass.
+	finalResult amplifiedClass: generatedClass.
+	self astHelper moveClassToFinal: finalResult amplifiedClass.
+	"self makeReadable."
+	finalResult
+		amplifiedAnalysis:
+			(selection
+				analysisFor: {finalResult amplifiedClass}
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal).
+	finalResult saveResultToFileAs: testClass name.
+	finalResult amplifiedClass fileOut
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> stepFinalizeTestMethod [
+	theATS := theATS
+		collect: [ :item | 
+			| c |
+			c := item cleanedUpCopy.
+			c signAsSmallAmp.
+			c ].
+	resultPeople addAll: theATS
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> stepInitAmplifyATestMethod: aSelector [
+	| aTestMethod |
+	aTestMethod := self getTestModelFromTSBySelector: aSelector.
+	theATS := OrderedCollection new.
+	theV := OrderedCollection with: aTestMethod.
+	theU := OrderedCollection new.
+	theV do: #strip
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> stepInitClass [
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
+	self flag: #todo	"write theTS to file -- accessible from runner"
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> stepInputAmplification [
+	theV := self inputAmplificationFrom: theV
+]
+
+{ #category : #steps }
+SAMainLoopShadowed >> stepSelection [
+	theU := self selectionFrom: theU.
+	theATS addAll: theU
 ]
