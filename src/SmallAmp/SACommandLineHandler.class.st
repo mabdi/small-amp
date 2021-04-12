@@ -62,13 +62,13 @@ SACommandLineHandler >> activate [
 	(self hasOption: 'ciAmplifyTest')
 		ifTrue: [ self shadowAmplifyTest ].
 	(self hasOption: 'ciFinalizeClass')
-		ifTrue: [ self shadowAmplifyClassFinalize  ].
+		ifTrue: [ self shadowAmplifyClassFinalize ].
 	(self hasOption: 'ciFinalizeTest')
 		ifTrue: [ self shadowAmplifyTestFinalize ].
-	(self hasOption: 'ciTestAmplification')
+	(self hasOption: 'ciAssertionAmplification')
 		ifTrue: [ self shadowAssertionAmplification ].
 	(self hasOption: 'ciInputAmplification')
-		ifTrue: [ self shadowInputAmplification  ].
+		ifTrue: [ self shadowInputAmplification ].
 	(self hasOption: 'ciSelection')
 		ifTrue: [ self shadowSelection ].
 	self end
@@ -431,10 +431,20 @@ SACommandLineHandler >> shadowAmplifyTestFinalize [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> shadowAssertionAmplification [
+	| cmd selector |
+	cmd := '--ciAssertionAmplification='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | selector := arg allButFirst: cmd size ].
+	self shadowAssertionAmplification: selector
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> shadowAssertionAmplification: aSelector [
 	| main |
 	main := self loadMainLoopFromFuelFile.
-	main stepAssertAmplification.
-	self cout: 'MainLoop stepAssertAmplification done successfully'.
+	main stepAssertAmplification: aSelector.
+	self cout: 'MainLoop stepAssertAmplification done successfully for: ', aSelector .
 	self saveMainLoopInFuelFile: main.
 	Smalltalk snapshot: false andQuit: true
 ]

@@ -10,16 +10,31 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #actions }
+SAMainLoopShadowed >> amplify [
+	^ self error: 'dont call me.'
+]
+
 { #category : #'as yet unclassified' }
-SAMainLoopShadowed >> getTestModelFromTSBySelector: selector [
+SAMainLoopShadowed >> getSelector: selector from: aList [
 	| x |
-	x := theTS select: [ :m | m selector = selector ].
+	x := aList select: [ :m | m selector = selector ].
 	x
 		ifEmpty: [ self
-				error: 'Selector not found in TS: ' , selector , ' ts: ' , theTS asString ].
+				error: 'Selector not found: ' , selector , ' list: ' , aList asString ].
 	x size > 1
 		ifTrue: [ self error ].
 	^ x first
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> getTestInputFromTheV: aSelector [
+	^ self getSelector: aSelector from: theV
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> getTestModelFromTSBySelector: selector [
+	^ self getSelector: selector from: theTS
 ]
 
 { #category : #actions }
@@ -103,8 +118,19 @@ SAMainLoopShadowed >> selectionFrom: aList [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopShadowed >> stepAssertAmplification [
-	theU := self assertionAmplificationFor: (theV collect: #clone)
+SAMainLoopShadowed >> stepAssertAmplification: aSelector [
+	| tcase |
+	tcase := (self getTestInputFromTheV: aSelector) clone.
+	self assertionAmplifiers
+		do: [ :amplifier | 
+			" dirty  but necessary. recreating a temp class is very time cosuming "
+			"^ aList reject: [ :tcase | tcase testMethod isNil ]"
+			assertAmplificationClassCache
+				ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+			amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+			tcase assertionAmplifyBy: amplifier.
+			assertAmplificationClassCache := amplifier generatedClass ].
+	tcase testMethod ifNotNil: [ theU add: tcase ]
 ]
 
 { #category : #actions }
@@ -144,7 +170,8 @@ SAMainLoopShadowed >> stepInitAmplifyATestMethod: aSelector [
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theU := OrderedCollection new.
-	theV do: #strip
+	theV do: #strip.
+	self flag: #todo	"write theV to file -- accessible from runner"
 ]
 
 { #category : #'as yet unclassified' }
@@ -157,7 +184,8 @@ SAMainLoopShadowed >> stepInitClass [
 
 { #category : #'as yet unclassified' }
 SAMainLoopShadowed >> stepInputAmplification [
-	theV := self inputAmplificationFrom: theV
+	theV := self inputAmplificationFrom: theV.
+	self flag: #todo	"write theV to file -- accessible from runner"
 ]
 
 { #category : #steps }
