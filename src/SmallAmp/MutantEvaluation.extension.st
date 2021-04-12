@@ -1,6 +1,45 @@
 Extension { #name : #MutantEvaluation }
 
 { #category : #'*SmallAmp' }
+MutantEvaluation >> getTestClass [
+	^ testCases first testCase class
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> logTestStart: aTestCaseStarted [
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: 'Mutation Testing, Starting Test: ';
+		nextPutAll: aTestCaseStarted testSelector;
+		lf;
+		flush.
+	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
+		truncate;
+		nextPutAll: aTestCaseStarted testSelector;
+		close.
+	
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> loggerBlock [
+	^ loggerBlock
+		ifNil: [ loggerBlock := [ :aTestCaseStarted | 
+			self logTestStart: aTestCaseStarted	
+				 ] ]
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> loggerSubscribe [
+	self getTestClass announcer when: TestCaseStarted do: self loggerBlock
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> loggerUnsubscribe [
+	self getTestClass announcer unsubscribe: self loggerBlock
+]
+
+{ #category : #'*SmallAmp' }
 MutantEvaluation >> runTestsSmallAmp [
 	"Collect all suite test and execute them."
 
@@ -61,6 +100,7 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 MutantEvaluation >> valueSmallAmp [
 	| testResults |
 	self initializeCoverageResultIfNil.
+	
 	testResults := [ mutation install.
 	self testResultsSmallAmp ]
 		ensure: [ mutation uninstallDeep ].
@@ -74,9 +114,11 @@ MutantEvaluation >> valueSmallAmp [
 MutantEvaluation >> valueSmallAmpVerbose [
 	| testResults |
 	self initializeCoverageResultIfNil.
+	self loggerSubscribe.
 	testResults := [ mutation install.
 	self testResultsSmallAmpVerbose ]
 		ensure: [ mutation uninstallDeep ].
+	self loggerUnsubscribe.
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults

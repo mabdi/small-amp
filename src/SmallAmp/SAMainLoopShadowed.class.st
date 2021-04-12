@@ -186,7 +186,8 @@ SAMainLoopShadowed >> stepInputAmplification [
 { #category : #steps }
 SAMainLoopShadowed >> stepSelectionFinalize [
 	theU := selection finalizeShadowSelections.
-	theATS addAll: theU
+	theATS addAll: theU.
+	self flag: #todo	"write uncovered to file -- accessible from runner"
 ]
 
 { #category : #steps }

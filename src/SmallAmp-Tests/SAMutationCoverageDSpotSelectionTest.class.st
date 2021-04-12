@@ -16,10 +16,14 @@ SAMutationCoverageDSpotSelectionTest >> test1 [
 		initialAnalysisFor: {SmallBankTest}
 		targets: {SmallBank}
 		ignore: {}.
+	selection setUpShadowSelections.
 	test := SATestMethod from: SmallBankTest >> #testWithdraw.
 	self assert: selection uncovered size equals: 3.
-	self assertEmpty: (selection select: {} forMutantAtIndex: 1).
-	self assertEmpty: (selection select: {test} forMutantAtIndex: 1).
+	selection select: {} forMutantAtIndex: 1.
+	self assertEmpty: selection finalizeShadowSelections.
+	selection setUpShadowSelections.
+	selection select: {test} forMutantAtIndex: 1.
+	self assertEmpty: selection finalizeShadowSelections.
 	test := test clone
 		testMethod:
 			'testWithdraw
@@ -29,6 +33,9 @@ SAMutationCoverageDSpotSelectionTest >> test1 [
 	self assert: b balance equals: 100.
 	b withdraw: 100.
 	self assert: b balance equals: 0'.
-	self assert: (selection select: {test} forMutantAtIndex: 1) size equals: 1.
-	
+	selection setUpShadowSelections.
+	(selection select: {test} forMutantAtIndex: 1).
+	self
+		assert: (selection finalizeShadowSelections) size
+		equals: 1.
 ]
