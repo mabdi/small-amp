@@ -1,6 +1,9 @@
 Class {
 	#name : #SAMutationCoverageDSpotSelection,
 	#superclass : #SAAbstractSelection,
+	#instVars : [
+		'shadowResults'
+	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -50,6 +53,18 @@ SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: resul
 { #category : #cleanup }
 SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
 	self astHelper removeClass: generatedClass source: self class name.
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> finalizeShadowSelections [
+	|result|
+	result := self addInfoToSelectedMethods: shadowResults.
+	^ result reject: #isNil
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> getMutantFromUncovereds: aMutantIndex [
+	^ {(uncovered at: aMutantIndex)}
 ]
 
 { #category : #cleanup }
@@ -171,4 +186,54 @@ SAMutationCoverageDSpotSelection >> select: aPopulation [
 									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	result := self addInfoToSelectedMethods: result.
 	^ result reject: #isNil
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
+	| analysisResult alives result newKills testClasses testClass targetClasses |
+	aPopulation ifEmpty: [ ^ {} ].
+	result := Dictionary new.
+	testClass := aPopulation atRandom testClass.
+	targetClasses := aPopulation atRandom testTargets.
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
+	self astHelper
+		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with:
+					(SmallAmpMutationsGenerationStrategy new
+						mutants: ((self getMutantFromUncovereds: aMutantIndex) collect: #mutant)).
+			analysisResult runSmallAmpVerbose ].
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
+	alives := analysisResult generalResult aliveMutants.
+	alives
+		ifNotEmpty: [ :x | ^ {} ]
+		ifEmpty: [ newKills := self getMutantFromUncovereds: aMutantIndex.
+			uncovered := uncovered
+				reject:
+					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
+	analysisResult particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels selected |
+									sels := item result failures collect: #selector.
+									selected := self
+										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+										notIncludedIn: result.
+									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	shadowResults addAll: result.
+	
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> setUpShadowSelections [
+	shadowResults := Dictionary new.
 ]

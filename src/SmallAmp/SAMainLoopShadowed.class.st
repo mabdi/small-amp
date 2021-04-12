@@ -111,12 +111,6 @@ SAMainLoopShadowed >> makeReadable [
 	self astHelper moveClassToFinal: readable.
 ]
 
-{ #category : #actions }
-SAMainLoopShadowed >> selectionFrom: aList [
-	aList ifEmpty: [ ^ {} ].
-			^ selection select: aList 
-]
-
 { #category : #'as yet unclassified' }
 SAMainLoopShadowed >> stepAssertAmplification: aSelector [
 	| tcase |
@@ -179,7 +173,8 @@ SAMainLoopShadowed >> stepInitClass [
 	theTS := self initTs.
 	self setupSelection.
 	self methodProfiling.
-	self flag: #todo	"write theTS to file -- accessible from runner"
+	self flag: #todo.	"write theTS to file -- accessible from runner"
+	self flag: #todo.	"write uncovered to file -- accessible from runner"	
 ]
 
 { #category : #'as yet unclassified' }
@@ -189,7 +184,18 @@ SAMainLoopShadowed >> stepInputAmplification [
 ]
 
 { #category : #steps }
-SAMainLoopShadowed >> stepSelection [
-	theU := self selectionFrom: theU.
+SAMainLoopShadowed >> stepSelectionFinalize [
+	theU := selection finalizeShadowSelections.
 	theATS addAll: theU
+]
+
+{ #category : #steps }
+SAMainLoopShadowed >> stepSelectionInit [
+	selection setUpShadowSelections.
+]
+
+{ #category : #steps }
+SAMainLoopShadowed >> stepSelectionMutantIndex: anInteger [
+	selection select: theU forMutantAtIndex: anInteger.
+	
 ]

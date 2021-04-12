@@ -27,6 +27,7 @@ SAAbstractSelection class >> initializeWith: aConfig [
 SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 	| result |
 	result := OrderedCollection new.
+	self flag: #todo. "duplications: if a test kills more than 1 mutant, you should consider it. you suould reverse the dictionary to method-> mutant, then add pragmas"
 	coveredToMethod
 		keysAndValuesDo: [ :k :v | 
 			| ast |

@@ -69,8 +69,12 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self shadowAssertionAmplification ].
 	(self hasOption: 'ciInputAmplification')
 		ifTrue: [ self shadowInputAmplification ].
-	(self hasOption: 'ciSelection')
-		ifTrue: [ self shadowSelection ].
+	(self hasOption: 'ciSelectionInit')
+		ifTrue: [ self shadowSelectionInit ].
+	(self hasOption: 'ciSelectionFinalize')
+		ifTrue: [ self shadowSelectionFinalize ].
+	(self hasOption: 'ciSelectionMutantIndex')
+		ifTrue: [ self shadowSelectionMutantIndex ].
 	self end
 ]
 
@@ -460,11 +464,41 @@ SACommandLineHandler >> shadowInputAmplification [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowSelection [
+SACommandLineHandler >> shadowSelectionFinalize [
 	| main |
 	main := self loadMainLoopFromFuelFile.
-	main stepSelection.
-	self cout: 'MainLoop stepSelection done successfully'.
+	main stepSelectionFinalize.
+	self cout: 'MainLoop stepSelectionFinalize done successfully'.
+	self saveMainLoopInFuelFile: main.
+	Smalltalk snapshot: false andQuit: true
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> shadowSelectionInit [
+	| main |
+	main := self loadMainLoopFromFuelFile.
+	main stepSelectionInit.
+	self cout: 'MainLoop stepSelectionInit done successfully'.
+	self saveMainLoopInFuelFile: main.
+	Smalltalk snapshot: false andQuit: true
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> shadowSelectionMutantIndex [
+	| cmd index |
+	cmd := '--ciSelectionMutantIndex='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | index := arg allButFirst: cmd size ].
+	self shadowSelectionMutantIndex: index asInteger
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> shadowSelectionMutantIndex: anIndex [
+	| main |
+	main := self loadMainLoopFromFuelFile.
+	main stepSelectionMutantIndex: anIndex.
+	self cout: 'MainLoop shadowSelectionMutantIndex: done successfully'.
 	self saveMainLoopInFuelFile: main.
 	Smalltalk snapshot: false andQuit: true
 ]
