@@ -165,7 +165,7 @@ SAMainLoopShadowed >> stepInitAmplifyATestMethod: aSelector [
 	theV := OrderedCollection with: aTestMethod.
 	theU := OrderedCollection new.
 	theV do: #strip.
-	self flag: #todo	"write theV to file -- accessible from runner"
+	self updateFileTheV
 ]
 
 { #category : #'as yet unclassified' }
@@ -173,21 +173,21 @@ SAMainLoopShadowed >> stepInitClass [
 	theTS := self initTs.
 	self setupSelection.
 	self methodProfiling.
-	self flag: #todo.	"write theTS to file -- accessible from runner"
-	self flag: #todo.	"write uncovered to file -- accessible from runner"	
+	self updateFileTheTS.
+	self updateFileUncovered
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoopShadowed >> stepInputAmplification [
 	theV := self inputAmplificationFrom: theV.
-	self flag: #todo	"write theV to file -- accessible from runner"
+	self updateFileTheV 
 ]
 
 { #category : #steps }
 SAMainLoopShadowed >> stepSelectionFinalize [
 	theU := selection finalizeShadowSelections.
 	theATS addAll: theU.
-	self flag: #todo	"write uncovered to file -- accessible from runner"
+	self updateFileUncovered 
 ]
 
 { #category : #steps }
@@ -199,4 +199,35 @@ SAMainLoopShadowed >> stepSelectionInit [
 SAMainLoopShadowed >> stepSelectionMutantIndex: anInteger [
 	selection select: theU forMutantAtIndex: anInteger.
 	
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> updateFileTheTS [
+		self
+		writeJsonToFile: '_smallamp_theTS'
+		array: (theTS collect: #selector).
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> updateFileTheV [
+	self
+		writeJsonToFile: '_smallamp_theV'
+		array: (theV collect: #selector)
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopShadowed >> updateFileUncovered [
+	self
+		writeJsonToFile: '_smallamp_uncovered'
+		array: (selection uncovered collect: #asDictionaryObject)
+]
+
+{ #category : #writing }
+SAMainLoopShadowed >> writeJsonToFile: name array: anArray [
+	| str |
+	str := STONJSON toString: anArray.
+	(FileLocator imageDirectory / (name, '.json')) writeStream
+		truncate;
+		nextPutAll: str;
+		close
 ]
