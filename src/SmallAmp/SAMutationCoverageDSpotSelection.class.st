@@ -2,7 +2,8 @@ Class {
 	#name : #SAMutationCoverageDSpotSelection,
 	#superclass : #SAAbstractSelection,
 	#instVars : [
-		'shadowResults'
+		'shadowResults',
+		'loggerBlock'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -78,6 +79,41 @@ SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: tar
 	analysis1 := self analysisFor: testClasses targets: targetClasses ignore: aListOfMethods.
 	uncovered := analysis1 generalResult aliveMutants.
 	^ analysis1
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> logTestStart: aTestCaseStarted [
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: 'Mutation Testing, Starting Test: ';
+		nextPutAll: aTestCaseStarted testSelector;
+		lf;
+		flush.
+	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
+		truncate;
+		nextPutAll: aTestCaseStarted testSelector;
+		close
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerBlock [
+	^ loggerBlock
+		ifNil:
+			[ loggerBlock := [ :aTestCaseStarted | self logTestStart: aTestCaseStarted ] ]
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerSubscribe: testClasses [
+	testClasses do: [ :cls |  
+	cls announcer
+		when: TestCaseStarted
+		do: self loggerBlock ]
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerUnsubscribe: testClasses [
+	testClasses do: [ :cls | cls announcer unsubscribe: self loggerBlock ]
 ]
 
 { #category : #'private-debugging' }
@@ -198,6 +234,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutan
 	testClasses := {(self astHelper
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass)}.
+	self loggerSubscribe: testClasses.
 	self astHelper
 		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
 				testCasesFrom: testClasses
@@ -208,6 +245,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutan
 					(SmallAmpMutationsGenerationStrategy new
 						mutants: ((self getMutantFromUncovereds: aMutantIndex) collect: #mutant)).
 			analysisResult runSmallAmpVerbose ].
+	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	alives := analysisResult generalResult aliveMutants.
 	alives
@@ -229,8 +267,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutan
 										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
 										notIncludedIn: result.
 									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
-	shadowResults addAll: result.
-	
+	shadowResults addAll: result
 ]
 
 { #category : #enumerating }

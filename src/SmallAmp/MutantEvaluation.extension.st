@@ -6,40 +6,6 @@ MutantEvaluation >> getTestClass [
 ]
 
 { #category : #'*SmallAmp' }
-MutantEvaluation >> logTestStart: aTestCaseStarted [
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: 'Mutation Testing, Starting Test: ';
-		nextPutAll: aTestCaseStarted testSelector;
-		lf;
-		flush.
-	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
-		truncate;
-		nextPutAll: aTestCaseStarted testSelector;
-		close.
-	
-]
-
-{ #category : #'*SmallAmp' }
-MutantEvaluation >> loggerBlock [
-	^ loggerBlock
-		ifNil: [ loggerBlock := [ :aTestCaseStarted | 
-			self logTestStart: aTestCaseStarted	
-				 ] ]
-]
-
-{ #category : #'*SmallAmp' }
-MutantEvaluation >> loggerSubscribe [
-	self getTestClass announcer when: TestCaseStarted do: self loggerBlock
-]
-
-{ #category : #'*SmallAmp' }
-MutantEvaluation >> loggerUnsubscribe [
-	self getTestClass announcer unsubscribe: self loggerBlock
-]
-
-{ #category : #'*SmallAmp' }
 MutantEvaluation >> runTestsSmallAmp [
 	"Collect all suite test and execute them."
 
