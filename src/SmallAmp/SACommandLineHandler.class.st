@@ -390,7 +390,7 @@ SACommandLineHandler >> shadowAmplifyClass: aTestClass [
 	classUnderTest := aTestClass smallAmpTargetClasses.
 	self amplificationRunInShadowFor: aTestClass target: classUnderTest.
 	self cout: 'finished #shadowAmplifyClass: for ' , aTestClass name.
-	Smalltalk snapshot: false andQuit: true
+	Smalltalk snapshot: true andQuit: true
 ]
 
 { #category : #'as yet unclassified' }
