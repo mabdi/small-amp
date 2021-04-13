@@ -35,19 +35,22 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ 
-		
-		[ suite run ]
-				on: Exception
-				do: [ :x | 
-					x isResumable
-						ifTrue: [ x resume ]
-						ifFalse: [ x signal ] ] 
-		
-		
-		 ]
+	^ [ [ suite run ]
 		on: Exception
-		do: [ :ex | nil ]
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ x signal ] ] ]
+		on: Exception
+		do: [ :ex | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'runTestsSmallAmpVerbose: Terminating test Run: ';
+				nextPutAll: ex asString;
+				lf;
+				flush.
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
@@ -61,7 +64,13 @@ MutantEvaluation >> testResultsSmallAmp [
 MutantEvaluation >> testResultsSmallAmpVerbose [
 	^ [ self runTestsSmallAmpVerbose ]
 		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
-		onTimeout: [ nil ]
+		onTimeout: [ 			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout';
+				lf;
+				flush.
+				nil ]
 ]
 
 { #category : #'*SmallAmp' }
