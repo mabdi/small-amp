@@ -80,11 +80,9 @@ MutantEvaluation >> valueSmallAmp [
 MutantEvaluation >> valueSmallAmpVerbose [
 	| testResults |
 	self initializeCoverageResultIfNil.
-	self loggerSubscribe.
 	testResults := [ mutation install.
 	self testResultsSmallAmpVerbose ]
 		ensure: [ mutation uninstallDeep ].
-	self loggerUnsubscribe.
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults
