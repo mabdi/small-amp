@@ -15,14 +15,20 @@ MutantEvaluation >> runTestsSmallAmp [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ SAASTHelper new runSafely: [[ suite runStoppingOnFirstFailOrError ]
+	^ [ [ suite runStoppingOnFirstFailOrError ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
 				ifTrue: [ x resume ]
-				ifFalse: [ x signal ] ]] timeOut: 3 seconds  ]
+				ifFalse: [ x signal ] ] ]
 		on: Exception
-		do: [ :ex | nil ]
+		do: [ :ex | 			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'runTestsSmallAmpVerbose: Terminating test Run: ';
+				nextPutAll: ex asString;
+				lf;
+				flush..nil ]
 ]
 
 { #category : #'*SmallAmp' }
@@ -57,7 +63,12 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 MutantEvaluation >> testResultsSmallAmp [
 	^ [ self runTestsSmallAmp ]
 		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
-		onTimeout: [ nil ]
+		onTimeout: [ Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout';
+				lf;
+				flush.nil ]
 ]
 
 { #category : #'*SmallAmp' }
@@ -94,13 +105,6 @@ MutantEvaluation >> valueSmallAmpVerbose [
 	testResults := [ mutation install.
 	self testResultsSmallAmpVerbose ]
 		ensure: [ mutation uninstallDeep ].
-	testResults
-		ifNil: [ Stdio stdout
-				nextPutAll: Time nowUTC print24;
-				nextPutAll: String space;
-				nextPutAll: 'testResults is nil';
-				lf;
-				flush ].
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults
