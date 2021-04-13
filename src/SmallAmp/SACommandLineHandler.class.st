@@ -75,7 +75,6 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self shadowSelectionFinalize ].
 	(self hasOption: 'ciSelectionMutantIndex')
 		ifTrue: [ self shadowSelectionMutantIndex ].
-	self end
 ]
 
 { #category : #'as yet unclassified' }
@@ -124,7 +123,8 @@ SACommandLineHandler >> amplificationContextInit [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> amplificationRunInShadowFor: aTestClass [
-	| main |
+	| error main |
+	error := 0.
 	main := SAMainLoopShadowed
 		with: SAConfig default
 		for: aTestClass
@@ -133,9 +133,11 @@ SACommandLineHandler >> amplificationRunInShadowFor: aTestClass [
 		on: Error
 		do: [ :x | 
 			self cout: 'Run instance crashed: ' , aTestClass name.
-			self cout: 'Error details:' , x description ].
+			self cout: 'Error details:' , x description.
+			error := 1 ].
 	self cout: 'MainLoop initClass done'.
-	self saveMainLoopInFuelFile: main
+	self saveMainLoopInFuelFile: main.
+	^ error
 ]
 
 { #category : #activation }
@@ -169,16 +171,6 @@ SACommandLineHandler >> cout: aString [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> defaultLoopObjectFuelFile [
 	^ '__smallAmp_main.fl'
-]
-
-{ #category : #accessing }
-SACommandLineHandler >> end [
-	| noquit nosave |
-	noquit := self commandLine hasOption: 'noquit'.
-	nosave := (self commandLine hasOption: 'nosave').
-	nosave ifFalse: [ Smalltalk snapshot: true andQuit: noquit not ].
-	noquit
-		ifFalse: [ self exitSuccess ]
 ]
 
 { #category : #accessing }
@@ -388,11 +380,17 @@ SACommandLineHandler >> shadowAmplifyClass [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> shadowAmplifyClass: aTestClass [
+	| error |
 	self cout: 'started #shadowAmplifyClass: for ' , aTestClass name.
 	self amplificationContextInit.
-	self amplificationRunInShadowFor: aTestClass.
-	self cout: 'finished #shadowAmplifyClass: for ' , aTestClass name.
-	Smalltalk snapshot: true andQuit: true
+	error := self amplificationRunInShadowFor: aTestClass.
+	self
+		cout:
+			'finished #shadowAmplifyClass: for ' , aTestClass name
+				, ' exit code: ' , error asString.
+	error = 0
+		ifTrue: [ Smalltalk snapshot: true andQuit: true ]
+		ifFalse: [ Smalltalk exit: error ]
 ]
 
 { #category : #'as yet unclassified' }
