@@ -203,16 +203,16 @@ SAMainLoopShadowed >> stepSelectionMutantIndex: anInteger [
 
 { #category : #'as yet unclassified' }
 SAMainLoopShadowed >> updateFileTheTS [
-		self
+	self
 		writeJsonToFile: '_smallamp_theTS'
-		array: (theTS collect: #selector).
+		array: (theTS collect: [:x | x selector asString])
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoopShadowed >> updateFileTheV [
 	self
 		writeJsonToFile: '_smallamp_theV'
-		array: (theV collect: #selector)
+		array: (theV collect: [ :x | x selector asString ])
 ]
 
 { #category : #'as yet unclassified' }
