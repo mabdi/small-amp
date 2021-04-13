@@ -400,7 +400,7 @@ SACommandLineHandler >> shadowAmplifyClass: aTestClass [
 			'finished #shadowAmplifyClass: for ' , aTestClass name
 				, ' exit code: ' , error asString.
 	error = 0
-		ifTrue: [ Smalltalk snapshot: true andQuit: true ]
+		ifTrue: [ Smalltalk snapshot: false andQuit: true ]
 		ifFalse: [ Smalltalk exit: error ]
 ]
 
