@@ -379,7 +379,7 @@ SACommandLineHandler >> shadowAmplifyClass [
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
 		ifFound: [ :arg | className := arg allButFirst: cmd size ].
-	self shadowAmplifyClass: className
+	self shadowAmplifyClass: (Smalltalk globals at: className asSymbol)
 ]
 
 { #category : #'as yet unclassified' }
