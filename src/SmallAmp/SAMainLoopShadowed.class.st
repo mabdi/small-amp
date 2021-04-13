@@ -219,7 +219,7 @@ SAMainLoopShadowed >> updateFileTheV [
 SAMainLoopShadowed >> updateFileUncovered [
 	self
 		writeJsonToFile: '_smallamp_uncovered'
-		array: (selection uncovered collect: #asDictionaryObject)
+		array: (selection uncovered collect: [:m | m mutant asDictionaryObject])
 ]
 
 { #category : #writing }

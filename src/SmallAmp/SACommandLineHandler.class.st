@@ -130,13 +130,13 @@ SACommandLineHandler >> amplificationRunInShadowFor: aTestClass [
 		with: SAConfig default
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
-	[ main stepInitClass ]
+	[ main stepInitClass.
+	self cout: 'MainLoop initClass done'. ]
 		on: Error
 		do: [ :x | 
 			self cout: 'Run instance crashed: ' , aTestClass name.
 			self cout: 'Error details:' , x description.
 			error := 1 ].
-	self cout: 'MainLoop initClass done'.
 	self saveMainLoopInFuelFile: main.
 	^ error
 ]
