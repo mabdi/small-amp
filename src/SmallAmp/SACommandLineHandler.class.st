@@ -123,12 +123,12 @@ SACommandLineHandler >> amplificationContextInit [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> amplificationRunInShadowFor: aTestClass target: classUnderTest [
+SACommandLineHandler >> amplificationRunInShadowFor: aTestClass [
 	| main |
 	main := SAMainLoopShadowed
 		with: SAConfig default
 		for: aTestClass
-		targets: {classUnderTest}.
+		targets: aTestClass smallAmpTargetClasses.
 	main stepInitClass.
 	self cout: 'MainLoop initClass done'.
 	self saveMainLoopInFuelFile: main
@@ -384,11 +384,9 @@ SACommandLineHandler >> shadowAmplifyClass [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> shadowAmplifyClass: aTestClass [
-	| classUnderTest |
 	self cout: 'started #shadowAmplifyClass: for ' , aTestClass name.
 	self amplificationContextInit.
-	classUnderTest := aTestClass smallAmpTargetClasses.
-	self amplificationRunInShadowFor: aTestClass target: classUnderTest.
+	self amplificationRunInShadowFor: aTestClass.
 	self cout: 'finished #shadowAmplifyClass: for ' , aTestClass name.
 	Smalltalk snapshot: true andQuit: true
 ]
