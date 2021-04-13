@@ -1,6 +1,11 @@
 Extension { #name : #MutantEvaluation }
 
 { #category : #'*SmallAmp' }
+MutantEvaluation >> getTestClass [
+	^ testCases first testCase class
+]
+
+{ #category : #'*SmallAmp' }
 MutantEvaluation >> runTestsSmallAmp [
 	"Collect all suite test and execute them."
 
@@ -61,6 +66,7 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 MutantEvaluation >> valueSmallAmp [
 	| testResults |
 	self initializeCoverageResultIfNil.
+	
 	testResults := [ mutation install.
 	self testResultsSmallAmp ]
 		ensure: [ mutation uninstallDeep ].

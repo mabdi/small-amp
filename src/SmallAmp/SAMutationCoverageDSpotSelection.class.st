@@ -1,6 +1,10 @@
 Class {
 	#name : #SAMutationCoverageDSpotSelection,
 	#superclass : #SAAbstractSelection,
+	#instVars : [
+		'shadowResults',
+		'loggerBlock'
+	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -52,6 +56,18 @@ SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
 	self astHelper removeClass: generatedClass source: self class name.
 ]
 
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> finalizeShadowSelections [
+	|result|
+	result := self addInfoToSelectedMethods: shadowResults.
+	^ result reject: #isNil
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> getMutantFromUncovereds: aMutantIndex [
+	^ {(uncovered at: aMutantIndex)}
+]
+
 { #category : #cleanup }
 SAMutationCoverageDSpotSelection >> infoPragmaFrom: aCovered [
 	^ aCovered smallAmpInfoText
@@ -63,6 +79,41 @@ SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: tar
 	analysis1 := self analysisFor: testClasses targets: targetClasses ignore: aListOfMethods.
 	uncovered := analysis1 generalResult aliveMutants.
 	^ analysis1
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> logTestStart: aTestCaseStarted [
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: 'Mutation Testing, Starting Test: ';
+		nextPutAll: aTestCaseStarted testSelector;
+		lf;
+		flush.
+	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
+		truncate;
+		nextPutAll: aTestCaseStarted testSelector;
+		close
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerBlock [
+	^ loggerBlock
+		ifNil:
+			[ loggerBlock := [ :aTestCaseStarted | self logTestStart: aTestCaseStarted ] ]
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerSubscribe: testClasses [
+	testClasses do: [ :cls |  
+	cls announcer
+		when: TestCaseStarted
+		do: self loggerBlock ]
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> loggerUnsubscribe: testClasses [
+	testClasses do: [ :cls | cls announcer unsubscribe: self loggerBlock ]
 ]
 
 { #category : #'private-debugging' }
@@ -171,4 +222,55 @@ SAMutationCoverageDSpotSelection >> select: aPopulation [
 									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	result := self addInfoToSelectedMethods: result.
 	^ result reject: #isNil
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
+	| analysisResult alives result newKills testClasses testClass targetClasses |
+	aPopulation ifEmpty: [ ^ {} ].
+	result := Dictionary new.
+	testClass := aPopulation atRandom testClass.
+	targetClasses := aPopulation atRandom testTargets.
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
+	self loggerSubscribe: testClasses.
+	self astHelper
+		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with:
+					(SmallAmpMutationsGenerationStrategy new
+						mutants: ((self getMutantFromUncovereds: aMutantIndex) collect: #mutant)).
+			analysisResult runSmallAmpVerbose ].
+	self loggerUnsubscribe: testClasses.
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
+	alives := analysisResult generalResult aliveMutants.
+	alives
+		ifNotEmpty: [ :x | ^ {} ]
+		ifEmpty: [ newKills := self getMutantFromUncovereds: aMutantIndex.
+			uncovered := uncovered
+				reject:
+					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
+	analysisResult particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels selected |
+									sels := item result failures collect: #selector.
+									selected := self
+										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+										notIncludedIn: result.
+									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	shadowResults addAll: result
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> setUpShadowSelections [
+	shadowResults := Dictionary new.
 ]
