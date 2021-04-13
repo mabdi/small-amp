@@ -94,6 +94,13 @@ MutantEvaluation >> valueSmallAmpVerbose [
 	testResults := [ mutation install.
 	self testResultsSmallAmpVerbose ]
 		ensure: [ mutation uninstallDeep ].
+	testResults
+		ifNil: [ Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'testResults is nil';
+				lf;
+				flush ].
 	^ MutantEvaluationResult
 		for: mutation
 		results: testResults
