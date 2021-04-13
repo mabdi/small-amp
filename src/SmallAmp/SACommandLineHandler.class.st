@@ -58,23 +58,24 @@ SACommandLineHandler >> activate [
 	(self hasOption: 'clearTemp')
 		ifTrue: [ self clearTempClasses ].
 	(self hasOption: 'ciAmplifyClass')
-		ifTrue: [ self shadowAmplifyClass ].
+		ifTrue: [ ^ self shadowAmplifyClass ].
 	(self hasOption: 'ciAmplifyTest')
-		ifTrue: [ self shadowAmplifyTest ].
+		ifTrue: [ ^ self shadowAmplifyTest ].
 	(self hasOption: 'ciFinalizeClass')
-		ifTrue: [ self shadowAmplifyClassFinalize ].
+		ifTrue: [ ^ self shadowAmplifyClassFinalize ].
 	(self hasOption: 'ciFinalizeTest')
-		ifTrue: [ self shadowAmplifyTestFinalize ].
+		ifTrue: [ ^ self shadowAmplifyTestFinalize ].
 	(self hasOption: 'ciAssertionAmplification')
-		ifTrue: [ self shadowAssertionAmplification ].
+		ifTrue: [ ^ self shadowAssertionAmplification ].
 	(self hasOption: 'ciInputAmplification')
-		ifTrue: [ self shadowInputAmplification ].
+		ifTrue: [ ^ self shadowInputAmplification ].
 	(self hasOption: 'ciSelectionInit')
-		ifTrue: [ self shadowSelectionInit ].
+		ifTrue: [ ^ self shadowSelectionInit ].
 	(self hasOption: 'ciSelectionFinalize')
-		ifTrue: [ self shadowSelectionFinalize ].
+		ifTrue: [ ^ self shadowSelectionFinalize ].
 	(self hasOption: 'ciSelectionMutantIndex')
-		ifTrue: [ self shadowSelectionMutantIndex ].
+		ifTrue: [ ^ self shadowSelectionMutantIndex ].
+	self end
 ]
 
 { #category : #'as yet unclassified' }
@@ -171,6 +172,16 @@ SACommandLineHandler >> cout: aString [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> defaultLoopObjectFuelFile [
 	^ '__smallAmp_main.fl'
+]
+
+{ #category : #accessing }
+SACommandLineHandler >> end [ 
+	| noquit nosave |
+	noquit := self commandLine hasOption: 'noquit'.
+	nosave := (self commandLine hasOption: 'nosave').
+	nosave ifFalse: [ Smalltalk snapshot: true andQuit: noquit not ].
+	noquit
+		ifFalse: [ self exitSuccess ]
 ]
 
 { #category : #accessing }
