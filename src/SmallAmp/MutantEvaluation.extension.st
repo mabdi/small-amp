@@ -6,6 +6,11 @@ MutantEvaluation >> getTestClass [
 ]
 
 { #category : #'*SmallAmp' }
+MutantEvaluation >> getTimeOut [
+	^ (10 max: (strategy timeoutForTestsOf: self)) milliSeconds
+]
+
+{ #category : #'*SmallAmp' }
 MutantEvaluation >> runTestsSmallAmp [
 	"Collect all suite test and execute them."
 
@@ -62,7 +67,7 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmp [
 	^ [ self runTestsSmallAmp ]
-		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
+		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
@@ -81,7 +86,7 @@ MutantEvaluation >> testResultsSmallAmp [
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmpVerbose [
 	^ [ self runTestsSmallAmpVerbose ]
-		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
+		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
