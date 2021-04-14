@@ -80,8 +80,11 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
-				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout- millies: ';
+				nextPutAll:
+					'testResultsSmallAmpVerbose: Terminating test Due to timeout- millies: ';
 				nextPutAll: (strategy timeoutForTestsOf: self) asString;
+				<< 'coverage: ';
+				<< coverageAnalysisResult coveredMethods;
 				lf;
 				flush.
 			nil ]
