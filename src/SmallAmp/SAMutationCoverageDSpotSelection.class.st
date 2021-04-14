@@ -271,6 +271,50 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutan
 ]
 
 { #category : #enumerating }
+SAMutationCoverageDSpotSelection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
+	| analysisResult alives result newKills testClasses testClass targetClasses |
+	aPopulation ifEmpty: [ ^ {} ].
+	result := Dictionary new.
+	testClass := aPopulation atRandom testClass.
+	targetClasses := aPopulation atRandom testTargets.
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
+	self loggerSubscribe: testClasses.
+	self astHelper
+		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with: (SmallAmpMutationsGenerationStrategy new mutants: {aMutantEvaluation mutant}).
+			analysisResult runSmallAmpVerbose ].
+	self loggerUnsubscribe: testClasses.
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
+	alives := analysisResult generalResult aliveMutants.
+	alives
+		ifNotEmpty: [ :x | ^ {} ]
+		ifEmpty: [ newKills := aMutantEvaluation.
+			uncovered := uncovered
+				reject:
+					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
+	analysisResult particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels selected |
+									sels := item result failures collect: #selector.
+									selected := self
+										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+										notIncludedIn: result.
+									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	shadowResults addAll: result
+]
+
+{ #category : #enumerating }
 SAMutationCoverageDSpotSelection >> setUpShadowSelections [
 	shadowResults := Dictionary new.
 ]

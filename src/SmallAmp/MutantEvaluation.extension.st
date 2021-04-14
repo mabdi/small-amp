@@ -67,21 +67,24 @@ MutantEvaluation >> testResultsSmallAmp [
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
 				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout';
+				nextPutAll: (strategy timeoutForTestsOf: self) asString;
 				lf;
-				flush.nil ]
+				flush.
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmpVerbose [
 	^ [ self runTestsSmallAmpVerbose ]
 		valueWithin: (strategy timeoutForTestsOf: self) milliSeconds
-		onTimeout: [ 			Stdio stdout
+		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
-				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout';
+				nextPutAll: 'testResultsSmallAmpVerbose: Terminating test Due to timeout- millies: ';
+				nextPutAll: (strategy timeoutForTestsOf: self) asString;
 				lf;
 				flush.
-				nil ]
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
