@@ -70,7 +70,9 @@ MutantEvaluation >> testResultsSmallAmp [
 					'testResultsSmallAmpVerbose: Terminating test Due to timeout- millies: ';
 				nextPutAll: (strategy timeoutForTestsOf: self) asString;
 				<< 'coverage: ';
-				<< coverageAnalysisResult coveredMethods;
+				<< coverageAnalysisResult class name;
+				<< ' ';
+				<< coverageAnalysisResult coveredMethods asString;
 				lf;
 				flush.
 			nil ]
