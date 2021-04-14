@@ -423,9 +423,12 @@ SACommandLineHandler >> shadowAmplifyClass: aTestClass [
 		cout:
 			'finished #shadowAmplifyClass: for ' , aTestClass name
 				, ' exit code: ' , error asString.
-	self cout: 'shadowAmplifyClass ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
+	self
+		cout:
+			'shadowAmplifyClass '
+				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	error = 0
-		ifTrue: [ Smalltalk snapshot: false andQuit: true ]
+		ifTrue: [ Smalltalk snapshot: true andQuit: true ]
 		ifFalse: [ Smalltalk exit: error ]
 ]
 
