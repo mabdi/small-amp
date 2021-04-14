@@ -40,6 +40,7 @@ SACommandLineHandler class >> description [
 
 { #category : #activation }
 SACommandLineHandler >> activate [
+	self cout: 'activate: ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	self activateHelp
 		ifTrue: [ ^ self ].
 	(self hasOption: 'reload')
@@ -311,7 +312,18 @@ SACommandLineHandler >> extraInformationFor: amplified [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> loadMainLoopFromFuelFile [
-	^ FLMaterializer materializeFromFileNamed: self defaultLoopObjectFuelFile  
+	| x |
+	self
+		cout:
+			'loadMainLoopFromFuelFile1'
+				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
+	x := FLMaterializer
+		materializeFromFileNamed: self defaultLoopObjectFuelFile.
+	self
+		cout:
+			'loadMainLoopFromFuelFile2'
+				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
+	^ x
 ]
 
 { #category : #actions }
@@ -376,9 +388,18 @@ SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> saveMainLoopInFuelFile: main [
+	self
+		cout:
+			'saveMainLoopInFuelFile1'
+				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	FLSerializer
 		serialize: main
 		toFileNamed: self defaultLoopObjectFuelFile.
+	self
+		cout:
+			'saveMainLoopInFuelFile2'
+				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
+	
 	self cout: 'MainLoop serialized in ' , self defaultLoopObjectFuelFile
 ]
 
@@ -402,6 +423,7 @@ SACommandLineHandler >> shadowAmplifyClass: aTestClass [
 		cout:
 			'finished #shadowAmplifyClass: for ' , aTestClass name
 				, ' exit code: ' , error asString.
+	self cout: 'shadowAmplifyClass ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	error = 0
 		ifTrue: [ Smalltalk snapshot: false andQuit: true ]
 		ifFalse: [ Smalltalk exit: error ]
@@ -434,6 +456,7 @@ SACommandLineHandler >> shadowAmplifyTest: aTestSelector [
 	main stepInitAmplifyATestMethod: aTestSelector.
 	self cout: 'MainLoop stepInitAmplifyATestMethod: done successfully'.
 	self saveMainLoopInFuelFile: main.
+	self cout: 'shadowAmplifyTest ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	Smalltalk snapshot: false andQuit: true
 ]
 
