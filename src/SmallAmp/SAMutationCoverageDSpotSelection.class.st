@@ -280,14 +280,16 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantEvaluation: aMu
 				mutating: targetClasses
 				using: MutantOperator contents
 				with: AllTestsMethodsRunningMutantEvaluationStrategy new
-				with: (SmallAmpMutationsGenerationStrategy new mutants: {aMutantEvaluation mutant}).
+				with:
+					(SmallAmpMutationsGenerationStrategy new
+						mutants: {aMutantEvaluation mutant}).
 			analysisResult runSmallAmpVerbose ].
 	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	alives := analysisResult generalResult aliveMutants.
 	alives
 		ifNotEmpty: [ :x | ^ {} ]
-		ifEmpty: [ newKills := aMutantEvaluation.
+		ifEmpty: [ newKills := {aMutantEvaluation}.
 			uncovered := uncovered
 				reject:
 					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
