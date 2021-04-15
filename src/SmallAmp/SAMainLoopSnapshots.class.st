@@ -196,7 +196,8 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshots >> snapshot: anEvent [ 
+SAMainLoopSnapshots >> snapshot: anEvent [
+	anEvent at: #testClass put: testClass name.
 	self saveEvent: anEvent.
 	Smalltalk snapshot: true andQuit: false.
 	^ self isEventPresent: anEvent

@@ -83,13 +83,6 @@ SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: tar
 
 { #category : #enumerating }
 SAMutationCoverageDSpotSelection >> logTestStart: aTestCaseStarted [
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: 'Mutation Testing, Starting Test: ';
-		nextPutAll: aTestCaseStarted testSelector;
-		lf;
-		flush.
 	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
 		truncate;
 		nextPutAll: aTestCaseStarted testSelector;
