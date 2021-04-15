@@ -2,7 +2,8 @@ Class {
 	#name : #SmallAmpMutationsGenerationStrategy,
 	#superclass : #MutationsGenerationStrategy,
 	#instVars : [
-		'mutants'
+		'mutants',
+		'onBeforeMutant'
 	],
 	#category : #'SmallAmp-MuTalk Extension'
 }
@@ -47,4 +48,14 @@ SmallAmpMutationsGenerationStrategy >> mutationsFor: aMutationTestingAnalysis lo
 	mutants
 		ifNil: [ mutants := super mutationsFor: aMutationTestingAnalysis loggingIn: aLogger ].
 	^ mutants
+]
+
+{ #category : #accessing }
+SmallAmpMutationsGenerationStrategy >> onBeforeMutant [
+	^ onBeforeMutant
+]
+
+{ #category : #accessing }
+SmallAmpMutationsGenerationStrategy >> onBeforeMutant: anObject [
+	onBeforeMutant := anObject
 ]

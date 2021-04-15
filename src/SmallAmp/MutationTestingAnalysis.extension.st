@@ -72,8 +72,14 @@ MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
 	particularResults := OrderedCollection new.
 	mutations
 		do: [ :aMutation | 
+			| continue |
 			logger logStartEvaluating: aMutation.
-			[ particularResults
+			continue := true.
+			mutationsGenerationStrategy onBeforeMutant
+				ifNotNil: [ continue := mutationsGenerationStrategy onBeforeMutant
+						value: aMutation ].
+			continue ifTrue: 
+[			[ particularResults
 				add:
 					(MutantEvaluation
 						for: aMutation
@@ -93,7 +99,7 @@ MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
 						<< ' ';
 						<< x asString;
 						lf;
-						flush ] ]
+						flush ]] ]
 		displayingProgress: 'Evaluating mutants'.
 	^ particularResults
 ]

@@ -187,17 +187,19 @@ SAMainLoopSnapshots >> saveEvent: anEvent [
 { #category : #actions }
 SAMainLoopSnapshots >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
-	selection setUpShadowSelections.
-	selection uncovered
-		withIndexDo: [ :item :index | 
-			(self
+	^ selection select: aList
+	
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> setupSelection [
+	super setupSelection.
+	selection onBeforeMutant: [:mutant | (self
 				snapshot:
 					{(#event -> #selection).
 					(#mutant
-						-> (selection uncovered at: index) mutant asDictionaryObject)}
-						asDictionary)
-				ifTrue: [ selection select: aList forMutantEvaluation: item ] ].
-	^ selection finalizeShadowSelections
+						-> mutant mutant asDictionaryObject)}
+						asDictionary)]
 ]
 
 { #category : #'as yet unclassified' }
