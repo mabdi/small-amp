@@ -40,7 +40,6 @@ SACommandLineHandler class >> description [
 
 { #category : #activation }
 SACommandLineHandler >> activate [
-	self cout: 'activate: ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	self activateHelp
 		ifTrue: [ ^ self ].
 	(self hasOption: 'reload')
@@ -76,6 +75,8 @@ SACommandLineHandler >> activate [
 		ifTrue: [ ^ self shadowSelectionFinalize ].
 	(self hasOption: 'ciSelectionMutantIndex')
 		ifTrue: [ ^ self shadowSelectionMutantIndex ].
+	(self hasOption: 'useSnapshots')
+		ifTrue: [ ^ self useSnapshots ].
 	self end
 ]
 
@@ -546,4 +547,34 @@ SACommandLineHandler >> shadowSelectionMutantIndex: anIndex [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> todoFile [
 	^ 'todo.txt'
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> useSnapshots [
+	| cmd className |
+	cmd := '--useSnapshots='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | className := arg allButFirst: cmd size ].
+	self useSnapshots: (Smalltalk globals at: className asSymbol)
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> useSnapshots: aTestClass [
+	| main |
+	self cout: 'started #useSnapshots: for ' , aTestClass name.
+	self amplificationContextInit.
+	main := SAMainLoopSnapshots
+		with: SAConfig default
+		for: aTestClass
+		targets: aTestClass smallAmpTargetClasses.
+	[ main amplify ]
+		on: Error
+		do: [ :x | 
+			self cout: 'Run instance crashed: ' , aTestClass name.
+			self cout: 'Error details:' , x description ].
+	self
+		cout:
+			'finished #useSnapshots: for ' , aTestClass name.
+	Smalltalk snapshot: true andQuit: true
 ]
