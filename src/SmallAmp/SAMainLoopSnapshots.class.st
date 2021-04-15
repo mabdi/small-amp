@@ -194,12 +194,12 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> setupSelection [
 	super setupSelection.
-	selection onBeforeMutant: [:mutant | (self
+	selection
+		onBeforeMutant: [ :mutant | 
+			self
 				snapshot:
 					{(#event -> #selection).
-					(#mutant
-						-> mutant mutant asDictionaryObject)}
-						asDictionary)]
+					(#mutant -> mutant asDictionaryObject)} asDictionary ]
 ]
 
 { #category : #'as yet unclassified' }
