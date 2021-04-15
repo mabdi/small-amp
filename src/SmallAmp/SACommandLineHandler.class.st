@@ -571,10 +571,11 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 	[ main amplify ]
 		on: Error
 		do: [ :x | 
+			FLSerializer
+		serialize: x
+		toFileNamed: '_error_', aTestClass name,'.fl'.
 			self cout: 'Run instance crashed: ' , aTestClass name.
 			self cout: 'Error details:' , x description ].
-	self
-		cout:
-			'finished #useSnapshots: for ' , aTestClass name.
+	self cout: 'finished #useSnapshots: for ' , aTestClass name.
 	Smalltalk snapshot: true andQuit: true
 ]
