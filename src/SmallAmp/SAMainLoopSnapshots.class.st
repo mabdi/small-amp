@@ -190,8 +190,13 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 	selection setUpShadowSelections.
 	selection uncovered
 		withIndexDo: [ :item :index | 
-			(self snapshot: {(#event -> #selection).(#mutant -> (selection uncovered at: index) mutant asDictionaryObject )} asDictionary)
-				ifTrue: [ selection select: aList forMutantAtIndex: index ] ].
+			(self
+				snapshot:
+					{(#event -> #selection).
+					(#mutant
+						-> (selection uncovered at: index) mutant asDictionaryObject)}
+						asDictionary)
+				ifTrue: [ selection select: aList forMutantEvaluation: item ] ].
 	^ selection finalizeShadowSelections
 ]
 
