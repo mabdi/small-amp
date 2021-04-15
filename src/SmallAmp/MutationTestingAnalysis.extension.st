@@ -51,11 +51,15 @@ MutationTestingAnalysis >> generateResultsSmallAmp [
 						following: mutantsEvaluationStrategy
 						andConsidering: self coverageAnalysisResult) valueSmallAmp ]
 				on: Error
-				do: [ Stdio stdout
+				do: [ :x | Stdio stdout
 						nextPutAll: 'Mutation generation failed: ';
-						nextPutAll: aMutation description;
+						nextPutAll: aMutation operator class;
 						nextPutAll: 'Method: ';
 						nextPutAll: aMutation originalMethod name asString;
+						<< ' ';
+						<< x class;
+						<< ' ';
+						<< x asString;
 						lf;
 						flush ] ]
 		displayingProgress: 'Evaluating mutants'.
@@ -74,13 +78,19 @@ MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
 						for: aMutation
 						using: testCases
 						following: mutantsEvaluationStrategy
-						andConsidering: self coverageAnalysisResult) valueSmallAmpVerbose  ]
+						andConsidering: self coverageAnalysisResult)
+						valueSmallAmpVerbose ]
 				on: Error
-				do: [ Stdio stdout
+				do: [ :x | 
+					Stdio stdout
 						nextPutAll: 'Mutation generation failed: ';
-						nextPutAll: aMutation description;
+						nextPutAll: aMutation operator class;
 						nextPutAll: 'Method: ';
 						nextPutAll: aMutation originalMethod name asString;
+						<< ' ';
+						<< x class;
+						<< ' ';
+						<< x asString;
 						lf;
 						flush ] ]
 		displayingProgress: 'Evaluating mutants'.
