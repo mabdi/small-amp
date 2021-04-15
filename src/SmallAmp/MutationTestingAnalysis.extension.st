@@ -51,13 +51,14 @@ MutationTestingAnalysis >> generateResultsSmallAmp [
 						following: mutantsEvaluationStrategy
 						andConsidering: self coverageAnalysisResult) valueSmallAmp ]
 				on: Error
-				do: [ :x | Stdio stdout
+				do: [ :x | 
+					Stdio stdout
 						nextPutAll: 'Mutation generation failed: ';
-						nextPutAll: aMutation operator class;
+						nextPutAll: aMutation operator class name;
 						nextPutAll: 'Method: ';
 						nextPutAll: aMutation originalMethod name asString;
 						<< ' ';
-						<< x class;
+						<< x class name;
 						<< ' ';
 						<< x asString;
 						lf;
@@ -84,7 +85,7 @@ MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
 				do: [ :x | 
 					Stdio stdout
 						nextPutAll: 'Mutation generation failed: ';
-						nextPutAll: aMutation operator class;
+						nextPutAll: aMutation operator class name;
 						nextPutAll: 'Method: ';
 						nextPutAll: aMutation originalMethod name asString;
 						<< ' ';
