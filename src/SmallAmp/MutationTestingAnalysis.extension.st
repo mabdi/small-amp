@@ -68,6 +68,47 @@ MutationTestingAnalysis >> generateResultsSmallAmp [
 ]
 
 { #category : #'*SmallAmp' }
+MutationTestingAnalysis >> generateResultsSmallAmpSnapshot [
+	| toSkip |
+	toSkip := mutationsGenerationStrategy onMutationEvaluation value.
+	particularResults := OrderedCollection new.
+	mutations
+		withIndexDo: [ :aMutation :index | 
+			toSkip == index
+				ifTrue: [ particularResults
+						add:
+							(MutantEvaluationResultTerminated
+								for: aMutation
+								results: nil
+								producedBy: nil) ].
+			toSkip > index
+				ifFalse: [ toSkip := index.
+					mutationsGenerationStrategy onBeforeMutant value: aMutation value: index.
+					[ particularResults
+						add:
+							(MutantEvaluation
+								for: aMutation
+								using: testCases
+								following: mutantsEvaluationStrategy
+								andConsidering: self coverageAnalysisResult)
+								valueSmallAmpVerbose ]
+						on: Error
+						do: [ :x | 
+							Stdio stdout
+								nextPutAll: 'Mutation generation failed: ';
+								nextPutAll: aMutation operator class name;
+								nextPutAll: 'Method: ';
+								nextPutAll: aMutation originalMethod name asString;
+								<< ' ';
+								<< x class;
+								<< ' ';
+								<< x asString;
+								lf;
+								flush ] ] ].
+	^ particularResults
+]
+
+{ #category : #'*SmallAmp' }
 MutationTestingAnalysis >> generateResultsSmallAmpVerbose [
 	particularResults := OrderedCollection new.
 	mutations
@@ -116,6 +157,27 @@ MutationTestingAnalysis >> runSmallAmp [
 		millisecondsToRun: [ self generateCoverageAnalysis.
 			self generateMutations.
 			self generateResultsSmallAmp ].
+	true ]
+		on: TestsWithErrorsException
+		do: [ :ex | 
+			self
+				inform: 'Your tests have Errors or Failures. Please correct them.'.
+			ex return: false ]
+]
+
+{ #category : #'*SmallAmp' }
+MutationTestingAnalysis >> runSmallAmpSnapshot [
+	"Obtain mutants applying the operators in the classes (or
+	methods of
+	those classes) and execute all mutants in the set of testClases.
+	We obtain a result for each mutant generated"
+
+	^ [ self discardFailings.
+	logger logAnalysisStartFor: self.
+	elapsedTime := Time
+		millisecondsToRun: [ self generateCoverageAnalysis.
+			self generateMutations.
+			self generateResultsSmallAmpSnapshot ].
 	true ]
 		on: TestsWithErrorsException
 		do: [ :ex | 

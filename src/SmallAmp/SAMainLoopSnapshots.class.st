@@ -60,15 +60,13 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 			toSkip := state at: #toSkip ].
 	aList
 		withIndexDo: [ :tcase :index | 
+			toSkip = index ifTrue: [ tcase testMethod: nil ].
 			toSkip > index
 				ifFalse: [ toSkip := index.
 					self
 						saveTheState:
 							{(#aList -> aList).
-							(#toSkip
-								->
-									(toSkip
-										))} asDictionary.
+							(#toSkip -> toSkip)} asDictionary.
 					self
 						saveCrashEvidence:
 							{(#testClass -> tcase testClass name).
@@ -238,11 +236,24 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 SAMainLoopSnapshots >> setupSelection [
 	super setupSelection.
 	selection
-		onBeforeMutant: [ :mutant | 
+		onBeforeMutant: [ :mutant :index | 
 			self
-				snapshot:
-					{(#event -> #selection).
-					(#mutant -> mutant asDictionaryObject)} asDictionary ]
+						saveTheState:
+							{
+							(#toSkip -> index)} asDictionary.
+					self
+						saveCrashEvidence:
+							{(#testClass -> testClass name).
+							
+							(#mutant -> mutant asDictionaryObject)} asDictionary
+			 ].
+	selection
+		onMutationEvaluation: [ | toSkip |
+			self snapshotPoint: #mutation_testing.
+			self restoreState
+				ifNil: [ toSkip := 0 ]
+				ifNotNil: [ :state | toSkip := state at: #toSkip ].
+			toSkip ]
 ]
 
 { #category : #'as yet unclassified' }

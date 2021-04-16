@@ -3,7 +3,8 @@ Class {
 	#superclass : #MutationsGenerationStrategy,
 	#instVars : [
 		'mutants',
-		'onBeforeMutant'
+		'onBeforeMutant',
+		'onMutationEvaluation'
 	],
 	#category : #'SmallAmp-MuTalk Extension'
 }
@@ -58,4 +59,14 @@ SmallAmpMutationsGenerationStrategy >> onBeforeMutant [
 { #category : #accessing }
 SmallAmpMutationsGenerationStrategy >> onBeforeMutant: anObject [
 	onBeforeMutant := anObject
+]
+
+{ #category : #accessing }
+SmallAmpMutationsGenerationStrategy >> onMutationEvaluation [
+	^ onMutationEvaluation
+]
+
+{ #category : #accessing }
+SmallAmpMutationsGenerationStrategy >> onMutationEvaluation: anObject [
+	onMutationEvaluation := anObject
 ]
