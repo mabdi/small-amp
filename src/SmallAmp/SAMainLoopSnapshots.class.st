@@ -52,32 +52,34 @@ SAMainLoopSnapshots >> amplifyATestMethod: aTestMethod [
 SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 	| toSkip aList |
 	aList := aListInput.
-	toSkip := OrderedCollection new.
+	toSkip := 0.
 	self snapshotPoint: #assertion_amplification.
 	self restoreState
 		ifNotNil: [ :state | 
 			aList := state at: #aList.
 			toSkip := state at: #toSkip ].
 	aList
-		do: [ :tcase | 
-			(toSkip includes: tcase)
-				ifFalse: [ self
+		withIndexDo: [ :tcase :index | 
+			toSkip > index
+				ifFalse: [ toSkip := index.
+					self
 						saveTheState:
 							{(#aList -> aList).
 							(#toSkip
 								->
 									(toSkip
-										add: tcase;
-										yourself))} asDictionary.
-					self saveCrashEvidence: {(#testClass -> tcase testClass name).(#testMethod -> tcase testMethod)} asDictionary.
+										))} asDictionary.
+					self
+						saveCrashEvidence:
+							{(#testClass -> tcase testClass name).
+							(#testMethod -> tcase testMethod)} asDictionary.
 					self assertionAmplifiers
 						do: [ :amplifier | 
 							assertAmplificationClassCache
 								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
 							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
 							tcase assertionAmplifyBy: amplifier.
-							assertAmplificationClassCache := amplifier generatedClass ] ] ]
-		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
+							assertAmplificationClassCache := amplifier generatedClass ] ] ].
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
 
