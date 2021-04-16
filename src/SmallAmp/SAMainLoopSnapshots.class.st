@@ -69,6 +69,7 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 									(toSkip
 										add: tcase;
 										yourself))} asDictionary.
+					self saveCrashEvidence: {(#testClass -> tcase testClass name).(#testMethod -> tcase testMethod)} asDictionary.
 					self assertionAmplifiers
 						do: [ :amplifier | 
 							assertAmplificationClassCache
@@ -83,6 +84,11 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> eventFile [
 	^ FileLocator imageDirectory / '_smallamp_last_event.json'
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> evidenceFile [
+	^ FileLocator imageDirectory / '_smallamp_crash_evidence.json'
 ]
 
 { #category : #actions }
@@ -192,6 +198,16 @@ SAMainLoopSnapshots >> restoreState [
 	self eventFile exists
 		ifFalse: [ ^ nil ].
 	^ FLMaterializer materializeFromFileNamed: self stateFile
+]
+
+{ #category : #private }
+SAMainLoopSnapshots >> saveCrashEvidence: aDictionary [
+	| str |
+	str := STONJSON toString: aDictionary.
+	self evidenceFile writeStream
+		truncate;
+		nextPutAll: str;
+		close
 ]
 
 { #category : #'as yet unclassified' }
