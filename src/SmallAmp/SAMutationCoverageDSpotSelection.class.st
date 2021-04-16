@@ -169,6 +169,7 @@ SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
 { #category : #'as yet unclassified' }
 SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
 	| analysis1 result |
+	self loggerSubscribe: testClasses.
 	self astHelper
 		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
 				testCasesFrom: testClasses
@@ -183,6 +184,7 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 			config debug
 				ifTrue: [ result
 						ifFalse: [ self halt ] ] ].
+	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	^ analysis1
 ]
