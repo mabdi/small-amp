@@ -195,7 +195,7 @@ SAMainLoopSnapshots >> resetCurrentState [
 
 { #category : #private }
 SAMainLoopSnapshots >> restoreState [
-	self eventFile exists
+	self stateFile exists
 		ifFalse: [ ^ nil ].
 	^ FLMaterializer materializeFromFileNamed: self stateFile basename
 ]
