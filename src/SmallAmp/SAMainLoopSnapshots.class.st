@@ -49,26 +49,33 @@ SAMainLoopSnapshots >> amplifyATestMethod: aTestMethod [
 ]
 
 { #category : #private }
-SAMainLoopSnapshots >> assertionAmplificationFor: aList [
+SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
+	| toSkip aList |
+	aList := aListInput.
+	toSkip := OrderedCollection new.
+	self snapshotPoint: #assertion_amplification.
+	self restoreState
+		ifNotNil: [ :state | 
+			aList := state at: #aList.
+			toSkip := state at: #toSkip ].
 	aList
-		do: [ :tcase |
-			(self
-						snapshot:
-							{(#event -> #assertion_amplification).
-							(#method -> tcase testMethod)} asDictionary) ifTrue: [
-							 
-			self assertionAmplifiers
-				do: [ :amplifier | 
-					assertAmplificationClassCache
-						ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
-					amplifier testRunTimeoutMillis: testRunTimeoutMillis.
-					
-					tcase assertionAmplifyBy: amplifier.
-					assertAmplificationClassCache := amplifier generatedClass ] 			
-								].
-					
-				
-				]
+		do: [ :tcase | 
+			(toSkip includes: tcase)
+				ifFalse: [ self
+						saveTheState:
+							{(#aList -> aList).
+							(#toSkip
+								->
+									(toSkip
+										add: tcase;
+										yourself))} asDictionary.
+					self assertionAmplifiers
+						do: [ :amplifier | 
+							assertAmplificationClassCache
+								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+							tcase assertionAmplifyBy: amplifier.
+							assertAmplificationClassCache := amplifier generatedClass ] ] ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
@@ -175,6 +182,19 @@ SAMainLoopSnapshots >> makeReadable [
 ]
 
 { #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> resetCurrentState [
+	self stateFile exists
+		ifTrue: [ self stateFile delete ]
+]
+
+{ #category : #private }
+SAMainLoopSnapshots >> restoreState [
+	self eventFile exists
+		ifFalse: [ ^ nil ].
+	^ FLMaterializer materializeFromFileNamed: self stateFile
+]
+
+{ #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> saveEvent: anEvent [
 	| str |
 	str := STONJSON toString: anEvent.
@@ -182,6 +202,11 @@ SAMainLoopSnapshots >> saveEvent: anEvent [
 		truncate;
 		nextPutAll: str;
 		close
+]
+
+{ #category : #private }
+SAMainLoopSnapshots >> saveTheState: anState [
+	FLSerializer serialize: anState on: self stateFile writeStream
 ]
 
 { #category : #actions }
@@ -208,4 +233,21 @@ SAMainLoopSnapshots >> snapshot: anEvent [
 	self saveEvent: anEvent.
 	Smalltalk snapshot: true andQuit: false.
 	^ self isEventPresent: anEvent
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> snapshotPoint: aPoint [
+	| anEvent |
+	anEvent := Dictionary new
+		at: #event put: aPoint;
+		at: #testClass put: testClass name;
+		yourself.
+	self saveEvent: anEvent.
+	self resetCurrentState.
+	Smalltalk snapshot: true andQuit: false
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> stateFile [
+	^ FileLocator imageDirectory / '_smallamp_last_state.fl'
 ]
