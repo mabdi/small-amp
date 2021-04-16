@@ -224,7 +224,7 @@ SAMainLoopSnapshots >> saveEvent: anEvent [
 
 { #category : #private }
 SAMainLoopSnapshots >> saveTheState: anState [
-	FLSerializer serialize: anState on: self stateFile writeStream
+	FLSerializer serialize: anState toFileNamed: self stateFile basename
 ]
 
 { #category : #actions }
