@@ -568,7 +568,9 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 		with: SAConfig default
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
-	[ main amplify ]
+	[ main amplify.
+	main saveResultToFileAs: aTestClass name.
+	main amplifiedClass fileOut ]
 		on: Error
 		do: [ :x | 
 			self cout: 'Run instance crashed: ' , aTestClass name.
