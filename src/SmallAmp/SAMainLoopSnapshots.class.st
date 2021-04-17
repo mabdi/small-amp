@@ -228,8 +228,7 @@ SAMainLoopSnapshots >> saveTheState: anState [
 { #category : #actions }
 SAMainLoopSnapshots >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
-	^ selection select: aList
-	
+	^ selection selectSnapshot: aList
 ]
 
 { #category : #'as yet unclassified' }

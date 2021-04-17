@@ -164,7 +164,7 @@ SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
 	testClasses := {(self astHelper
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass)}.
-	^ self mutalkRunClass: testClasses targetClasses: targetClasses
+	^ self mutalkRunSnapshotClass: testClasses targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }
@@ -179,10 +179,43 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 				with: AllTestsMethodsRunningMutantEvaluationStrategy new
 				with:
 					(SmallAmpMutationsGenerationStrategy new
+						mutants: (uncovered collect: #mutant)).
+			result := analysis1 runSmallAmpVerbose.
+			config debug
+				ifTrue: [ result
+						ifFalse: [ self halt ] ] ].
+	self loggerUnsubscribe: testClasses.
+	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
+	^ analysis1
+]
+
+{ #category : #'as yet unclassified' }
+SAMutationCoverageDSpotSelection >> mutalkRunSnapshot: aPopulation [
+	| testClasses testClass targetClasses |
+	testClass := aPopulation atRandom testClass.
+	targetClasses := aPopulation atRandom testTargets.
+	testClasses := {(self astHelper
+		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
+		using: testClass)}.
+	^ self mutalkRunClass: testClasses targetClasses: targetClasses
+]
+
+{ #category : #'as yet unclassified' }
+SAMutationCoverageDSpotSelection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
+	| analysis1 result |
+	self loggerSubscribe: testClasses.
+	self astHelper
+		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
+				testCasesFrom: testClasses
+				mutating: targetClasses
+				using: MutantOperator contents
+				with: AllTestsMethodsRunningMutantEvaluationStrategy new
+				with:
+					(SmallAmpMutationsGenerationStrategy new
 						onBeforeMutant: onBeforeMutant;
 						onMutationEvaluation: onMutationEvaluation;
 						mutants: (uncovered collect: #mutant)).
-			result := analysis1 runSmallAmpVerbose.
+			result := analysis1 runSmallAmpSnapshot.
 			config debug
 				ifTrue: [ result
 						ifFalse: [ self halt ] ] ].
@@ -333,6 +366,37 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantEvaluation: aMu
 										notIncludedIn: result.
 									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	shadowResults addAll: result
+]
+
+{ #category : #enumerating }
+SAMutationCoverageDSpotSelection >> selectSnapshot: aPopulation [
+	| analysisResult alives result newKills |
+	result := Dictionary new.
+	analysisResult := self mutalkRunSnapshot: aPopulation.
+	alives := analysisResult generalResult aliveMutants.
+	newKills := uncovered
+		reject: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	uncovered := uncovered
+		select: [ :s | 
+			alives
+				anySatisfy: [ :z | z mutant modifiedSource = s mutant modifiedSource ] ].
+	analysisResult particularResults
+		do: [ :item | 
+			newKills
+				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
+				ifFound: [ :s | 
+					item result
+						ifNotNil: [ item result failures
+								ifNotEmpty: [ | sels selected |
+									sels := item result failures collect: #selector.
+									selected := self
+										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
+										notIncludedIn: result.
+									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	result := self addInfoToSelectedMethods: result.
+	^ result reject: #isNil
 ]
 
 { #category : #enumerating }
