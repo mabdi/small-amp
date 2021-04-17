@@ -561,16 +561,16 @@ SACommandLineHandler >> useSnapshots [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> useSnapshots: aTestClass [
-	| main |
+	| main result |
 	self cout: 'started #useSnapshots: for ' , aTestClass name.
 	self amplificationContextInit.
 	main := SAMainLoopSnapshots
 		with: SAConfig default
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
-	[ main amplify.
-	main saveResultToFileAs: aTestClass name.
-	main amplifiedClass fileOut ]
+	[ result := main amplify.
+	result saveResultToFileAs: aTestClass name.
+	result amplifiedClass fileOut ]
 		on: Error
 		do: [ :x | 
 			self cout: 'Run instance crashed: ' , aTestClass name.
