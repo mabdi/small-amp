@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'shadowResults',
 		'loggerBlock',
-		'onBeforeMutant'
+		'onBeforeMutant',
+		'onMutationEvaluation'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -179,6 +180,7 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 				with:
 					(SmallAmpMutationsGenerationStrategy new
 						onBeforeMutant: onBeforeMutant;
+						onMutationEvaluation: onMutationEvaluation;
 						mutants: (uncovered collect: #mutant)).
 			result := analysis1 runSmallAmpVerbose.
 			config debug
@@ -197,6 +199,16 @@ SAMutationCoverageDSpotSelection >> onBeforeMutant [
 { #category : #accessing }
 SAMutationCoverageDSpotSelection >> onBeforeMutant: anObject [
 	onBeforeMutant := anObject
+]
+
+{ #category : #accessing }
+SAMutationCoverageDSpotSelection >> onMutationEvaluation [
+	^ onMutationEvaluation
+]
+
+{ #category : #accessing }
+SAMutationCoverageDSpotSelection >> onMutationEvaluation: anObject [
+	onMutationEvaluation := anObject
 ]
 
 { #category : #enumerating }
