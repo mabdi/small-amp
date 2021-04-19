@@ -379,7 +379,12 @@ SACommandLineHandler >> registerIceBerg: repoName [
 		ifNone: [ (IceRepositoryCreator new
 				repository: nil;
 				location: gitClone asFileReference;
-				createRepository) register ]
+				createRepository) register ].
+	IceCredentialStore current  
+	storeCredential: (IcePlaintextCredentials new
+		username: 'smallamp';
+		password: (Smalltalk os environment asDictionary at: #GITHUB_TOKEN)) forHostname: 'github.com'
+	
 ]
 
 { #category : #'as yet unclassified' }
