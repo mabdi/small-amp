@@ -194,6 +194,7 @@ SAMainLoopSnapshots >> makeReadable [
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
 	self astHelper moveClassToFinal: readable.
+	^ readable
 ]
 
 { #category : #'as yet unclassified' }
