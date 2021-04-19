@@ -164,7 +164,9 @@ SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
 	testClasses := {(self astHelper
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass)}.
-	^ self mutalkRunSnapshotClass: testClasses targetClasses: targetClasses
+	^ self
+		mutalkRunClass: testClasses
+		targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }
@@ -197,7 +199,7 @@ SAMutationCoverageDSpotSelection >> mutalkRunSnapshot: aPopulation [
 	testClasses := {(self astHelper
 		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 		using: testClass)}.
-	^ self mutalkRunClass: testClasses targetClasses: targetClasses
+	^ self mutalkRunSnapshotClass: testClasses targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }

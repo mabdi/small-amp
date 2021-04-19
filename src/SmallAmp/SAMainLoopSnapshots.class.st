@@ -202,9 +202,9 @@ SAMainLoopSnapshots >> pushToRepo [
 	| repo |
 	repo := IceRepository registry
 		detect:
-			[ :r | r name = (Smalltalk os environment asDictionary at: #repoName) ].
-	
-	repo workingCopy commitWithMessage: '[SmallAmp] amplified methods added to the base'
+			[ :r | r name = (Smalltalk os environment asDictionary at: #reponame) ].
+	repo workingCopy
+		commitWithMessage: '[SmallAmp] amplified methods added to the base'
 ]
 
 { #category : #'as yet unclassified' }
