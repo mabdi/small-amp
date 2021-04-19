@@ -99,7 +99,7 @@ SAMainLoopSnapshots >> finalSteps [
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
 	self astHelper moveClassToFinal: finalResult amplifiedClass.
-	"self makeReadable."
+	self makeReadable.
 	finalResult
 		amplifiedAnalysis:
 			(selection
@@ -185,6 +185,10 @@ SAMainLoopSnapshots >> makeReadable [
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
 	self astHelper moveClassToFinal: readable.
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshots >> pushToRepo [
 ]
 
 { #category : #'as yet unclassified' }

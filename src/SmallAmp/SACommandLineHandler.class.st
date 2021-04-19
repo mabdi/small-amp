@@ -330,6 +330,7 @@ SACommandLineHandler >> loadMainLoopFromFuelFile [
 { #category : #actions }
 SACommandLineHandler >> metricsEval: repoName [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
+	self registerIceBerg:repoName.
 	classes := self allClassesForRepo: repoName.
 	commitId := self commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
@@ -365,6 +366,19 @@ SACommandLineHandler >> metricsEval: repoName [
 		lf;
 		close.
 	^ stat
+]
+
+{ #category : #actions }
+SACommandLineHandler >> registerIceBerg: repoName [
+	| gitClone |
+	
+	[gitClone := Smalltalk os environment asDictionary at: #DDD.
+	IceRepository registry
+		detect: [ :r | r name = repoName ]
+		ifNone: [ (IceRepositoryCreator new
+				repository: nil;
+				location: '/Users/mabdi/Projects/tmp/Roassal3' asFileReference;
+				createRepository) register ]]
 ]
 
 { #category : #'as yet unclassified' }
@@ -569,6 +583,7 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
 	[ result := main amplify.
+	main pushToRepo.
 	result saveResultToFileAs: aTestClass name.
 	result amplifiedClass fileOut ]
 		on: Error
