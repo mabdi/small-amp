@@ -93,19 +93,20 @@ SAMainLoopSnapshots >> evidenceFile [
 
 { #category : #actions }
 SAMainLoopSnapshots >> finalSteps [
-	| generatedClass |
+	| generatedClass readable |
 	generatedClass := self astHelper
 		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
 	self astHelper moveClassToFinal: finalResult amplifiedClass.
-	self makeReadable.
+	readable := self makeReadable.
 	finalResult
 		amplifiedAnalysis:
 			(selection
 				analysisFor: {finalResult amplifiedClass}
 				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal)
+				ignore: finalResult failedSelectorInOriginal).
+	self installAmplifiedTests: readable
 ]
 
 { #category : #actions }
@@ -167,6 +168,14 @@ SAMainLoopSnapshots >> inputAmplificationFrom: pop [
 	^ newcodes shuffle takeFirst: config maxPop
 ]
 
+{ #category : #actions }
+SAMainLoopSnapshots >> installAmplifiedTests: aReadableClass [
+	aReadableClass testSelectors
+		do: [ :selector | 
+			testClass
+				compile: (aReadableClass lookupSelector: selector) sourceCode ]
+]
+
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> isEventPresent: anEvent [
 	^ self eventFile exists
@@ -189,6 +198,12 @@ SAMainLoopSnapshots >> makeReadable [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> pushToRepo [
+	| repo |
+	repo := IceRepository registry
+		detect:
+			[ :r | r name = (Smalltalk os environment asDictionary at: #repoName) ].
+	
+	repo workingCopy commitWithMessage: '[SmallAmp] amplified methods added to the base'
 ]
 
 { #category : #'as yet unclassified' }

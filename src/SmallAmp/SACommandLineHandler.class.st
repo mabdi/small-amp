@@ -370,15 +370,23 @@ SACommandLineHandler >> metricsEval: repoName [
 
 { #category : #actions }
 SACommandLineHandler >> registerIceBerg: repoName [
-	| gitClone |
-	
-	[gitClone := Smalltalk os environment asDictionary at: #DDD.
+	| gitClone repo |
+	gitClone := Smalltalk os environment asDictionary
+		at: #GITHUB_WORKSPACE
+		ifAbsent: [ ^ self ].
 	IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ (IceRepositoryCreator new
 				repository: nil;
-				location: '/Users/mabdi/Projects/tmp/Roassal3' asFileReference;
-				createRepository) register ]]
+				location: gitClone asFileReference;
+				createRepository) register ].
+	repo := IceRepository registry
+		detect: [ :r | r name = repoName ].
+		repo
+				createBranch:
+					'smallamp-run-'
+						, (Smalltalk os environment asDictionary at: #GITHUB_RUN_NUMBER).
+			 
 ]
 
 { #category : #'as yet unclassified' }
