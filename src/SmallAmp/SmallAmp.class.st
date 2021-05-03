@@ -65,16 +65,6 @@ SmallAmp class >> assertionsHere: caller for: anObject [
 		during: [ caller class compile: newCode classified: aMethod protocol ]
 ]
 
-{ #category : #example }
-SmallAmp class >> example [
-	| result |
-	result := SmallAmp initializeDefault
-		testCase: SmallBankTest targets: {SmallBank};
-		testCase: SmallBank2Test targets: {SmallBank2};
-		amplifyAll.
-	^ result
-]
-
 { #category : #initialization }
 SmallAmp class >> initializeDefault [
 	^ self new initializeWith: SAConfig default
