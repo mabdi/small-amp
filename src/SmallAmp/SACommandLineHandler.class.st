@@ -589,7 +589,7 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
 	[ result := main amplify.
-	main pushToRepo.
+	"main pushToRepo."
 	result saveResultToFileAs: aTestClass name.
 	result amplifiedClass fileOut ]
 		on: Error

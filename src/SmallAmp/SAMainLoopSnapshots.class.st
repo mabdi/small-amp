@@ -106,7 +106,7 @@ SAMainLoopSnapshots >> finalSteps [
 				analysisFor: {finalResult amplifiedClass}
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal).
-	self installAmplifiedTests: readable
+	"self installAmplifiedTests: readable"
 ]
 
 { #category : #actions }
