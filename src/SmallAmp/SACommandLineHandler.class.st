@@ -330,7 +330,7 @@ SACommandLineHandler >> loadMainLoopFromFuelFile [
 { #category : #actions }
 SACommandLineHandler >> metricsEval: repoName [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
-	self registerIceBerg:repoName.
+	"self registerIceBerg: repoName."
 	classes := self allClassesForRepo: repoName.
 	commitId := self commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
