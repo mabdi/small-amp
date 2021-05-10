@@ -22,9 +22,10 @@ IceRepository registry
 		   Stdio stdout << '2-name'; << r repository name ; lf; flush.		   				
   		   tmp := (r repository repositoryHandle lookupLocalBranch: r repository head name)
 				targetId.
+		   Stdio stdout << '2-target Id '; << tmp asString ; lf; flush.		   				
+		   tmp := LGitCommit of: r repository repositoryHandle fromId: tmp.	
 
-
-		   Stdio stdout << '2-tmp '; << tmp asString ; lf; flush.		   
+		   Stdio stdout << '2-commit '; << tmp asString ; lf; flush.		   
 		   r repository workingCopy initializePackagesFromRepository.
 		   Stdio stdout << '3'; lf; flush.
 		   r doEnsureProject.
