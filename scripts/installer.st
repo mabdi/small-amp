@@ -7,7 +7,7 @@ gitClone := Smalltalk os environment asDictionary
 		at: #GITHUB_WORKSPACE
 		ifAbsent: [ ^ 1 ].
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ ^ 1 ].
-Stdio stdout << 'env is set'; << gitClone; lf; flush.
+Stdio stdout << 'env is set'; lf; flush.
 IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ |r|
@@ -15,12 +15,12 @@ IceRepository registry
 		   r := IceRepositoryCreator new
 				repository: nil;
 				location: gitClone asFileReference.
-		   Stdio stdout << 'r repository headCommit: '; lf; flush.
-		   r repository headCommit.
-		   Stdio stdout << '1'; lf; flush.
+                   r repository location: r locationToUse.
 		   r repository pluginManager
-		repositoryWillBeCreated: r repository.
+			repositoryWillBeCreated: r repository.
 		   Stdio stdout << '2'; lf; flush.
+		   (LGitRepository on: r repository location) open.
+		   Stdio stdout << '2-open'; lf; flush.		   
 		   r repository workingCopy initializePackagesFromRepository.
 		   Stdio stdout << '3'; lf; flush.
 		   r doEnsureProject.
