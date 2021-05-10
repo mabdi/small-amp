@@ -14,7 +14,7 @@ IceRepository registry
 				repository: nil;
 				location: gitClone asFileReference;
 				createRepository) register.
-                   Stdio stdout << 'repo registerd!'; lf; flush.
+                   Stdio stdout << 'repo registerd'; lf; flush.
 ].
 all_st := FileLocator imageDirectory childrenMatching: '*.st'.
 (all_st reject: [ :a_st | a_st basename = 'installer.st' ]) do: [ :a_st | a_st asFileReference fileIn ].
