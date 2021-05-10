@@ -10,7 +10,7 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ ^ 1 
 Stdio stdout << 'env is set'; lf; flush.
 IceRepository registry
 		detect: [ :r | r name = repoName ]
-		ifNone: [ |r|
+		ifNone: [ |r tmp|
    		   Stdio stdout << 'lets register the repo'; << gitClone; lf; flush.
 		   r := IceRepositoryCreator new
 				repository: nil;
@@ -19,10 +19,12 @@ IceRepository registry
 		   r repository pluginManager
 			repositoryWillBeCreated: r repository.
 		   Stdio stdout << '2'; lf; flush.
-		   r repository repositoryHandle.
+  		   (r repository repositoryHandle lookupLocalBranch: self name)
+				targetId.
 		   Stdio stdout << '2-handle'; lf; flush.		   
-  		   r repository repositoryHandle head.
-		   Stdio stdout << '2-head'; lf; flush.		   
+  		   tmp := (r repository repositoryHandle lookupLocalBranch: self name)
+				targetId.
+		   Stdio stdout << '2-head'; << tmp asString ; lf; flush.		   
 		   r repository workingCopy initializePackagesFromRepository.
 		   Stdio stdout << '3'; lf; flush.
 		   r doEnsureProject.
