@@ -20,7 +20,7 @@ IceRepository registry
 			repositoryWillBeCreated: r repository.
 		   Stdio stdout << '2'; lf; flush.
 		   Stdio stdout << '2-name'; << r repository name ; lf; flush.		   				
-  		   tmp := (r repository repositoryHandle lookupLocalBranch: r repository name)
+  		   tmp := (r repository repositoryHandle lookupLocalBranch: r repository head name)
 				targetId.
 
 
