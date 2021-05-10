@@ -17,8 +17,9 @@ IceRepository registry
 				location: gitClone asFileReference.
    		   Stdio stdout << 'object is created'; lf; flush.
 		   r validate.
-		   Stdio stdout << 'validate done'; lf; flush.
-	r repository location: r locationToUse.
+		   Stdio stdout << 'r repository workingCopy referenceCommit: '; << r repository workingCopy referenceCommit asString; lf; flush.
+		   Stdio stdout << 'r repository headCommit: '; << r repository headCommit asString; lf; flush.
+		   
 		   Stdio stdout << '1'; lf; flush.
 		   r repository pluginManager
 		repositoryWillBeCreated: r repository.
