@@ -19,8 +19,10 @@ IceRepository registry
 		   r repository pluginManager
 			repositoryWillBeCreated: r repository.
 		   Stdio stdout << '2'; lf; flush.
-		   (LGitRepository on: r repository location) open.
-		   Stdio stdout << '2-open'; lf; flush.		   
+		   r repository repositoryHandle.
+		   Stdio stdout << '2-handle'; lf; flush.		   
+  		   r repository repositoryHandle head.
+		   Stdio stdout << '2-head'; lf; flush.		   
 		   r repository workingCopy initializePackagesFromRepository.
 		   Stdio stdout << '3'; lf; flush.
 		   r doEnsureProject.
