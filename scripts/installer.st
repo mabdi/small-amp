@@ -23,5 +23,7 @@ package classes do: [ :aClass |
 			aClass superclass
 				compile: (aClass lookupSelector: selector) sourceCode ]
 ].
+Stdio stdout << 'changes has been updated successfully'; lf; flush.
 repo := IceRepository registry detect: [ :r | r name = repoName ].
+Stdio stdout << 'ready to write to disk'; lf; flush.
 repo index updateDiskWorkingCopy: repo workingCopyDiff
