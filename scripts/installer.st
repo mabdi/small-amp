@@ -12,7 +12,7 @@ IceRepository registry
 				location: gitClone asFileReference;
 				createRepository) register ].
 all_st := FileLocator imageDirectory childrenMatching: '*.st'.
-all_st do: [:a_st | a_st asFileReference fileIn ].
+(all_st reject: [ :a_st | a_st basename = 'installer.st' ]) do: [ :a_st | a_st asFileReference fileIn ].
 (RPackageOrganizer default
 		includesPackageNamed: 'SmallAmpFinalClasses')
 		ifFalse: [ ^ 2 ].
