@@ -18,7 +18,7 @@ IceRepository registry
    		   Stdio stdout << 'object is created'; lf; flush.
 		   r validate.
 		   Stdio stdout << 'validate done'; lf; flush.
-	r repository location: self locationToUse.
+	r repository location: r locationToUse.
 		   Stdio stdout << '1'; lf; flush.
 		   r repository pluginManager
 		repositoryWillBeCreated: r repository.
