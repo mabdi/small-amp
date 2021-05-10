@@ -1,5 +1,5 @@
 "this file is used in SmallAmpPush CI flow"
-|gitClone |
+| gitClone artifacts all_st package repo |
 
 gitClone := Smalltalk os environment asDictionary
 		at: #GITHUB_WORKSPACE
