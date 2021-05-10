@@ -18,7 +18,6 @@ IceRepository registry
    		   Stdio stdout << 'object is created'; lf; flush.
 		   r validate.
 		   Stdio stdout << 'validate done'; lf; flush.
-		   Stdio stdout << 'r isCloning:'; << r isCloning asString; lf; flush.
 	r addLocalRepository.
 	r repository location: self locationToUse.
 		   Stdio stdout << '1'; lf; flush.
