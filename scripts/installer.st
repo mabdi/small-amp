@@ -7,7 +7,7 @@ gitClone := Smalltalk os environment asDictionary
 		at: #GITHUB_WORKSPACE
 		ifAbsent: [ ^ 1 ].
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ ^ 1 ].
-Stdio stdout << 'env is set!'; lf; flush.
+Stdio stdout << 'env is set'; lf; flush.
 IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ (IceRepositoryCreator new
