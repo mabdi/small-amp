@@ -12,10 +12,25 @@ IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ |r|
    		   Stdio stdout << 'lets register the repo'; lf; flush.
-		   r := (IceRepositoryCreator new
+		   r := IceRepositoryCreator new
 				repository: nil;
-				location: gitClone asFileReference;
-				createRepository).
+				location: gitClone asFileReference.
+   		   Stdio stdout << 'object is created'; lf; flush.
+		   r validate.
+		   Stdio stdout << 'validate done'; lf; flush.
+		   Stdio stdout << 'r isCloning:'; << r isCloning; lf; flush.
+		   r repository location: self locationToUse.
+		   Stdio stdout << '1'; lf; flush.
+		   r repository pluginManager
+		repositoryWillBeCreated: r repository.
+		   Stdio stdout << '2'; lf; flush.
+		   r repository workingCopy initializePackagesFromRepository.
+		   Stdio stdout << '3'; lf; flush.
+		   r doEnsureProject.
+		   Stdio stdout << '4'; lf; flush.
+		   r repository pluginManager repositoryWasCreated: r repository.
+		   Stdio stdout << '5'; lf; flush.
+	r := r createRepository.
 		   Stdio stdout << 'repo created'; lf; flush.
 		   r register.
                    Stdio stdout << 'repo registerd'; lf; flush.
