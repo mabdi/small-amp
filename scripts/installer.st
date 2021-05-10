@@ -24,5 +24,4 @@ package classes do: [ :aClass |
 				compile: (aClass lookupSelector: selector) sourceCode ]
 ].
 repo := IceRepository registry detect: [ :r | r name = repoName ].
-repo createBranch: 'smallamp-run-' , (Smalltalk os environment asDictionary at: #run_number).
 repo index updateDiskWorkingCopy: repo workingCopyDiff
