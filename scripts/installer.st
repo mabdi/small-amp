@@ -10,10 +10,14 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ ^ 1 
 Stdio stdout << 'env is set'; lf; flush.
 IceRepository registry
 		detect: [ :r | r name = repoName ]
-		ifNone: [ (IceRepositoryCreator new
+		ifNone: [ |r|
+   		   Stdio stdout << 'lets register the repo'; lf; flush.
+		   r := (IceRepositoryCreator new
 				repository: nil;
 				location: gitClone asFileReference;
-				createRepository) register.
+				createRepository).
+		   Stdio stdout << 'repo created'; lf; flush.
+		   r register.
                    Stdio stdout << 'repo registerd'; lf; flush.
 ].
 all_st := FileLocator imageDirectory childrenMatching: '*.st'.
