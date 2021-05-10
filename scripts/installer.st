@@ -11,7 +11,7 @@ Stdio stdout << 'env is set'; lf; flush.
 IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ |r|
-   		   Stdio stdout << 'lets register the repo'; lf; flush.
+   		   Stdio stdout << 'lets register the repo'; << gitClone; lf; flush.
 		   r := IceRepositoryCreator new
 				repository: nil;
 				location: gitClone asFileReference.
