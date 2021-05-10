@@ -19,12 +19,12 @@ IceRepository registry
 		   r repository pluginManager
 			repositoryWillBeCreated: r repository.
 		   Stdio stdout << '2'; lf; flush.
-  		   (r repository repositoryHandle lookupLocalBranch: self name)
+		   Stdio stdout << '2-name'; << r repository name << lf; flush.		   				
+  		   tmp := (r repository repositoryHandle lookupLocalBranch: r repository name)
 				targetId.
-		   Stdio stdout << '2-handle'; lf; flush.		   
-  		   tmp := (r repository repositoryHandle lookupLocalBranch: self name)
-				targetId.
-		   Stdio stdout << '2-head'; << tmp asString ; lf; flush.		   
+
+
+		   Stdio stdout << '2-tmp '; << tmp asString ; lf; flush.		   
 		   r repository workingCopy initializePackagesFromRepository.
 		   Stdio stdout << '3'; lf; flush.
 		   r doEnsureProject.
