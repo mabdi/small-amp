@@ -36,6 +36,22 @@ SAMutationCoverageDSpotSelection >> astHelper [
 ]
 
 { #category : #enumerating }
+SAMutationCoverageDSpotSelection >> chooseBestFrom: theList [
+	"first select shortest methods
+	Then, select minimum change,"
+
+	| shortestLen shorts |
+	theList ifEmpty: [ ^ nil ].
+	shortestLen := (theList collect: [ :s | s testMethod lines size ]) min.
+	shorts := theList
+		select: [ :s | s testMethod lines size = shortestLen ].
+	^ (shorts
+		sort: [ :a :b | 
+			(a selector count: [ :x | x = $_ ])
+				< (b selector count: [ :x | x = $_ ]) ]) first
+]
+
+{ #category : #enumerating }
 SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: result [
 	"first select shortest methods
 	Then, select minimum change,"
@@ -395,7 +411,7 @@ SAMutationCoverageDSpotSelection >> selectSnapshot: aPopulation [
 									sels := item result failures collect: #selector.
 									selected := self
 										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
-										notIncludedIn: result.
+										.
 									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	result := self addInfoToSelectedMethods: result.
 	^ result reject: #isNil

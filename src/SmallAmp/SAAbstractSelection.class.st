@@ -39,7 +39,7 @@ SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 		keysAndValuesDo: [ :selector :tuple | 
 			| list v |
 			v := tuple first.
-			list := tuple second. 
+			list := tuple second.
 			list
 				do: [ :k | 
 					| ast |
@@ -50,7 +50,8 @@ SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 								selector: self class defaultInfoPragma
 								arguments: {(RBLiteralValueNode value: (self infoPragmaFrom: k))}).
 					v testMethod: ast formattedCode.
-					result add: v ] ].
+					 ].
+				result add: v ].
 	^ result
 ]
 
