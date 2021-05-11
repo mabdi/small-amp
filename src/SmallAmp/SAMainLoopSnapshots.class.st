@@ -99,8 +99,8 @@ SAMainLoopSnapshots >> finalSteps [
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
-	self astHelper moveClassToFinal: readable .
-	
+	finalResult amplifiedClass: readable.
+	self astHelper moveClassToFinal: readable.
 	finalResult
 		amplifiedAnalysis:
 			(selection
@@ -194,7 +194,6 @@ SAMainLoopSnapshots >> makeReadable [
 	readable := reducer makeReducedResult.
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
-	self astHelper moveClassToFinal: readable.
 	^ readable
 ]
 
