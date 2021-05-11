@@ -25,12 +25,22 @@ SAAbstractSelection class >> initializeWith: aConfig [
 
 { #category : #cleanup }
 SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
-	| result |
+	| result tmp |
 	result := OrderedCollection new.
-	self flag: #todo. "duplications: if a test kills more than 1 mutant, you should consider it. you suould reverse the dictionary to method-> mutant, then add pragmas"
+	tmp := Dictionary new.
 	coveredToMethod
 		keysAndValuesDo: [ :k :v | 
-			| ast |
+			tmp at: v selector ifAbsentPut: [ OrderedCollection new ].
+			(tmp at: v selector)
+				add:
+					{k.
+					v} ].
+	tmp  
+		keysAndValuesDo: [ :selector :list | 
+			list do: [ :item |
+				| ast v k |
+				k := item first.
+				v := item second.
 			ast := SAASTHelper new parsedMethodFrom: v testMethod.
 			ast
 				addPragma:
@@ -38,7 +48,10 @@ SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 						selector: self class defaultInfoPragma
 						arguments: {(RBLiteralValueNode value: (self infoPragmaFrom: k))}).
 			v testMethod: ast formattedCode.
-			result add: v ].
+			result add: v
+				
+				 ]
+			 ].
 	^ result
 ]
 
