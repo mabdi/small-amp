@@ -98,14 +98,15 @@ SAMainLoopSnapshots >> finalSteps [
 		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
 		using: testClass.
 	finalResult amplifiedClass: generatedClass.
-	self astHelper moveClassToFinal: finalResult amplifiedClass.
 	readable := self makeReadable.
+	self astHelper moveClassToFinal: readable .
+	
 	finalResult
 		amplifiedAnalysis:
 			(selection
 				analysisFor: {finalResult amplifiedClass}
 				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal).
+				ignore: finalResult failedSelectorInOriginal)
 	"self installAmplifiedTests: readable"
 ]
 
