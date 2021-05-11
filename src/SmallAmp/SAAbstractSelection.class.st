@@ -30,28 +30,27 @@ SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 	tmp := Dictionary new.
 	coveredToMethod
 		keysAndValuesDo: [ :k :v | 
-			tmp at: v selector ifAbsentPut: [ OrderedCollection new ].
-			(tmp at: v selector)
-				add:
-					{k.
-					v} ].
-	tmp  
-		keysAndValuesDo: [ :selector :list | 
-			list do: [ :item |
-				| ast v k |
-				k := item first.
-				v := item second.
-			ast := SAASTHelper new parsedMethodFrom: v testMethod.
-			ast
-				addPragma:
-					(RBPragmaNode
-						selector: self class defaultInfoPragma
-						arguments: {(RBLiteralValueNode value: (self infoPragmaFrom: k))}).
-			v testMethod: ast formattedCode.
-			result add: v
-				
-				 ]
-			 ].
+			tmp
+				at: v selector
+				ifAbsentPut: [ {v.
+					OrderedCollection new} ].
+			(tmp at: v selector) second add: k ].
+	tmp
+		keysAndValuesDo: [ :selector :tuple | 
+			| list v |
+			v := tuple first.
+			list := tuple second. 
+			list
+				do: [ :k | 
+					| ast |
+					ast := SAASTHelper new parsedMethodFrom: v testMethod.
+					ast
+						addPragma:
+							(RBPragmaNode
+								selector: self class defaultInfoPragma
+								arguments: {(RBLiteralValueNode value: (self infoPragmaFrom: k))}).
+					v testMethod: ast formattedCode.
+					result add: v ] ].
 	^ result
 ]
 
