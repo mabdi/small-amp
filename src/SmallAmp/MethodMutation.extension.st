@@ -6,6 +6,7 @@ MethodMutation >> asDictionaryObject [
 	(#operatorClass -> operator class name).
 	(#class -> originalClass name).
 	(#method -> originalMethod selector).
+	(#mutatedNode -> self mutatedNode formattedCode).
 	(#mutationStart -> self nodeToMutate start).
 	(#mutationEnd -> self nodeToMutate stop)} asDictionary
 ]
