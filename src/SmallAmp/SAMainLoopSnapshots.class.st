@@ -96,7 +96,7 @@ SAMainLoopSnapshots >> finalSteps [
 	| generatedClass readable |
 	generatedClass := self astHelper
 		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
-		using: testClass.
+		using: testClass smallAmpOriginalTestCase.
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
@@ -187,7 +187,7 @@ SAMainLoopSnapshots >> makeReadable [
 	| readable reducer prettifier |
 	reducer := (config oracleReducion initializeWith: config)
 		with: finalResult amplifiedClass
-		from: testClass
+		from: testClass smallAmpOriginalTestCase
 		target: targetClasses
 		uncovered: finalResult notCoveredInOriginal.
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
