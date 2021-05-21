@@ -67,11 +67,7 @@ SAASTHelper >> buildTestClassAndLogWith: aCollection using: testClass [
 		package: self defaultTempPackage.
 	tempClass class
 		compile:
-			'allTestSelectors
-		| answer |
-		answer := Set withAll: self testSelectors.
-		answer addAll: self superclass allTestSelectors.
-		^ answer asSortedCollection asOrderedCollection'.
+			self srcAllTestSelectors.
 	aCollection
 		do: [ :item | 
 			| ast |
@@ -88,20 +84,8 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 		instanceVariableNames: ''
 		classVariableNames: ''
 		package: self defaultTempPackage.
-	self
-		onClass: tempClass class
-		compile:
-			'allTestSelectors
-		| answer |
-		answer := Set withAll: self testSelectors.
-		answer addAll: self superclass allTestSelectors.
-		^ answer asSortedCollection asOrderedCollection'.
-	self
-		onClass: tempClass class
-		compile:
-			'defaultTimeLimit
-	^ 3 seconds '.
-
+	self onClass: tempClass class compile: self srcAllTestSelectors.
+	self onClass: tempClass class compile: self srcDefaultTimeLimit.
 	aCollection
 		do: [ :item | 
 			| ast |
@@ -212,6 +196,40 @@ SAASTHelper >> extractMethodName: aSourceCode [
 { #category : #private }
 SAASTHelper >> getId [
 	^ self class instanceId
+]
+
+{ #category : #'as yet unclassified' }
+SAASTHelper >> grindTestClass: testClass size: testNumber [
+	| currentTests currentIndex tests result tempClass helpers firstClass |
+	currentIndex := 1.
+	firstClass := true.
+	result := OrderedCollection new.
+	tests := testClass testSelectors.
+	helpers := testClass methods
+		reject: [ :m | tests includes: m selector ].
+	[ currentIndex < tests size ]
+		whileTrue: [ currentTests := tests
+				copyFrom: currentIndex
+				to: (currentIndex + testNumber - 1 min: tests size).
+			currentIndex := currentIndex + testNumber.
+			currentTests ifEmpty: [ ^ result ].
+			tempClass := testClass superclass
+				subclass: (testClass name asString , self getId asString) asSymbol
+				instanceVariableNames: testClass instanceVariablesString
+				classVariableNames: testClass classVariablesString
+				package: self defaultTempPackage.
+			currentTests
+				do:
+					[ :selector | tempClass compile: (testClass lookupSelector: selector) sourceCode ].
+			helpers do: [ :h | tempClass compile: h sourceCode ].
+			firstClass
+				ifTrue: [ tempClass class compile: self srcAllTestSelectors.
+					firstClass := false ].
+			tempClass class compile: self srcDefaultTimeLimit.
+					tempClass class
+				compile: 'smallAmpTargetClasses ^ ' , testClass name , ' smallAmpTargetClasses'.
+			result add: tempClass ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
@@ -436,6 +454,21 @@ SAASTHelper >> signAsSmallAmp: src [
 		ifFalse: [ ast
 				addPragma: (RBPragmaNode selector: self defaultPragma arguments: {}) ].
 			^ ast formattedCode 
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> srcAllTestSelectors [
+	^ 'allTestSelectors
+		| answer |
+		answer := Set withAll: self testSelectors.
+		answer addAll: self superclass allTestSelectors.
+		^ answer asSortedCollection asOrderedCollection'
+]
+
+{ #category : #'method operations' }
+SAASTHelper >> srcDefaultTimeLimit [
+	^ 'defaultTimeLimit
+	^ 3 seconds '
 ]
 
 { #category : #'as yet unclassified' }

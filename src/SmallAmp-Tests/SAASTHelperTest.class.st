@@ -61,6 +61,34 @@ SAASTHelperTest >> testCleanUp [
 ]
 
 { #category : #test }
+SAASTHelperTest >> testGrindTestClassSize [
+	| helper cls grinded |
+	helper := SAASTHelper new.
+	cls := TestCase
+		subclass: 'SAFakeTestForGrind' , helper getId asString
+		instanceVariableNames: 'i j k'
+		classVariableNames: 'a b c'
+		package: helper defaultTempPackage.
+	1 to: 32 do: [ :i | cls compile: 'testNum' , i asString , ' self assert: true' ].
+	cls compile: 'helperMethod ^ 1'.
+	grinded := helper grindTestClass: cls size: 20.
+	self assert: grinded size equals: 2.
+	self assert: grinded first testSelectors size equals: 20.
+	self
+		assert: (grinded first class >> #allTestSelectors) sourceCode
+		equals: helper srcAllTestSelectors.
+	self
+		assert: grinded first smallAmpTargetClasses
+		equals: cls smallAmpTargetClasses.
+	self
+		assert: grinded second smallAmpTargetClasses
+		equals: cls smallAmpTargetClasses.
+	self assert: grinded second testSelectors size equals: 12.
+	grinded do: #removeFromSystem.
+	cls removeFromSystem.
+]
+
+{ #category : #test }
 SAASTHelperTest >> testOldBuildTestClassAndRun [
 	| result methods testMethods |
 	testMethods := SAAssertTransformTest methods

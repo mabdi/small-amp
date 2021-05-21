@@ -311,6 +311,15 @@ SACommandLineHandler >> extraInformationFor: amplified [
 	^ result
 ]
 
+{ #category : #actions }
+SACommandLineHandler >> grindTestClass: targetedTests [
+	^ targetedTests
+		flatCollect: [ :cls | 
+			cls allTestSelectors size > 20
+				ifTrue: [ SAASTHelper new grindTestClass: cls size: 20 ]
+				ifFalse: [ {cls} ] ]
+]
+
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> loadMainLoopFromFuelFile [
 	| x |
@@ -355,16 +364,18 @@ SACommandLineHandler >> metricsEval: repoName [
 		nextPutAll: stat;
 		lf;
 		close.
+	(FileLocator imageDirectory / 'allTests.txt') writeStream
+		nextPutAll: (Character lf join: targetedTests);
+		lf;
+		close.
+	targetedTests := self grindTestClass: targetedTests.	
 	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll:
 			(Character lf
 				join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ]));
 		lf;
 		close.
-	(FileLocator imageDirectory / 'allTests.txt') writeStream
-		nextPutAll: (Character lf join: targetedTests);
-		lf;
-		close.
+	
 	^ stat
 ]
 
