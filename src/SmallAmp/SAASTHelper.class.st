@@ -226,8 +226,10 @@ SAASTHelper >> grindTestClass: testClass size: testNumber [
 				ifTrue: [ tempClass class compile: self srcAllTestSelectors.
 					firstClass := false ].
 			tempClass class compile: self srcDefaultTimeLimit.
-					tempClass class
-				compile: 'smallAmpTargetClasses ^ ' , testClass name , ' smallAmpTargetClasses'.
+			tempClass class
+				compile: 'smallAmpOriginalTestCase ^ ' , testClass name.
+			tempClass class
+				compile: 'smallAmpTargetClasses ^ self smallAmpOriginalTestCase smallAmpTargetClasses'.
 			result add: tempClass ].
 	^ result
 ]

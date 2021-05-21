@@ -81,11 +81,17 @@ SAASTHelperTest >> testGrindTestClassSize [
 		assert: grinded first smallAmpTargetClasses
 		equals: cls smallAmpTargetClasses.
 	self
+		assert: grinded first smallAmpOriginalTestCase
+		equals: cls.
+	self
+		assert: grinded second smallAmpOriginalTestCase
+		equals: cls.
+	self
 		assert: grinded second smallAmpTargetClasses
 		equals: cls smallAmpTargetClasses.
 	self assert: grinded second testSelectors size equals: 12.
 	grinded do: #removeFromSystem.
-	cls removeFromSystem.
+	cls removeFromSystem
 ]
 
 { #category : #test }

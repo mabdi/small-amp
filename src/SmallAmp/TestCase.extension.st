@@ -17,6 +17,11 @@ TestCase class >> smallAmpAssertionDensity [
 ]
 
 { #category : #'*SmallAmp' }
+TestCase class >> smallAmpOriginalTestCase [
+	^ self
+]
+
+{ #category : #'*SmallAmp' }
 TestCase class >> smallAmpTargetClasses [
 	| c t |
 	self isAbstract
