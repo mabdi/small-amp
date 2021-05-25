@@ -36,7 +36,6 @@ MutantEvaluationLogger >> initialize [
 
 { #category : #evaluation }
 MutantEvaluationLogger >> installMetaLinkTo: aNode [
-	self traceCr: 'Installing on: ' , aNode asString.
 	aNode isMessage
 		ifFalse: [ aNode link: self getMetaLink ]
 		ifTrue: [ aNode isInlined
