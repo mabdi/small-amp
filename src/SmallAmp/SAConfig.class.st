@@ -36,7 +36,7 @@ SAConfig class >> default [
 	"debugOn sandBoxOn"
 
 	^ self dspotAllamps
-		maxPop: 100;
+		maxPop: 10;
 		saveToFile: false;
 		debugOn;
 		yourself
