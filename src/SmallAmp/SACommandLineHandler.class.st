@@ -368,14 +368,13 @@ SACommandLineHandler >> metricsEval: repoName [
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
 		close.
-	targetedTests := self grindTestClass: targetedTests.	
+	targetedTests := self grindTestClass: targetedTests.
 	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll:
 			(Character lf
-				join: (targetedTests sort: [ :a :b | a linesOfCode < b linesOfCode ]));
+				join: (targetedTests ));
 		lf;
 		close.
-	
 	^ stat
 ]
 
