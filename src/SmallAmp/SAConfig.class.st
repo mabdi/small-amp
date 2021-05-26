@@ -33,12 +33,10 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	"debugOn sandBoxOn"
-
+	
 	^ self dspotAllamps
 		maxPop: 10;
 		saveToFile: false;
-		debugOn;
 		yourself
 ]
 
