@@ -597,10 +597,10 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 	cnf := SAConfig default.
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_iteration
-		ifPresent: [ :iter | cnf iterations: iter ].
+		ifPresent: [ :iter | cnf iterations: iter asInteger ].
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_maxInputs
-		ifPresent: [ :maxInputs | cnf maxPop: maxInputs ].
+		ifPresent: [ :maxInputs | cnf maxPop: maxInputs asInteger ].
 	main := SAMainLoopSnapshots
 		with: cnf
 		for: aTestClass
@@ -616,8 +616,7 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 			self
 				cout:
 					(String
-						streamContents: [ :stream | x signalerContext errorReportOn: stream ])
-			 ].
+						streamContents: [ :stream | x signalerContext errorReportOn: stream ]) ].
 	self cout: 'finished #useSnapshots: for ' , aTestClass name.
 	Smalltalk snapshot: true andQuit: true
 ]
