@@ -1,0 +1,31 @@
+name: smalltalkCI
+# based  on https://raw.githubusercontent.com/hpi-swa/smalltalkCI/master/.github/workflows/main.yml
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.appveyor.yml'
+      - '.travis.yml'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.appveyor.yml'
+      - '.travis.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hpi-swa/setup-smalltalkCI@v1
+        id: smalltalkci
+        with:
+          smalltalk-image: Pharo64-stable
+      - run: smalltalkci -s Pharo64-stable
+        shell: bash
+        timeout-minutes: 15
