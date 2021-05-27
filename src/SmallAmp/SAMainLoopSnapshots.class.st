@@ -254,19 +254,21 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> setupSelection [
-	super setupSelection.
+	selection := config selection initializeWith: config.
+	finalResult
+		originalAnalysis:
+			(selection
+				initialAnalysisFor: {testClass smallAmpOriginalTestCase}
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal).
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
 	selection
 		onBeforeMutant: [ :mutant :index | 
+			self saveTheState: {(#toSkip -> index)} asDictionary.
 			self
-						saveTheState:
-							{
-							(#toSkip -> index)} asDictionary.
-					self
-						saveCrashEvidence:
-							{(#testClass -> testClass name).
-							
-							(#mutant -> mutant asDictionaryObject)} asDictionary
-			 ].
+				saveCrashEvidence:
+					{(#testClass -> testClass name).
+					(#mutant -> mutant asDictionaryObject)} asDictionary ].
 	selection
 		onMutationEvaluation: [ | toSkip |
 			self snapshotPoint: #mutation_testing.
