@@ -612,7 +612,7 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 		on: Error
 		do: [ :x | 
 			self cout: 'Run instance crashed: ' , aTestClass name.
-			self cout: 'Error details:' , x description ].
+			self cout: 'Error details:' , x description. ].
 	self cout: 'finished #useSnapshots: for ' , aTestClass name.
 	Smalltalk snapshot: true andQuit: true
 ]

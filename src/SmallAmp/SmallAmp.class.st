@@ -215,8 +215,10 @@ SmallAmp >> amplifyEvalItem: item [
 		on: Error
 		do: [ :x | 
 			self debugLog: 'Run instance crashed: ' , className.
-			self debugLog: 'Error details:' , x description ].
-	logsFile := nil.
+			self debugLog: 'Error details:' , x description.
+			self debugLog: (String
+				streamContents: [ :stream | x signalerContext errorReportOn: stream ]). ].
+	logsFile := nil
 ]
 
 { #category : #'as yet unclassified' }
