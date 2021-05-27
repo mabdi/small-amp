@@ -8,7 +8,7 @@ SmalltalkCISpec {
     ],
     #testing : {
         #coverage : {
-            #packages : [ 'SmalltalkTestGrinder-Core*' ]
+            #packages : [ 'SmallAmp' ]
         }
     }
 }
