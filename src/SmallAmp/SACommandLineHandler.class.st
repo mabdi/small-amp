@@ -591,11 +591,18 @@ SACommandLineHandler >> useSnapshots [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> useSnapshots: aTestClass [
-	| main result |
+	| main result cnf |
 	self cout: 'started #useSnapshots: for ' , aTestClass name.
 	self amplificationContextInit.
+	cnf := SAConfig default.
+	Smalltalk os environment asDictionary
+		at: #SMALLAMP_iteration
+		ifPresent: [ :iter | cnf iterations: iter ].
+	Smalltalk os environment asDictionary
+		at: #SMALLAMP_maxInputs
+		ifPresent: [ :maxInputs | cnf maxPop: maxInputs ].
 	main := SAMainLoopSnapshots
-		with: SAConfig default
+		with: cnf
 		for: aTestClass
 		targets: aTestClass smallAmpTargetClasses.
 	[ result := main amplify.

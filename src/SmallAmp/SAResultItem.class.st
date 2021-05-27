@@ -103,6 +103,7 @@ SAResultItem >> asDictionaryObject [
 	result := Dictionary new.
 	result at: #unixtime put: DateAndTime now asUnixTime.
 	self safeFail: [ testClass name ] key: #testCase addTo: result.
+	self safeFail: [ testClass smallAmpOriginalTestCase name ] key: #originalTestCase addTo: result.
 	self
 		safeFail: [ (targetClasses collect: #name) asArray ]
 		key: #targetClasses
@@ -228,10 +229,9 @@ SAResultItem >> asDictionaryObject [
 		key: #notCoveredInAmplified
 		addTo: result.
 	self
-		safeFail: [ self numberOfOriginalTestMethods  ]
+		safeFail: [ self numberOfOriginalTestMethods ]
 		key: #numberOfOriginalTestMethods
 		addTo: result.
-	
 	^ result
 ]
 
