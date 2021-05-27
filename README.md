@@ -1,5 +1,6 @@
 # small-amp
 [![Build Status](https://travis-ci.org/mabdi/small-amp.svg?branch=master)](https://travis-ci.org/mabdi/small-amp)
+[![smalltalkCI](https://github.com/mabdi/small-amp/actions/workflows/smalltalkCI.yml/badge.svg)](https://github.com/mabdi/small-amp/actions/workflows/smalltalkCI.yml)
 
 SmallAmp is an open source test amplification tool in Pharo Smalltalk. SmallAmp transforms existing test methods to generate a set of new test methods that increase mutation coverage on selected class.
 
