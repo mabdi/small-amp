@@ -57,24 +57,6 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self ampTodo ].
 	(self hasOption: 'clearTemp')
 		ifTrue: [ self clearTempClasses ].
-	(self hasOption: 'ciAmplifyClass')
-		ifTrue: [ ^ self shadowAmplifyClass ].
-	(self hasOption: 'ciAmplifyTest')
-		ifTrue: [ ^ self shadowAmplifyTest ].
-	(self hasOption: 'ciFinalizeClass')
-		ifTrue: [ ^ self shadowAmplifyClassFinalize ].
-	(self hasOption: 'ciFinalizeTest')
-		ifTrue: [ ^ self shadowAmplifyTestFinalize ].
-	(self hasOption: 'ciAssertionAmplification')
-		ifTrue: [ ^ self shadowAssertionAmplification ].
-	(self hasOption: 'ciInputAmplification')
-		ifTrue: [ ^ self shadowInputAmplification ].
-	(self hasOption: 'ciSelectionInit')
-		ifTrue: [ ^ self shadowSelectionInit ].
-	(self hasOption: 'ciSelectionFinalize')
-		ifTrue: [ ^ self shadowSelectionFinalize ].
-	(self hasOption: 'ciSelectionMutantIndex')
-		ifTrue: [ ^ self shadowSelectionMutantIndex ].
 	(self hasOption: 'useSnapshots')
 		ifTrue: [ ^ self useSnapshots ].
 	self end
@@ -124,28 +106,6 @@ SACommandLineHandler >> amplificationContextInit [
 			self cout: 'Author set.' ].
 ]
 
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> amplificationRunInShadowFor: aTestClass [
-	| error main |
-	error := 0.
-	main := SAMainLoopShadowed
-		with: SAConfig default
-		for: aTestClass
-		targets: aTestClass smallAmpTargetClasses.
-	[ main stepInitClass.
-	self cout: 'MainLoop initClass done' ]
-		on: Error
-		do: [ :x | 
-			self cout: 'Run instance crashed: ' , aTestClass name.
-			self cout: 'Error details:' , x description.
-			error := 1.
-			FLSerializer
-		serialize: x
-		toFileNamed: '___dbg.fl'. ].
-	self saveMainLoopInFuelFile: main.
-	^ error
-]
-
 { #category : #activation }
 SACommandLineHandler >> clearTempClasses [
 	SAASTHelper new clearTempClasses 
@@ -172,11 +132,6 @@ SACommandLineHandler >> cout: aString [
 		lf;
 		flush.
 	
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> defaultLoopObjectFuelFile [
-	^ '__smallAmp_main.fl'
 ]
 
 { #category : #accessing }
@@ -320,14 +275,6 @@ SACommandLineHandler >> grindTestClass: targetedTests [
 				ifFalse: [ {cls} ] ]
 ]
 
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> loadMainLoopFromFuelFile [
-	| x |
-	x := FLMaterializer
-		materializeFromFileNamed: self defaultLoopObjectFuelFile.
-	^ x
-]
-
 { #category : #actions }
 SACommandLineHandler >> metricsEval: repoName [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
@@ -407,144 +354,6 @@ SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
 				flush.
 			'N/A' ].
 	aDictionary at: aKey put: theValue
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> saveMainLoopInFuelFile: main [
-	FLSerializer
-		serialize: main
-		toFileNamed: self defaultLoopObjectFuelFile.
-	self cout: 'MainLoop serialized in ' , self defaultLoopObjectFuelFile
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyClass [
-	| cmd className |
-	cmd := '--ciAmplifyClass='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | className := arg allButFirst: cmd size ].
-	self shadowAmplifyClass: (Smalltalk globals at: className asSymbol)
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyClass: aTestClass [
-	| error |
-	self amplificationContextInit.
-	error := self amplificationRunInShadowFor: aTestClass.
-	error = 0
-		ifTrue: [ Smalltalk snapshot: true andQuit: true ]
-		ifFalse: [ Smalltalk exit: error ]
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyClassFinalize [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepFinalize.
-	self cout: 'MainLoop stepFinalize done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyTest [
-	| cmd testName |
-	cmd := '--ciAmplifyTest='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | testName := arg allButFirst: cmd size ].
-	self shadowAmplifyTest: testName
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyTest: aTestSelector [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepInitAmplifyATestMethod: aTestSelector.
-	self cout: 'MainLoop stepInitAmplifyATestMethod: done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAmplifyTestFinalize [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepFinalizeTestMethod.
-	self cout: 'MainLoop stepFinalizeTestMethod done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAssertionAmplification [
-	| cmd selector |
-	cmd := '--ciAssertionAmplification='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | selector := arg allButFirst: cmd size ].
-	self shadowAssertionAmplification: selector
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowAssertionAmplification: aSelector [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepAssertAmplification: aSelector.
-	self cout: 'MainLoop stepAssertAmplification done successfully for: ', aSelector .
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowInputAmplification [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepInputAmplification.
-	self cout: 'MainLoop stepInputAmplification done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowSelectionFinalize [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepSelectionFinalize.
-	self cout: 'MainLoop stepSelectionFinalize done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowSelectionInit [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepSelectionInit.
-	self cout: 'MainLoop stepSelectionInit done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowSelectionMutantIndex [
-	| cmd index |
-	cmd := '--ciSelectionMutantIndex='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | index := arg allButFirst: cmd size ].
-	self shadowSelectionMutantIndex: index asInteger
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> shadowSelectionMutantIndex: anIndex [
-	| main |
-	main := self loadMainLoopFromFuelFile.
-	main stepSelectionMutantIndex: anIndex.
-	self cout: 'MainLoop shadowSelectionMutantIndex: done successfully'.
-	self saveMainLoopInFuelFile: main.
-	Smalltalk snapshot: false andQuit: true
 ]
 
 { #category : #'as yet unclassified' }
