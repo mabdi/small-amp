@@ -43,7 +43,7 @@ SAConfig class >> dspot [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{(SADspotLiteralInputAmplifier -> 1).
+			{(SALiteralInputAmplifier -> 1).
 			(SARemoveInputAmplifier -> 1).
 			(SADuplicateInputAmplifier -> 1).
 			(SAAddInputAmplifier -> 1)};
@@ -74,7 +74,7 @@ SAConfig class >> dspotAllamps [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{(SADspotLiteralInputAmplifier -> 1).
+			{(SALiteralInputAmplifier -> 1).
 			(SARemoveInputAmplifier -> 1).
 			(SADuplicateInputAmplifier -> 1).
 			(SAAddInputAmplifier -> 1).

@@ -19,9 +19,11 @@ SALiteralMutator >> characterSet [
 
 { #category : #removing }
 SALiteralMutator >> insertRandom: aStr [
-	| x |
+	| x rnd |
+	rnd := self characterSet atRandom asString.
+	aStr ifEmpty: [ ^ rnd ].
 	x := aStr size atRandom.
-	^ (aStr copyFrom: 1 to: x) , self characterSet atRandom asString
+	^ (aStr copyFrom: 1 to: x) , rnd
 		, (aStr copyFrom: x + 1 to: aStr size)
 ]
 
@@ -170,12 +172,6 @@ SALiteralMutator >> mutateLiteralArrayNode: aNode [
 ]
 
 { #category : #'as yet unclassified' }
-SALiteralMutator >> mutateNode: aNode [
-	aNode isLiteralNode ifFalse: [ ^ {  } ].
-	^ aNode value smallAmpMutateWith: self. 
-]
-
-{ #category : #'as yet unclassified' }
 SALiteralMutator >> mutateNumber: aValue [
 	| nodes |
 	nodes := {(aValue + 1).
@@ -201,7 +197,8 @@ SALiteralMutator >> mutateString: aValue [
 	(self updateRandom: aValue).
 	(self insertRandom: aValue).
 	(self removeRandom: aValue).
-	self randomString} asOrderedCollection reject: [:s | s = aValue].
+	(self randomString: aValue size).
+	} asOrderedCollection reject: [ :s | s = aValue ].
 	nodes := nodes collect: [ :n | RBLiteralValueNode value: n ].
 	^ nodes
 ]
@@ -215,9 +212,8 @@ SALiteralMutator >> mutateTrue: aValue [
 ]
 
 { #category : #'as yet unclassified' }
-SALiteralMutator >> randomString [
-	^ (String new: 32)
-		collect: [ :each | self characterSet atRandom ]
+SALiteralMutator >> randomString: size [
+	^ (String new: size) collect: [ :each | self characterSet atRandom ]
 ]
 
 { #category : #removing }
