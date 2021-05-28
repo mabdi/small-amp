@@ -44,9 +44,3 @@ SAAbstractProfiler >> reset [
 SAAbstractProfiler >> samples [
 	^ samples
 ]
-
-{ #category : #'instance creation' }
-SAAbstractProfiler >> with: aConfig [
-	self initialize.
-	config := aConfig
-]

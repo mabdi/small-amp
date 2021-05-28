@@ -94,16 +94,40 @@ SAStateSerializerTest >> testArrayDeep [
 ]
 
 { #category : #tests }
+SAStateSerializerTest >> testBlock [
+	| item obj |
+	obj := [:x | 1 + 2].
+	item := obj
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: item class equals: SAObservationBlockClosure.
+	self assert: item theClass equals: BlockClosure.
+	self assert: item theValue sourceNode equals: [:x | 1 + 2] sourceNode
+]
+
+{ #category : #tests }
 SAStateSerializerTest >> testBoolean [
 	| item obj |
 	obj := true.
 	item := obj
-		        smallAmpAcceptSerializerVisitor:
-		        self getASerializer
-		        atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	self assert: item class equals: SAObservationTrue.
 	self assert: item theClass equals: True.
-	self assert: item theValue equals: true
+	self assert: item theValue equals: true.
+	self
+		assert: item valueNode
+		equals: (RBParser parseExpression: 'true').
+	obj := false.
+	item := obj
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: item class equals: SAObservationFalse.
+	self assert: item theClass equals: False.
+	self assert: item theValue equals: false.
+	self
+		assert: item valueNode
+		equals: (RBParser parseExpression: 'false')
 ]
 
 { #category : #tests }
@@ -227,16 +251,31 @@ SAStateSerializerTest >> testMaxDepth [
 ]
 
 { #category : #tests }
+SAStateSerializerTest >> testMethodObject [
+	| item obj |
+	obj := self class >> #testMethodObject.
+	item := obj
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
+	self assert: item class equals: SAObservationCompiledCode.
+	self assert: item theClass equals: CompiledMethod.
+	self
+		assert: item theValue 
+		equals: self class >> #testMethodObject
+]
+
+{ #category : #tests }
 SAStateSerializerTest >> testNil [
 	| item obj |
 	obj := nil.
 	item := obj
-		        smallAmpAcceptSerializerVisitor:
-		        self getASerializer
-		        atDepth: 0.
+		smallAmpAcceptSerializerVisitor: self getASerializer
+		atDepth: 0.
 	self assert: item class equals: SAObservationNil.
 	self assert: item theClass equals: UndefinedObject.
-	self assert: item theValue equals: nil
+	self assert: item theValue equals: nil.
+	self assert: item valueNode equals: (RBParser parseExpression: 'nil')
+	
 ]
 
 { #category : #tests }

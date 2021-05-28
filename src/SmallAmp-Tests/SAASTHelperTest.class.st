@@ -72,20 +72,18 @@ SAASTHelperTest >> testGrindTestClassSize [
 	1 to: 32 do: [ :i | cls compile: 'testNum' , i asString , ' self assert: true' ].
 	cls compile: 'helperMethod ^ 1'.
 	grinded := helper grindTestClass: cls size: 20.
+	self assert: cls smallAmpOriginalTestCase equals: cls.
 	self assert: grinded size equals: 2.
 	self assert: grinded first testSelectors size equals: 20.
+	self assert: grinded first smallAmpOriginalTestCase equals: cls.
 	self
 		assert: (grinded first class >> #allTestSelectors) sourceCode
 		equals: helper srcAllTestSelectors.
 	self
 		assert: grinded first smallAmpTargetClasses
 		equals: cls smallAmpTargetClasses.
-	self
-		assert: grinded first smallAmpOriginalTestCase
-		equals: cls.
-	self
-		assert: grinded second smallAmpOriginalTestCase
-		equals: cls.
+	self assert: grinded first smallAmpOriginalTestCase equals: cls.
+	self assert: grinded second smallAmpOriginalTestCase equals: cls.
 	self
 		assert: grinded second smallAmpTargetClasses
 		equals: cls smallAmpTargetClasses.
@@ -110,6 +108,18 @@ SAASTHelperTest >> testOldBuildTestClassAndRun [
 		deny: (result methods detect: [ :mtd | mtd selector = #astHelper ]) isNil.
 	self assert: result testSelectors size equals: methods size.
 	SAASTHelper new removeClass: result source: self class name
+]
+
+{ #category : #test }
+SAASTHelperTest >> testPragma [
+	| signed |
+	signed := Fake2Test smallAmpAmplifiedMethods.
+	self
+		assert: signed size
+		equals: 1.
+	self
+		assert: signed first selector
+		equals: #testSigned
 ]
 
 { #category : #test }
