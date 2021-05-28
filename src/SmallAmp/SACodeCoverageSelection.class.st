@@ -61,7 +61,7 @@ SACodeCoverageSelection >> initialAnalysisFor: testClasses targets: targetClasse
 
 { #category : #cleanup }
 SACodeCoverageSelection >> runCoverage: aPopulation [
-	| testClass  newTestClass pages |
+	| testClass newTestClass pages |
 	testClass := aPopulation atRandom testClass.
 	newTestClass := nil.
 	pages := self split: aPopulation page: 100.
@@ -71,12 +71,10 @@ SACodeCoverageSelection >> runCoverage: aPopulation [
 				ifNil: [ newTestClass := SAASTHelper new
 						buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 						using: testClass ]
-				ifNotNil: [ :cls | 
-					aPage
-						do:
-							[ :item | cls compile: item testMethod ] ].
+				ifNotNil:
+					[ :cls | aPage do: [ :item | cls compile: item testMethod ] ].
 			self runCoverageClass: newTestClass ]
-		displayingProgress: 'Running Coverage'
+		
 ]
 
 { #category : #cleanup }

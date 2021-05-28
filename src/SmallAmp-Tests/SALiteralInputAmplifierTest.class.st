@@ -105,6 +105,17 @@ SALiteralInputAmplifierTest >> testFloats2 [
 ]
 
 { #category : #tests }
+SALiteralInputAmplifierTest >> testFraction [
+	| res |
+	res := SALiteralInputAmplifier new
+		amplifyInputsSource: 'foo |a| a:=2/3'.
+	self
+		assertMethodSourceCode:
+			'foo |a| a:=1/3'
+		in: res
+]
+
+{ #category : #tests }
 SALiteralInputAmplifierTest >> testInteger [
 	| res |
 	res := SALiteralInputAmplifier new
