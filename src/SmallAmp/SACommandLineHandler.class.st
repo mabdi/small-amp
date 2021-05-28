@@ -323,16 +323,8 @@ SACommandLineHandler >> grindTestClass: targetedTests [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> loadMainLoopFromFuelFile [
 	| x |
-	self
-		cout:
-			'loadMainLoopFromFuelFile1'
-				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	x := FLMaterializer
 		materializeFromFileNamed: self defaultLoopObjectFuelFile.
-	self
-		cout:
-			'loadMainLoopFromFuelFile2'
-				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	^ x
 ]
 
@@ -419,18 +411,9 @@ SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> saveMainLoopInFuelFile: main [
-	self
-		cout:
-			'saveMainLoopInFuelFile1'
-				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	FLSerializer
 		serialize: main
 		toFileNamed: self defaultLoopObjectFuelFile.
-	self
-		cout:
-			'saveMainLoopInFuelFile2'
-				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
-	
 	self cout: 'MainLoop serialized in ' , self defaultLoopObjectFuelFile
 ]
 
@@ -447,17 +430,8 @@ SACommandLineHandler >> shadowAmplifyClass [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> shadowAmplifyClass: aTestClass [
 	| error |
-	self cout: 'started #shadowAmplifyClass: for ' , aTestClass name.
 	self amplificationContextInit.
 	error := self amplificationRunInShadowFor: aTestClass.
-	self
-		cout:
-			'finished #shadowAmplifyClass: for ' , aTestClass name
-				, ' exit code: ' , error asString.
-	self
-		cout:
-			'shadowAmplifyClass '
-				, (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	error = 0
 		ifTrue: [ Smalltalk snapshot: true andQuit: true ]
 		ifFalse: [ Smalltalk exit: error ]
@@ -490,7 +464,6 @@ SACommandLineHandler >> shadowAmplifyTest: aTestSelector [
 	main stepInitAmplifyATestMethod: aTestSelector.
 	self cout: 'MainLoop stepInitAmplifyATestMethod: done successfully'.
 	self saveMainLoopInFuelFile: main.
-	self cout: 'shadowAmplifyTest ', (SmallBankTest >> #testDeposit) bytecodesHash asString.
 	Smalltalk snapshot: false andQuit: true
 ]
 
