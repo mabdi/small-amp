@@ -217,29 +217,6 @@ SAMainLoop >> methodProfiling [
 	instantiationExtractor run
 ]
 
-{ #category : #accessing }
-SAMainLoop >> methodReduction [
-	| p size |
-	size := self methodReductions size asString.
-	finalResult logs
-		recoredTag: #methodReduction
-		toRun: [ p := population.
-			self methodReductions
-				do: [ :reducer | 
-					reducer
-						uncovered: selection uncovered;
-						testRunTimeoutMillis: testRunTimeoutMillis.
-					p := reducer reduceMethods: p ]
-				displayingProgress: 'Method Reduction' , ' (' , size , ')'.
-			population := p ]
-]
-
-{ #category : #accessing }
-SAMainLoop >> methodReductions [
-	^ config methodReductions
-				collect: [ :reducer | reducer initializeWith: config ]
-]
-
 { #category : #'as yet unclassified' }
 SAMainLoop >> normalize [
 	finalResult logs
@@ -333,15 +310,6 @@ SAMainLoop >> setupSelection [
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal).
 	selection uncovered ifEmpty: [ SANoUncovered new signal  ]
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoop >> simplification [
-	| simplifier |
-	finalResult logs
-		recoredTag: #simplification
-		toRun: [ simplifier := config simplifier initializeWith: config.
-			simplifier simplify: finalResult amplifiedClass ]
 ]
 
 { #category : #accessing }

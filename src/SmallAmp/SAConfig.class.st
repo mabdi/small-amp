@@ -13,9 +13,7 @@ Class {
 		'statementTimeOut',
 		'testRunTimeOut',
 		'serializationMaxDepth',
-		'methodReductions',
 		'prettifier',
-		'simplifier',
 		'maxPop',
 		'testRunTimeOutMult',
 		'saveToFile',
@@ -24,9 +22,7 @@ Class {
 		'enableExclude',
 		'overwrite',
 		'timeBudget',
-		'maxPopPerMethod',
-		'mainloop',
-		'waves'
+		'mainloop'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -53,15 +49,12 @@ SAConfig class >> dspot [
 			(SAAddInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
-		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 100;
-		maxPopPerMethod: 10;
 		debug: false;
 		mainloop: SAMainLoopDspot;
 		saveToFile: false;
@@ -91,15 +84,12 @@ SAConfig class >> dspotAllamps [
 			(SANullifyInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
-		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 100;
-		maxPopPerMethod: 10;
 		debug: false;
 		mainloop: SAMainLoopDspot;
 		saveToFile: false;
@@ -208,26 +198,6 @@ SAConfig >> maxPop: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> maxPopPerMethod [
-	^ maxPopPerMethod
-]
-
-{ #category : #accessing }
-SAConfig >> maxPopPerMethod: anObject [
-	maxPopPerMethod := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> methodReductions [
-	^ methodReductions
-]
-
-{ #category : #accessing }
-SAConfig >> methodReductions: anObject [
-	methodReductions := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> oracleReducion [
 	^ oracleReducion ifNil: [ selection defaultOracleReduction ]
 ]
@@ -314,16 +284,6 @@ SAConfig >> serializationMaxDepth: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> simplifier [
-	^ simplifier
-]
-
-{ #category : #accessing }
-SAConfig >> simplifier: anObject [
-	simplifier := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> statementTimeOut [
 	^ statementTimeOut
 ]
@@ -361,14 +321,4 @@ SAConfig >> timeBudget [
 { #category : #accessing }
 SAConfig >> timeBudget: anObject [
 	timeBudget := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> waves [
-	^ waves
-]
-
-{ #category : #accessing }
-SAConfig >> waves: anObject [
-	waves := anObject
 ]
