@@ -55,9 +55,9 @@ SALiteralMutator >> mutateCharacter: aValue [
 	Character space.
 	Character allByteCharacters atRandom} asOrderedCollection.
 	aValue asInteger + 1 < Character maxVal
-		ifTrue: [ Character value: aValue asInteger + 1 ].
-	aValue asInteger - 1 >=0 ifTrue: [
-	Character value: aValue asInteger - 1].
+		ifTrue: [ nodes add: (Character value: (aValue asInteger + 1) ) ].
+	aValue asInteger - 1 >= 0
+		ifTrue: [ nodes add: (Character value: (aValue asInteger - 1) ) ].
 	nodes := (nodes reject: [ :x | x = aValue ])
 		collect: [ :q | RBLiteralValueNode value: q ].
 	^ nodes

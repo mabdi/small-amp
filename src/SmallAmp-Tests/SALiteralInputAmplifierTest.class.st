@@ -83,6 +83,14 @@ SALiteralInputAmplifierTest >> testByteArray [
 ]
 
 { #category : #tests }
+SALiteralInputAmplifierTest >> testCharacter [
+	| res |
+	res := SALiteralInputAmplifier new
+		amplifyInputsSource: 'foo |a| a:= $c'.
+	self assertMethodSourceCode: 'foo |a| a:= $d' in: res
+]
+
+{ #category : #tests }
 SALiteralInputAmplifierTest >> testFloats2 [
 	| res codes cls item |
 	cls := SAASTHelper new
