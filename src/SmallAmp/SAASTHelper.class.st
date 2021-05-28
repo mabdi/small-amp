@@ -2,8 +2,7 @@ Class {
 	#name : #SAASTHelper,
 	#superclass : #Object,
 	#classInstVars : [
-		'instanceId',
-		'unsafeProcess'
+		'instanceId'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -23,13 +22,6 @@ SAASTHelper class >> instanceId [
 { #category : #'as yet unclassified' }
 SAASTHelper class >> tempPattern [
 	^ 'tmp_([a-z0-9A-Z]+)\d+'
-]
-
-{ #category : #accessing }
-SAASTHelper class >> unsafeProcess [
-	^ unsafeProcess ifNil: [ unsafeProcess := [ ] newProcess
-		name: 'SmallAmp unsafe run';
-		priority: Processor userBackgroundPriority + 1 ]
 ]
 
 { #category : #adding }

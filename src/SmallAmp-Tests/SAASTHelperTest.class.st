@@ -112,14 +112,17 @@ SAASTHelperTest >> testOldBuildTestClassAndRun [
 
 { #category : #test }
 SAASTHelperTest >> testPragma [
-	| signed |
+	| signed newSrc |
 	signed := Fake2Test smallAmpAmplifiedMethods.
+	self assert: signed size equals: 1.
+	self assert: signed first selector equals: #testSigned.
+	self assert: signed first isMadeBySmallAmp.
+	self assert: signed first selector equals: #testSigned.
+	newSrc := SAASTHelper new signAsSmallAmp: 'testHi self assert: true'.
 	self
-		assert: signed size
-		equals: 1.
-	self
-		assert: signed first selector
-		equals: #testSigned
+		assert: (SAASTHelper new parsedMethodFrom: newSrc) pragmas first selector
+		equals: SAASTHelper defaultPragma.
+	
 ]
 
 { #category : #test }
