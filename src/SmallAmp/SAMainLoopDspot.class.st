@@ -9,18 +9,20 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
-	
-	finalResult logs
-		recoredTag: #init
-		toRun: [ theTS := self initTs.
-			self setupSelection.
-			self methodProfiling ].
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			SALogger logConsole: aTestMethod selector.
+			Stdio stdout
+		<< Time nowUTC print24;
+		<< String space;
+		<< aTestMethod selector;
+		lf;
+		flush.
 			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
-	finalResult logs recoredTag: #finalize toRun: [ self finalSteps ].
+	self finalSteps.
 	^ finalResult
 ]
 
@@ -31,27 +33,16 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 		ifTrue: [ ^ false ].
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
-	finalResult logs
-		recoredTag: #assertionAmplification
-		toRun: [ theV do: #strip.
-			"theV do: #removeAssertionsAndExtract."
-			theU := self assertionAmplificationFor: (theV collect: #clone) ].
-	finalResult logs
-		recoredTag: #selection
-		toRun: [ theU := self selectionFrom: theU.
-			theATS addAll: theU ].
+	theV do: #strip.
+	theU := self assertionAmplificationFor: (theV collect: #clone).
+	theU := self selectionFrom: theU.
+	theATS addAll: theU.
 	(1 to: config iterations)
 		do: [ :gen | 
-			finalResult logs
-				recoredTag: #inputAmplification
-				toRun: [ theV := self inputAmplificationFrom: theV ].
-			finalResult logs
-				recoredTag: #assertionAmplification
-				toRun: [ theU := self assertionAmplificationFor: (theV collect: #clone) ].
-			finalResult logs
-				recoredTag: #selection
-				toRun: [ theU := self selectionFrom: theU.
-					theATS addAll: theU ] ]
+			theV := self inputAmplificationFrom: theV.
+			theU := self assertionAmplificationFor: (theV collect: #clone).
+			theU := self selectionFrom: theU.
+					theATS addAll: theU ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	theATS := theATS
 		collect: [ :item | 

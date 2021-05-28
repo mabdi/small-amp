@@ -5,7 +5,8 @@ Class {
 	#name : #SALiteralInputAmplifierTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'amplifier'
+		'amplifier',
+		'tempClasses'
 	],
 	#category : #'SmallAmp-Tests-Core'
 }
@@ -14,8 +15,13 @@ Class {
 SALiteralInputAmplifierTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 
-	amplifier := SALiteralInputAmplifier
-		initializeWith: SAConfig dspot
+	amplifier := SALiteralInputAmplifier initializeWith: SAConfig dspot.
+	tempClasses := OrderedCollection new.
+]
+
+{ #category : #running }
+SALiteralInputAmplifierTest >> tearDown [ 
+	tempClasses do: [ :cls | cls removeFromSystem  ]
 ]
 
 { #category : #tests }
@@ -47,6 +53,7 @@ SALiteralInputAmplifierTest >> testBoolean2 [
 	cls := SAASTHelper new
 		makeClassFrom: {'testDspotBoolean a:= true. b:= false'}
 		instanceVars: 'a b'.
+	tempClasses add: cls.
 	item := SATestMethod
 		with: (cls >> #testDspotBoolean) sourceCode
 		class: cls
@@ -81,7 +88,7 @@ SALiteralInputAmplifierTest >> testFloats2 [
 	cls := SAASTHelper new
 		makeClassFrom: {'testDspotFloat a:= 10.01 . b:= 3.14. c:=-0.01'}
 		instanceVars: 'a b c'.
-	item := SATestMethod
+	tempClasses add: cls.item := SATestMethod
 		with: (cls >> #testDspotFloat) sourceCode
 		class: cls
 		targets: FakeSmallBank.
@@ -92,9 +99,9 @@ SALiteralInputAmplifierTest >> testFloats2 [
 				copyWithRegex: 'testDspot(.*)_L(\d+)'
 				matchesReplacedWith: 'test' ].
 	self assert: codes size >= 15.
-	"self
-		assertMethodSourceCode: (codes at: 1) asString
-		equals: 'test a:= 9.01 . b:= 3.14. c:=-0.01'"
+	self
+		assertMethodSourceCode: 'test a:= 9.01 . b:= 3.14. c:=-0.01'
+		in: codes
 ]
 
 { #category : #tests }
@@ -142,7 +149,7 @@ SALiteralInputAmplifierTest >> testInts2 [
 	| res codes cls item |
 	cls := SAASTHelper new
 		makeClassFrom: {'testDspotInts a:= 10. b:= 20. c:=29'}
-		instanceVars: 'a b c'.
+		instanceVars: 'a b c'.tempClasses add: cls.
 	item := SATestMethod
 		with: (cls >> #testDspotInts) sourceCode
 		class: cls
@@ -155,9 +162,7 @@ SALiteralInputAmplifierTest >> testInts2 [
 				matchesReplacedWith: 'test' ].
 	codes := codes sort.
 	self assert: codes size >= 15.
-	"self
-		assertMethodSourceCode: (codes at: 1) asString
-		equals: 'test a:= 10. b:= 10. c:=29'"
+	self assertMethodSourceCode: 'test a:= 10. b:= 10. c:=29' in: codes
 ]
 
 { #category : #tests }
@@ -167,8 +172,8 @@ SALiteralInputAmplifierTest >> testLiteralArray [
 		amplifyInputsSource: 'foo |a| a set:#(10 11 12 13)'.
 	self assert: res size equals: 4 * 9 + 4.	"continue to mutation in children"
 	self
-		assertMethodSourceCode: (res at: 1) asString
-		equals: 'foo |a| a set:#()'
+		assertMethodSourceCode: 'foo |a| a set:#()' 
+		in: res 
 ]
 
 { #category : #tests }
@@ -190,6 +195,7 @@ SALiteralInputAmplifierTest >> testString2 [
 	cls := SAASTHelper new
 		makeClassFrom: {'testDspotString a:= ''dspot'''}
 		instanceVars: 'a'.
+		tempClasses add: cls.
 	item := SATestMethod
 		with: (cls >> #testDspotString) sourceCode
 		class: cls

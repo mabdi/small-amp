@@ -10,11 +10,16 @@ Class {
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> amplify [
 	theTS := self initTs.
-			self setupSelection.
-			self methodProfiling.
+	self setupSelection.
+	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			SALogger logConsole: aTestMethod selector.
+			Stdio stdout
+				<< Time nowUTC print24;
+				<< String space;
+				<< aTestMethod selector;
+				lf;
+				flush.
 			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.

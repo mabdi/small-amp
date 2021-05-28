@@ -47,12 +47,7 @@ SAMainLoop >> amplify [
 
 { #category : #private }
 SAMainLoop >> assertionAmplification [
-finalResult logs
-		recoredTag: #assertionAmplification
-		toRun:
-			[ 
 	population := self assertionAmplificationFor: population
-	]
 ]
 
 { #category : #private }
@@ -92,11 +87,8 @@ SAMainLoop >> cleanUp [
 
 { #category : #cleanup }
 SAMainLoop >> cleanUpAndAddToResult [
-	finalResult logs
-		recoredTag: #cleanUpAndAddToResult
-		toRun: [population := population collect: [ :obj | obj cleanedUpCopy ].
-	self addPopulationToResult.]
-	
+	population := population collect: [ :obj | obj cleanedUpCopy ].
+			self addPopulationToResult
 ]
 
 { #category : #'as yet unclassified' }
@@ -144,12 +136,9 @@ SAMainLoop >> finalSteps [
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> initialSteps [
-	finalResult logs
-		recoredTag: #initialSteps
-		toRun: [ self discardFailingTests.
+	self discardFailingTests.
 			self setupSelection.
-			
-			self methodProfiling ]
+			self methodProfiling
 ]
 
 { #category : #initialization }
@@ -160,24 +149,19 @@ SAMainLoop >> initialize [
 
 { #category : #private }
 SAMainLoop >> inputAmplification [
-	finalResult logs
-		recoredTag: #inputAmplification
-		toRun: [ 
-	^ self inputAmplificationFrom: population]
+	^ self inputAmplificationFrom: population
 ]
 
 { #category : #private }
 SAMainLoop >> inputAmplificationFrom: pop [
 	| newcodes |
-	finalResult logs
-		recoredTag: #inputAmplification
-		toRun: [ newcodes := OrderedCollection new.
+	newcodes := OrderedCollection new.
 			pop
 				do: [ :tcase | 
 					self inputAmplifiers
 						do: [ :amplifier | newcodes addAll: (tcase inputAmplifyBy: amplifier) ] ]
 				displayingProgress: 'Input Amplification' , ' (' , pop size asString , ')'.
-			population addAll: newcodes ]
+			population addAll: newcodes
 ]
 
 { #category : #accessing }
@@ -194,15 +178,13 @@ SAMainLoop >> inputTransplantation [
 { #category : #private }
 SAMainLoop >> inputTransplantationFrom: aPopulation [
 	| newcodes transplantor |
-	finalResult logs
-		recoredTag: #inputTransplantation
-		toRun: [ newcodes := OrderedCollection new.
+	newcodes := OrderedCollection new.
 			transplantor := SAInstantiationTransplanter initializeWith: config.
 			transplantor instantiationPatterns: instantiationExtractor patterns.
 			aPopulation
 				do: [ :tcase | newcodes addAll: (tcase inputAmplifyBy: transplantor) ]
 				displayingProgress: 'Input inputTransplantation' , ' (' , aPopulation size asString , ')'.
-			population addAll: newcodes ]
+			population addAll: newcodes
 ]
 
 { #category : #private }
@@ -219,21 +201,17 @@ SAMainLoop >> methodProfiling [
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> normalize [
-	finalResult logs
-		recoredTag: #strip
-		toRun: [ population
+	population
 				do: [ :tcase | 
 					tcase strip.
 					tcase normalize ]
-				displayingProgress: 'Strip Test Methods' ]
+				displayingProgress: 'Strip Test Methods'
 ]
 
 { #category : #private }
 SAMainLoop >> oracleReduction [
 	| reducer generatedClass |
-	finalResult logs
-		recoredTag: #oracleReduction
-		toRun: [ generatedClass := self astHelper
+	generatedClass := self astHelper
 				buildTestClassWith: (resultPeople collect: [ :tcase | tcase testMethod ])
 				using: testClass.
 			reducer := (config oracleReducion initializeWith: config)
@@ -242,17 +220,14 @@ SAMainLoop >> oracleReduction [
 				target: targetClasses
 				uncovered: finalResult notCoveredInOriginal.
 			reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-			finalResult amplifiedClass: reducer makeReducedResult.
-			 ]
+			finalResult amplifiedClass: reducer makeReducedResult
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoop >> prettifying [
 	| prettifier |
-	finalResult logs
-		recoredTag: #prettifying
-		toRun: [ prettifier := config prettifier initializeWith: config.
-			prettifier prettify: finalResult amplifiedClass ]
+	prettifier := config prettifier initializeWith: config.
+			prettifier prettify: finalResult amplifiedClass
 ]
 
 { #category : #actions }
@@ -292,12 +267,10 @@ SAMainLoop >> selection [
 { #category : #actions }
 SAMainLoop >> selectionFrom: aList [
 	| selectedTests |
-	finalResult logs
-		recoredTag: #selection
-		toRun: [ aList ifEmpty: [ ^ {  } ].
+	aList ifEmpty: [ ^ {} ].
 			selectedTests := OrderedCollection new.
 			selectedTests addAll: (selection select: aList).
-			^ selectedTests ]
+			^ selectedTests
 ]
 
 { #category : #'as yet unclassified' }

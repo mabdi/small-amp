@@ -5,21 +5,8 @@ Class {
 		'generatedClass',
 		'passingCheckClass'
 	],
-	#classInstVars : [
-		'timing'
-	],
 	#category : #'SmallAmp-Core'
 }
-
-{ #category : #accessing }
-SADefaultAssertionAmplifier class >> timing [
-	^ timing ifNil: [ timing := SALogger new ]
-]
-
-{ #category : #accessing }
-SADefaultAssertionAmplifier class >> timing: anObject [ 
-	timing:= anObject 
-]
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [

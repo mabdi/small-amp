@@ -9,6 +9,16 @@ TestAsserter >> assertMethodSourceCode: aSrc1 equals: aSrc2 [
 ]
 
 { #category : #'*SmallAmp' }
+TestAsserter >> assertMethodSourceCode: aSrc1 in: aList [
+	| ast1 ast2 |
+	self assert: (aList
+		anySatisfy: [ :item | 
+			ast1 := RBParser parseMethod: aSrc1.
+			ast2 := RBParser parseMethod: item.
+			ast1 dump = ast2 dump ])
+]
+
+{ #category : #'*SmallAmp' }
 TestAsserter >> assertSourceCode: aSrc1 equals: aSrc2 [
 	| ast1 ast2 |
 	ast1 := RBParser parseExpression: aSrc1.
