@@ -8,7 +8,7 @@ Class {
 		'links',
 		'directCalls'
 	],
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Complementary'
 }
 
 { #category : #'as yet unclassified' }

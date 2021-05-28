@@ -209,24 +209,6 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		classes: targetClasses;
 		testCases: {testClass};
 		run.
-	('Processing ', amplified) traceCr.
-	self
-		safeFail: [ SAReceiverTypeProfiler directCallsFor: testClass ]
-		key: #directTestingOriginal
-		addTo: result.
-	self
-		safeFail: [ ((targetClasses
-				collect: [ :cls | (SACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
-				inject: 0
-				into: [ :accum :each | accum + each ])
-				printShowingDecimalPlaces: 2 ]
-		key: #targetChurn
-		addTo: result.
-	self
-		safeFail: [ (SACodeChurnAnalyser new codeChurnForClass: testClass)
-				printShowingDecimalPlaces: 2 ]
-		key: #testChurn
-		addTo: result.
 	self
 		safeFail: [ amplifiedCoverage methodsCoverage ]
 		key: #amplifiedCoverageMethods
@@ -251,18 +233,46 @@ SACommandLineHandler >> extraInformationFor: amplified [
 		safeFail: [ originalCoverage statementsCoverage ]
 		key: #originalCoverageStatementes
 		addTo: result.
-	self
-		safeFail: [ SATestAssertionDensity
-				dencityFor: (testClass methods select: #isTestMethod) ]
-		key: #assertionDensityOriginal
-		addTo: result.
-	self
-		safeFail: [ SATestAssertionDensity
-				dencityFor:
-					(amplifiedClass methods
-						select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
-		key: #assertionDensityAmplified
-		addTo: result.
+	('Processing ' , amplified) traceCr.
+	Smalltalk
+		at: #SAReceiverTypeProfiler
+		ifPresent: [ :theSAReceiverTypeProfiler | 
+			self
+				safeFail: [ theSAReceiverTypeProfiler directCallsFor: testClass ]
+				key: #directTestingOriginal
+				addTo: result ].
+	Smalltalk
+		at: #SACodeChurnAnalyser
+		ifPresent: [ :theSACodeChurnAnalyser | 
+			self
+				safeFail: [ ((targetClasses
+						collect:
+							[ :cls | (theSACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
+						inject: 0
+						into: [ :accum :each | accum + each ])
+						printShowingDecimalPlaces: 2 ]
+				key: #targetChurn
+				addTo: result.
+			self
+				safeFail: [ (theSACodeChurnAnalyser new codeChurnForClass: testClass)
+						printShowingDecimalPlaces: 2 ]
+				key: #testChurn
+				addTo: result ].
+	Smalltalk
+		at: #SATestAssertionDensity
+		ifPresent: [ :theSATestAssertionDensity | 
+			self
+				safeFail: [ theSATestAssertionDensity
+						dencityFor: (testClass methods select: #isTestMethod) ]
+				key: #assertionDensityOriginal
+				addTo: result.
+			self
+				safeFail: [ theSATestAssertionDensity
+						dencityFor:
+							(amplifiedClass methods
+								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
+				key: #assertionDensityAmplified
+				addTo: result ].
 	^ result
 ]
 

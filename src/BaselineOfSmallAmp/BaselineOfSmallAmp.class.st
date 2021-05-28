@@ -15,15 +15,19 @@ BaselineOfSmallAmp >> baseline: spec [
 			spec
 				baseline: 'MuTalk'
 				with: [ spec repository: 'github://pavel-krivanek/mutalk/src' ].
-			spec
-				package: 'SmallAmp'
-				with: [ spec requires: #('MuTalk' ) ].
+			spec package: 'SmallAmp' with: [ spec requires: #('MuTalk') ].
 			spec
 				package: 'SmallAmp-Tests'
 				with: [ spec requires: #('SmallAmp' 'SmallBank') ].
 			spec
 				package: 'SmallAmp-DrTests'
 				with: [ spec requires: #('SmallAmp') ].
+			spec
+				package: 'SmallAmp-Complementary'
+				with: [ spec requires: #('SmallAmp') ].
+			spec
+				package: 'SmallAmp-Complementary-Tests'
+				with: [ spec requires: #('SmallAmp-Complementary') ].
 			spec
 				package: 'SmallAmp-Spec'
 				with: [ spec requires: #('SmallAmp') ].

@@ -1,7 +1,7 @@
 Class {
 	#name : #SATestAssertionDensity,
 	#superclass : #Object,
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Complementary'
 }
 
 { #category : #'as yet unclassified' }

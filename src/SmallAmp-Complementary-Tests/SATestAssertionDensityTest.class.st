@@ -4,7 +4,7 @@ A SATestAssertionDensityTest is a test class for testing the behavior of SATestA
 Class {
 	#name : #SATestAssertionDensityTest,
 	#superclass : #TestCase,
-	#category : #'SmallAmp-Tests-Helpers'
+	#category : #'SmallAmp-Complementary-Tests'
 }
 
 { #category : #tests }
