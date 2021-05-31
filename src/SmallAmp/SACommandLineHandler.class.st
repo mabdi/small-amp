@@ -67,7 +67,7 @@ SACommandLineHandler >> evalStats [
 	| prefix |
 	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix allButFirst: '--stat=' size.
-	SmallAmp metricsEval: prefix
+	SAGenericMethods new metricsEval: prefix
 ]
 
 { #category : #accessing }
@@ -76,7 +76,7 @@ SACommandLineHandler >> extraInformation [
 	self arguments
 		detect: [ :arg | arg beginsWith: '--xinfo=' ]
 		ifFound: [ :arg | testName := arg allButFirst: '--xinfo=' size ].
-	res := SmallAmp extraInformationFor: testName.
+	res := SAGenericMethods new extraInformationFor: testName.
 	resstr := STONJSON toStringPretty: res.
 	fileName := testName , '.xjson'.
 	(FileLocator imageDirectory / fileName) exists
