@@ -3,17 +3,7 @@ Extension { #name : #TestCase }
 { #category : #'*SmallAmp' }
 TestCase class >> smallAmpAmplifiedMethods [
 	^ self methods
-		select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
-]
-
-{ #category : #'*SmallAmp' }
-TestCase class >> smallAmpAssertionDensity [
-	| methods |
-	methods := self methods select: #isTestMethod.
-	^ ((methods
-		collect: [ :m | SATestAssertionDensity new densityForMethod: m ])
-		inject: 0
-		into: [ :s :i | s + i ]) / methods size printShowingDecimalPlaces: 2
+		select: [ :z | z hasPragmaNamed: SAGenericMethods new defaultPragma ]
 ]
 
 { #category : #'*SmallAmp' }

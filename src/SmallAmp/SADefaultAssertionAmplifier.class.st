@@ -5,21 +5,8 @@ Class {
 		'generatedClass',
 		'passingCheckClass'
 	],
-	#classInstVars : [
-		'timing'
-	],
 	#category : #'SmallAmp-Core'
 }
-
-{ #category : #accessing }
-SADefaultAssertionAmplifier class >> timing [
-	^ timing ifNil: [ timing := SALogger new ]
-]
-
-{ #category : #accessing }
-SADefaultAssertionAmplifier class >> timing: anObject [ 
-	timing:= anObject 
-]
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> amplifyAssertions [
@@ -41,14 +28,9 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 	^ sourceCodeWithAssertions
 ]
 
-{ #category : #asserting }
-SADefaultAssertionAmplifier >> assertBuilder [
-	^ SAAssertGenerator new
-]
-
 { #category : #accessing }
 SADefaultAssertionAmplifier >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #'as yet unclassified' }
@@ -76,40 +58,38 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
-	^ anObserver history collect: [ :observation | 
-		  | asserts |
-		  asserts := observation buildAssertions: self assertBuilder.
-		  asserts doWithIndex: [ :assrt :index | 
-			  assrt arguments
-				  detect: [ :obj | 
-					  obj class = RBLiteralValueNode and: [ obj value = 'smallAmp' ] ]
-				  ifFound: [ :obj | 
-					  obj
-						  value:
-							  selector asString , ':' , observation id asString , '.'
-							  , index asString
-						  start: 0
-						  stop: -1 ] ].
-		  observation id -> asserts ]
+	^ anObserver history
+		collect: [ :observation | 
+			| asserts |
+			asserts := observation buildAssertions: SAAssertGenerator new.
+			asserts
+				doWithIndex: [ :assrt :index | 
+					assrt arguments
+						detect:
+							[ :obj | obj class = RBLiteralValueNode and: [ obj value = 'smallAmp' ] ]
+						ifFound: [ :obj | 
+							obj
+								value:
+									selector asString , ':' , observation id asString , '.'
+										, index asString
+								start: 0
+								stop: -1 ] ].
+			observation id -> asserts ]
 ]
 
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
-	| r  |
+	| r |
 	self astHelper
 		onClass: generatedClass
 		compile: sourceCodeWithAssertions.
-	r := SAASTHelper new
+	r := SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		selector: testMethodModel selector
 		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds.
 	r ifNil: [ ^ false ].
-	r := r hasPassed .
-	r
-		ifFalse: [ self
-				log4debug: #AssertAmplifyCheckPassing
-				what: sourceCodeWithAssertions ].
-	^ r
+	
+	^ r hasPassed
 ]
 
 { #category : #'as yet unclassified' }
@@ -146,13 +126,9 @@ SADefaultAssertionAmplifier >> ignoreFlakyValues [
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
 			self runTestClass
-				ifNil: [ self
-						log4debug: #ignoreFlakyValues
-						what: (generatedClass methodNamed: testMethodModel selector) sourceCode.
-					^ self ].
-			self validFlakyMem ifTrue: [generatedClass observer checkFlaky].
-			
-			 ]
+				ifNil: [ 					^ self ].
+			self validFlakyMem
+				ifTrue: [ generatedClass observer checkFlaky ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -250,12 +226,6 @@ SADefaultAssertionAmplifier >> insertObserversMethod: methodAST Node: theNode [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> log4debug: tag what: obj [
-	SALogger debugWatchings
-				add: tag -> obj
-]
-
-{ #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 	SAMethodNormalizingRewriter runWith: aMethodAST
 ]
@@ -263,7 +233,7 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
-	^ SAASTHelper new
+	^ SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		selector: testMethodModel selector
 		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds

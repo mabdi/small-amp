@@ -18,7 +18,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethod [
 	t1 := ins method1.
 	t2 := t3 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -42,7 +42,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade [
 	t1 := ins method1.
 	t2 := ins method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -66,7 +66,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade2 [
 	t3 := ins2 method2.
 	t3 := t1 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -92,7 +92,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade3 [
 	t2 := ins method2.
 	t3 := ins method3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	continue := true.
 	[ continue ]
 		whileTrue: [ continue := ins packStatementsInMethod: ast ].
@@ -116,7 +116,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade4 [
 	t1 := ins m1;m2.
 	t2 := ins m3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -138,7 +138,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade5 [
 	t1 := ins m1.
 	t2 := ins m2; m3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -160,7 +160,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade6 [
 	t1 := ins m1; m2; m3.
 	t2 := ins m4; m5.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -182,7 +182,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade7 [
 	t1 := ins m1 m2 m3.
 	t2 := ins m4 m5.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -207,7 +207,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodCascade8 [
 	ins method2.
 	ins method3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	continue := true.
 	[ continue ]
 		whileTrue: [ continue := ins packStatementsInMethod: ast ].
@@ -231,7 +231,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain [
 	t1 := ins method1.
 	t2 := t1 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -255,7 +255,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain2 [
 	t3 := ins2 method2.
 	t3 := t1 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -281,7 +281,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain3 [
 	t2 := t1 method2.
 	t3 := t2 method3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	continue := true.
 	[ continue ] whileTrue: 
 	[continue := ins packStatementsInMethod: ast].
@@ -305,7 +305,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain4 [
 	t1 := 1 + 1.
 	t2 := t1 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -327,7 +327,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain5 [
 	t1 := 1.
 	t2 := t1 method2.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -349,7 +349,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain6 [
 	t1 := ins m1 m2 m3.
 	t2 := t1 m4.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	src2 := ins packStatementsInMethod: ast.
 	self
 		assertMethodSourceCode: ast formattedCode
@@ -372,7 +372,7 @@ SADefaultPrettificationTest >> testPackStatementsInMethodChain7 [
 	t2 := t1 method2.
 	t2 method3.
 	'.
-	ast := SAASTHelper new parsedMethodFrom: method.
+	ast := SAGenericMethods new parsedMethodFrom: method.
 	continue := true.
 	[ continue ]
 		whileTrue: [ continue := ins packStatementsInMethod: ast ].

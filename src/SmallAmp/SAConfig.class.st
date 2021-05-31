@@ -13,30 +13,19 @@ Class {
 		'statementTimeOut',
 		'testRunTimeOut',
 		'serializationMaxDepth',
-		'methodReductions',
 		'prettifier',
-		'simplifier',
 		'maxPop',
 		'testRunTimeOutMult',
-		'saveToFile',
-		'runSandboxed',
-		'excludeList',
-		'enableExclude',
-		'overwrite',
 		'timeBudget',
-		'maxPopPerMethod',
-		'mainloop',
-		'waves'
+		'mainloop'
 	],
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #accessing }
 SAConfig class >> default [
-	
 	^ self dspotAllamps
 		maxPop: 10;
-		saveToFile: false;
 		yourself
 ]
 
@@ -47,28 +36,20 @@ SAConfig class >> dspot [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{(SADspotLiteralInputAmplifier -> 1).
+			{(SALiteralInputAmplifier -> 1).
 			(SARemoveInputAmplifier -> 1).
 			(SADuplicateInputAmplifier -> 1).
 			(SAAddInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
-		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 100;
-		maxPopPerMethod: 10;
 		debug: false;
 		mainloop: SAMainLoopDspot;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
 		serializationMaxDepth: 3;
 		yourself
@@ -81,7 +62,7 @@ SAConfig class >> dspotAllamps [
 		assertionAmplifiers: {SADefaultAssertionAmplifier};
 		flackyTestRepeat: 10;
 		inputAmplifiers:
-			{(SADspotLiteralInputAmplifier -> 1).
+			{(SALiteralInputAmplifier -> 1).
 			(SARemoveInputAmplifier -> 1).
 			(SADuplicateInputAmplifier -> 1).
 			(SAAddInputAmplifier -> 1).
@@ -91,22 +72,14 @@ SAConfig class >> dspotAllamps [
 			(SANullifyInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
 		selection: SAMutationCoverageDSpotSelection;
-		methodReductions: {SANoMethodReduction};
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		simplifier: SADefaultSimplification;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
 		statementTimeOut: 2000;
 		maxPop: 100;
-		maxPopPerMethod: 10;
 		debug: false;
 		mainloop: SAMainLoopDspot;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
 		serializationMaxDepth: 3;
 		yourself
@@ -135,26 +108,6 @@ SAConfig >> debug: anObject [
 { #category : #'as yet unclassified' }
 SAConfig >> debugOn [
 	self debug: true
-]
-
-{ #category : #accessing }
-SAConfig >> enableExclude [
-	^ enableExclude
-]
-
-{ #category : #accessing }
-SAConfig >> enableExclude: anObject [
-	enableExclude := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> excludeList [
-	^ excludeList
-]
-
-{ #category : #accessing }
-SAConfig >> excludeList: anObject [
-	excludeList := anObject
 ]
 
 { #category : #accessing }
@@ -208,26 +161,6 @@ SAConfig >> maxPop: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> maxPopPerMethod [
-	^ maxPopPerMethod
-]
-
-{ #category : #accessing }
-SAConfig >> maxPopPerMethod: anObject [
-	maxPopPerMethod := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> methodReductions [
-	^ methodReductions
-]
-
-{ #category : #accessing }
-SAConfig >> methodReductions: anObject [
-	methodReductions := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> oracleReducion [
 	^ oracleReducion ifNil: [ selection defaultOracleReduction ]
 ]
@@ -235,16 +168,6 @@ SAConfig >> oracleReducion [
 { #category : #accessing }
 SAConfig >> oracleReducion: list [
 	oracleReducion := list
-]
-
-{ #category : #accessing }
-SAConfig >> overwrite [
-	^ overwrite
-]
-
-{ #category : #accessing }
-SAConfig >> overwrite: anObject [
-	overwrite := anObject
 ]
 
 { #category : #accessing }
@@ -269,31 +192,6 @@ SAConfig >> profiler: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> runSandboxed [
-	^ runSandboxed
-]
-
-{ #category : #accessing }
-SAConfig >> runSandboxed: anObject [
-	runSandboxed := anObject
-]
-
-{ #category : #'as yet unclassified' }
-SAConfig >> sandBoxOn [
-	self runSandboxed: true
-]
-
-{ #category : #accessing }
-SAConfig >> saveToFile [
-	^ saveToFile
-]
-
-{ #category : #accessing }
-SAConfig >> saveToFile: anObject [
-	saveToFile := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> selection [
 	^ selection
 ]
@@ -311,16 +209,6 @@ SAConfig >> serializationMaxDepth [
 { #category : #accessing }
 SAConfig >> serializationMaxDepth: anObject [
 	serializationMaxDepth := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> simplifier [
-	^ simplifier
-]
-
-{ #category : #accessing }
-SAConfig >> simplifier: anObject [
-	simplifier := anObject
 ]
 
 { #category : #accessing }
@@ -361,14 +249,4 @@ SAConfig >> timeBudget [
 { #category : #accessing }
 SAConfig >> timeBudget: anObject [
 	timeBudget := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> waves [
-	^ waves
-]
-
-{ #category : #accessing }
-SAConfig >> waves: anObject [
-	waves := anObject
 ]

@@ -42,6 +42,20 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SmallAmp class >> <~ aString [
+	| string |
+	string := aString isString
+		ifFalse: [ aString asString ]
+		ifTrue: [ aString ].
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		flush
+]
+
+{ #category : #'as yet unclassified' }
 SmallAmp class >> assertionsHere: caller for: anObject [
 	| ast observation asserts hook hookIndex newCode aMethod |
 	aMethod := caller class lookupSelector: caller selector.
@@ -89,10 +103,10 @@ SmallAmp class >> menuCommandOn: aBuilder [
 	(aBuilder
 		item: #'Browse Temp Package';
 		parent: #SmallAmp)
-		action: [ h:= SAASTHelper new. h createTempPackage. h defaultTempPackage asPackage browse ].
+		action: [ h:= SAGenericMethods new. h createTempPackage. h defaultTempPackage asPackage browse ].
 	(aBuilder
 		item: #'Clear temp';
-		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
+		parent: #SmallAmp) action: [ SAGenericMethods new clearTempClasses ].
 	(aBuilder
 		item: #'Default config';
 		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ].
@@ -106,169 +120,58 @@ SmallAmp class >> menuCommandOn: aBuilder [
 
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
-	| sa |
-	sa := config mainloop with: config for: aTestClass targets: targetClasses.
-			^ sa amplify
+	| sa res |
+	sa := config mainloop
+		with: config
+		for: aTestClass
+		targets: targetClasses.
+	res := sa amplify.
+	res saveResultToFileAs: aTestClass asString.
+			res amplifiedClass fileOut.
+			^ res
 ]
 
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
-	config runSandboxed
-		ifTrue: [ ^ self amplifyAllSandboxed ].
-	self preRunChecks.
+	SAGenericMethods new preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
 			| instance |
-			('Processing ' , item key name) traceCr.
-			[ [instance := self amplify: item key target: item value.
-			res addResult: instance for: item.
-			config saveToFile
-				ifTrue: [ instance saveResultToFileAs: item key asString.
-					instance amplifiedClass fileOut ] ] on: SANoGreenTest, SANoUncovered do: [:x | x asString traceCr]]
+			self class <~ ('Run instance start: ' , item key name).
+			[ [ instance := self amplify: item key target: item value.
+			self class <~ 'Run instance finished successfully.'.
+			self class <~ ('Run instance finish: ' , item key name).
+			res addResult: instance for: item ]
+				on: SANoGreenTest , SANoUncovered
+				do: [ :x | x asString traceCr ] ]
 				on: Error
 				do: [ :ex | 
 					config debug
 						ifTrue: [ ex signal ].
-					('Error in processing ' , item key name , ': ' , ex asString)
-						traceCr ] ]
-		displayingProgress: [ :item | 'Processing ' , item key name ].
-	^ res
-]
-
-{ #category : #actions }
-SmallAmp >> amplifyAllSandboxed [
-	| res cmd json output |
-	self preRunChecks.
-	res := SAResult new.
-	self finalAmplifyList
-		do: [ :item | 
-			| instance tcase |
-			tcase := item key name.
-			('Processing ' , tcase) traceCr.
-			(FileLocator imageDirectory / (tcase , '.json')) exists
-				ifTrue: [ (FileLocator imageDirectory / (tcase , '.json')) delete ].
-			[ cmd := String
-				streamContents: [ :stream | 
-					stream
-						nextPutAll: FileLocator vmBinary pathString;
-						nextPutAll: ' ';
-						nextPutAll: FileLocator image pathString;
-						nextPutAll: ' ';
-						nextPutAll: 'smallamp';
-						nextPutAll: ' ';
-						nextPutAll: '--amp=';
-						nextPutAll: tcase;
-						nextPutAll: ' ';
-						nextPutAll: '--nosave' ].
-			output := OSPlatform current resultOfCommand: cmd.
-			(FileLocator imageDirectory / (tcase , '.log')) exists
-				ifTrue: [ (FileLocator imageDirectory / (tcase , '.log')) delete ].
-			(FileLocator imageDirectory / (tcase , '.log')) writeStream
-				nextPutAll: output;
-				close.
-			(FileLocator imageDirectory / (tcase , '.json')) exists
-				ifTrue: [ json := STONJSON
-						fromString:
-							(FileLocator imageDirectory / (tcase , '.json')) asFileReference
-								contents.
-					(FileLocator imageDirectory
-						/ ((json at: #amplifiedClass) , '.st')) asFileReference fileIn
-					"instance := SAResultItem fromDictionaryObject: json.
-					res addResult: instance for: item" ]
-				ifFalse: [ 'unfinished run' traceCr ] ]
-				on: Error
-				do: [ :ex | 
-					self
-						traceCr: 'Error in processing ' , item key name , ': ' , ex asString ] ]
+					self class <~ ('Run instance crashed: ' , item key name).
+					self class <~ ('Error details:' , ex description).
+					self class
+						<~
+							(String
+								streamContents: [ :stream | ex signalerContext errorReportOn: stream ]) ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
 
 { #category : #actions }
 SmallAmp >> amplifyEval [
-	self debugLog: 'Run start.'.
-	CompilationContext bytecodeBackend = EncoderForSistaV1
-		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
-			self debugLog: 'Encoder changed to SistaV1.' ].
-	Author fullName
-		ifNil: [ Author fullName: 'SmallAmpEval'.
-			self debugLog: 'Author set.' ].
-	amplifyList do: [ :item | self amplifyEvalItem: item ].
-	self debugLog: 'Run finish.'
-]
-
-{ #category : #actions }
-SmallAmp >> amplifyEvalItem: item [
-	| instance className |
-	className := item key name asString.
-	logsFile := FileLocator imageDirectory / (className , '.log').
-	self debugLog: 'Run instance start: ' , className.
-	[ instance := self amplify: item key target: item value.
-	self debugLog: 'Run instance finished successfully.'.
-	self
-		debugLog: 'Json saved on ' , (instance saveResultToFileAs: className).
-	instance amplifiedClass fileOut.
-	self debugLog: 'Amplified class saved.'.
-	self debugLog: 'Run instance finish: ' , className ]
-		on: Error
-		do: [ :x | 
-			self debugLog: 'Run instance crashed: ' , className.
-			self debugLog: 'Error details:' , x description.
-			self debugLog: (String
-				streamContents: [ :stream | x signalerContext errorReportOn: stream ]). ].
-	logsFile := nil
-]
-
-{ #category : #'as yet unclassified' }
-SmallAmp >> applyExclude [
-	| exList list |
-	(FileLocator imageDirectory / config excludeList) exists
-		ifFalse: [ ^ amplifyList ].
-	exList := ((FileLocator imageDirectory / config excludeList)
-		asFileReference contents splitOn: String lf)
-		reject: [ :line | line beginsWith: '#' ].
-	list := amplifyList reject: [ :r | exList includes: r key name ].
-	config overwrite
-		ifFalse: [ list := list
-				reject: [ :kvp | (FileLocator imageDirectory / (kvp key name , '.json')) exists ] ].
-	^ list
-]
-
-{ #category : #'as yet unclassified' }
-SmallAmp >> debugLog: aString [
-	| string |
-	string := aString isString
-		ifFalse: [ aString asString ]
-		ifTrue: [ aString ].
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: string;
-		lf;
-		flush.
-	logsFile ifNotNil: 
-	[logsFile writeStream
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: string;
-		lf;
-		close]
-]
-
-{ #category : #'as yet unclassified' }
-SmallAmp >> finalAmplifyList [
-	config enableExclude
-		ifTrue: [ ^ self applyExclude ]
-		ifFalse: [ ^ amplifyList ]
+	self class <~ 'Run start.'.
+	SAGenericMethods new contextInit.
+	self amplifyAll.
+	self class <~ 'Run finish.'
 ]
 
 { #category : #initialization }
 SmallAmp >> initialize [
 	amplifyList := OrderedCollection new.
-	SALogger debugWatchings removeAll.
-	SADefaultAssertionAmplifier timing: SALogger new
+	
 ]
 
 { #category : #accessing }
@@ -276,25 +179,6 @@ SmallAmp >> initializeWith: aConfig [
 	self initialize. 
 	config := aConfig.
 	
-]
-
-{ #category : #actions }
-SmallAmp >> preRunChecks [
-	CompiledMethod compilerClass compiler compilationContext encoderClass
-		= EncoderForSistaV1
-		ifFalse: [ Warning new
-				signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ].
-	
-]
-
-{ #category : #actions }
-SmallAmp >> regenerateMethod: aMethodName [
-	| sa method |
-	amplifyList do: [ :item |
-	sa := SAMainLoop with: config for: item key targets: item value.
-	method := sa regenerateMethod: aMethodName.
-	method ifNotNil: [ ^ method ]
-	]
 ]
 
 { #category : #adding }

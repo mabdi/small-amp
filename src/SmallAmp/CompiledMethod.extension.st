@@ -2,7 +2,7 @@ Extension { #name : #CompiledMethod }
 
 { #category : #'*SmallAmp' }
 CompiledMethod >> isMadeBySmallAmp [
-	^ self hasPragmaNamed: SAASTHelper defaultPragma 
+	^ self hasPragmaNamed: SAGenericMethods defaultPragma 
 ]
 
 { #category : #'*SmallAmp' }

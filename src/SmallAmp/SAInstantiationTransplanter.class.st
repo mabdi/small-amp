@@ -14,7 +14,7 @@ SAInstantiationTransplanter >> amplifyInputs [
 	| results |
 	self profileVariableTypes.
 	results := OrderedCollection new.
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	results addAll: self transplantInstanceVariables.
 	results addAll: self transplantAssignments.

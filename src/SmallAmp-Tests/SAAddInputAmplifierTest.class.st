@@ -110,7 +110,7 @@ SAAddInputAmplifierTest >> testAdd2 [
 { #category : #tests }
 SAAddInputAmplifierTest >> testInstanceVaribale [
 	| res item cls codes |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom:
 			{'setUp f := FakeSmallBank new' . 'testO1 self assert: f balance equals: 0'}
 		instanceVars: 'f'.

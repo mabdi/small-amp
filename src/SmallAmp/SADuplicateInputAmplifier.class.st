@@ -7,7 +7,7 @@ Class {
 { #category : #removing }
 SADuplicateInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	results := OrderedCollection new.
 	aMethodAST statements

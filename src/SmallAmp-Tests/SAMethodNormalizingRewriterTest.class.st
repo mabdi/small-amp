@@ -9,7 +9,7 @@ Class {
 
 { #category : #tests }
 SAMethodNormalizingRewriterTest >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #tests }
@@ -57,8 +57,8 @@ SAMethodNormalizingRewriterTest >> testAssignmentReceiver [
 	object := STON fromString: ston.'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter formattedCode)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter formattedCode)
 ]
 
 { #category : #tests }
@@ -76,8 +76,8 @@ y:=1.
 x := y + 1.'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter formattedCode)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter formattedCode)
 ]
 
 { #category : #tests }
@@ -92,8 +92,8 @@ SAMethodNormalizingRewriterTest >> testCascade [
 	tmp_QzSdLqXCVx1 := Array with: 2'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter)
 ]
 
 { #category : #tests }
@@ -120,8 +120,8 @@ SAMethodNormalizingRewriterTest >> testCascade2 [
 	tmp_ptzTVYJYPV1 := tmp_ptzTVYJYPV1 build'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter)
 ]
 
 { #category : #tests }
@@ -136,8 +136,8 @@ SAMethodNormalizingRewriterTest >> testChain [
 	tmp_uHdMrJYozl2 := tmp_Ihz3cGorrB1 size'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assert: (SAASTHelper new renameTempVars: astBefore dump)
-		equals: (SAASTHelper new renameTempVars: astAfter dump)
+		assert: (SAGenericMethods new renameTempVars: astBefore dump)
+		equals: (SAGenericMethods new renameTempVars: astAfter dump)
 ]
 
 { #category : #tests }
@@ -152,8 +152,8 @@ SAMethodNormalizingRewriterTest >> testChain3NonArg [
 	d := tmp_Nx36B1jZZ43 g'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: codeAfter)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: codeAfter)
 ]
 
 { #category : #tests }
@@ -179,8 +179,8 @@ SAMethodNormalizingRewriterTest >> testDuplicateMessages [
 	tmp_cXmrihy6UX5 := c add'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assert: (SAASTHelper new renameTempVars: astBefore dump)
-		equals: (SAASTHelper new renameTempVars: astAfter dump)
+		assert: (SAGenericMethods new renameTempVars: astBefore dump)
+		equals: (SAGenericMethods new renameTempVars: astAfter dump)
 ]
 
 { #category : #tests }
@@ -204,8 +204,8 @@ SAMethodNormalizingRewriterTest >> testErrorIssue52 [
 	tmp_cEOZWmuP0a3 := self assertIsNullable: block'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assert: (SAASTHelper new renameTempVars: astBefore dump)
-		equals: (SAASTHelper new renameTempVars: astAfter dump)
+		assert: (SAGenericMethods new renameTempVars: astBefore dump)
+		equals: (SAGenericMethods new renameTempVars: astAfter dump)
 ]
 
 { #category : #tests }
@@ -235,8 +235,8 @@ SAMethodNormalizingRewriterTest >> testErrorIssue53 [
 	tmp_WhozcPPC0D7 := tmp_cG5uAfRkyc6 inspect'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assert: (SAASTHelper new renameTempVars: astBefore dump)
-		equals: (SAASTHelper new renameTempVars: astAfter dump)
+		assert: (SAGenericMethods new renameTempVars: astBefore dump)
+		equals: (SAGenericMethods new renameTempVars: astAfter dump)
 ]
 
 { #category : #test }
@@ -282,8 +282,8 @@ SAMethodNormalizingRewriterTest >> testIntNormalizer [
 				yourself ]'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter)
 ]
 
 { #category : #tests }
@@ -299,8 +299,8 @@ SAMethodNormalizingRewriterTest >> testNoNormalize [
 	tmp_XU7VULfHBa1 := Array with: 1'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode )
-		equals: (SAASTHelper new renameTempVars: astAfter formattedCode)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode )
+		equals: (SAGenericMethods new renameTempVars: astAfter formattedCode)
 ]
 
 { #category : #test }
@@ -336,13 +336,13 @@ SAMethodNormalizingRewriterTest >> testNormalizeAssignmentAssignTo [
 	self
 		assertCollection:
 			((node5 smallAmpNormalizeWith: ins assignTo: nil)
-				collect: [ :s | SAASTHelper new renameTempVars: s formattedCode ])
+				collect: [ :s | SAGenericMethods new renameTempVars: s formattedCode ])
 				asArray
 		equals: {'tmp1 := y + 1'}.
 	self
 		assertCollection:
 			((node6 smallAmpNormalizeWith: ins assignTo: nil)
-				collect: [ :s | SAASTHelper new renameTempVars: s formattedCode ])
+				collect: [ :s | SAGenericMethods new renameTempVars: s formattedCode ])
 				asArray
 		equals: {}
 ]
@@ -372,6 +372,6 @@ SAMethodNormalizingRewriterTest >> testSelf [
 		end: 3'.
 	SAMethodNormalizingRewriter runWith: astBefore.
 	self
-		assertMethodSourceCode: (SAASTHelper new renameTempVars: astBefore formattedCode)
-		equals: (SAASTHelper new renameTempVars: astAfter)
+		assertMethodSourceCode: (SAGenericMethods new renameTempVars: astBefore formattedCode)
+		equals: (SAGenericMethods new renameTempVars: astAfter)
 ]

@@ -7,7 +7,7 @@ Class {
 { #category : #removing }
 SARotateLiteralsInputAmplifier >> amplifyInputs [
 	| aMethodAST results literals |
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	literals := self getAllLiterals: aMethodAST.
 	results := OrderedCollection new.

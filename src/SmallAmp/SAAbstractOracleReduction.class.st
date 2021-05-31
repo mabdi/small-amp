@@ -22,7 +22,7 @@ SAAbstractOracleReduction class >> initializeWith: aConfig [
 
 { #category : #accessing }
 SAAbstractOracleReduction >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #'as yet unclassified' }

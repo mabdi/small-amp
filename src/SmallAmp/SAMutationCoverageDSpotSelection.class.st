@@ -32,7 +32,7 @@ SAMutationCoverageDSpotSelection >> analysisFor: testClasses targets: targetClas
 
 { #category : #accessing }
 SAMutationCoverageDSpotSelection >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #enumerating }

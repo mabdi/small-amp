@@ -13,7 +13,7 @@ Class {
 
 { #category : #accessing }
 SADefaultAssertionAmplifierTest >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #running }

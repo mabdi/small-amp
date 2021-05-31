@@ -1,5 +1,5 @@
 Class {
 	#name : #SANoUncovered,
 	#superclass : #Error,
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Exceptions'
 }

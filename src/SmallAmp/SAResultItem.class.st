@@ -8,12 +8,12 @@ Class {
 		'targetClasses',
 		'testClass',
 		'originalAnalysis',
-		'logs',
 		'runProfile',
 		'amplifiedCoverage',
 		'originalCoverage',
 		'timeBudgetFinished',
-		'numberOfOriginalTestMethods'
+		'numberOfOriginalTestMethods',
+		'totalTime'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -241,18 +241,6 @@ SAResultItem >> asFileText [
 ]
 
 { #category : #reporting }
-SAResultItem >> detailedTimeLabel [
-	| sum |
-	self logs summary ifEmpty: [ ^ {} ].
-	sum := (self logs summary collect: #value) sum.
-	^ self logs summary
-		collect: [ :s | 
-			s key asString , ': % '
-				, (100 * s value / sum printShowingDecimalPlaces: 2) , ' ('
-				, (Duration milliSeconds: s value) humanReadablePrintString , ')' ]
-]
-
-{ #category : #reporting }
 SAResultItem >> directTestingOriginal [
 	| dict vals |
 	testClass allTestSelectors ifEmpty: [ ^ 0 ].
@@ -278,13 +266,7 @@ SAResultItem >> failedSelectorInOriginal: aListOfFaileds [
 
 { #category : #initialization }
 SAResultItem >> initialize [
-	logs := SALogger new.
 	timeBudgetFinished := false
-]
-
-{ #category : #accessing }
-SAResultItem >> logs [
-	^ logs
 ]
 
 { #category : #reporting }
@@ -297,13 +279,15 @@ SAResultItem >> markDownOn: stream [
 		nextPutAll: '|';
 		nextPutAll:
 			(Duration
-				seconds: ((self logs summary collect: #value) sum / 1000) asInteger)
+				seconds: ((self totalTime)  / 1000) asInteger)
 				humanReadablePrintString;
 		nextPutAll: '|'.
 	self markDownOn: stream class: testClass analysis: originalAnalysis.
 	stream nextPutAll: '|'.
-	self markDownOn: stream class: amplifiedClass analysis: amplifiedAnalysis.
-	
+	self
+		markDownOn: stream
+		class: amplifiedClass
+		analysis: amplifiedAnalysis.
 	stream nextPutAll: '|'
 ]
 
@@ -543,10 +527,12 @@ SAResultItem >> timeBudgetFinished: anObject [
 
 { #category : #reporting }
 SAResultItem >> totalTime [
-	| sum |
-	self logs summary ifEmpty: [ ^ Duration milliSeconds: 0 ].
-	sum := (self logs summary collect: #value) sum.
-	^ Duration milliSeconds: sum
+	^ totalTime
+]
+
+{ #category : #reporting }
+SAResultItem >> totalTime: aTime [
+	totalTime := aTime
 ]
 
 { #category : #reporting }

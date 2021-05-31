@@ -34,8 +34,7 @@ SALiteralMutatorTest >> testMutateArrayNode [
 
 { #category : #test }
 SALiteralMutatorTest >> testMutateCharacter [
-	self shouldnt: [ mutator mutateCharacter: Character null ] raise: PrimitiveFailed
-	
+	mutator mutateCharacter: Character null
 ]
 
 { #category : #test }

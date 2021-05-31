@@ -9,7 +9,7 @@ Class {
 
 { #category : #accessing }
 SAAssertTransformTest >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #running }

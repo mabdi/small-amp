@@ -90,7 +90,7 @@ SAObjectInstantiationExtractor >> run [
 { #category : #'as yet unclassified' }
 SAObjectInstantiationExtractor >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
-	^ SAASTHelper new runSafelyTestClass: testClass timeOut: 3000 milliSeconds.
+	^ SAGenericMethods new runSafelyTestClass: testClass timeOut: 3000 milliSeconds.
 
 ]
 

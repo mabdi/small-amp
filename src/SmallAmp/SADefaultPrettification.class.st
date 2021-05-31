@@ -117,7 +117,7 @@ SADefaultPrettification >> isChainPatternInAST: ast index: i [
 SADefaultPrettification >> packStatements [
 	| newBody continue tree |
 	theClass methods
-		select: [ :m | m hasPragmaNamed: SAASTHelper defaultPragma ]
+		select: [ :m | m hasPragmaNamed: SAGenericMethods defaultPragma ]
 		thenDo: [ :m | 
 			continue := true.
 			tree := m ast copy.
@@ -147,10 +147,10 @@ SADefaultPrettification >> prettify [
 { #category : #'as yet unclassified' }
 SADefaultPrettification >> renameInsideMethod: aMethodSrc profiles: varTypes [
 	| src newNames ast |
-	src := SAASTHelper new cleanUp: aMethodSrc.
-	ast := SAASTHelper new parsedMethodFrom: src.
+	src := SAGenericMethods new cleanUp: aMethodSrc.
+	ast := SAGenericMethods new parsedMethodFrom: src.
 	newNames := ast temporaries
-		select: [ :tv | tv name matchesRegex: SAASTHelper tempPattern ]
+		select: [ :tv | tv name matchesRegex: SAGenericMethods tempPattern ]
 		thenCollect: [ :t | 
 			t name
 				-> (varTypes at: ast selector , ':' , t name ifAbsent: [nil class]) canonicalArgumentName ].
@@ -181,6 +181,6 @@ SADefaultPrettification >> renameTempVariables [
 		run;
 		variablesTypes.
 	theClass methods
-		select: [ :m | m hasPragmaNamed: SAASTHelper defaultPragma ]
+		select: [ :m | m hasPragmaNamed: SAGenericMethods defaultPragma ]
 		thenDo: [ :m | newBody := self renameInsideMethod: m sourceCode profiles: varTypes.theClass compile: newBody ]
 ]

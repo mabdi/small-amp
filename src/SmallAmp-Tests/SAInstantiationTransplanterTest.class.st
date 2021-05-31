@@ -14,7 +14,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanterTest >> genClass1 [
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom:
 			{'testO0 | s0 | 1+1. s0 := ''Hi''' . 'testO1 | s1 | s1 := 1 asString'.
 			'testO2 | s2 | 1 + 1. s2 := String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
@@ -24,7 +24,7 @@ SAInstantiationTransplanterTest >> genClass1 [
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanterTest >> genClass2 [
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom:
 			{'setUp z := ''voila''. x:= 10'.
 			'testO0 | s0 | 1+x. s0 := ''Hi'''.
@@ -39,7 +39,7 @@ SAInstantiationTransplanterTest >> genClass2 [
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanterTest >> genClass3 [
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom:
 			{'setUp s := FakeSmallBank new. s deposit: 10'.
 			'testO0 | s0 | s0 := ''Hi''' . 'testO1 | s2 t | t := FakeSmallBank new. t deposit: 34. s2 := String streamContents: [ :stream |  stream nextPutAll: t balance asString;lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
