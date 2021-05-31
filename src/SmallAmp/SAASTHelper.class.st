@@ -227,12 +227,6 @@ SAASTHelper >> grindTestClass: testClass size: testNumber [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> killAllMetalinksOn: aClass [ 
-	(aClass   methodDict values do: [ :x | (x ast links select: #isNotNil)do: #uninstall ]).
-
-]
-
-{ #category : #'as yet unclassified' }
 SAASTHelper >> makeClassFrom: arrayOfTestMethods [
 	^ self makeClassFrom: arrayOfTestMethods  instanceVars: '' 
 ]
@@ -381,35 +375,6 @@ SAASTHelper >> runSafely: aBlock timeOut: aDuration [
 	^ aBlock
 		valueWithin: aDuration
 		onTimeout: [ SAUnsafeRunKilled new signal ]
-]
-
-{ #category : #'as yet unclassified' }
-SAASTHelper >> runSafelyNotWorking: aBlock timeOut: aDuration [
-	| retval semaphor p unsafePriority watcherPriority |
-	unsafePriority := Processor activeProcess priority - 3.
-	watcherPriority := unsafePriority + 1.
-	'1' traceCrAt: watcherPriority.
-	semaphor := Semaphore new.
-	'2' traceCrAt: watcherPriority.
-	p := [ '3' traceCrAt: watcherPriority.
-	Processor yield.
-	retval := aBlock value.
-	'4' traceCrAt: watcherPriority.
-	semaphor signal.
-	'5' traceCrAt: watcherPriority ] newProcess
-		name: 'SmallAmp unsafe run';
-		priority: unsafePriority.
-	'6' traceCrAt: watcherPriority.
-	^ [ [ '7' traceCrAt: watcherPriority.
-	p resume.
-	'8' traceCrAt: watcherPriority.
-	semaphor wait.
-	'9' traceCrAt: watcherPriority.
-	retval ] valueAt: watcherPriority ]
-		valueWithin: aDuration
-		onTimeout: [ '10' traceCrAt: watcherPriority.
-			p terminate.
-			SAUnsafeRunKilled new signal ]
 ]
 
 { #category : #'as yet unclassified' }
