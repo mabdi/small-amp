@@ -4,52 +4,6 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshots >> amplify [
-	theTS := self initTs.
-	self setupSelection.
-	self methodProfiling.
-	theTS
-		do: [ :aTestMethod | 
-			Stdio stdout
-				<< Time nowUTC print24;
-				<< String space;
-				<< aTestMethod selector;
-				lf;
-				flush.
-			self amplifyATestMethod: aTestMethod ]
-		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
-	self finalSteps.
-	^ finalResult
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshots >> amplifyATestMethod: aTestMethod [
-	| theATS theV theU |
-	theATS := OrderedCollection new.
-	theV := OrderedCollection with: aTestMethod.
-	theV do: #strip.
-	theU := self assertionAmplificationFor: (theV collect: #clone).
-	theU := self selectionFrom: theU.
-	theATS addAll: theU.
-	(1 to: config iterations)
-		do: [ :gen |
-					theV := self inputAmplificationFrom: theV.
-			
-					theU := self assertionAmplificationFor: (theV collect: #clone).
-			
-					theU := self selectionFrom: theU.
-					theATS addAll: theU  ]
-		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	theATS := theATS
-		collect: [ :item | 
-			| c |
-			c := item cleanedUpCopy.
-			c signAsSmallAmp.
-			c ].
-	resultPeople addAll: theATS
-]
-
 { #category : #private }
 SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 	| toSkip aList |
@@ -93,61 +47,9 @@ SAMainLoopSnapshots >> evidenceFile [
 	^ FileLocator imageDirectory / '_smallamp_crash_evidence.json'
 ]
 
-{ #category : #private }
-SAMainLoopSnapshots >> inputAmplificationFrom: pop [
-	| applyTransformation newcodes tmp amps |
-	amps := self inputAmplifiers.
-	newcodes := OrderedCollection new.
-	applyTransformation := [ :amplifier :tcase | 
-	amplifier isTransplantation
-		ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-	newcodes addAll: (tcase inputAmplifyBy: amplifier) ].
-	tmp := (pop collect: #clone)
-		do: [ :tcase | 
-			tcase strip.
-			tcase normalize ].
-	amps
-		do: [ :amp | 
-			| tmp2 |
-			tmp2 := (config maxPop / 2 / amps size) ceiling.
-			(pop shuffle takeFirst: (tmp2 min: pop size))
-				do: [ :tcase | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := (pop size > (config maxPop / 2)) 
-		ifTrue: [ tmp shuffle takeFirst: config maxPop / 2 ]
-		ifFalse: [ tmp ].
-	tmp
-		do: [ :tcase | 
-			| tmp2 |
-			tmp2 := ((config maxPop / 2 + 1) / tmp size) ceiling.
-			(amps shuffle takeFirst: (tmp2 min: amps size))
-				do: [ :amp | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle takeFirst: config maxPop
-]
-
-{ #category : #actions }
-SAMainLoopSnapshots >> installAmplifiedTests: aReadableClass [
-	aReadableClass testSelectors
-		do: [ :selector | 
-			testClass
-				compile: (aReadableClass lookupSelector: selector) sourceCode ]
-]
-
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> isEventPresent: anEvent [
 	^ self eventFile exists
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshots >> pushToRepo [
-	| repo |
-	repo := IceRepository registry
-		detect:
-			[ :r | r name = (Smalltalk os environment asDictionary at: #reponame) ].
-	repo index updateDiskWorkingCopy: repo workingCopyDiff 
-	"repo workingCopy
-		commitWithMessage: '[SmallAmp] amplified methods added to the base'"
 ]
 
 { #category : #'as yet unclassified' }
