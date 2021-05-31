@@ -156,14 +156,7 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
 		key: #methodsNotProfiled
 		addTo: result.
-	"self
-		safeFail: [ self originalMethodsAssertionDensity ]
-		key: #assertionDensityOriginal
-		addTo: result.
-	self
-		safeFail: [ self amplifiedMethodsAssertionDensity ]
-		key: #assertionDensityAmplified
-		addTo: result."
+	
 	self
 		safeFail: [ (self failedSelectorInOriginal collect: #name) asArray ]
 		key: #testMethodsIgnored

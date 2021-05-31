@@ -126,7 +126,7 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 		for: aTestClass
 		targets: targetClasses.
 	totalTime := Time millisecondsToRun: [ res := sa amplify ].
-	res totalTime: totalTime.
+	res totalTime: (Duration milliSeconds: totalTime).
 	res saveResultToFileAs: aTestClass asString.
 	res amplifiedClass fileOut.
 	^ res
