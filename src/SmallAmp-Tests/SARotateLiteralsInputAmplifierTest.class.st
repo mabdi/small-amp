@@ -47,7 +47,7 @@ SARotateLiteralsInputAmplifierTest >> testItem1 [
 { #category : #tests }
 SARotateLiteralsInputAmplifierTest >> testItem2 [
 	| res cls item codes |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom:
 			{'testq <foo: #abc> ''-'' join: {#l123 asString. #rty asString. ''ssss''. ''vvvv''}'}
 		instanceVars: ''.

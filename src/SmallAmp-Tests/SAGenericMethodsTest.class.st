@@ -2,44 +2,54 @@
 A SAASTHelperTest is a test class for testing the behavior of SAASTHelper
 "
 Class {
-	#name : #SAASTHelperTest,
+	#name : #SAGenericMethodsTest,
 	#superclass : #TestCase,
 	#category : #'SmallAmp-Tests-Helpers'
 }
 
 { #category : #test }
-SAASTHelperTest >> testAddCommentToMethod [
+SAGenericMethodsTest >> testAddCommentToMethod [
 	| h src2 |
-	h := SAASTHelper new.
-	src2 := h addComment: 'some comments is here' toMethod: 'foo x:=1'.
-	self assert: src2 equals: (RBParser parseMethod: 'foo "some comments is here" x:=1') formattedCode 
+	h := SAGenericMethods new.
+	src2 := h
+		addComment: 'some comments is here'
+		toMethodAST: (h parsedMethodFrom: 'foo x:=1').
+	self
+		assertMethodSourceCode: src2 formattedCode
+		equals:
+			'foo "some comments is here" x:=1'
 ]
 
 { #category : #test }
-SAASTHelperTest >> testAddCommentToMethodQuote [
+SAGenericMethodsTest >> testAddCommentToMethodQuote [
 	| h src2 |
-	h := SAASTHelper new.
-	src2 := h addComment: 'some " comments is here' toMethod: 'foo x:=1'.
-	self assertMethodSourceCode: src2 equals: (RBParser parseMethod: 'foo ''some " comments is here''. x:=1') formattedCode 
+	h := SAGenericMethods new.
+	src2 := h
+		addComment: 'some " comments is here'
+		toMethodAST: (h parsedMethodFrom: 'foo x:=1').
+	self
+		assertMethodSourceCode: src2 formattedCode
+		equals:
+			'foo ''some " comments is here''. x:=1'
 ]
 
 { #category : #test }
-SAASTHelperTest >> testBuildTestClassAndRun [
+SAGenericMethodsTest >> testBuildTestClassAndRun [
 	| result methods testMethods |
 	testMethods := SAAssertTransformTest methods
 		select: [ :each | each selector beginsWith: 'test' ].
 	methods := testMethods
 		collect: [ :atestMethod | atestMethod sourceCode ].
-	result := SAASTHelper new
+	result := SAGenericMethods new
 		buildTestClassWith: methods allButFirst
 		using: SAAssertTransformTest.
 	self assert: result superclass equals: SAAssertTransformTest.
 	self deny: (result selectors includes: testMethods first selector).
-	SAASTHelper new removeClass: result source: self class name
+	SAGenericMethods new removeClass: result source: self class name
 ]
 
 { #category : #test }
-SAASTHelperTest >> testCleanUp [
+SAGenericMethodsTest >> testCleanUp [
 	| s r |
 	s := 'testWithdraw_1_1
 	| b tmp_ZISDO00DGz1 tmp_9nbUP3optD2 |
@@ -49,7 +59,7 @@ SAASTHelperTest >> testCleanUp [
 	self assert: tmp_ZISDO00DGz1 balance equals: 102.
 	tmp_9nbUP3optD2 := b withdraw: 30.
 	self assert: b balance equals: 72'.
-	r := SAASTHelper new cleanUp: s.
+	r := SAGenericMethods new cleanUp: s.
 	self assertMethodSourceCode: r equals: 'testWithdraw_1_1
 	| b tmp_ZISDO00DGz1 |
 	b := SmallBank new.
@@ -61,9 +71,9 @@ SAASTHelperTest >> testCleanUp [
 ]
 
 { #category : #test }
-SAASTHelperTest >> testGrindTestClassSize [
+SAGenericMethodsTest >> testGrindTestClassSize [
 	| helper cls grinded |
-	helper := SAASTHelper new.
+	helper := SAGenericMethods new.
 	cls := TestCase
 		subclass: 'SAFakeTestForGrind' , helper getId asString
 		instanceVariableNames: 'i j k'
@@ -93,13 +103,13 @@ SAASTHelperTest >> testGrindTestClassSize [
 ]
 
 { #category : #test }
-SAASTHelperTest >> testOldBuildTestClassAndRun [
+SAGenericMethodsTest >> testOldBuildTestClassAndRun [
 	| result methods testMethods |
 	testMethods := SAAssertTransformTest methods
 		select: [ :each | each selector beginsWith: 'test' ].
 	methods := testMethods
 		collect: [ :atestMethod | atestMethod sourceCode ].
-	result := SAASTHelper new
+	result := SAGenericMethods new
 		old_buildTestClassWith: methods
 		using: SAAssertTransformTest.
 	self
@@ -107,28 +117,28 @@ SAASTHelperTest >> testOldBuildTestClassAndRun [
 	self
 		deny: (result methods detect: [ :mtd | mtd selector = #astHelper ]) isNil.
 	self assert: result testSelectors size equals: methods size.
-	SAASTHelper new removeClass: result source: self class name
+	SAGenericMethods new removeClass: result source: self class name
 ]
 
 { #category : #test }
-SAASTHelperTest >> testPragma [
+SAGenericMethodsTest >> testPragma [
 	| signed newSrc |
 	signed := Fake2Test smallAmpAmplifiedMethods.
 	self assert: signed size equals: 1.
 	self assert: signed first selector equals: #testSigned.
 	self assert: signed first isMadeBySmallAmp.
 	self assert: signed first selector equals: #testSigned.
-	newSrc := SAASTHelper new signAsSmallAmp: 'testHi self assert: true'.
+	newSrc := SAGenericMethods new signAsSmallAmp: 'testHi self assert: true'.
 	self
-		assert: (SAASTHelper new parsedMethodFrom: newSrc) pragmas first selector
-		equals: SAASTHelper defaultPragma.
+		assert: (SAGenericMethods new parsedMethodFrom: newSrc) pragmas first selector
+		equals: SAGenericMethods defaultPragma.
 	
 ]
 
 { #category : #test }
-SAASTHelperTest >> testRunSafelyTimeOut [
+SAGenericMethodsTest >> testRunSafelyTimeOut [
 	 
-			[(SAASTHelper new
+			[(SAGenericMethods new
 				runSafely: [ 200 milliSeconds wait.
 					self deny: true ]
 				timeOut: 100 milliSeconds)] on: SAUnsafeRunKilled  do: [ self assert: true ]
@@ -136,13 +146,13 @@ SAASTHelperTest >> testRunSafelyTimeOut [
 ]
 
 { #category : #test }
-SAASTHelperTest >> testRunSafelyTimeOutSemaphor [
+SAGenericMethodsTest >> testRunSafelyTimeOutSemaphor [
 	| semaphor |
 	semaphor := Semaphore new.
 	[ 1 seconds wait.
 	semaphor signal.
 	self assert: false ] forkAt: Processor activePriority + 1.
-	[ SAASTHelper new
+	[ SAGenericMethods new
 		runSafely: [ semaphor wait.
 			self assert: false ]
 		timeOut: 100 milliSeconds ]
@@ -151,7 +161,7 @@ SAASTHelperTest >> testRunSafelyTimeOutSemaphor [
 ]
 
 { #category : #test }
-SAASTHelperTest >> testStrip [
+SAGenericMethodsTest >> testStrip [
 	| sourceCode expectingCode result |
 	sourceCode := 'foo
 	| tmp1 |
@@ -167,7 +177,7 @@ SAASTHelperTest >> testStrip [
 		with: 1;
 		with: 2.
 	'.
-	result := SAASTHelper new strip: sourceCode.
+	result := SAGenericMethods new strip: sourceCode.
 	self assertMethodSourceCode: result equals: expectingCode.
 	sourceCode := 'foo
 	self assert: foo bar equals: 1.
@@ -178,7 +188,7 @@ SAASTHelperTest >> testStrip [
 	self hello value not.
 	tmp1 isNotEmpty value	
 	'.
-	result := SAASTHelper new strip: sourceCode.
+	result := SAGenericMethods new strip: sourceCode.
 	self assertMethodSourceCode: result equals: expectingCode.
 	
 ]

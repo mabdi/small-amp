@@ -23,7 +23,7 @@ SAVariableTypeProfiler class >> instanceVariablesKey [
 
 { #category : #removing }
 SAVariableTypeProfiler >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #removing }
@@ -164,7 +164,7 @@ SAVariableTypeProfiler >> run [
 	(generatedClass methods select: #isTestMethod)
 		do: [ :method | self installMetaLinksOnMethod: method ].
 	
-	SAASTHelper new
+	SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		timeOut: config testRunTimeOut milliSeconds ]
 		ensure: [ links do: #uninstall.

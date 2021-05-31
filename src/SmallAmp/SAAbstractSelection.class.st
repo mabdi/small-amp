@@ -43,7 +43,7 @@ SAAbstractSelection >> addInfoToSelectedMethods: coveredToMethod [
 			list
 				do: [ :k | 
 					| ast |
-					ast := SAASTHelper new parsedMethodFrom: v testMethod.
+					ast := SAGenericMethods new parsedMethodFrom: v testMethod.
 					ast
 						addPragma:
 							(RBPragmaNode

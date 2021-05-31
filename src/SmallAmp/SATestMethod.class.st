@@ -36,7 +36,7 @@ SATestMethod >> assertionAmplifyBy: anAmplifier [
 
 { #category : #removing }
 SATestMethod >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #cleanup }

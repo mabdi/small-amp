@@ -77,7 +77,7 @@ SAMainLoop >> assertionAmplifiers [
 
 { #category : #accessing }
 SAMainLoop >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #cleanup }

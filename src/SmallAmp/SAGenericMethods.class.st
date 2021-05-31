@@ -1,5 +1,5 @@
 Class {
-	#name : #SAASTHelper,
+	#name : #SAGenericMethods,
 	#superclass : #Object,
 	#classInstVars : [
 		'instanceId'
@@ -8,32 +8,24 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAASTHelper class >> defaultPragma [
+SAGenericMethods class >> defaultPragma [
 	^ #madeBySmallAmp
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper class >> instanceId [
+SAGenericMethods class >> instanceId [
 	instanceId ifNil: [ instanceId:=0 ].
 	instanceId := instanceId + 1.
 	^ instanceId
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper class >> tempPattern [
+SAGenericMethods class >> tempPattern [
 	^ 'tmp_([a-z0-9A-Z]+)\d+'
 ]
 
 { #category : #adding }
-SAASTHelper >> addComment: aText toMethod: anSRC [
-	| newMethodAST anAST |
-	anAST := self parserClass parseMethod: anSRC.
-	newMethodAST := self addComment: aText  toMethodAST: anAST.
-	^ newMethodAST formattedCode
-]
-
-{ #category : #adding }
-SAASTHelper >> addComment: aText toMethodAST: anAST [
+SAGenericMethods >> addComment: aText toMethodAST: anAST [
 	| newMethodAST |
 	(aText includes: $")
 		ifTrue: [ newMethodAST := anAST copy.
@@ -49,8 +41,30 @@ SAASTHelper >> addComment: aText toMethodAST: anAST [
 		^ newMethodAST
 ]
 
+{ #category : #'as yet unclassified' }
+SAGenericMethods >> allClassesForRepo: repoName [
+	Smalltalk
+		at: #IceRepository
+		ifPresent: [ :clsIceRepository | 
+			clsIceRepository registry
+				detect: [ :r | r name = repoName ]
+				ifFound: [ :r | 
+					^ (r workingCopy packages select: [ :p | p isLoaded ])
+						flatCollect: [ :p | p package asPackage definedClasses asOrderedCollection ] ] ].
+	Smalltalk
+		at: #MetacelloProjectRegistration
+		ifPresent: [ :clsMetacelloProjectRegistration | 
+			| reg |
+			reg := clsMetacelloProjectRegistration
+				registrationForClassNamed: repoName
+				ifAbsent: [ nil ].
+			reg
+				ifNotNil: [ ^ reg currentlyLoadedClassesInProject asOrderedCollection ] ].
+	self error: 'repo not installed. ' , repoName
+]
+
 { #category : #'method operations' }
-SAASTHelper >> buildTestClassAndLogWith: aCollection using: testClass [
+SAGenericMethods >> buildTestClassAndLogWith: aCollection using: testClass [
 	| tempClass |
 	tempClass := testClass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -69,7 +83,7 @@ SAASTHelper >> buildTestClassAndLogWith: aCollection using: testClass [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> buildTestClassWith: aCollection using: testClass [
+SAGenericMethods >> buildTestClassWith: aCollection using: testClass [
 	| tempClass |
 	tempClass := testClass
 		subclass: (testClass name asString , self getId asString) asSymbol
@@ -87,7 +101,7 @@ SAASTHelper >> buildTestClassWith: aCollection using: testClass [
 ]
 
 { #category : #cleanup }
-SAASTHelper >> cleanUp: aSourceCode [
+SAGenericMethods >> cleanUp: aSourceCode [
 	| mtd tmps rewriter |
 	mtd := self parsedMethodFrom: aSourceCode.
 	tmps := (mtd body temporaries
@@ -107,15 +121,33 @@ SAASTHelper >> cleanUp: aSourceCode [
 ]
 
 { #category : #cleanup }
-SAASTHelper >> clearTempClasses [
+SAGenericMethods >> clearTempClasses [
 	<script: 'SAASTHelper new clearTempClasses '>
 	(self defaultTempPackage asPackageIfAbsent: [ ^ true ]) classes
 		do: [ :item | self removeClass: item source: 'ClearTemp' ]
 		displayingProgress: 'Clear temp classes.'
 ]
 
+{ #category : #actions }
+SAGenericMethods >> commitIdFor: repoName [
+	| clsIceRepository |
+	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
+	clsIceRepository
+		ifNotNil: [ ^ clsIceRepository latestCommitIdFor: repoName ]
+]
+
 { #category : #'as yet unclassified' }
-SAASTHelper >> createTempPackage [
+SAGenericMethods >> contextInit [
+	CompilationContext bytecodeBackend = EncoderForSistaV1
+		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
+			SmallAmp <~ 'Encoder changed to SistaV1.' ].
+	Author fullName
+		ifNil: [ Author fullName: 'SmallAmp'.
+			SmallAmp <~ 'Author set.' ]
+]
+
+{ #category : #'as yet unclassified' }
+SAGenericMethods >> createTempPackage [
 	(RPackageOrganizer default
 		includesPackageNamed: self defaultTempPackage)
 		ifFalse: [ RPackageOrganizer default
@@ -123,22 +155,22 @@ SAASTHelper >> createTempPackage [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> defaultFinalPackage [
+SAGenericMethods >> defaultFinalPackage [
 	^ 'SmallAmpFinalClasses'
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> defaultPragma [
+SAGenericMethods >> defaultPragma [
 	^ self class defaultPragma
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> defaultTempPackage [
+SAGenericMethods >> defaultTempPackage [
 	^ 'SmallAmpTempClasses'
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> disableDeprecationsOn: aClass [
+SAGenericMethods >> disableDeprecationsOn: aClass [
 	Deprecation
 		activateTransformations: false;
 		raiseWarning: false;
@@ -156,7 +188,7 @@ SAASTHelper >> disableDeprecationsOn: aClass [
 ]
 
 { #category : #accessing }
-SAASTHelper >> disableDeprecationsWhile: aBlock [
+SAGenericMethods >> disableDeprecationsWhile: aBlock [
 	| activateTransformations raiseWarning showWarning |
 	activateTransformations := Deprecation activateTransformations.
 	raiseWarning := Deprecation raiseWarning.
@@ -173,25 +205,127 @@ SAASTHelper >> disableDeprecationsWhile: aBlock [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> enableDeprecationsOn: aClass [
+SAGenericMethods >> enableDeprecationsOn: aClass [
 	Deprecation
 		activateTransformations: true;
 		raiseWarning: true;
 		showWarning: true
 ]
 
+{ #category : #accessing }
+SAGenericMethods >> extraInformationFor: amplified [
+	| json result targetClasses testClass amplifiedClass amplifiedCoverage originalCoverage |
+	result := Dictionary new.
+	json := STONJSON
+		fromString:
+			(FileLocator imageDirectory / (amplified , '.json')) asFileReference
+				contents.
+	targetClasses := (json at: #targetClasses)
+		collect: [ :c | self class environment at: c asSymbol ].
+	testClass := self class environment at: (json at: #testCase) asSymbol.
+	self class environment
+		at: (json at: #amplifiedClass) asSymbol
+		ifPresent: [ :x | amplifiedClass := x ]
+		ifAbsent: [ (FileLocator imageDirectory / ((json at: #amplifiedClass) , '.st'))
+				asFileReference fileIn.
+			amplifiedClass := self class environment
+				at: (json at: #amplifiedClass) asSymbol ].
+	amplifiedCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {amplifiedClass};
+		run.
+	originalCoverage := SACoverageAnalyser new
+		classes: targetClasses;
+		testCases: {testClass};
+		run.
+	self
+		safeFail: [ amplifiedCoverage methodsCoverage ]
+		key: #amplifiedCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage branchesCoverage ]
+		key: #amplifiedCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ amplifiedCoverage statementsCoverage ]
+		key: #amplifiedCoverageStatementes
+		addTo: result.
+	self
+		safeFail: [ originalCoverage methodsCoverage ]
+		key: #originalCoverageMethods
+		addTo: result.
+	self
+		safeFail: [ originalCoverage branchesCoverage ]
+		key: #originalCoverageBranches
+		addTo: result.
+	self
+		safeFail: [ originalCoverage statementsCoverage ]
+		key: #originalCoverageStatementes
+		addTo: result.
+	('Processing ' , amplified) traceCr.
+	Smalltalk
+		at: #SAReceiverTypeProfiler
+		ifPresent: [ :theSAReceiverTypeProfiler | 
+			self
+				safeFail: [ theSAReceiverTypeProfiler directCallsFor: testClass ]
+				key: #directTestingOriginal
+				addTo: result ].
+	Smalltalk
+		at: #SACodeChurnAnalyser
+		ifPresent: [ :theSACodeChurnAnalyser | 
+			self
+				safeFail: [ ((targetClasses
+						collect:
+							[ :cls | (theSACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
+						inject: 0
+						into: [ :accum :each | accum + each ])
+						printShowingDecimalPlaces: 2 ]
+				key: #targetChurn
+				addTo: result.
+			self
+				safeFail: [ (theSACodeChurnAnalyser new codeChurnForClass: testClass)
+						printShowingDecimalPlaces: 2 ]
+				key: #testChurn
+				addTo: result ].
+	Smalltalk
+		at: #SATestAssertionDensity
+		ifPresent: [ :theSATestAssertionDensity | 
+			self
+				safeFail: [ theSATestAssertionDensity
+						dencityFor: (testClass methods select: #isTestMethod) ]
+				key: #assertionDensityOriginal
+				addTo: result.
+			self
+				safeFail: [ theSATestAssertionDensity
+						dencityFor:
+							(amplifiedClass methods
+								select: [ :z | z hasPragmaNamed: SAGenericMethods new defaultPragma ]) ]
+				key: #assertionDensityAmplified
+				addTo: result ].
+	^ result
+]
+
 { #category : #'method operations' }
-SAASTHelper >> extractMethodName: aSourceCode [
+SAGenericMethods >> extractMethodName: aSourceCode [
 	^ (self parsedMethodFrom: aSourceCode) selector
 ]
 
 { #category : #private }
-SAASTHelper >> getId [
+SAGenericMethods >> getId [
 	^ self class instanceId
 ]
 
+{ #category : #actions }
+SAGenericMethods >> grindTestClass: targetedTests [
+	^ targetedTests
+		flatCollect: [ :cls | 
+			cls allTestSelectors size > 20
+				ifTrue: [ SAGenericMethods new grindTestClass: cls size: 20 ]
+				ifFalse: [ {cls} ] ]
+]
+
 { #category : #'as yet unclassified' }
-SAASTHelper >> grindTestClass: testClass size: testNumber [
+SAGenericMethods >> grindTestClass: testClass size: testNumber [
 	| currentTests currentIndex tests result tempClass helpers firstClass |
 	currentIndex := 1.
 	firstClass := true.
@@ -227,12 +361,12 @@ SAASTHelper >> grindTestClass: testClass size: testNumber [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> makeClassFrom: arrayOfTestMethods [
+SAGenericMethods >> makeClassFrom: arrayOfTestMethods [
 	^ self makeClassFrom: arrayOfTestMethods  instanceVars: '' 
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
+SAGenericMethods >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
 	| cls |
 	cls := TestCase
 		subclass: ('TempTestClass' , self class instanceId asString) asSymbol
@@ -243,8 +377,48 @@ SAASTHelper >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars [
 	^ cls
 ]
 
+{ #category : #actions }
+SAGenericMethods >> metricsEval: repoName [
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId helper |
+	helper := SAGenericMethods new.
+	classes := helper allClassesForRepo: repoName.
+	commitId := helper commitIdFor: repoName.
+	loc := (classes collect: #linesOfCode) sum.
+	tests := classes select: #isTestCase.
+	targetedTests := tests
+		select: [ :s | s smallAmpTargetClasses isNotNil ].
+	testsuite := TestSuite new.
+	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
+	testrun := testsuite run.
+	testMethodTargeted := testsuite tests.
+	stat := {(#classes -> classes size).
+	(#tests -> tests size).
+	(#loc -> loc).
+	(#commitId -> commitId).
+	(#targetedTests -> targetedTests size).
+	(#targetedTestsMethods -> testMethodTargeted size).
+	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
+	(#testsFails -> testrun failureCount).
+	(#testsErrors -> testrun errorCount).
+	(#testsPasses -> testrun passedCount)} asString.
+	(FileLocator imageDirectory / (repoName , '.stat')) writeStream
+		nextPutAll: stat;
+		lf;
+		close.
+	(FileLocator imageDirectory / 'allTests.txt') writeStream
+		nextPutAll: (Character lf join: targetedTests);
+		lf;
+		close.
+	targetedTests := self grindTestClass: targetedTests.
+	(FileLocator imageDirectory / self todoFile) writeStream
+		nextPutAll: (Character lf join: targetedTests);
+		lf;
+		close.
+	^ stat
+]
+
 { #category : #'as yet unclassified' }
-SAASTHelper >> moveClassToFinal: aClass [
+SAGenericMethods >> moveClassToFinal: aClass [
 	| package |
 	(RPackageOrganizer default
 		includesPackageNamed: self defaultFinalPackage)
@@ -255,7 +429,7 @@ SAASTHelper >> moveClassToFinal: aClass [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
+SAGenericMethods >> old_buildTestClassWith: aCollection using: testClass [
 	| tempClass package |
 	tempClass := testClass
 		duplicateClassWithNewName: (testClass name asString , self getId asString) asSymbol.
@@ -277,7 +451,7 @@ SAASTHelper >> old_buildTestClassWith: aCollection using: testClass [
 ]
 
 { #category : #compiling }
-SAASTHelper >> onClass: aClass compile: aMethod [
+SAGenericMethods >> onClass: aClass compile: aMethod [
 	SystemAnnouncer uniqueInstance
 		suspendAllWhile: [ aClass compile: aMethod.
 			"
@@ -290,7 +464,7 @@ SAASTHelper >> onClass: aClass compile: aMethod [
 ]
 
 { #category : #compiling }
-SAASTHelper >> onClass: aClass removeSelector: aSelector [
+SAGenericMethods >> onClass: aClass removeSelector: aSelector [
 	SystemAnnouncer uniqueInstance
 		suspendAllWhile: [ aClass removeSelector: aSelector
 			"
@@ -303,17 +477,26 @@ SAASTHelper >> onClass: aClass removeSelector: aSelector [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> parsedMethodFrom: aSourceCode [
+SAGenericMethods >> parsedMethodFrom: aSourceCode [
 	^ self parserClass parseMethod: aSourceCode
 ]
 
 { #category : #factory }
-SAASTHelper >> parserClass [
+SAGenericMethods >> parserClass [
 	^ RBParser
 ]
 
+{ #category : #actions }
+SAGenericMethods >> preRunChecks [
+	CompiledMethod compilerClass compiler compilationContext encoderClass
+		= EncoderForSistaV1
+		ifFalse: [ Warning new
+				signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ].
+	
+]
+
 { #category : #'as yet unclassified' }
-SAASTHelper >> randomString [
+SAGenericMethods >> randomString [
 	| string |
 	string := String
 		streamContents: [ :stream | 
@@ -324,7 +507,7 @@ SAASTHelper >> randomString [
 ]
 
 { #category : #removing }
-SAASTHelper >> removeAssertions: aMethod [
+SAGenericMethods >> removeAssertions: aMethod [
 	^ (SAAssertTransform
 		   removeAllAsserts: (self parsedMethodFrom: aMethod)
 		   )
@@ -332,7 +515,7 @@ SAASTHelper >> removeAssertions: aMethod [
 ]
 
 { #category : #removing }
-SAASTHelper >> removeClass: theClass source: sid [
+SAGenericMethods >> removeClass: theClass source: sid [
 	"theClass removeFromSystem"
 
 	theClass superclass addObsoleteSubclass: theClass.
@@ -341,7 +524,7 @@ SAASTHelper >> removeClass: theClass source: sid [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
+SAGenericMethods >> renameAndMoveClass: aClass name: aName package: aPackage [
 	(self environment includesKey: aName)
 		ifTrue: [^ self error: aName , ' already exists'].
 	aClass renameSilently: aName.
@@ -349,12 +532,12 @@ SAASTHelper >> renameAndMoveClass: aClass name: aName package: aPackage [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> renameClass: aClass name: aName [
+SAGenericMethods >> renameClass: aClass name: aName [
 	aClass rename: aName
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> renameMethodName: aSourceCode append: aText [
+SAGenericMethods >> renameMethodName: aSourceCode append: aText [
 	| re first |
 	re := self parsedMethodFrom: aSourceCode.
 	first := (re selector splitOn: $:) at: 1.
@@ -363,14 +546,14 @@ SAASTHelper >> renameMethodName: aSourceCode append: aText [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> renameTempVars: anStr [
+SAGenericMethods >> renameTempVars: anStr [
 	^ anStr
 		copyWithRegex: self class tempPattern
 		matchesTranslatedUsing: [ :each | 'tmp' , (each allButFirst: 14) ]
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> runSafely: aBlock timeOut: aDuration [
+SAGenericMethods >> runSafely: aBlock timeOut: aDuration [
 	self flag: #todo.	"use  semaphor to be able to kill process"
 	^ aBlock
 		valueWithin: aDuration
@@ -378,7 +561,7 @@ SAASTHelper >> runSafely: aBlock timeOut: aDuration [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> runSafelyTestClass: aTestClass selector: aSelector timeOut: aTimeOut [
+SAGenericMethods >> runSafelyTestClass: aTestClass selector: aSelector timeOut: aTimeOut [
 	^ [ self
 		runSafely: [ [ aTestClass run: aSelector ]
 				on: Exception
@@ -392,7 +575,7 @@ SAASTHelper >> runSafelyTestClass: aTestClass selector: aSelector timeOut: aTime
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> runSafelyTestClass: aTestClass timeOut: aTimeOut [
+SAGenericMethods >> runSafelyTestClass: aTestClass timeOut: aTimeOut [
 	^ [ self
 		runSafely: [ [ aTestClass buildSuite run ]
 				on: Exception
@@ -405,8 +588,20 @@ SAASTHelper >> runSafelyTestClass: aTestClass timeOut: aTimeOut [
 		do: [ ^ nil ]
 ]
 
+{ #category : #'as yet unclassified' }
+SAGenericMethods >> safeFail: block key: aKey addTo: aDictionary [
+	| theValue |
+	theValue := block
+		on: Error
+		do: [ :x | 
+			SmallAmp <~ x asString, '-', x messageText
+				.
+			'N/A' ].
+	aDictionary at: aKey put: theValue
+]
+
 { #category : #'method operations' }
-SAASTHelper >> signAsSmallAmp: src [
+SAGenericMethods >> signAsSmallAmp: src [
 	| ast |
 	ast := self parsedMethodFrom: src.
 	(ast hasPragmaNamed: self defaultPragma)
@@ -416,7 +611,7 @@ SAASTHelper >> signAsSmallAmp: src [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> srcAllTestSelectors [
+SAGenericMethods >> srcAllTestSelectors [
 	^ 'allTestSelectors
 		| answer |
 		answer := Set withAll: self testSelectors.
@@ -425,13 +620,13 @@ SAASTHelper >> srcAllTestSelectors [
 ]
 
 { #category : #'method operations' }
-SAASTHelper >> srcDefaultTimeLimit [
+SAGenericMethods >> srcDefaultTimeLimit [
 	^ 'defaultTimeLimit
 	^ 3 seconds '
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> strip: testMethod [
+SAGenericMethods >> strip: testMethod [
 	| m |
 	m := SAAssertTransform
 		removeAllAsserts: (self parsedMethodFrom: testMethod).
@@ -443,11 +638,16 @@ SAASTHelper >> strip: testMethod [
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> stripMethodSrc: aMethod [
+SAGenericMethods >> stripMethodSrc: aMethod [
 	^ self stripString: aMethod sourceCode 
 ]
 
 { #category : #'as yet unclassified' }
-SAASTHelper >> stripString: aString [ 
+SAGenericMethods >> stripString: aString [ 
 	^ aString copyWithoutAll: {Character cr. ' '. Character tab }
+]
+
+{ #category : #'as yet unclassified' }
+SAGenericMethods >> todoFile [
+	^ 'todo.txt'
 ]

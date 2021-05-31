@@ -7,7 +7,7 @@ Class {
 { #category : #removing }
 SARemoveInputAmplifier >> amplifyInputs [
 | results aMethodAST |
-	aMethodAST := SAASTHelper new parsedMethodFrom: testMethodModel testMethod.
+	aMethodAST := SAGenericMethods new parsedMethodFrom: testMethodModel testMethod.
 	results := OrderedCollection new.
 	aMethodAST statements size < 2
 		ifTrue: [ ^ results ].

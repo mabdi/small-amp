@@ -3,7 +3,7 @@ Extension { #name : #TestCase }
 { #category : #'*SmallAmp' }
 TestCase class >> smallAmpAmplifiedMethods [
 	^ self methods
-		select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]
+		select: [ :z | z hasPragmaNamed: SAGenericMethods new defaultPragma ]
 ]
 
 { #category : #'*SmallAmp' }

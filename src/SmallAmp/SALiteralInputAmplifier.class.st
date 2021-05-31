@@ -53,7 +53,7 @@ SALiteralInputAmplifier >> amplifyInputsSource: testCode [
 	| results |
 	mutator := SALiteralMutator new.
 	mappings := OrderedCollection new.
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testCode.
 	results := OrderedCollection new.
 	mappings addAll: self allLiteralNodes.

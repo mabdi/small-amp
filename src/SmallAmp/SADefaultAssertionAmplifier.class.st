@@ -30,7 +30,7 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 
 { #category : #accessing }
 SADefaultAssertionAmplifier >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #'as yet unclassified' }
@@ -83,7 +83,7 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	self astHelper
 		onClass: generatedClass
 		compile: sourceCodeWithAssertions.
-	r := SAASTHelper new
+	r := SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		selector: testMethodModel selector
 		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds.
@@ -233,7 +233,7 @@ SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
 { #category : #'as yet unclassified' }
 SADefaultAssertionAmplifier >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
-	^ SAASTHelper new
+	^ SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		selector: testMethodModel selector
 		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds

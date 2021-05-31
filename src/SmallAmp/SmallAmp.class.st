@@ -79,16 +79,6 @@ SmallAmp class >> assertionsHere: caller for: anObject [
 		during: [ caller class compile: newCode classified: aMethod protocol ]
 ]
 
-{ #category : #'as yet unclassified' }
-SmallAmp class >> contextInit [
-	CompilationContext bytecodeBackend = EncoderForSistaV1
-		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
-			self <~ 'Encoder changed to SistaV1.' ].
-	Author fullName
-		ifNil: [ Author fullName: 'SmallAmp'.
-			self <~ 'Author set.' ]
-]
-
 { #category : #initialization }
 SmallAmp class >> initializeDefault [
 	^ self new initializeWith: SAConfig default
@@ -113,10 +103,10 @@ SmallAmp class >> menuCommandOn: aBuilder [
 	(aBuilder
 		item: #'Browse Temp Package';
 		parent: #SmallAmp)
-		action: [ h:= SAASTHelper new. h createTempPackage. h defaultTempPackage asPackage browse ].
+		action: [ h:= SAGenericMethods new. h createTempPackage. h defaultTempPackage asPackage browse ].
 	(aBuilder
 		item: #'Clear temp';
-		parent: #SmallAmp) action: [ SAASTHelper new clearTempClasses ].
+		parent: #SmallAmp) action: [ SAGenericMethods new clearTempClasses ].
 	(aBuilder
 		item: #'Default config';
 		parent: #SmallAmp) action: [ (SAConfig class >> #default) browse ].
@@ -144,15 +134,15 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
-	self preRunChecks.
+	SAGenericMethods new preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
 			| instance |
-			self class <~ 'Run instance start: ' , item key name.
+			self class <~ ('Run instance start: ' , item key name).
 			[ [ instance := self amplify: item key target: item value.
 			self class <~ 'Run instance finished successfully.'.
-			self class <~ 'Run instance finish: ' , item key name.
+			self class <~ ('Run instance finish: ' , item key name).
 			res addResult: instance for: item ]
 				on: SANoGreenTest , SANoUncovered
 				do: [ :x | x asString traceCr ] ]
@@ -160,9 +150,10 @@ SmallAmp >> amplifyAll [
 				do: [ :ex | 
 					config debug
 						ifTrue: [ ex signal ].
-					self class <~ 'Run instance crashed: ' , item key name.
-					self class <~ 'Error details:' , ex description.
-					self class <~
+					self class <~ ('Run instance crashed: ' , item key name).
+					self class <~ ('Error details:' , ex description).
+					self class
+						<~
 							(String
 								streamContents: [ :stream | ex signalerContext errorReportOn: stream ]) ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
@@ -172,7 +163,7 @@ SmallAmp >> amplifyAll [
 { #category : #actions }
 SmallAmp >> amplifyEval [
 	self class <~ 'Run start.'.
-	self class contextInit.
+	SAGenericMethods new contextInit.
 	self amplifyAll.
 	self class <~ 'Run finish.'
 ]
@@ -187,15 +178,6 @@ SmallAmp >> initialize [
 SmallAmp >> initializeWith: aConfig [
 	self initialize. 
 	config := aConfig.
-	
-]
-
-{ #category : #actions }
-SmallAmp >> preRunChecks [
-	CompiledMethod compilerClass compiler compilationContext encoderClass
-		= EncoderForSistaV1
-		ifFalse: [ Warning new
-				signal: 'Change `Bytecode Backend` in setting to `SistaV1`' ].
 	
 ]
 

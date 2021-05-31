@@ -10,7 +10,7 @@ Class {
 { #category : #tests }
 SANotUsedTempsVisitorTest >> testDetectUsedVariable [
 	| visitor mtd |
-	mtd := SAASTHelper new parsedMethodFrom: 'helloWorld 
+	mtd := SAGenericMethods new parsedMethodFrom: 'helloWorld 
 		| used notUsed |
 		used := 3.
 		used + 3
@@ -24,7 +24,7 @@ SANotUsedTempsVisitorTest >> testDetectUsedVariable [
 { #category : #tests }
 SANotUsedTempsVisitorTest >> testDetectUsedVariableObject [
 	| visitor mtd |
-	mtd := SAASTHelper new parsedMethodFrom: 'helloWorld 
+	mtd := SAGenericMethods new parsedMethodFrom: 'helloWorld 
 		| used notUsed |
 		used := Array new.
 		used size
@@ -38,7 +38,7 @@ SANotUsedTempsVisitorTest >> testDetectUsedVariableObject [
 { #category : #tests }
 SANotUsedTempsVisitorTest >> testDetectUselessVariable [
 	| visitor mtd |
-	mtd := SAASTHelper new parsedMethodFrom: 'helloWorld 
+	mtd := SAGenericMethods new parsedMethodFrom: 'helloWorld 
 		| used notUsed |
 		used := Array new.
 		used size
@@ -52,7 +52,7 @@ SANotUsedTempsVisitorTest >> testDetectUselessVariable [
 { #category : #tests }
 SANotUsedTempsVisitorTest >> testDetectUselessVariableJustWrite [
 	| visitor mtd |
-	mtd := SAASTHelper new parsedMethodFrom: 'helloWorld 
+	mtd := SAGenericMethods new parsedMethodFrom: 'helloWorld 
 		| used notUsed |
 		notUsed := 10.
 		used := Array new.

@@ -7,7 +7,7 @@ Class {
 { #category : #removing }
 SANullifyInputAmplifier >> amplifyInputs [
 	| aMethodAST results |
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	results := self nullifyMessageNodes: aMethodAST.
 	^ results collect: #formattedCode

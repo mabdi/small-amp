@@ -1,25 +1,12 @@
 "
-Usage: smallamp [ --stat=prefix | --amp=testClass | --reload | --rejson=amplifiedClass | --noquit | --save ]
+Usage: smallamp [ options ]
+options: 
  	--stat=prefix               Calculates some statistics about packages with specified prefix
-	--amp=testClass             runs smallamp on testClass
-	--reload                    reload (git pull) small-amp repo
-	--rejson=amplifiedClass     Regenerate json files for amplified class
-	--clearTemp                 Clears temp package.
+	--xinfo=testName
+	--useSnapshots=testName     Amplify the specified test class, it snapshots the main to be able to recover after a crash
+	--dspot=testName     			Amplify the specified test class
 	--noquit                    Don't quite image after performing the operation
-	--nosave                    Don't save image after opertation
-	
-Documentation:
-Use this command to run smallamp.
-
-Examples:
-	# get the last updates in smallamp package
-	pharo Pharo.image smallamp --reload
-	# Stat for packages with names in pattern `smallamp*` 
-	pharo Pharo.image smallamp --stat=SmallAmp
-	# Run amplification for test class `SmallBankTest` 
-	pharo Pharo.image smallamp --amp=SmallBankTest
-	# Regenerate json file for the amplified test class `SmallBankTest123` 
-	pharo Pharo.image smallamp --rejson=SmallBankTest123
+	--save                    	Save image after opertation
 	
 "
 Class {
@@ -42,114 +29,45 @@ SACommandLineHandler class >> description [
 SACommandLineHandler >> activate [
 	self activateHelp
 		ifTrue: [ ^ self ].
-	(self hasOption: 'reload')
-		ifTrue: [ IceRepository pullRepoNamed: 'small-amp'.
-			('Updated to: ' , (IceRepository latestCommitIdFor: 'small-amp'))
-				traceCr.
-			Smalltalk snapshot: true andQuit: true ].
 	(self hasOption: 'stat')
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'xinfo')
 		ifTrue: [ self extraInformation ].
-	(self hasOption: 'amp')
-		ifTrue: [ self evalAmp ].
-	(self hasOption: 'amptodo')
-		ifTrue: [ self ampTodo ].
-	(self hasOption: 'clearTemp')
-		ifTrue: [ self clearTempClasses ].
 	(self hasOption: 'useSnapshots')
-		ifTrue: [ ^ self useSnapshots ].
+		ifTrue: [  self useSnapshots ].
+	(self hasOption: 'dspot')
+		ifTrue: [  self dspot ].
 	self end
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> allClassesForRepo: repoName [
-	| clsIceRepository clsMetacelloProjectRegistration |
-	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
-	clsMetacelloProjectRegistration := Smalltalk
-		at: #MetacelloProjectRegistration
-		ifAbsent: [ nil ].
-	clsIceRepository
-		ifNotNil: [ clsIceRepository registry
-				detect: [ :r | r name = repoName ]
-				ifFound: [ :r | 
-					^ (r workingCopy packages select: [ :p | p isLoaded ])
-						flatCollect: [ :p | p package asPackage definedClasses asOrderedCollection ] ] ].
-	clsMetacelloProjectRegistration
-		ifNotNil: [ | reg |
-			reg := clsMetacelloProjectRegistration
-				registrationForClassNamed: repoName
-				ifAbsent: [  ].
-			reg ifNotNil: [ ^ reg currentlyLoadedClassesInProject asOrderedCollection ] ].
-	self error: 'repo not installed. ' , repoName
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> ampTodo [
-	| classes sa |
-	classes := ((self todoFile asFileReference contents
-		splitOn: String lf) reject: #isEmpty)
-		collect: [ :line | self class environment at: line trim asSymbol ].
-	sa := SmallAmp initializeDefault.
-	classes do: [ :cls | sa testCase: cls ].
-	sa amplifyAll.
-	Smalltalk snapshot: true andQuit: true
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> amplificationContextInit [
-	CompilationContext bytecodeBackend = EncoderForSistaV1
-		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
-			SmallAmp <~ 'Encoder changed to SistaV1.' ].
-	Author fullName
-		ifNil: [ Author fullName: 'SmallAmp'.
-			SmallAmp <~ 'Author set.' ]
-]
-
-{ #category : #activation }
-SACommandLineHandler >> clearTempClasses [
-	SAASTHelper new clearTempClasses 
-]
-
-{ #category : #actions }
-SACommandLineHandler >> commitIdFor: repoName [
-	| clsIceRepository |
-	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
-	clsIceRepository
-		ifNotNil: [ ^ clsIceRepository latestCommitIdFor: repoName ]
-]
-
-{ #category : #accessing }
-SACommandLineHandler >> end [ 
-	| noquit nosave |
-	noquit := self commandLine hasOption: 'noquit'.
-	nosave := (self commandLine hasOption: 'nosave').
-	nosave ifFalse: [ Smalltalk snapshot: true andQuit: noquit not ].
-	noquit
-		ifFalse: [ self exitSuccess ]
-]
-
-{ #category : #accessing }
-SACommandLineHandler >> evalAmp [
-	| testClass |
+SACommandLineHandler >> dspot [
+	| cmd className aTestClass |
+	cmd := '--dspot='.
 	self arguments
-		detect: [ :arg | arg beginsWith: '--amp=' ]
-		ifFound: [ :arg | 
-			testClass := self class environment
-				at: (arg allButFirst: '--amp=' size) ].
-	SmallAmp initializeDefault
-		testCase: testClass;
-		amplifyEval.
-	Smalltalk snapshot: false andQuit: true
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | className := arg allButFirst: cmd size ].
+	aTestClass := Smalltalk globals at: className asSymbol.
+	SmallAmp <~ ('started #dspot: for ' , aTestClass name).
+	self runSmallAmp: aTestClass mainLoop: SAMainLoopDspot.
+	SmallAmp <~ ('finished #dspot: for ' , aTestClass name)
+]
+
+{ #category : #accessing }
+SACommandLineHandler >> end [
+	| noquit saveit |
+	noquit := self commandLine hasOption: 'noquit'.
+	saveit := self commandLine hasOption: 'save'.
+	Smalltalk snapshot: saveit andQuit: noquit not.
+
 ]
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalStats [
 	| prefix |
-	prefix := self arguments
-		detect: [ :arg | arg beginsWith: '--stat=' ].
-	prefix := prefix  allButFirst: '--stat=' size.
-	self metricsEval: prefix
+	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
+	prefix := prefix allButFirst: '--stat=' size.
+	SmallAmp metricsEval: prefix
 ]
 
 { #category : #accessing }
@@ -157,8 +75,8 @@ SACommandLineHandler >> extraInformation [
 	| testName res resstr fileName |
 	self arguments
 		detect: [ :arg | arg beginsWith: '--xinfo=' ]
-		ifFound: [ :arg | testName :=  arg allButFirst: '--xinfo=' size ].
-	res := self extraInformationFor: testName.
+		ifFound: [ :arg | testName := arg allButFirst: '--xinfo=' size ].
+	res := SmallAmp extraInformationFor: testName.
 	resstr := STONJSON toStringPretty: res.
 	fileName := testName , '.xjson'.
 	(FileLocator imageDirectory / fileName) exists
@@ -168,209 +86,9 @@ SACommandLineHandler >> extraInformation [
 		close
 ]
 
-{ #category : #accessing }
-SACommandLineHandler >> extraInformationFor: amplified [
-	| json result targetClasses testClass amplifiedClass amplifiedCoverage originalCoverage |
-	result := Dictionary new.
-	json := STONJSON
-		fromString:
-			(FileLocator imageDirectory / (amplified , '.json')) asFileReference
-				contents.
-	targetClasses := (json at: #targetClasses)
-		collect: [ :c | self class environment at: c asSymbol ].
-	testClass := self class environment at: (json at: #testCase) asSymbol.
-	self class environment
-		at: (json at: #amplifiedClass) asSymbol
-		ifPresent: [ :x | amplifiedClass := x ]
-		ifAbsent: [ (FileLocator imageDirectory / ((json at: #amplifiedClass) , '.st'))
-				asFileReference fileIn.
-			amplifiedClass := self class environment
-				at: (json at: #amplifiedClass) asSymbol ].
-	amplifiedCoverage := SACoverageAnalyser new
-		classes: targetClasses;
-		testCases: {amplifiedClass};
-		run.
-	originalCoverage := SACoverageAnalyser new
-		classes: targetClasses;
-		testCases: {testClass};
-		run.
-	self
-		safeFail: [ amplifiedCoverage methodsCoverage ]
-		key: #amplifiedCoverageMethods
-		addTo: result.
-	self
-		safeFail: [ amplifiedCoverage branchesCoverage ]
-		key: #amplifiedCoverageBranches
-		addTo: result.
-	self
-		safeFail: [ amplifiedCoverage statementsCoverage ]
-		key: #amplifiedCoverageStatementes
-		addTo: result.
-	self
-		safeFail: [ originalCoverage methodsCoverage ]
-		key: #originalCoverageMethods
-		addTo: result.
-	self
-		safeFail: [ originalCoverage branchesCoverage ]
-		key: #originalCoverageBranches
-		addTo: result.
-	self
-		safeFail: [ originalCoverage statementsCoverage ]
-		key: #originalCoverageStatementes
-		addTo: result.
-	('Processing ' , amplified) traceCr.
-	Smalltalk
-		at: #SAReceiverTypeProfiler
-		ifPresent: [ :theSAReceiverTypeProfiler | 
-			self
-				safeFail: [ theSAReceiverTypeProfiler directCallsFor: testClass ]
-				key: #directTestingOriginal
-				addTo: result ].
-	Smalltalk
-		at: #SACodeChurnAnalyser
-		ifPresent: [ :theSACodeChurnAnalyser | 
-			self
-				safeFail: [ ((targetClasses
-						collect:
-							[ :cls | (theSACodeChurnAnalyser new codeChurnForClass: cls) asNumber ])
-						inject: 0
-						into: [ :accum :each | accum + each ])
-						printShowingDecimalPlaces: 2 ]
-				key: #targetChurn
-				addTo: result.
-			self
-				safeFail: [ (theSACodeChurnAnalyser new codeChurnForClass: testClass)
-						printShowingDecimalPlaces: 2 ]
-				key: #testChurn
-				addTo: result ].
-	Smalltalk
-		at: #SATestAssertionDensity
-		ifPresent: [ :theSATestAssertionDensity | 
-			self
-				safeFail: [ theSATestAssertionDensity
-						dencityFor: (testClass methods select: #isTestMethod) ]
-				key: #assertionDensityOriginal
-				addTo: result.
-			self
-				safeFail: [ theSATestAssertionDensity
-						dencityFor:
-							(amplifiedClass methods
-								select: [ :z | z hasPragmaNamed: SAASTHelper new defaultPragma ]) ]
-				key: #assertionDensityAmplified
-				addTo: result ].
-	^ result
-]
-
-{ #category : #actions }
-SACommandLineHandler >> grindTestClass: targetedTests [
-	^ targetedTests
-		flatCollect: [ :cls | 
-			cls allTestSelectors size > 20
-				ifTrue: [ SAASTHelper new grindTestClass: cls size: 20 ]
-				ifFalse: [ {cls} ] ]
-]
-
-{ #category : #actions }
-SACommandLineHandler >> metricsEval: repoName [
-	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
-	"self registerIceBerg: repoName."
-	classes := self allClassesForRepo: repoName.
-	commitId := self commitIdFor: repoName.
-	loc := (classes collect: #linesOfCode) sum.
-	tests := classes select: #isTestCase.
-	targetedTests := tests
-		select: [ :s | s smallAmpTargetClasses isNotNil ].
-	testsuite := TestSuite new.
-	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
-	testrun := testsuite run.
-	testMethodTargeted := testsuite tests.
-	stat := {(#classes -> classes size).
-	(#tests -> tests size).
-	(#loc -> loc).
-	(#commitId -> commitId).
-	(#targetedTests -> targetedTests size).
-	(#targetedTestsMethods -> testMethodTargeted size).
-	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
-	(#testsFails -> testrun failureCount).
-	(#testsErrors -> testrun errorCount).
-	(#testsPasses -> testrun passedCount)} asString.
-	(FileLocator imageDirectory / (repoName , '.stat')) writeStream
-		nextPutAll: stat;
-		lf;
-		close.
-	(FileLocator imageDirectory / 'allTests.txt') writeStream
-		nextPutAll: (Character lf join: targetedTests);
-		lf;
-		close.
-	targetedTests := self grindTestClass: targetedTests.
-	(FileLocator imageDirectory / self todoFile) writeStream
-		nextPutAll:
-			(Character lf
-				join: (targetedTests ));
-		lf;
-		close.
-	^ stat
-]
-
-{ #category : #actions }
-SACommandLineHandler >> registerIceBerg: repoName [
-	| gitClone |
-	gitClone := Smalltalk os environment asDictionary
-		at: #GITHUB_WORKSPACE
-		ifAbsent: [ ^ self ].
-	IceRepository registry
-		detect: [ :r | r name = repoName ]
-		ifNone: [ (IceRepositoryCreator new
-				repository: nil;
-				location: gitClone asFileReference;
-				createRepository) register ].
-	IceCredentialStore current  
-	storeCredential: (IcePlaintextCredentials new
-		username: 'smallamp';
-		password: (Smalltalk os environment asDictionary at: #GITHUB_TOKEN)) forHostname: 'github.com'
-	
-]
-
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> safeFail: block key: aKey addTo: aDictionary [
-	| theValue |
-	theValue := block
-		on: Error
-		do: [ :x | 
-			Stdio stdout
-				nextPutAll: Time nowUTC print24;
-				nextPutAll: String space;
-				nextPutAll: x class asString;
-				nextPutAll: ': ';
-				nextPutAll: x asString;
-				nextPutAll: '-';
-				nextPutAll: x messageText;
-				lf;
-				flush.
-			'N/A' ].
-	aDictionary at: aKey put: theValue
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> todoFile [
-	^ 'todo.txt'
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> useSnapshots [
-	| cmd className |
-	cmd := '--useSnapshots='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | className := arg allButFirst: cmd size ].
-	self useSnapshots: (Smalltalk globals at: className asSymbol)
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> useSnapshots: aTestClass [
-	| main result cnf |
-	SmallAmp <~ 'started #useSnapshots: for ' , aTestClass name.
-	self amplificationContextInit.
+SACommandLineHandler >> runSmallAmp: aTestClass mainLoop: mode [
+	| cnf |
 	cnf := SAConfig default.
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_iteration
@@ -378,22 +96,21 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_maxInputs
 		ifPresent: [ :maxInputs | cnf maxPop: maxInputs asInteger ].
-	main := SAMainLoopSnapshots
-		with: cnf
-		for: aTestClass
-		targets: aTestClass smallAmpTargetClasses.
-	[ result := main amplify.
-	"main pushToRepo."
-	result saveResultToFileAs: aTestClass name.
-	result amplifiedClass fileOut ]
-		on: Error
-		do: [ :x | 
-			SmallAmp <~ 'Run instance crashed: ' , aTestClass name.
-			SmallAmp <~ 'Error details:' , x description.
-			SmallAmp
-				<~
-					(String
-						streamContents: [ :stream | x signalerContext errorReportOn: stream ]) ].
-	SmallAmp <~ 'finished #useSnapshots: for ' , aTestClass name.
-	Smalltalk snapshot: true andQuit: true
+	cnf mainloop: mode.
+	(SmallAmp initializeWith: cnf)
+		testCase: aTestClass;
+		amplifyEval
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> useSnapshots [
+	| cmd className aTestClass |
+	cmd := '--useSnapshots='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | className := arg allButFirst: cmd size ].
+	aTestClass := Smalltalk globals at: className asSymbol.
+	SmallAmp <~ ('started #useSnapshots: for ' , aTestClass name).
+	self runSmallAmp: aTestClass mainLoop: SAMainLoopSnapshots.
+	SmallAmp <~ ('finished #useSnapshots: for ' , aTestClass name)
 ]

@@ -33,7 +33,7 @@ SAReceiverTypeProfiler class >> initializeWith: aConfig [
 
 { #category : #removing }
 SAReceiverTypeProfiler >> astHelper [
-	^ SAASTHelper new
+	^ SAGenericMethods new
 ]
 
 { #category : #removing }

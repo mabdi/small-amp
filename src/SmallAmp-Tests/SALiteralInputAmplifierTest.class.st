@@ -50,7 +50,7 @@ SALiteralInputAmplifierTest >> testBoolean [
 { #category : #tests }
 SALiteralInputAmplifierTest >> testBoolean2 [
 	| res codes cls item |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom: {'testDspotBoolean a:= true. b:= false'}
 		instanceVars: 'a b'.
 	tempClasses add: cls.
@@ -93,7 +93,7 @@ SALiteralInputAmplifierTest >> testCharacter [
 { #category : #tests }
 SALiteralInputAmplifierTest >> testFloats2 [
 	| res codes cls item |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom: {'testDspotFloat a:= 10.01 . b:= 3.14. c:=-0.01'}
 		instanceVars: 'a b c'.
 	tempClasses add: cls.item := SATestMethod
@@ -166,7 +166,7 @@ SALiteralInputAmplifierTest >> testIntegerDouble [
 { #category : #tests }
 SALiteralInputAmplifierTest >> testInts2 [
 	| res codes cls item |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom: {'testDspotInts a:= 10. b:= 20. c:=29'}
 		instanceVars: 'a b c'.tempClasses add: cls.
 	item := SATestMethod
@@ -211,7 +211,7 @@ SALiteralInputAmplifierTest >> testString [
 { #category : #tests }
 SALiteralInputAmplifierTest >> testString2 [
 	| res codes cls item |
-	cls := SAASTHelper new
+	cls := SAGenericMethods new
 		makeClassFrom: {'testDspotString a:= ''dspot'''}
 		instanceVars: 'a'.
 		tempClasses add: cls.

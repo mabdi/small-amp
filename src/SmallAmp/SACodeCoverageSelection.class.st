@@ -68,7 +68,7 @@ SACodeCoverageSelection >> runCoverage: aPopulation [
 	^ pages
 		collect: [ :aPage | 
 			newTestClass
-				ifNil: [ newTestClass := SAASTHelper new
+				ifNil: [ newTestClass := SAGenericMethods new
 						buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
 						using: testClass ]
 				ifNotNil:

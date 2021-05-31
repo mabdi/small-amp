@@ -10,7 +10,7 @@ SANoOracleReduction >> makeReducedResult [
 	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
 	methods := l value: testClass.
 	methods := methods , (l value: newTestClass).
-	newClass := SAASTHelper new
+	newClass := SAGenericMethods new
 		buildTestClassWith: methods
 		using: testClass.
 	res := newClass.

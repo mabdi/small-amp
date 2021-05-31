@@ -42,7 +42,7 @@ SAVariableTypeProfilerTest >> testCase1 [
 { #category : #tests }
 SAVariableTypeProfilerTest >> testCase2 [
 	| testClass variableTypes |
-	testClass := SAASTHelper new
+	testClass := SAGenericMethods new
 		makeClassFrom: {'testO1 |x y| x := 10. y := x / 3'}
 		instanceVars: ''.
 	variableTypes := profiler
@@ -64,7 +64,7 @@ SAVariableTypeProfilerTest >> testCase2 [
 { #category : #tests }
 SAVariableTypeProfilerTest >> testCase3 [
 	| testClass variableTypes |
-	testClass := SAASTHelper new
+	testClass := SAGenericMethods new
 		makeClassFrom:
 			{'setUp f := FakeSmallBank new' . 'testO1 |x| x := 10. self assert: f balance equals: 0'}
 		instanceVars: 'f'.
@@ -85,7 +85,7 @@ SAVariableTypeProfilerTest >> testCase3 [
 { #category : #tests }
 SAVariableTypeProfilerTest >> testCase4 [
 	| testClass variableTypes |
-	testClass := SAASTHelper new
+	testClass := SAGenericMethods new
 		makeClassFrom: {'setUp f := FakeSmallBank new' . 'testO1 '}
 		instanceVars: 'f'.
 	variableTypes := profiler

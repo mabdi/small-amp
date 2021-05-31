@@ -12,7 +12,7 @@ SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
 	results := OrderedCollection new.
 	self profileVariableTypes.
-	aMethodAST := SAASTHelper new
+	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	results addAll: (self applySetupMessageAddOn: aMethodAST).
 	aMethodAST statements
