@@ -100,10 +100,10 @@ SACommandLineHandler >> ampTodo [
 SACommandLineHandler >> amplificationContextInit [
 	CompilationContext bytecodeBackend = EncoderForSistaV1
 		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
-			self cout: 'Encoder changed to SistaV1.' ].
+			SmallAmp <~ 'Encoder changed to SistaV1.' ].
 	Author fullName
 		ifNil: [ Author fullName: 'SmallAmp'.
-			self cout: 'Author set.' ].
+			SmallAmp <~ 'Author set.' ]
 ]
 
 { #category : #activation }
@@ -117,21 +117,6 @@ SACommandLineHandler >> commitIdFor: repoName [
 	clsIceRepository := Smalltalk at: #IceRepository ifAbsent: [ nil ].
 	clsIceRepository
 		ifNotNil: [ ^ clsIceRepository latestCommitIdFor: repoName ]
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> cout: aString [
-	| string |
-	string := aString isString
-		ifFalse: [ aString asString ]
-		ifTrue: [ aString ].
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: string;
-		lf;
-		flush.
-	
 ]
 
 { #category : #accessing }
@@ -384,7 +369,7 @@ SACommandLineHandler >> useSnapshots [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> useSnapshots: aTestClass [
 	| main result cnf |
-	self cout: 'started #useSnapshots: for ' , aTestClass name.
+	SmallAmp <~ 'started #useSnapshots: for ' , aTestClass name.
 	self amplificationContextInit.
 	cnf := SAConfig default.
 	Smalltalk os environment asDictionary
@@ -403,12 +388,12 @@ SACommandLineHandler >> useSnapshots: aTestClass [
 	result amplifiedClass fileOut ]
 		on: Error
 		do: [ :x | 
-			self cout: 'Run instance crashed: ' , aTestClass name.
-			self cout: 'Error details:' , x description.
-			self
-				cout:
+			SmallAmp <~ 'Run instance crashed: ' , aTestClass name.
+			SmallAmp <~ 'Error details:' , x description.
+			SmallAmp
+				<~
 					(String
 						streamContents: [ :stream | x signalerContext errorReportOn: stream ]) ].
-	self cout: 'finished #useSnapshots: for ' , aTestClass name.
+	SmallAmp <~ 'finished #useSnapshots: for ' , aTestClass name.
 	Smalltalk snapshot: true andQuit: true
 ]

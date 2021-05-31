@@ -16,11 +16,6 @@ Class {
 		'prettifier',
 		'maxPop',
 		'testRunTimeOutMult',
-		'saveToFile',
-		'runSandboxed',
-		'excludeList',
-		'enableExclude',
-		'overwrite',
 		'timeBudget',
 		'mainloop'
 	],
@@ -29,10 +24,8 @@ Class {
 
 { #category : #accessing }
 SAConfig class >> default [
-	
 	^ self dspotAllamps
 		maxPop: 10;
-		saveToFile: false;
 		yourself
 ]
 
@@ -57,11 +50,6 @@ SAConfig class >> dspot [
 		maxPop: 100;
 		debug: false;
 		mainloop: SAMainLoopDspot;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
 		serializationMaxDepth: 3;
 		yourself
@@ -92,11 +80,6 @@ SAConfig class >> dspotAllamps [
 		maxPop: 100;
 		debug: false;
 		mainloop: SAMainLoopDspot;
-		saveToFile: false;
-		runSandboxed: false;
-		enableExclude: false;
-		overwrite: false;
-		excludeList: '../blacklist.txt';
 		timeBudget: 21600;
 		serializationMaxDepth: 3;
 		yourself
@@ -125,26 +108,6 @@ SAConfig >> debug: anObject [
 { #category : #'as yet unclassified' }
 SAConfig >> debugOn [
 	self debug: true
-]
-
-{ #category : #accessing }
-SAConfig >> enableExclude [
-	^ enableExclude
-]
-
-{ #category : #accessing }
-SAConfig >> enableExclude: anObject [
-	enableExclude := anObject
-]
-
-{ #category : #accessing }
-SAConfig >> excludeList [
-	^ excludeList
-]
-
-{ #category : #accessing }
-SAConfig >> excludeList: anObject [
-	excludeList := anObject
 ]
 
 { #category : #accessing }
@@ -208,16 +171,6 @@ SAConfig >> oracleReducion: list [
 ]
 
 { #category : #accessing }
-SAConfig >> overwrite [
-	^ overwrite
-]
-
-{ #category : #accessing }
-SAConfig >> overwrite: anObject [
-	overwrite := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> prettifier [
 	^ prettifier
 ]
@@ -236,31 +189,6 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
-]
-
-{ #category : #accessing }
-SAConfig >> runSandboxed [
-	^ runSandboxed
-]
-
-{ #category : #accessing }
-SAConfig >> runSandboxed: anObject [
-	runSandboxed := anObject
-]
-
-{ #category : #'as yet unclassified' }
-SAConfig >> sandBoxOn [
-	self runSandboxed: true
-]
-
-{ #category : #accessing }
-SAConfig >> saveToFile [
-	^ saveToFile
-]
-
-{ #category : #accessing }
-SAConfig >> saveToFile: anObject [
-	saveToFile := anObject
 ]
 
 { #category : #accessing }
