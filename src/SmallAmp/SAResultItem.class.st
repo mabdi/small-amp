@@ -103,7 +103,10 @@ SAResultItem >> asDictionaryObject [
 	result := Dictionary new.
 	result at: #unixtime put: DateAndTime now asUnixTime.
 	self safeFail: [ testClass name ] key: #testCase addTo: result.
-	self safeFail: [ testClass smallAmpOriginalTestCase name ] key: #originalTestCase addTo: result.
+	self
+		safeFail: [ testClass smallAmpOriginalTestCase name ]
+		key: #originalTestCase
+		addTo: result.
 	self
 		safeFail: [ (targetClasses collect: #name) asArray ]
 		key: #targetClasses
@@ -124,10 +127,6 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ self amplifiedScore ]
 		key: #mutationScoreAfter
 		addTo: result.
-	"self
-		safeFail: [ self directTestingOriginal printShowingDecimalPlaces: 2 ]
-		key: #directTestingOriginal
-		addTo: result."
 	self
 		safeFail: [ self totalTime asSeconds ]
 		key: #timeTotal
@@ -139,55 +138,15 @@ SAResultItem >> asDictionaryObject [
 				into: [ :accum :each | accum + each ] ]
 		key: #targetLoc
 		addTo: result.
-	"self
-		safeFail: [ ((targetClasses
-				collect: [ :cls | (self codeChurnForClass: cls) asNumber ])
-				inject: 0
-				into: [ :accum :each | accum + each ])
-				printShowingDecimalPlaces: 2 ]
-		key: #targetChurn
-		addTo: result.
-	self
-		safeFail: [ (self codeChurnForClass: testClass) printShowingDecimalPlaces: 2 ]
-		key: #testChurn
-		addTo: result."
 	self
 		safeFail: [ testClass linesOfCode asString ]
 		key: #testLoc
 		addTo: result.
-	"self
-		safeFail: [ self amplifiedTestCoverage methodsCoverage ]
-		key: #amplifiedCoverageMethods
-		addTo: result.
-	self
-		safeFail: [ self amplifiedTestCoverage branchesCoverage ]
-		key: #amplifiedCoverageBranches
-		addTo: result.
-	self
-		safeFail: [ self amplifiedTestCoverage statementsCoverage ]
-		key: #amplifiedCoverageStatementes
-		addTo: result.
-	self
-		safeFail: [ self originalTestCoverage methodsCoverage ]
-		key: #originalCoverageMethods
-		addTo: result.
-	self
-		safeFail: [ self originalTestCoverage branchesCoverage ]
-		key: #originalCoverageBranches
-		addTo: result.
-	self
-		safeFail: [ self originalTestCoverage statementsCoverage ]
-		key: #originalCoverageStatementes
-		addTo: result."
 	self
 		safeFail: [ (self amplifiedMethods collect: #linesOfCode)
 				inject: 0
 				into: [ :accum :each | accum + each ] ]
 		key: #testAmpLoc
-		addTo: result.
-	self
-		safeFail: [ self detailedTimeLabel asArray ]
-		key: #timeDetail
 		addTo: result.
 	self
 		safeFail: [ self timeBudgetFinished ]

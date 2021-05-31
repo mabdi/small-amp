@@ -120,15 +120,16 @@ SmallAmp class >> menuCommandOn: aBuilder [
 
 { #category : #private }
 SmallAmp >> amplify: aTestClass target: targetClasses [
-	| sa res |
+	| sa res totalTime |
 	sa := config mainloop
 		with: config
 		for: aTestClass
 		targets: targetClasses.
-	res := sa amplify.
+	totalTime := Time millisecondsToRun: [ res := sa amplify ].
+	res totalTime: totalTime.
 	res saveResultToFileAs: aTestClass asString.
-			res amplifiedClass fileOut.
-			^ res
+	res amplifiedClass fileOut.
+	^ res
 ]
 
 { #category : #actions }
