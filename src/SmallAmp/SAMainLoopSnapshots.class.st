@@ -1,9 +1,6 @@
 Class {
 	#name : #SAMainLoopSnapshots,
-	#superclass : #SAMainLoop,
-	#instVars : [
-		'theTS'
-	],
+	#superclass : #SAMainLoopDspot,
 	#category : #'SmallAmp-Core'
 }
 
@@ -96,51 +93,6 @@ SAMainLoopSnapshots >> evidenceFile [
 	^ FileLocator imageDirectory / '_smallamp_crash_evidence.json'
 ]
 
-{ #category : #actions }
-SAMainLoopSnapshots >> finalSteps [
-	| generatedClass readable |
-	generatedClass := self astHelper
-		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
-		using: testClass smallAmpOriginalTestCase.
-	finalResult amplifiedClass: generatedClass.
-	readable := self makeReadable.
-	finalResult amplifiedClass: readable.
-	self astHelper moveClassToFinal: readable.
-	finalResult
-		amplifiedAnalysis:
-			(selection
-				analysisFor: {finalResult amplifiedClass}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal)
-	"self installAmplifiedTests: readable"
-]
-
-{ #category : #actions }
-SAMainLoopSnapshots >> initTs [
-	| result testMethods |
-	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
-		asMilliSeconds ]
-		valueWithin: config testRunTimeOut milliSeconds
-		onTimeout: [ self error: 'Original test class timeout' ].
-	testRunTimeoutMillis := {1000.
-	testRunTimeoutMillis} max.
-	testMethods := result expectedPasses
-		collect:
-			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
-	finalResult
-		failedSelectorInOriginal:
-			(result failures , result expectedDefects
-				collect: [ :failed | failed class lookupSelector: failed selector ])
-				asOrderedCollection.
-	testMethods ifEmpty: [ SANoGreenTest new signal ].
-	finalResult numberOfOriginalTestMethods: testMethods size.
-	^ testMethods
-		collect: [ :tcase | 
-			(SATestMethod with: tcase class: testClass targets: targetClasses)
-				selectorAppend: '_amp';
-				yourself ]
-]
-
 { #category : #private }
 SAMainLoopSnapshots >> inputAmplificationFrom: pop [
 	| applyTransformation newcodes tmp amps |
@@ -185,21 +137,6 @@ SAMainLoopSnapshots >> installAmplifiedTests: aReadableClass [
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> isEventPresent: anEvent [
 	^ self eventFile exists
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshots >> makeReadable [
-	| readable reducer prettifier |
-	reducer := (config oracleReducion initializeWith: config)
-		with: finalResult amplifiedClass
-		from: testClass smallAmpOriginalTestCase
-		target: targetClasses
-		uncovered: finalResult notCoveredInOriginal.
-	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-	readable := reducer makeReducedResult.
-	prettifier := config prettifier initializeWith: config.
-	prettifier prettify: readable.
-	^ readable
 ]
 
 { #category : #'as yet unclassified' }
@@ -259,14 +196,7 @@ SAMainLoopSnapshots >> selectionFrom: aList [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshots >> setupSelection [
-	selection := config selection initializeWith: config.
-	finalResult
-		originalAnalysis:
-			(selection
-				initialAnalysisFor: {testClass smallAmpOriginalTestCase}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal).
-	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	super setupSelection.
 	selection
 		onBeforeMutant: [ :mutant :index | 
 			self saveTheState: {(#toSkip -> index)} asDictionary.

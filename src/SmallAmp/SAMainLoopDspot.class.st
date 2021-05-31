@@ -2,7 +2,12 @@ Class {
 	#name : #SAMainLoopDspot,
 	#superclass : #SAMainLoop,
 	#instVars : [
-		'theTS'
+		'theTS',
+		'resultPeople',
+		'testRunTimeoutMillis',
+		'selection',
+		'assertAmplificationClassCache',
+		'instantiationExtractor'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -14,12 +19,7 @@ SAMainLoopDspot >> amplify [
 	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			Stdio stdout
-		<< Time nowUTC print24;
-		<< String space;
-		<< aTestMethod selector;
-		lf;
-		flush.
+			SmallAmp <~ aTestMethod selector.
 			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
@@ -29,8 +29,6 @@ SAMainLoopDspot >> amplify [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	| theATS theV theU |
-	(self checkCachedFor: aTestMethod selector)
-		ifTrue: [ ^ false ].
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
@@ -42,7 +40,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 			theV := self inputAmplificationFrom: theV.
 			theU := self assertionAmplificationFor: (theV collect: #clone).
 			theU := self selectionFrom: theU.
-					theATS addAll: theU ]
+			theATS addAll: theU ]
 		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
 	theATS := theATS
 		collect: [ :item | 
@@ -50,73 +48,48 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 			c := item cleanedUpCopy.
 			c signAsSmallAmp.
 			c ].
-	self cacheSelectedTests: theATS for: aTestMethod selector.
 	resultPeople addAll: theATS
 ]
 
-{ #category : #'as yet unclassified' }
-SAMainLoopDspot >> cacheSelectedTests: aList for: aSelector [
-	| fileName data tmp |
-	config saveToFile
-		ifFalse: [ ^ self ].
-	fileName := self fileNameForSelector: aSelector.
-	fileName exists
-		ifTrue: [ fileName delete ].
-	tmp := (aList
-		collect: [ :m | ZnBase64Encoder new encode: m testMethod asByteArray ])
-		asArray.
-	data := {(#methods -> tmp)} asDictionary.
-	fileName writeStream
-		nextPutAll: (STONJSON toStringPretty: data);
-		close
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopDspot >> checkCachedFor: aSelector [
-	| theATS fileName data |
-	config saveToFile
-		ifFalse: [ ^ false ].
-	fileName := self fileNameForSelector: aSelector .
-	fileName exists
-		ifTrue: [ fileName
-				readStreamDo: [ :readStream | data := STONJSON fromStream: readStream ] ]
-		ifFalse: [ ^ false ].
-	theATS := (data at: #methods ifAbsent: [ ^ false ])
-		collect: [ :item | 
-			SATestMethod
-				with: (ZnBase64Encoder new decode: item) asString
-				class: testClass
-				targets: targetClasses ].
-	resultPeople addAll: theATS.
-	^ true
-]
-
 { #category : #private }
-SAMainLoopDspot >> fileNameForSelector: aSelector [
-	| fileName |
-	fileName := FileLocator imageDirectory / 'smallAmp'.
-	fileName ensureCreateDirectory.
-	fileName := fileName / testClass name.
-	fileName ensureCreateDirectory.
-	fileName := fileName / (aSelector , '.json').
-	^ fileName
+SAMainLoopDspot >> assertionAmplificationFor: aList [
+	aList
+		do: [ :tcase | 
+			self assertionAmplifiers
+				do: [ :amplifier | 
+					" dirty  but necessary. recreating a temp class is very time cosuming "
+					assertAmplificationClassCache
+						ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
+					amplifier testRunTimeoutMillis: testRunTimeoutMillis.
+					tcase assertionAmplifyBy: amplifier.
+					assertAmplificationClassCache := amplifier generatedClass ] ]
+		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
+	^ aList reject: [ :tcase | tcase testMethod isNil ]
+]
+
+{ #category : #asserting }
+SAMainLoopDspot >> assertionAmplifiers [
+	^ config assertionAmplifiers
+				collect: [ :amplifier | amplifier initializeWith: config]
 ]
 
 { #category : #actions }
 SAMainLoopDspot >> finalSteps [
-	| generatedClass |
-	generatedClass := self astHelper
+	| generatedClass readable |
+	generatedClass := SAGenericMethods new
 		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
-		using: testClass.
+		using: testClass smallAmpOriginalTestCase.
 	finalResult amplifiedClass: generatedClass.
-	self astHelper moveClassToFinal: finalResult amplifiedClass.
-	"self makeReadable."
+	readable := self makeReadable.
+	finalResult amplifiedClass: readable.
+	SAGenericMethods new moveClassToFinal: readable.
 	finalResult
 		amplifiedAnalysis:
 			(selection
 				analysisFor: {finalResult amplifiedClass}
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal)
+	"self installAmplifiedTests: readable"
 ]
 
 { #category : #actions }
@@ -143,6 +116,12 @@ SAMainLoopDspot >> initTs [
 			(SATestMethod with: tcase class: testClass targets: targetClasses)
 				selectorAppend: '_amp';
 				yourself ]
+]
+
+{ #category : #initialization }
+SAMainLoopDspot >> initialize [
+	super initialize.
+	resultPeople := OrderedCollection new
 ]
 
 { #category : #private }
@@ -178,23 +157,88 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 	^ newcodes shuffle takeFirst: config maxPop
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
+SAMainLoopDspot >> inputAmplifiers [
+	^ config inputAmplifiers
+		collect: [ :amplifier | amplifier key initializeWith: config ]
+]
+
+{ #category : #actions }
 SAMainLoopDspot >> makeReadable [
 	| readable reducer prettifier |
 	reducer := (config oracleReducion initializeWith: config)
 		with: finalResult amplifiedClass
-		from: testClass
+		from: testClass smallAmpOriginalTestCase
 		target: targetClasses
 		uncovered: finalResult notCoveredInOriginal.
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
-	self astHelper moveClassToFinal: readable.
+	^ readable
+]
+
+{ #category : #private }
+SAMainLoopDspot >> methodProfiling [
+	config profiler
+		ifNotNil: [ config profiler reset.
+			self flag: #TODO.	"why wee need cache profiles in config?"
+			config profiler profileClasses: targetClasses byRunning: testClass.
+			finalResult runProfile: config profiler ].
+	instantiationExtractor := SAObjectInstantiationExtractor new.
+	instantiationExtractor testClass: testClass.
+	instantiationExtractor run
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> prettifying [
+	| prettifier |
+	prettifier := config prettifier initializeWith: config.
+			prettifier prettify: finalResult amplifiedClass
+]
+
+{ #category : #actions }
+SAMainLoopDspot >> regenerateMethod: aMethodName [
+	| method |
+	method := testClass allTestSelectors
+		detect: [ :m | aMethodName beginsWith: m ]
+		ifNone: [ ^ nil ].
+	method := (SATestMethod
+		with: (testClass lookupSelector: method) sourceCode
+		class: testClass
+		targets: targetClasses)
+		selectorAppend: '_amp';
+		yourself.
+	self methodProfiling.
+	1 to: config iterations do: [ :gen | 
+		| newcodes |
+		method strip.
+		method normalize.
+		newcodes := self inputAmplifiers
+			flatCollect: [ :amplifier | method inputAmplifyBy: amplifier ].
+		newcodes
+			detect: [ :m | m selector = aMethodName ]
+			ifFound: [ :m | ^ m testMethod ]
+			ifNone: [ newcodes
+					detect: [ :m | aMethodName beginsWith: m selector , '_' ]
+					ifFound: [ :m | method := m ]
+					ifNone: [ ^ nil ] ] ]
 ]
 
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
 			^ selection select: aList 
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> setupSelection [
+	selection := config selection initializeWith: config.
+	finalResult
+		originalAnalysis:
+			(selection
+				initialAnalysisFor: {testClass smallAmpOriginalTestCase}
+				targets: targetClasses
+				ignore: finalResult failedSelectorInOriginal).
+	selection uncovered ifEmpty: [ SANoUncovered new signal ]
 ]
