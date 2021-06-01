@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'inputAmplifiers',
 		'flackyTestRepeat',
-		'assertionAmplifiers',
+		'assertionAmplifier',
 		'iterations',
 		'debug',
 		'selection',
@@ -17,7 +17,8 @@ Class {
 		'maxPop',
 		'testRunTimeOutMult',
 		'timeBudget',
-		'mainloop'
+		'mainloop',
+		'hashClass'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -30,36 +31,10 @@ SAConfig class >> default [
 ]
 
 { #category : #accessing }
-SAConfig class >> dspot [
-	^ self new
-		iterations: 3;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{(SALiteralInputAmplifier -> 1).
-			(SARemoveInputAmplifier -> 1).
-			(SADuplicateInputAmplifier -> 1).
-			(SAAddInputAmplifier -> 1)};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageDSpotSelection;
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 100;
-		debug: false;
-		mainloop: SAMainLoopDspot;
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
-]
-
-{ #category : #accessing }
 SAConfig class >> dspotAllamps [
 	^ self new
 		iterations: 3;
-		assertionAmplifiers: {SADefaultAssertionAmplifier};
+		assertionAmplifier: SAXieAssertionAmplifier;
 		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{(SALiteralInputAmplifier -> 1).
@@ -76,6 +51,7 @@ SAConfig class >> dspotAllamps [
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;
 		testRunTimeOutMult: 5;
+		
 		statementTimeOut: 2000;
 		maxPop: 100;
 		debug: false;
@@ -86,13 +62,13 @@ SAConfig class >> dspotAllamps [
 ]
 
 { #category : #accessing }
-SAConfig >> assertionAmplifiers [
-	^ assertionAmplifiers
+SAConfig >> assertionAmplifier [
+	^ assertionAmplifier
 ]
 
 { #category : #accessing }
-SAConfig >> assertionAmplifiers: aListOfClassNames [
-	assertionAmplifiers := aListOfClassNames
+SAConfig >> assertionAmplifier: aListOfClassNames [
+	assertionAmplifier := aListOfClassNames
 ]
 
 { #category : #accessing }

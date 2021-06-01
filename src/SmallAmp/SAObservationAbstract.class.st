@@ -26,6 +26,11 @@ SAObservationAbstract >> buildAssertions: aGenerator [
 ]
 
 { #category : #accessing }
+SAObservationAbstract >> diff: anObject [
+	^ self subclassResponsibility 
+]
+
+{ #category : #accessing }
 SAObservationAbstract >> id [
 	^ id
 ]
@@ -43,12 +48,27 @@ SAObservationAbstract >> initialize [
 ]
 
 { #category : #testing }
+SAObservationAbstract >> isEquals: anObject [
+	| diff |
+	diff := self diff: anObject.
+	diff ifNil: [ ^ true ].
+	diff isDictionary
+		ifTrue: [ diff ifEmpty: [ ^ true ] ].
+	^ false
+]
+
+{ #category : #testing }
 SAObservationAbstract >> isPrimitive [
 	^ false
 ]
 
 { #category : #testing }
 SAObservationAbstract >> isValueObservation [
+	^ false
+]
+
+{ #category : #'as yet unclassified' }
+SAObservationAbstract >> noHashAsserts [
 	^ false
 ]
 

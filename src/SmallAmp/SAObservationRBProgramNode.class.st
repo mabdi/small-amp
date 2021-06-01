@@ -19,6 +19,15 @@ SAObservationRBProgramNode >> checkFlaky: anItem [
 		ifFalse: [ self isFlaky: true ]
 ]
 
+{ #category : #accessing }
+SAObservationRBProgramNode >> diff: anObject [
+	self isFlaky
+		ifTrue: [ ^ nil ].
+	theValue = anObject
+		ifTrue: [ ^ nil ].
+	^ self
+]
+
 { #category : #'as yet unclassified' }
 SAObservationRBProgramNode >> valueNode [
 	^ RBLiteralValueNode

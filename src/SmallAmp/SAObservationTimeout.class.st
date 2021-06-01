@@ -19,6 +19,11 @@ SAObservationTimeout >> buildAssertions: aGenerator [
 		^ {}	"aGenerator buildAssertionsTimeoutObservation: self"
 ]
 
+{ #category : #'as yet unclassified' }
+SAObservationTimeout >> noHashAsserts [
+	^ true
+]
+
 { #category : #accessing }
 SAObservationTimeout >> timeout [
 ^ timeout

@@ -20,6 +20,11 @@ SAObservationError >> buildAssertions: aGenerator [
 	^ aGenerator buildAssertionsErrorObservation: self
 ]
 
+{ #category : #'as yet unclassified' }
+SAObservationError >> noHashAsserts [
+	^ true
+]
+
 { #category : #'instance creation' }
 SAObservationError >> theError [
 	^ theError

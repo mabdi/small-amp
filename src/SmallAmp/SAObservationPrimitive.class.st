@@ -24,6 +24,15 @@ SAObservationPrimitive >> checkFlaky: anItem [
 ]
 
 { #category : #testing }
+SAObservationPrimitive >> diff: anObject [
+	self isFlaky
+		ifTrue: [ ^ nil ].
+	theValue = anObject theValue
+		ifTrue: [ ^ nil ].
+	^ self
+]
+
+{ #category : #testing }
 SAObservationPrimitive >> isPrimitive [
 	^ true
 ]

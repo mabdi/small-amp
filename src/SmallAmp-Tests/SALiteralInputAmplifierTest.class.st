@@ -15,7 +15,7 @@ Class {
 SALiteralInputAmplifierTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 
-	amplifier := SALiteralInputAmplifier initializeWith: SAConfig dspot.
+	amplifier := SALiteralInputAmplifier initializeWith: SAConfig default.
 	tempClasses := OrderedCollection new.
 ]
 

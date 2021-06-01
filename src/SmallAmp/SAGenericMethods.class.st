@@ -41,6 +41,23 @@ SAGenericMethods >> addComment: aText toMethodAST: anAST [
 		^ newMethodAST
 ]
 
+{ #category : #adding }
+SAGenericMethods >> addHelperMethodsToClass: generatedClass [
+	generatedClass class addInstVarNamed: 'assertAmplifier'.
+	self
+		onClass: generatedClass class
+		compile: 'assertAmplifier ^ assertAmplifier'.
+	self
+		onClass: generatedClass class
+		compile: 'assertAmplifier: obj assertAmplifier := obj'.
+	self
+		onClass: generatedClass
+		compile:
+			'assertObjectState: anObject varName: aVariableName id: id type: type
+			^ self class assertAmplifier assertObjectState: anObject selector: self selector varName: aVariableName id: id type: type
+		'
+]
+
 { #category : #'as yet unclassified' }
 SAGenericMethods >> allClassesForRepo: repoName [
 	Smalltalk
@@ -453,15 +470,9 @@ SAGenericMethods >> old_buildTestClassWith: aCollection using: testClass [
 
 { #category : #compiling }
 SAGenericMethods >> onClass: aClass compile: aMethod [
-	SystemAnnouncer uniqueInstance
-		suspendAllWhile: [ aClass compile: aMethod.
-			"
-			aClass
-				compile: aMethod
-				classified: Protocol unclassified
-				withStamp: nil
-				notifying: nil
-				logSource: false" ]
+	aClass compile: aMethod.
+"	SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass compile: aMethod ]"
 ]
 
 { #category : #compiling }

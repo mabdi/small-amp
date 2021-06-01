@@ -21,3 +21,19 @@ SAObservationCollection >> checkFlaky: anItem [
 				ifTrue: [ v := nil ].
 			v ifNotNil: [ v checkFlaky: (anItem theValue at: index) ] ]
 ]
+
+{ #category : #testing }
+SAObservationCollection >> diff: anObject [
+	| diff |
+	diff := Dictionary new.
+	self theValue
+		doWithIndex: [ :item :index | 
+			| v1 v2 |
+			v1 := self theValue at: index.
+			v2 := anObject theValue at: index ifAbsent: [ nil ].
+			v1 isNotNil & v2 isNotNil
+				ifTrue: [ (v1 isEquals: v2)
+						ifTrue: [ diff at: index put: v1 ] ] ].
+	diff ifEmpty: [ ^ nil ].
+	^ diff
+]

@@ -1,5 +1,5 @@
 Class {
-	#name : #SADefaultAssertionAmplifier,
+	#name : #SAXieAssertionAmplifier,
 	#superclass : #SAAbstractAssertionAmplifier,
 	#instVars : [
 		'generatedClass',
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> amplifyAssertions [
+SAXieAssertionAmplifier >> amplifyAssertions [
 	| aMethodAST sourceCodeWithoutObservers sourceCodeWithAssertions |
 	aMethodAST := self astHelper
 		parsedMethodFrom: testMethodModel testMethod.
@@ -29,12 +29,12 @@ SADefaultAssertionAmplifier >> amplifyAssertions [
 ]
 
 { #category : #accessing }
-SADefaultAssertionAmplifier >> astHelper [
+SAXieAssertionAmplifier >> astHelper [
 	^ SAGenericMethods new
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
+SAXieAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 	generatedClass
 		ifNil: [ generatedClass := self astHelper
 				buildTestClassWith: {}
@@ -57,7 +57,7 @@ SADefaultAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
+SAXieAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 	^ anObserver history
 		collect: [ :observation | 
 			| asserts |
@@ -78,7 +78,7 @@ SADefaultAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
+SAXieAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	| r |
 	self astHelper
 		onClass: generatedClass
@@ -93,35 +93,35 @@ SADefaultAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> cleanUp [
+SAXieAssertionAmplifier >> cleanUp [
 	config debug
 		ifTrue: [ ^ self ].
 	self astHelper onClass: generatedClass removeSelector: testMethodModel selector	"self astHelper removeClass: generatedClass source: self class name"
 ]
 
 { #category : #cleanup }
-SADefaultAssertionAmplifier >> cleanUp: generatedClass [
+SAXieAssertionAmplifier >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
 		self astHelper removeClass: generatedClass source: self class name ]
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> flackyTestRepeat [
+SAXieAssertionAmplifier >> flackyTestRepeat [
 	^ config flackyTestRepeat
 ]
 
 { #category : #accessing }
-SADefaultAssertionAmplifier >> generatedClass [
+SAXieAssertionAmplifier >> generatedClass [
 	^ generatedClass
 ]
 
 { #category : #accessing }
-SADefaultAssertionAmplifier >> generatedClass: anObject [
+SAXieAssertionAmplifier >> generatedClass: anObject [
 	generatedClass := anObject
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> ignoreFlakyValues [
+SAXieAssertionAmplifier >> ignoreFlakyValues [
 	self flackyTestRepeat
 		timesRepeat: [ "Flaky detection"
 			generatedClass observer resetFlakyDetection.
@@ -132,7 +132,7 @@ SADefaultAssertionAmplifier >> ignoreFlakyValues [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
+SAXieAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 	| aMethod newAsserts |
 	aMethod := self astHelper parsedMethodFrom: aMethodSrc.
 	newAsserts := self
@@ -161,14 +161,14 @@ SADefaultAssertionAmplifier >> insertAsserts: aMethodSrc using: anObserver [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> insertObservers: aMethodAST [
+SAXieAssertionAmplifier >> insertObservers: aMethodAST [
 	| targetNodes |
 	targetNodes := aMethodAST statements select: #isAssignment.
 	targetNodes do: [ :theNode | self insertObserversMethod: aMethodAST Node: theNode ]
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> insertObserversMethod: methodAST Node: theNode [
+SAXieAssertionAmplifier >> insertObserversMethod: methodAST Node: theNode [
 	| aNode idx theReceiver theSelector a b |
 	aNode := theNode nodesDo: [ :each | each comments: nil ].
 	idx := methodAST body statements indexOf: aNode.
@@ -226,12 +226,12 @@ SADefaultAssertionAmplifier >> insertObserversMethod: methodAST Node: theNode [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> normalizeMethod: aMethodAST [
+SAXieAssertionAmplifier >> normalizeMethod: aMethodAST [
 	SAMethodNormalizingRewriter runWith: aMethodAST
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> runTestClass [
+SAXieAssertionAmplifier >> runTestClass [
 	"If test throws any Exception, most probabily it's a malformed test. don't waste your time with it"
 	^ SAGenericMethods new
 		runSafelyTestClass: generatedClass
@@ -242,7 +242,7 @@ SADefaultAssertionAmplifier >> runTestClass [
 ]
 
 { #category : #'as yet unclassified' }
-SADefaultAssertionAmplifier >> validFlakyMem [
+SAXieAssertionAmplifier >> validFlakyMem [
 	[ generatedClass observer history
 		with: generatedClass observer flakyMem
 		do: [ :a :b | 

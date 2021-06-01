@@ -20,6 +20,17 @@ SAAssertGeneratorTest >> setUp [
 	assertGenerator := SAAssertGenerator new
 ]
 
+{ #category : #tests }
+SAAssertGeneratorTest >> testAssertObjectState [
+	| item assertions |
+	item := SAObservationPrimitive newFor: 10 atDepth: 1.
+	item name: 'foo'; id: 2.
+	assertions := SAAssertGenerator new buildAssertObjectStateFor: item.
+	self
+		assertSourceCode: assertions formattedCode
+		equals: 'self assertObjectState: foo varName: ''foo'' id: 2'
+]
+
 { #category : #test }
 SAAssertGeneratorTest >> testBuildAssertionCollectionAt [
 	| arr item assertions |

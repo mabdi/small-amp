@@ -16,7 +16,8 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 			toSkip := state at: #toSkip ].
 	aList
 		withIndexDo: [ :tcase :index | 
-			toSkip = index ifTrue: [ tcase testMethod: nil ].
+			toSkip = index
+				ifTrue: [ tcase testMethod: nil ].
 			toSkip > index
 				ifFalse: [ toSkip := index.
 					self
@@ -27,13 +28,8 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 						saveCrashEvidence:
 							{(#testClass -> tcase testClass name).
 							(#testMethod -> tcase testMethod)} asDictionary.
-					self assertionAmplifiers
-						do: [ :amplifier | 
-							assertAmplificationClassCache
-								ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
-							amplifier testRunTimeoutMillis: testRunTimeoutMillis.
-							tcase assertionAmplifyBy: amplifier.
-							assertAmplificationClassCache := amplifier generatedClass ] ] ].
+					tcase assertionAmplifyBy: assertAmplifier.
+					 ] ].
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
 

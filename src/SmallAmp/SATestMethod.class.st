@@ -6,7 +6,8 @@ Class {
 		'testClass',
 		'testTargets',
 		'selector',
-		'selectorOriginal'
+		'selectorOriginal',
+		'observedState'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -99,6 +100,11 @@ SATestMethod >> normalize [
 	ast := self astHelper parsedMethodFrom: testMethod.
 	SAMethodNormalizingRewriter runWith: ast.
 	testMethod := ast formattedCode
+]
+
+{ #category : #accessing }
+SATestMethod >> observedState: anObject [
+	observedState := anObject
 ]
 
 { #category : #printing }

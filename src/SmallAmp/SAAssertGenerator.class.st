@@ -363,6 +363,23 @@ SAAssertGenerator >> assertType: observation [
 	^ assertStatement
 ]
 
+{ #category : #building }
+SAAssertGenerator >> buildAssertObjectStateFor: observation [
+	| assertStatement theObject theName theId theType |
+	theObject := RBVariableNode named: observation name.
+	theName := RBLiteralValueNode value: observation name.
+	theId := RBLiteralValueNode value: observation id.
+	theType := RBLiteralValueNode value: observation observedBy.
+	assertStatement := RBMessageNode
+		receiver: (RBSelfNode named: 'self')
+		selector: #assertObjectState:varName:id:type:
+		arguments:
+			{theObject.
+			theName.
+			theId.theType}.
+	^ assertStatement
+]
+
 { #category : #'as yet unclassified' }
 SAAssertGenerator >> buildAssertionsBlockClosureObservation: observation [
 	| asserts |

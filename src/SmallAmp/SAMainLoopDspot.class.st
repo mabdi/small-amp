@@ -6,7 +6,7 @@ Class {
 		'resultPeople',
 		'testRunTimeoutMillis',
 		'selection',
-		'assertAmplificationClassCache',
+		'assertAmplifier',
 		'instantiationExtractor'
 	],
 	#category : #'SmallAmp-Core'
@@ -55,22 +55,10 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 SAMainLoopDspot >> assertionAmplificationFor: aList [
 	aList
 		do: [ :tcase | 
-			self assertionAmplifiers
-				do: [ :amplifier | 
-					" dirty  but necessary. recreating a temp class is very time cosuming "
-					assertAmplificationClassCache
-						ifNotNil: [ amplifier generatedClass: assertAmplificationClassCache ].
-					amplifier testRunTimeoutMillis: testRunTimeoutMillis.
-					tcase assertionAmplifyBy: amplifier.
-					assertAmplificationClassCache := amplifier generatedClass ] ]
+			tcase assertionAmplifyBy: assertAmplifier.
+			 ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
-]
-
-{ #category : #asserting }
-SAMainLoopDspot >> assertionAmplifiers [
-	^ config assertionAmplifiers
-				collect: [ :amplifier | amplifier initializeWith: config]
 ]
 
 { #category : #actions }
@@ -101,6 +89,9 @@ SAMainLoopDspot >> initTs [
 		onTimeout: [ self error: 'Original test class timeout' ].
 	testRunTimeoutMillis := {1000.
 	testRunTimeoutMillis} max.
+		assertAmplifier := config assertionAmplifier initializeWith: config.
+
+	assertAmplifier testRunTimeoutMillis: testRunTimeoutMillis.
 	testMethods := result expectedPasses
 		collect:
 			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].

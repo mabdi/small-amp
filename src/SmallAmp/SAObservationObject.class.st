@@ -21,6 +21,22 @@ SAObservationObject >> checkFlaky: anItem [
 			 ]
 ]
 
+{ #category : #testing }
+SAObservationObject >> diff: anObject [
+	| diff  |
+	diff := Dictionary new.
+	self theValue
+		keysDo: [ :key | 
+			| v1 v2 |
+			v1 := self theValue at: key.
+			v2 := anObject theValue at: key ifAbsent: [ nil ].
+			v1 isNotNil & v2 isNotNil
+				ifTrue: [ (v1 isEquals: v2)
+						ifFalse: [ diff at: key put: v1 ] ] ].
+	diff ifEmpty: [ ^ nil ].
+	^ diff
+]
+
 { #category : #accessing }
 SAObservationObject >> theValue: anObject [
 	super theValue: anObject.
