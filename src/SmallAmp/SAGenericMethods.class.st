@@ -410,6 +410,7 @@ SAGenericMethods >> metricsEval: repoName [
 		lf;
 		close.
 	targetedTests := self grindTestClass: targetedTests.
+	targetedTests := targetedTests asOrderedCollection sort: [:cls1 :cls2 | cls1 name asString < cls2 name asString  ].
 	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
