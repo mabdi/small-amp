@@ -1,5 +1,5 @@
 Class {
-	#name : #SAMutationCoverage2Selection,
+	#name : #SAMutationTestingDiffSelection,
 	#superclass : #SAAbstractSelection,
 	#instVars : [
 		'shadowResults',
@@ -12,12 +12,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection class >> defaultOracleReduction [
+SAMutationTestingDiffSelection class >> defaultOracleReduction [
 	^ SAMuTalkFirstFailOracleReduction 
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SAMutationTestingDiffSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: testClasses
@@ -32,7 +32,7 @@ SAMutationCoverage2Selection >> analysisFor: testClasses targets: targetClasses 
 ]
 
 { #category : #asserting }
-SAMutationCoverage2Selection >> assertObjectState: anObject selector: selector cache: modelsCache varName: aVariableName id: id type: type serializationMaxDepth: serializationMaxDepth [
+SAMutationTestingDiffSelection >> assertObjectState: anObject selector: selector cache: modelsCache varName: aVariableName id: id type: type serializationMaxDepth: serializationMaxDepth [
 	| history item diff |
 	history := (modelsCache at: selector)
 		detect: [ :x | x id = id and: [ x observedBy = type ] ].
@@ -57,12 +57,12 @@ SAMutationCoverage2Selection >> assertObjectState: anObject selector: selector c
 ]
 
 { #category : #accessing }
-SAMutationCoverage2Selection >> astHelper [
+SAMutationTestingDiffSelection >> astHelper [
 	^ SAGenericMethods new
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> buildAssertionsFrom: failedDiff insteadOf: node observed: observed [
+SAMutationTestingDiffSelection >> buildAssertionsFrom: failedDiff insteadOf: node observed: observed [
 	| asserts |
 	observed theValue: failedDiff.
 	asserts := observed buildAssertions: SAAssertGenerator new.
@@ -71,7 +71,7 @@ SAMutationCoverage2Selection >> buildAssertionsFrom: failedDiff insteadOf: node 
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> chooseBestFrom: theList [
+SAMutationTestingDiffSelection >> chooseBestFrom: theList [
 	"first select shortest methods
 	Then, select minimum change,"
 
@@ -87,7 +87,7 @@ SAMutationCoverage2Selection >> chooseBestFrom: theList [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> chooseBestFrom: theList notIncludedIn: result [
+SAMutationTestingDiffSelection >> chooseBestFrom: theList notIncludedIn: result [
 	"first select shortest methods
 	Then, select minimum change,"
 
@@ -105,19 +105,19 @@ SAMutationCoverage2Selection >> chooseBestFrom: theList notIncludedIn: result [
 ]
 
 { #category : #cleanup }
-SAMutationCoverage2Selection >> cleanUp: generatedClass [
+SAMutationTestingDiffSelection >> cleanUp: generatedClass [
 	self astHelper removeClass: generatedClass source: self class name.
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> finalizeShadowSelections [
+SAMutationTestingDiffSelection >> finalizeShadowSelections [
 	|result|
 	result := self addInfoToSelectedMethods: shadowResults.
 	^ result reject: #isNil
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> generateAssertions: testModel [
+SAMutationTestingDiffSelection >> generateAssertions: testModel [
 	| ast asserts |
 	ast := RBParser parseMethod: testModel testMethod.
 	asserts := (ast statements select: #isMessage)
@@ -147,17 +147,17 @@ SAMutationCoverage2Selection >> generateAssertions: testModel [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> getMutantFromUncovereds: aMutantIndex [
+SAMutationTestingDiffSelection >> getMutantFromUncovereds: aMutantIndex [
 	^ {(uncovered at: aMutantIndex)}
 ]
 
 { #category : #cleanup }
-SAMutationCoverage2Selection >> infoPragmaFrom: aCovered [
+SAMutationTestingDiffSelection >> infoPragmaFrom: aCovered [
 	^ aCovered smallAmpInfoText
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SAMutationTestingDiffSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := self analysisFor: testClasses targets: targetClasses ignore: aListOfMethods.
 	uncovered := analysis1 generalResult aliveMutants.
@@ -165,7 +165,7 @@ SAMutationCoverage2Selection >> initialAnalysisFor: testClasses targets: targetC
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> logTestStart: aTestCaseStarted [
+SAMutationTestingDiffSelection >> logTestStart: aTestCaseStarted [
 	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
 		truncate;
 		nextPutAll: aTestCaseStarted testSelector;
@@ -173,14 +173,14 @@ SAMutationCoverage2Selection >> logTestStart: aTestCaseStarted [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> loggerBlock [
+SAMutationTestingDiffSelection >> loggerBlock [
 	^ loggerBlock
 		ifNil:
 			[ loggerBlock := [ :aTestCaseStarted | self logTestStart: aTestCaseStarted ] ]
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> loggerSubscribe: testClasses [
+SAMutationTestingDiffSelection >> loggerSubscribe: testClasses [
 	testClasses do: [ :cls |  
 	cls announcer
 		when: TestCaseStarted
@@ -188,12 +188,12 @@ SAMutationCoverage2Selection >> loggerSubscribe: testClasses [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> loggerUnsubscribe: testClasses [
+SAMutationTestingDiffSelection >> loggerUnsubscribe: testClasses [
 	testClasses do: [ :cls | cls announcer unsubscribe: self loggerBlock ]
 ]
 
 { #category : #'private-debugging' }
-SAMutationCoverage2Selection >> matrixFromMutalk: aResult [
+SAMutationTestingDiffSelection >> matrixFromMutalk: aResult [
 	| matrix instance selectors muts |
 	muts := OrderedCollection new.
 	selectors := OrderedCollection new.
@@ -238,7 +238,7 @@ SAMutationCoverage2Selection >> matrixFromMutalk: aResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> mutalkRun: aPopulation [
+SAMutationTestingDiffSelection >> mutalkRun: aPopulation [
 	| testClasses testClass targetClasses generatedClass |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
@@ -253,7 +253,7 @@ SAMutationCoverage2Selection >> mutalkRun: aPopulation [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> mutalkRunClass: testClasses targetClasses: targetClasses [
+SAMutationTestingDiffSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
 	self astHelper
@@ -275,7 +275,7 @@ SAMutationCoverage2Selection >> mutalkRunClass: testClasses targetClasses: targe
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> mutalkRunSnapshot: aPopulation [
+SAMutationTestingDiffSelection >> mutalkRunSnapshot: aPopulation [
 	| testClasses testClass targetClasses generatedClass |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
@@ -292,7 +292,7 @@ SAMutationCoverage2Selection >> mutalkRunSnapshot: aPopulation [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverage2Selection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
+SAMutationTestingDiffSelection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
 	self astHelper
@@ -316,27 +316,27 @@ SAMutationCoverage2Selection >> mutalkRunSnapshotClass: testClasses targetClasse
 ]
 
 { #category : #accessing }
-SAMutationCoverage2Selection >> onBeforeMutant [
+SAMutationTestingDiffSelection >> onBeforeMutant [
 	^ onBeforeMutant
 ]
 
 { #category : #accessing }
-SAMutationCoverage2Selection >> onBeforeMutant: anObject [
+SAMutationTestingDiffSelection >> onBeforeMutant: anObject [
 	onBeforeMutant := anObject
 ]
 
 { #category : #accessing }
-SAMutationCoverage2Selection >> onMutationEvaluation [
+SAMutationTestingDiffSelection >> onMutationEvaluation [
 	^ onMutationEvaluation
 ]
 
 { #category : #accessing }
-SAMutationCoverage2Selection >> onMutationEvaluation: anObject [
+SAMutationTestingDiffSelection >> onMutationEvaluation: anObject [
 	onMutationEvaluation := anObject
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> select: aPopulation [
+SAMutationTestingDiffSelection >> select: aPopulation [
 	| analysisResult alives result newKills |
 	result := Dictionary new.
 	analysisResult := self mutalkRun: aPopulation.
@@ -368,7 +368,7 @@ SAMutationCoverage2Selection >> select: aPopulation [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> select: aPopulation forMutantAtIndex: aMutantIndex [
+SAMutationTestingDiffSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
 	| analysisResult alives result newKills testClasses testClass targetClasses |
 	aPopulation ifEmpty: [ ^ {} ].
 	result := Dictionary new.
@@ -414,7 +414,7 @@ SAMutationCoverage2Selection >> select: aPopulation forMutantAtIndex: aMutantInd
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
+SAMutationTestingDiffSelection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
 	| analysisResult alives result newKills testClasses testClass targetClasses |
 	aPopulation ifEmpty: [ ^ {} ].
 	result := Dictionary new.
@@ -460,7 +460,7 @@ SAMutationCoverage2Selection >> select: aPopulation forMutantEvaluation: aMutant
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> selectSnapshot: aPopulation [
+SAMutationTestingDiffSelection >> selectSnapshot: aPopulation [
 	| analysisResult alives result newKills |
 	result := Dictionary new.
 	analysisResult := self mutalkRunSnapshot: aPopulation.
@@ -491,6 +491,6 @@ SAMutationCoverage2Selection >> selectSnapshot: aPopulation [
 ]
 
 { #category : #enumerating }
-SAMutationCoverage2Selection >> setUpShadowSelections [
+SAMutationTestingDiffSelection >> setUpShadowSelections [
 	shadowResults := Dictionary new.
 ]

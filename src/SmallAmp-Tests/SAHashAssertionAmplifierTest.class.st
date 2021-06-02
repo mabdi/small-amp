@@ -12,11 +12,11 @@ Class {
 SAHashAssertionAmplifierTest >> testCase1 [
 	| item config amplifier selection res mutants |
 	config := SAConfig default.
-	amplifier := SAHashAssertionAmplifier initializeWith: config.
+	amplifier := SADiffAssertionAmplifier initializeWith: config.
 	amplifier testRunTimeoutMillis: 1000.
 	mutants := RemoveCaretOperator new
 		mutationsFor: FakeSmallBank >> #rand.
-	selection := SAMutationCoverage2Selection initializeWith: config.
+	selection := SAMutationTestingDiffSelection initializeWith: config.
 	item := self
 		testModelFor: (FakeSmallBankTest >> #testInit) sourceCode.
 	selection

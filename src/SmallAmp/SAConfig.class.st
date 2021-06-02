@@ -31,6 +31,36 @@ SAConfig class >> default [
 ]
 
 { #category : #accessing }
+SAConfig class >> diffBased [
+	^ self new
+		iterations: 3;
+		assertionAmplifier: SADiffAssertionAmplifier;
+		flackyTestRepeat: 10;
+		inputAmplifiers:
+			{(SALiteralInputAmplifier -> 1).
+			(SARemoveInputAmplifier -> 1).
+			(SADuplicateInputAmplifier -> 1).
+			(SAAddInputAmplifier -> 1).
+			(SARotateLiteralsInputAmplifier -> 1).
+			(SAUniqLiteralsInputAmplifier -> 1).
+			(SAInstantiationTransplanter -> 1).
+			(SANullifyInputAmplifier -> 1)};
+		profiler: SAProxyProfiler new;
+		selection: SAMutationTestingDiffSelection ;
+		oracleReducion: SANoOracleReduction ;
+		prettifier: SADefaultPrettification;
+		testRunTimeOut: 300000;
+		testRunTimeOutMult: 5;
+		statementTimeOut: 2000;
+		maxPop: 100;
+		debug: false;
+		mainloop: SAMainLoopDspot;
+		timeBudget: 21600;
+		serializationMaxDepth: 3;
+		yourself
+]
+
+{ #category : #accessing }
 SAConfig class >> dspotAllamps [
 	^ self new
 		iterations: 3;
