@@ -34,7 +34,7 @@ SAConfig class >> default [
 SAConfig class >> dspotAllamps [
 	^ self new
 		iterations: 3;
-		assertionAmplifier: SAXieAssertionAmplifier;
+		assertionAmplifier: SADspotAssertionAmplifier;
 		flackyTestRepeat: 10;
 		inputAmplifiers:
 			{(SALiteralInputAmplifier -> 1).
@@ -46,7 +46,7 @@ SAConfig class >> dspotAllamps [
 			(SAInstantiationTransplanter -> 1).
 			(SANullifyInputAmplifier -> 1)};
 		profiler: SAProxyProfiler new;
-		selection: SAMutationCoverageDSpotSelection;
+		selection: SADSpotSelection;
 		oracleReducion: SAMuTalkFirstFailOracleReduction;
 		prettifier: SADefaultPrettification;
 		testRunTimeOut: 300000;

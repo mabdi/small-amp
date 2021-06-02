@@ -1,5 +1,5 @@
 Class {
-	#name : #SAMutationCoverageDSpotSelection,
+	#name : #SADSpotSelection,
 	#superclass : #SAAbstractSelection,
 	#instVars : [
 		'shadowResults',
@@ -11,12 +11,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection class >> defaultOracleReduction [
+SADSpotSelection class >> defaultOracleReduction [
 	^ SAMuTalkFirstFailOracleReduction 
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SADSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
 		testCasesFrom: testClasses
@@ -31,12 +31,12 @@ SAMutationCoverageDSpotSelection >> analysisFor: testClasses targets: targetClas
 ]
 
 { #category : #accessing }
-SAMutationCoverageDSpotSelection >> astHelper [
+SADSpotSelection >> astHelper [
 	^ SAGenericMethods new
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> chooseBestFrom: theList [
+SADSpotSelection >> chooseBestFrom: theList [
 	"first select shortest methods
 	Then, select minimum change,"
 
@@ -52,7 +52,7 @@ SAMutationCoverageDSpotSelection >> chooseBestFrom: theList [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: result [
+SADSpotSelection >> chooseBestFrom: theList notIncludedIn: result [
 	"first select shortest methods
 	Then, select minimum change,"
 
@@ -70,29 +70,29 @@ SAMutationCoverageDSpotSelection >> chooseBestFrom: theList notIncludedIn: resul
 ]
 
 { #category : #cleanup }
-SAMutationCoverageDSpotSelection >> cleanUp: generatedClass [
+SADSpotSelection >> cleanUp: generatedClass [
 	self astHelper removeClass: generatedClass source: self class name.
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> finalizeShadowSelections [
+SADSpotSelection >> finalizeShadowSelections [
 	|result|
 	result := self addInfoToSelectedMethods: shadowResults.
 	^ result reject: #isNil
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> getMutantFromUncovereds: aMutantIndex [
+SADSpotSelection >> getMutantFromUncovereds: aMutantIndex [
 	^ {(uncovered at: aMutantIndex)}
 ]
 
 { #category : #cleanup }
-SAMutationCoverageDSpotSelection >> infoPragmaFrom: aCovered [
+SADSpotSelection >> infoPragmaFrom: aCovered [
 	^ aCovered smallAmpInfoText
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+SADSpotSelection >> initialAnalysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := self analysisFor: testClasses targets: targetClasses ignore: aListOfMethods.
 	uncovered := analysis1 generalResult aliveMutants.
@@ -100,7 +100,7 @@ SAMutationCoverageDSpotSelection >> initialAnalysisFor: testClasses targets: tar
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> logTestStart: aTestCaseStarted [
+SADSpotSelection >> logTestStart: aTestCaseStarted [
 	(FileLocator imageDirectory / '_mutalk_lasttest.txt') writeStream
 		truncate;
 		nextPutAll: aTestCaseStarted testSelector;
@@ -108,14 +108,14 @@ SAMutationCoverageDSpotSelection >> logTestStart: aTestCaseStarted [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> loggerBlock [
+SADSpotSelection >> loggerBlock [
 	^ loggerBlock
 		ifNil:
 			[ loggerBlock := [ :aTestCaseStarted | self logTestStart: aTestCaseStarted ] ]
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> loggerSubscribe: testClasses [
+SADSpotSelection >> loggerSubscribe: testClasses [
 	testClasses do: [ :cls |  
 	cls announcer
 		when: TestCaseStarted
@@ -123,12 +123,12 @@ SAMutationCoverageDSpotSelection >> loggerSubscribe: testClasses [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> loggerUnsubscribe: testClasses [
+SADSpotSelection >> loggerUnsubscribe: testClasses [
 	testClasses do: [ :cls | cls announcer unsubscribe: self loggerBlock ]
 ]
 
 { #category : #'private-debugging' }
-SAMutationCoverageDSpotSelection >> matrixFromMutalk: aResult [
+SADSpotSelection >> matrixFromMutalk: aResult [
 	| matrix instance selectors muts |
 	muts := OrderedCollection new.
 	selectors := OrderedCollection new.
@@ -173,7 +173,7 @@ SAMutationCoverageDSpotSelection >> matrixFromMutalk: aResult [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
+SADSpotSelection >> mutalkRun: aPopulation [
 	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
@@ -186,7 +186,7 @@ SAMutationCoverageDSpotSelection >> mutalkRun: aPopulation [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
+SADSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
 	self astHelper
@@ -208,7 +208,7 @@ SAMutationCoverageDSpotSelection >> mutalkRunClass: testClasses targetClasses: t
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> mutalkRunSnapshot: aPopulation [
+SADSpotSelection >> mutalkRunSnapshot: aPopulation [
 	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
@@ -219,7 +219,7 @@ SAMutationCoverageDSpotSelection >> mutalkRunSnapshot: aPopulation [
 ]
 
 { #category : #'as yet unclassified' }
-SAMutationCoverageDSpotSelection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
+SADSpotSelection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
 	self astHelper
@@ -243,27 +243,27 @@ SAMutationCoverageDSpotSelection >> mutalkRunSnapshotClass: testClasses targetCl
 ]
 
 { #category : #accessing }
-SAMutationCoverageDSpotSelection >> onBeforeMutant [
+SADSpotSelection >> onBeforeMutant [
 	^ onBeforeMutant
 ]
 
 { #category : #accessing }
-SAMutationCoverageDSpotSelection >> onBeforeMutant: anObject [
+SADSpotSelection >> onBeforeMutant: anObject [
 	onBeforeMutant := anObject
 ]
 
 { #category : #accessing }
-SAMutationCoverageDSpotSelection >> onMutationEvaluation [
+SADSpotSelection >> onMutationEvaluation [
 	^ onMutationEvaluation
 ]
 
 { #category : #accessing }
-SAMutationCoverageDSpotSelection >> onMutationEvaluation: anObject [
+SADSpotSelection >> onMutationEvaluation: anObject [
 	onMutationEvaluation := anObject
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> select: aPopulation [
+SADSpotSelection >> select: aPopulation [
 	| analysisResult alives result newKills |
 	result := Dictionary new.
 	analysisResult := self mutalkRun: aPopulation.
@@ -295,7 +295,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
+SADSpotSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
 	| analysisResult alives result newKills testClasses testClass targetClasses |
 	aPopulation ifEmpty: [ ^ {} ].
 	result := Dictionary new.
@@ -341,7 +341,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantAtIndex: aMutan
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
+SADSpotSelection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
 	| analysisResult alives result newKills testClasses testClass targetClasses |
 	aPopulation ifEmpty: [ ^ {} ].
 	result := Dictionary new.
@@ -387,7 +387,7 @@ SAMutationCoverageDSpotSelection >> select: aPopulation forMutantEvaluation: aMu
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> selectSnapshot: aPopulation [
+SADSpotSelection >> selectSnapshot: aPopulation [
 	| analysisResult alives result newKills |
 	result := Dictionary new.
 	analysisResult := self mutalkRunSnapshot: aPopulation.
@@ -418,6 +418,6 @@ SAMutationCoverageDSpotSelection >> selectSnapshot: aPopulation [
 ]
 
 { #category : #enumerating }
-SAMutationCoverageDSpotSelection >> setUpShadowSelections [
+SADSpotSelection >> setUpShadowSelections [
 	shadowResults := Dictionary new.
 ]

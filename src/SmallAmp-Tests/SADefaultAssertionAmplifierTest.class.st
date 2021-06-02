@@ -22,7 +22,7 @@ SADefaultAssertionAmplifierTest >> setUp [
 
 	aConfig := SAConfig default statementTimeOut: 1000;
 		yourself.
-	ins := SAXieAssertionAmplifier initializeWith: aConfig.
+	ins := SADspotAssertionAmplifier initializeWith: aConfig.
 	ins testRunTimeoutMillis: 1000
 ]
 
@@ -93,7 +93,7 @@ SADefaultAssertionAmplifierTest >> testAMessageAndACascadeAndInstvar [
 		do: [ :ex | self class observer observeException: ex id: 2.
 			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
-	amplifier := (SAXieAssertionAmplifier initializeWith: aConfig)
+	amplifier := (SADspotAssertionAmplifier initializeWith: aConfig)
 		insertObservers: methodAST.
 	self
 		assertMethodSourceCode: methodAST formattedCode
@@ -168,7 +168,7 @@ SADefaultAssertionAmplifierTest >> testAMessageAndACascadeTwoTemps [
 			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	amplifier := (SAXieAssertionAmplifier initializeWith: aConfig)
+	amplifier := (SADspotAssertionAmplifier initializeWith: aConfig)
 		insertObservers: methodAST.
 	self assert: methodAST dump equals: expectingAST dump
 ]
@@ -210,7 +210,7 @@ SADefaultAssertionAmplifierTest >> testNoMessageCall [
 	a := 1'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	amplifier := (SAXieAssertionAmplifier initializeWith: aConfig)
+	amplifier := (SADspotAssertionAmplifier initializeWith: aConfig)
 		insertObservers: methodAST.
 	self assert: methodAST dump equals: expectingAST dump
 ]
@@ -259,7 +259,7 @@ SADefaultAssertionAmplifierTest >> testWithCascade [
 			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	amplifier := (SAXieAssertionAmplifier initializeWith: aConfig)
+	amplifier := (SADspotAssertionAmplifier initializeWith: aConfig)
 		insertObservers: methodAST.
 	self assert: methodAST dump equals: expectingAST dump
 ]
@@ -301,7 +301,7 @@ SADefaultAssertionAmplifierTest >> testWithMessageCall [
 			^ self ]'.
 	methodAST := self astHelper parsedMethodFrom: sourceCode.
 	expectingAST := self astHelper parsedMethodFrom: expectingCode.
-	amplifier := (SAXieAssertionAmplifier initializeWith: aConfig)
+	amplifier := (SADspotAssertionAmplifier initializeWith: aConfig)
 		insertObservers: methodAST.
 	self assert: methodAST dump equals: expectingAST dump
 ]

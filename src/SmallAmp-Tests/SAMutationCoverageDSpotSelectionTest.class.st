@@ -15,7 +15,7 @@ SAMutationCoverageDSpotSelectionTest >> expectedFailures [
 { #category : #tests }
 SAMutationCoverageDSpotSelectionTest >> test1 [
 	| selection test |
-	selection := SAMutationCoverageDSpotSelection
+	selection := SADSpotSelection
 		initializeWith: SAConfig default.
 	selection
 		initialAnalysisFor: {SmallBankTest}
