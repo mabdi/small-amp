@@ -20,7 +20,7 @@ MutantEvaluation >> runTestsSmallAmp [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ suite runStoppingOnFirstFailOrError."^ [ [ suite runStoppingOnFirstFailOrError ]
+	^ [ [ suite runStoppingOnFirstFailOrError ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
@@ -35,7 +35,7 @@ MutantEvaluation >> runTestsSmallAmp [
 				nextPutAll: ex asString;
 				lf;
 				flush.
-			nil ]"
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
@@ -48,8 +48,8 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-				^ suite run
-"	^ [ [ suite run ]
+	
+	^ [ [ suite run ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
@@ -64,13 +64,12 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 				nextPutAll: ex asString;
 				lf;
 				flush.
-			nil ]"
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmp [
-	^ self runTestsSmallAmp
-	"^ [ self runTestsSmallAmp ]
+	^ [ self runTestsSmallAmp ]
 		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
@@ -84,13 +83,12 @@ MutantEvaluation >> testResultsSmallAmp [
 				<< coverageAnalysisResult coveredMethods asString;
 				lf;
 				flush.
-			nil ]"
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmpVerbose [
-	^ self runTestsSmallAmpVerbose
-"	^ [ self runTestsSmallAmpVerbose ]
+	^ [ self runTestsSmallAmpVerbose ]
 		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
@@ -102,7 +100,7 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 				<< coverageAnalysisResult coveredMethods;
 				lf;
 				flush.
-			nil ]"
+			nil ]
 ]
 
 { #category : #'*SmallAmp' }

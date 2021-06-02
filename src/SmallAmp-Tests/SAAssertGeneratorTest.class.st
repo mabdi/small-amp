@@ -24,11 +24,15 @@ SAAssertGeneratorTest >> setUp [
 SAAssertGeneratorTest >> testAssertObjectState [
 	| item assertions |
 	item := SAObservationPrimitive newFor: 10 atDepth: 1.
-	item name: 'foo'; id: 2.
+	item name: 'foo'; id: 2; observedBy: #sth.
 	assertions := SAAssertGenerator new buildAssertObjectStateFor: item.
 	self
 		assertSourceCode: assertions formattedCode
-		equals: 'self assertObjectState: foo varName: ''foo'' id: 2'
+		equals: 'self
+	assertObjectState: foo
+	varName: ''foo''
+	id: 2
+	type: #sth'
 ]
 
 { #category : #test }
