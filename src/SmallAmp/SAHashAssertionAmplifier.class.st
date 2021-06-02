@@ -3,8 +3,7 @@ Class {
 	#superclass : #SAAbstractAssertionAmplifier,
 	#instVars : [
 		'generatedClass',
-		'passingCheckClass',
-		'historiesCache'
+		'passingCheckClass'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -20,13 +19,10 @@ SAHashAssertionAmplifier >> amplifyAssertions [
 	self buildANewClassFor: aMethodAST basedOn: testMethodModel testClass.
 	self runTestClass ifNil: [ ^ nil ].
 	self ignoreFlakyValues.
-	self
-		cacheHistory: generatedClass observer history
-		selector: testMethodModel selector.
+	testMethodModel observedState: generatedClass observer history.
 	sourceCodeWithAssertions := self
 		insertAsserts: sourceCodeWithoutObservers
 		using: generatedClass observer.
-	
 	(self checkPassing: sourceCodeWithAssertions)
 		ifFalse: [ ^ nil ].
 	self cleanUp.
@@ -34,11 +30,12 @@ SAHashAssertionAmplifier >> amplifyAssertions [
 ]
 
 { #category : #asserting }
-SAHashAssertionAmplifier >> assertObjectState: anObject selector: selector varName: aVariableName id: id type: type [
-	| history item |
-	history := (historiesCache at: selector) detect: [:x | x id = id and: [ x observedBy = type ] ].
+SAHashAssertionAmplifier >> assertObjectState: anObject selector: selector cache: modelsCache varName: aVariableName id: id type: type serializationMaxDepth: serializationMaxDepth [
+		| history item |
+	history := (modelsCache at: selector)
+		detect: [ :x | x id = id and: [ x observedBy = type ] ].
 	item := anObject
-		smallAmpAcceptSerializerVisitor: (SAStateSerializer withDepth: config serializationMaxDepth)
+		smallAmpAcceptSerializerVisitor: (SAStateSerializer withDepth: serializationMaxDepth)
 		atDepth: 0.
 	item
 		name: aVariableName;
@@ -55,10 +52,10 @@ SAHashAssertionAmplifier >> astHelper [
 SAHashAssertionAmplifier >> buildANewClassFor: aMethod basedOn: aClass [
 	generatedClass
 		ifNil: [ generatedClass := self astHelper
-				buildTestClassWith: {}
-				using: aClass.
-			self astHelper addHelperMethodsToClass: generatedClass.
-			generatedClass assertAmplifier: self.
+				buildTestClassWithModels: {}
+				using: aClass
+				config: config.
+			generatedClass assertHandler: self.
 			SystemAnnouncer uniqueInstance
 				suspendAllWhile: [ generatedClass class addInstVarNamed: 'observer' ].
 			self astHelper
@@ -100,22 +97,17 @@ SAHashAssertionAmplifier >> buildAsserts: anObserver methodName: selector [
 ]
 
 { #category : #'as yet unclassified' }
-SAHashAssertionAmplifier >> cacheHistory: history selector: selector [
-	historiesCache at: selector put: history  
-]
-
-{ #category : #'as yet unclassified' }
 SAHashAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 	| r |
 	self astHelper
 		onClass: generatedClass
 		compile: sourceCodeWithAssertions.
+	generatedClass addToCache: testMethodModel.
 	r := SAGenericMethods new
 		runSafelyTestClass: generatedClass
 		selector: testMethodModel selector
 		timeOut: (config testRunTimeOutMult * testRunTimeoutMillis) milliSeconds.
 	r ifNil: [ ^ false ].
-	
 	^ r hasPassed
 ]
 
@@ -123,7 +115,10 @@ SAHashAssertionAmplifier >> checkPassing: sourceCodeWithAssertions [
 SAHashAssertionAmplifier >> cleanUp [
 	config debug
 		ifTrue: [ ^ self ].
-	self astHelper onClass: generatedClass removeSelector: testMethodModel selector	"self astHelper removeClass: generatedClass source: self class name"
+	self astHelper
+		onClass: generatedClass
+		removeSelector: testMethodModel selector	"self astHelper removeClass: generatedClass source: self class name".
+	generatedClass clearCache
 ]
 
 { #category : #cleanup }
@@ -159,8 +154,7 @@ SAHashAssertionAmplifier >> ignoreFlakyValues [
 ]
 
 { #category : #initialization }
-SAHashAssertionAmplifier >> initialize [ 
-	historiesCache := Dictionary new
+SAHashAssertionAmplifier >> initialize [
 ]
 
 { #category : #'as yet unclassified' }

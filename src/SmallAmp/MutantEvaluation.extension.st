@@ -20,33 +20,7 @@ MutantEvaluation >> runTestsSmallAmp [
 		addTests:
 			((strategy testCasesToEvaluate: mutation for: self)
 				collect: [ :each | each testCase ]).
-	^ [ [ suite runStoppingOnFirstFailOrError ]
-		on: Exception
-		do: [ :x | 
-			x isResumable
-				ifTrue: [ x resume ]
-				ifFalse: [ x signal ] ] ]
-		on: Exception
-		do: [ :ex | 			Stdio stdout
-				nextPutAll: Time nowUTC print24;
-				nextPutAll: String space;
-				nextPutAll: 'runTestsSmallAmpVerbose: Terminating test Run: ';
-				nextPutAll: ex asString;
-				lf;
-				flush..nil ]
-]
-
-{ #category : #'*SmallAmp' }
-MutantEvaluation >> runTestsSmallAmpVerbose [
-	"Collect all suite test and execute them."
-
-	| suite |
-	suite := TestSuite named: 'MutationEvaluation'.
-	suite
-		addTests:
-			((strategy testCasesToEvaluate: mutation for: self)
-				collect: [ :each | each testCase ]).
-	^ [ [ suite run ]
+	^ suite runStoppingOnFirstFailOrError."^ [ [ suite runStoppingOnFirstFailOrError ]
 		on: Exception
 		do: [ :x | 
 			x isResumable
@@ -61,12 +35,42 @@ MutantEvaluation >> runTestsSmallAmpVerbose [
 				nextPutAll: ex asString;
 				lf;
 				flush.
-			nil ]
+			nil ]"
+]
+
+{ #category : #'*SmallAmp' }
+MutantEvaluation >> runTestsSmallAmpVerbose [
+	"Collect all suite test and execute them."
+
+	| suite |
+	suite := TestSuite named: 'MutationEvaluation'.
+	suite
+		addTests:
+			((strategy testCasesToEvaluate: mutation for: self)
+				collect: [ :each | each testCase ]).
+				^ suite run
+"	^ [ [ suite run ]
+		on: Exception
+		do: [ :x | 
+			x isResumable
+				ifTrue: [ x resume ]
+				ifFalse: [ x signal ] ] ]
+		on: Exception
+		do: [ :ex | 
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: 'runTestsSmallAmpVerbose: Terminating test Run: ';
+				nextPutAll: ex asString;
+				lf;
+				flush.
+			nil ]"
 ]
 
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmp [
-	^ [ self runTestsSmallAmp ]
+	^ self runTestsSmallAmp
+	"^ [ self runTestsSmallAmp ]
 		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
@@ -80,12 +84,13 @@ MutantEvaluation >> testResultsSmallAmp [
 				<< coverageAnalysisResult coveredMethods asString;
 				lf;
 				flush.
-			nil ]
+			nil ]"
 ]
 
 { #category : #'*SmallAmp' }
 MutantEvaluation >> testResultsSmallAmpVerbose [
-	^ [ self runTestsSmallAmpVerbose ]
+	^ self runTestsSmallAmpVerbose
+"	^ [ self runTestsSmallAmpVerbose ]
 		valueWithin: self getTimeOut
 		onTimeout: [ Stdio stdout
 				nextPutAll: Time nowUTC print24;
@@ -97,7 +102,7 @@ MutantEvaluation >> testResultsSmallAmpVerbose [
 				<< coverageAnalysisResult coveredMethods;
 				lf;
 				flush.
-			nil ]
+			nil ]"
 ]
 
 { #category : #'*SmallAmp' }

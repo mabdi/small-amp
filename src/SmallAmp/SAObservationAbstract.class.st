@@ -49,12 +49,7 @@ SAObservationAbstract >> initialize [
 
 { #category : #testing }
 SAObservationAbstract >> isEquals: anObject [
-	| diff |
-	diff := self diff: anObject.
-	diff ifNil: [ ^ true ].
-	diff isDictionary
-		ifTrue: [ diff ifEmpty: [ ^ true ] ].
-	^ false
+	^ self subclassResponsibility 
 ]
 
 { #category : #testing }

@@ -103,6 +103,11 @@ SATestMethod >> normalize [
 ]
 
 { #category : #accessing }
+SATestMethod >> observedState [
+	^ observedState
+]
+
+{ #category : #accessing }
 SATestMethod >> observedState: anObject [
 	observedState := anObject
 ]

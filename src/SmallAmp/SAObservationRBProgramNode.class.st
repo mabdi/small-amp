@@ -22,10 +22,18 @@ SAObservationRBProgramNode >> checkFlaky: anItem [
 { #category : #accessing }
 SAObservationRBProgramNode >> diff: anObject [
 	self isFlaky
-		ifTrue: [ ^ nil ].
-	theValue = anObject
-		ifTrue: [ ^ nil ].
-	^ self
+		ifTrue: [ theClass = anObject theClass
+				ifFalse: [ ^ self ] ].
+	theValue = anObject theValue
+		ifFalse: [ ^ self ].
+	^ nil
+]
+
+{ #category : #accessing }
+SAObservationRBProgramNode >> isEquals: anObject [
+	self isFlaky
+		ifTrue: [ ^ theClass = anObject theClass ].
+	^ theValue = anObject theValue
 ]
 
 { #category : #'as yet unclassified' }

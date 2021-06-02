@@ -26,10 +26,18 @@ SAObservationPrimitive >> checkFlaky: anItem [
 { #category : #testing }
 SAObservationPrimitive >> diff: anObject [
 	self isFlaky
-		ifTrue: [ ^ nil ].
-	theValue = anObject theValue
-		ifTrue: [ ^ nil ].
-	^ self
+		ifTrue: [ theClass = anObject theClass ifFalse: [ ^ self ] ].
+	theValue = anObject theValue ifFalse: [ ^ self ].
+	^ nil
+	
+]
+
+{ #category : #testing }
+SAObservationPrimitive >> isEquals: anObject [
+	self isFlaky
+		ifTrue: [ ^ theClass = anObject theClass ].
+	^ theValue = anObject theValue
+		
 ]
 
 { #category : #testing }

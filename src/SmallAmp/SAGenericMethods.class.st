@@ -42,20 +42,31 @@ SAGenericMethods >> addComment: aText toMethodAST: anAST [
 ]
 
 { #category : #adding }
-SAGenericMethods >> addHelperMethodsToClass: generatedClass [
-	generatedClass class addInstVarNamed: 'assertAmplifier'.
+SAGenericMethods >> addHelperMethodsToClass: generatedClass config: config [
+	generatedClass class addInstVarNamed: 'modelsCache'.
+	generatedClass class addInstVarNamed: 'assertHandler'.
 	self
 		onClass: generatedClass class
-		compile: 'assertAmplifier ^ assertAmplifier'.
+		compile: 'modelsCache ^ modelsCache ifNil: [ modelsCache := Dictionary new ]'.
 	self
 		onClass: generatedClass class
-		compile: 'assertAmplifier: obj assertAmplifier := obj'.
+		compile: 'assertHandler: aHandler assertHandler := aHandler'.
+	self
+		onClass: generatedClass class
+		compile: 'assertHandler ^ assertHandler'.
+	self
+		onClass: generatedClass class
+		compile:
+			'addToCache: model self modelsCache at: model selector put: model observedState'.
+	self
+		onClass: generatedClass class
+		compile: 'clearCache modelsCache := nil'.
 	self
 		onClass: generatedClass
 		compile:
 			'assertObjectState: anObject varName: aVariableName id: id type: type
-			^ self class assertAmplifier assertObjectState: anObject selector: self selector varName: aVariableName id: id type: type
-		'
+			self assert: (self class assertHandler assertObjectState: anObject selector: self selector cache: self class modelsCache varName: aVariableName id: id type: type serializationMaxDepth: '
+				, config serializationMaxDepth asString , ')'
 ]
 
 { #category : #'as yet unclassified' }
@@ -114,6 +125,20 @@ SAGenericMethods >> buildTestClassWith: aCollection using: testClass [
 			| ast |
 			ast := self parsedMethodFrom: item.
 			self onClass: tempClass compile: ast formattedCode ].
+	^ tempClass
+]
+
+{ #category : #'method operations' }
+SAGenericMethods >> buildTestClassWithModels: aModelsList using: testClass config: config [
+	| tempClass |
+	tempClass := self
+		buildTestClassWith: (aModelsList collect: #testMethod)
+		using: testClass.
+	self addHelperMethodsToClass: tempClass config: config.
+	aModelsList do: [ :x | tempClass
+		addToCache: x ]
+	.
+			
 	^ tempClass
 ]
 

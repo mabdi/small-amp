@@ -30,10 +30,25 @@ SAObservationCollection >> diff: anObject [
 		doWithIndex: [ :item :index | 
 			| v1 v2 |
 			v1 := self theValue at: index.
-			v2 := anObject theValue at: index ifAbsent: [ nil ].
+			v2 := anObject theValue at: index ifAbsent: [ diff at: index put: v1.nil ].
 			v1 isNotNil & v2 isNotNil
 				ifTrue: [ (v1 isEquals: v2)
 						ifTrue: [ diff at: index put: v1 ] ] ].
 	diff ifEmpty: [ ^ nil ].
 	^ diff
+]
+
+{ #category : #testing }
+SAObservationCollection >> isEquals: anObject [
+	self theValue
+		doWithIndex: [ :item :index | 
+	 
+			| v1 v2 |
+			v1 := self theValue at: index.
+			v2 := anObject theValue at: index ifAbsent: [ ^ false ].
+			v1 ifNil: [ v2 ifNotNil: [ ^ false ] ].
+			v1 isNotNil & v2 isNotNil
+				ifTrue: [ (v1 isEquals: v2)
+						ifFalse: [ ^ false ] ] ].
+	^ true
 ]
