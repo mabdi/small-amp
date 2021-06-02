@@ -33,24 +33,9 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self evalStats ].
 	(self hasOption: 'xinfo')
 		ifTrue: [ self extraInformation ].
-	(self hasOption: 'useSnapshots')
-		ifTrue: [  self useSnapshots ].
-	(self hasOption: 'dspot')
-		ifTrue: [  self dspot ].
+	(self hasOption: 'mode')
+		ifTrue: [ self runInMode ].
 	self end
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> dspot [
-	| cmd className aTestClass |
-	cmd := '--dspot='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | className := arg allButFirst: cmd size ].
-	aTestClass := Smalltalk globals at: className asSymbol.
-	SmallAmp <~ ('started #dspot: for ' , aTestClass name).
-	self runSmallAmp: aTestClass mainLoop: SAMainLoopDspot.
-	SmallAmp <~ ('finished #dspot: for ' , aTestClass name)
 ]
 
 { #category : #accessing }
@@ -87,30 +72,45 @@ SACommandLineHandler >> extraInformation [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> runSmallAmp: aTestClass mainLoop: mode [
-	| cnf |
-	cnf := SAConfig default.
+SACommandLineHandler >> runInMode [
+	| cmd testClass aTestClass mode cnf |
+	cmd := '--testClass='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | testClass := arg allButFirst: cmd size ]
+		ifNone: [ SmallAmp <~ '--testClass=TestClassName is required'.
+			^ self ].
+	cmd := '--mode='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | mode := arg allButFirst: cmd size ].
+	aTestClass := Smalltalk globals at: testClass asSymbol.
+	mode = 'dspotSnapshots'
+		ifTrue: [ cnf := SAConfig dspotAllamps.
+			cnf mainloop: SAMainLoopSnapshots ].
+	mode = 'dspot'
+		ifTrue: [ cnf := SAConfig dspotAllamps.
+			cnf mainloop: SAMainLoopDspot ].
+	mode = 'diffSnapshots'
+		ifTrue: [ cnf := SAConfig diffBased.
+			cnf mainloop: SAMainLoopSnapshots ].
+	mode = 'diff'
+		ifTrue: [ cnf := SAConfig diffBased.
+			cnf mainloop: SAMainLoopDspot ].
+	SmallAmp <~ ('started mode: ' , mode , ' for: ' , aTestClass name).
+	self runSmallAmp: aTestClass config: cnf.
+	SmallAmp <~ ('finished mode: ' , mode , ' for: ' , aTestClass name)
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> runSmallAmp: aTestClass config: cnf [
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_iteration
 		ifPresent: [ :iter | cnf iterations: iter asInteger ].
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_maxInputs
 		ifPresent: [ :maxInputs | cnf maxPop: maxInputs asInteger ].
-	cnf mainloop: mode.
 	(SmallAmp initializeWith: cnf)
 		testCase: aTestClass;
 		amplifyEval
-]
-
-{ #category : #'as yet unclassified' }
-SACommandLineHandler >> useSnapshots [
-	| cmd className aTestClass |
-	cmd := '--useSnapshots='.
-	self arguments
-		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | className := arg allButFirst: cmd size ].
-	aTestClass := Smalltalk globals at: className asSymbol.
-	SmallAmp <~ ('started #useSnapshots: for ' , aTestClass name).
-	self runSmallAmp: aTestClass mainLoop: SAMainLoopSnapshots.
-	SmallAmp <~ ('finished #useSnapshots: for ' , aTestClass name)
 ]
