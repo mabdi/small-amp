@@ -28,8 +28,4 @@ IceRepository registry
 		   r register.
 		   ].
 
-commitId := (IceRepository registry detect: [ :n | n name = repoName ]) branch commit shortId.
-
-('Project registered in Iceberg ', commitId asString) traceCr.
-
 Smalltalk snapshot: true andQuit: true
