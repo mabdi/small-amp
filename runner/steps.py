@@ -6,7 +6,6 @@ from datetime import datetime
 import re
 import json
 from config import *
-from smallAmpLoop import *
 from zipfile import ZipFile
 import time
 from command import Command
