@@ -125,7 +125,7 @@ def githubCIMain():
       "mode": os.getenv('SMALLAMP_mode')
    }
    print(args, flush=True)
-   runAmplificationCI(args)
+   # runAmplificationCI(args)
 
 if report is not None:
    reportMain()
