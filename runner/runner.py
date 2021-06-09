@@ -113,20 +113,17 @@ def reportMain():
 def githubCIMain():
    args = {
       "repo": os.getenv('reponame'),
-      "vm": os.getenv('SMALLTALK_CI_VM'),
-      "image": os.getenv('SMALLTALK_CI_IMAGE'),
-      "zips": os.getenv('SMALLAMP_CI_ZIPS'),
+      "vm": os.getenv('PHARO_VM'),
+      "image": os.getenv('PHARO_IMAGE'),
+      "base": os.getenv('PHARO_HOME'),
+      "zips": os.getenv('SMALLAMP_ZIPS'),
+
       "job_id": int(os.getenv('SMALLAMP_PORTION')),
       "total_jobs": int(os.getenv('SMALLAMP_ALLJOBS')),
-      "tonel": os.getenv('SMALLAMP_TONEL'),
       "iteration": os.getenv('SMALLAMP_iteration'),
       "maxInputs": os.getenv('SMALLAMP_maxInputs'),
-      "mode": os.getenv('SMALLAMP_mode'),
-      "base": os.path.dirname(os.getenv('SMALLTALK_CI_IMAGE')),
-      "imgFile": os.path.basename(os.getenv('SMALLTALK_CI_IMAGE'))
+      "mode": os.getenv('SMALLAMP_mode')
    }
-   #print("ENV==> jobIndex: {}, jobTotal: {}, repo: {}, vm: {}, image: {}, base: {}, imgFile: {}, zips: {}, tonel: {}, iteration: {}, maxInputs: {}, mode: {}".
-   #      format( job_id, total_jobs, repo, vm, image, base, imgFile, zips, tonel, iteration, maxInputs, mode ), flush=True)
    print(args, flush=True)
    runAmplificationCI(args)
 
