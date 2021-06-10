@@ -245,7 +245,7 @@ def runAmplificationCI_snapshoted(imgFile, vm, mode, className):
       cmd = cmd2
 
 def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
-   zipFileLogs = zipDirectory + '/' + repo + '_logs_job_' + str(job_id) + '.zip'
+   zipFileLogs = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'logs.zip'
    file_paths = []
    file_paths.extend(glob.glob(base+'/*.log'))
    file_paths.extend(glob.glob(base+'/out/*.log'))
@@ -256,7 +256,7 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
             zip.write(file, arcname)
    syso('zip file created. '+ zipFileLogs)
 
-   zipFileResults = zipDirectory + '/' + repo + '_results_job_' + str(job_id) + '.zip'
+   zipFileResults = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'results.zip'
    file_paths = []
    file_paths.append(base+'/'+ repo +'.stat')
    file_paths.extend(glob.glob(base+'/*.json'))
