@@ -16,3 +16,4 @@ repo := IceRepository registry detect: [ :r | r name = repoName ].
 Stdio stdout << 'Repo:'; << repo asString; lf; flush.      
 repo index updateDiskWorkingCopy: repo workingCopyDiff.
 Stdio stdout << 'done'; lf; flush.      
+Smalltalk snapshot: true andQuit: true
