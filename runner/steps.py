@@ -6,7 +6,6 @@ from datetime import datetime
 import re
 import json
 from config import *
-from smallAmpLoop import *
 from zipfile import ZipFile
 import time
 from command import Command
@@ -245,23 +244,8 @@ def runAmplificationCI_snapshoted(imgFile, vm, mode, className):
       os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
       cmd = cmd2
 
-def runAmplificationCI_installSmallAmp(vm, imgFile, tonel):
-   c = Command("""{} {} eval "[ Metacello new
-        baseline: 'SmallAmp';
-        repository: 'tonel://{}/src';
-        onUpgrade: [ :ex | ex useIncoming ];
-        onConflictUseIncoming;
-        load: 'core' ] on: Warning do: [ :w | w resume ].
-        Smalltalk snapshot: true andQuit: true" """.format(vm, imgFile, tonel))
-   c.run(timeout=120)
-   
-def runAmplificationCI_stats(vm, imgFile, repo):
-   syso('Making Stat files')
-   c = Command(vm + ' ' + imgFile + ' smallamp --save --stat=' + repo)
-   c.run(timeout=300)
-
 def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
-   zipFileLogs = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) +  'logs.zip'
+   zipFileLogs = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'logs.zip'
    file_paths = []
    file_paths.extend(glob.glob(base+'/*.log'))
    file_paths.extend(glob.glob(base+'/out/*.log'))
@@ -272,8 +256,7 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
             zip.write(file, arcname)
    syso('zip file created. '+ zipFileLogs)
 
-
-   zipFileResults = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) +  'results.zip'
+   zipFileResults = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'results.zip'
    file_paths = []
    file_paths.append(base+'/'+ repo +'.stat')
    file_paths.extend(glob.glob(base+'/*.json'))
@@ -288,12 +271,10 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
 
 
 def runAmplificationCI(args):
-   tonel = args['tonel']
    repo = args['repo']
    vm = args['vm']
-   image = args['image']
    base = args['base']
-   imgFile = args['imgFile']
+   imgFile = args['image']
    zipDirectory = args['zips']
    job_id = args['job_id']
    total_jobs = args['total_jobs']
@@ -305,9 +286,6 @@ def runAmplificationCI(args):
    syso('CI for:'+ repo)
    cwd = os.getcwd()
    os.chdir(base)
-
-   runAmplificationCI_installSmallAmp(vm, imgFile, tonel)
-   runAmplificationCI_stats(vm, imgFile, repo)
 
    todoFile = base + '/' + todoFileName
    if not os.path.exists(todoFile):
