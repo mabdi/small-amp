@@ -269,6 +269,20 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
             zip.write(file, arcname)
    syso('zip file created. '+ zipFileResults)
 
+   zipFileResults = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'crashes.zip'
+   file_paths = []
+   file_paths.extend(glob.glob(base+'/crash_event_*.json'))
+   file_paths.extend(glob.glob(base+'/crash_evidence_*.json'))
+   
+   if len(file_paths) > 0:
+      with ZipFile(zipFileResults, 'w') as zip:
+         for  file  in  file_paths :
+               arcname  =  file [ len ( base ):]
+               zip.write(file, arcname)
+      syso('zip file created. '+ zipFileResults)
+   else:
+      syso('No crashes found.')
+
 
 def runAmplificationCI(args):
    repo = args['repo']
