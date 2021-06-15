@@ -31,3 +31,9 @@ $ cd /some/path/small-amp/runner
 $ python3 runner.py -r amp -p MyProj-4
 
 ```
+
+Use this command for extracting in separated folders:
+
+```
+$ find . -name '*.zip' -exec sh -c 'unzip -d `basename {} .zip` {}' \;
+```
