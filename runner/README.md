@@ -75,8 +75,7 @@ SMALLAMP_TONEL=../.. ./pharo Pharo.image st load_SmallAmp.st
 ./pharo Pharo.image smallamp  --save --stat=\$reponame " > setup.sh
 
 $ nano setup.sh # change me
-$ chmod +x setup.sh
-$ ./setup.sh
+$ source setup.sh
 $ cd ../../runner 
 $ SMALLAMP_PORTION=6 SMALLAMP_ALLJOBS=20 python3 runner.py -g
 ```
