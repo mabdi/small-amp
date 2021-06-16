@@ -55,9 +55,9 @@ $ cd debugRun
 $ echo "export GIT_REPO=CHANGEME # https://github.com/mabdi/DataFrame
 export reponame=CHANGEME # DataFrame 
 export project_baseline=CHANGEME # DataFrame 
-export iteration=3 
-export maxInputs=10 
-export mode=diff 
+export SMALLAMP_iteration=3 
+export SMALLAMP_maxInputs=10 
+export SMALLAMP_mode=diff 
 cp ../../scripts/installPharo.sh . 
 ./installPharo.sh
 export PHARO_HOME=\$PWD
