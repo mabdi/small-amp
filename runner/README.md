@@ -48,28 +48,35 @@ $ md5 */todo.txt
 ### Runing locally:
 
 ```
-$ export iteration=3 
-$ export maxInputs=10 
-$ export mode=diff 
 $ cd /some/path/small-amp/pharo-projects-files
 $ mkdir debugRun # any name you like
 $ cd debugRun
-$ cp ../../scripts/installPharo.sh . 
-$ ./installPharo.sh
-$ export PHARO_HOME=$PWD
-$ export PHARO_IMAGE=Pharo.image
-$ export PHARO_VM=$PHARO_HOME/pharo
-$ export SMALLAMP_ZIPS=$PHARO_HOME
-$ git clone https://github.com/mabdi/DataFrame # replace with project under test
-$ cp ../../scripts/load_project.st .
-$ export project_baseline=DataFrame 
-$ export project_repository=$PWD/DataFrame/src
-$ export GITHUB_WORKSPACE=$PWD/DataFrame
-$ export reponame=DataFrame 
-$ ./pharo Pharo.image st load_project.st
-$ cp ../../scripts/load_SmallAmp.st .
-$ SMALLAMP_TONEL=../.. ./pharo Pharo.image st load_SmallAmp.st
-$ ./pharo Pharo.image smallamp  --save --stat=DataFrame 
+
+$ echo "export GIT_REPO=CHANGEME # https://github.com/mabdi/DataFrame
+export reponame=CHANGEME # DataFrame 
+export project_baseline=CHANGEME # DataFrame 
+export iteration=3 
+export maxInputs=10 
+export mode=diff 
+cp ../../scripts/installPharo.sh . 
+./installPharo.sh
+export PHARO_HOME=\$PWD
+export PHARO_IMAGE=Pharo.image
+export PHARO_VM=\$PHARO_HOME/pharo
+mkdir _zips
+export SMALLAMP_ZIPS=\$PHARO_HOME/_zips
+git clone \$GIT_REPO 
+cp ../../scripts/load_project.st .
+export project_repository=\$PWD/\$reponame/src
+export GITHUB_WORKSPACE=\$PWD/\$reponame
+./pharo Pharo.image st load_project.st
+cp ../../scripts/load_SmallAmp.st .
+SMALLAMP_TONEL=../.. ./pharo Pharo.image st load_SmallAmp.st
+./pharo Pharo.image smallamp  --save --stat=\$reponame " > setup.sh
+
+$ nano setup.sh # change me
+$ chmod +x setup.sh
+$ ./setup.sh
 $ cd ../../runner 
 $ SMALLAMP_PORTION=6 SMALLAMP_ALLJOBS=20 python3 runner.py -g
 ```
