@@ -7,7 +7,8 @@ Class {
 		'testRunTimeoutMillis',
 		'selection',
 		'assertAmplifier',
-		'instantiationExtractor'
+		'instantiationExtractor',
+		'variableTypes'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -20,6 +21,7 @@ SAMainLoopDspot >> amplify [
 	theTS
 		do: [ :aTestMethod | 
 			SmallAmp <~ aTestMethod selector.
+			self variableTypesProfile: aTestMethod.
 			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
@@ -121,6 +123,8 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
+	amplifier isTypeSensitive
+		ifTrue: [ amplifier variableTypes: variableTypes ].
 	amplifier isTransplantation
 		ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
 	newcodes addAll: (tcase inputAmplifyBy: amplifier) ].
@@ -135,7 +139,7 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 			(pop shuffle takeFirst: (tmp2 min: pop size))
 				do: [ :tcase | applyTransformation value: amp value: tcase ] ]
 		displayingProgress: 'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := (pop size > (config maxPop / 2)) 
+	tmp := pop size > (config maxPop / 2)
 		ifTrue: [ tmp shuffle takeFirst: config maxPop / 2 ]
 		ifFalse: [ tmp ].
 	tmp
@@ -232,4 +236,13 @@ SAMainLoopDspot >> setupSelection [
 				targets: targetClasses
 				ignore: finalResult failedSelectorInOriginal).
 	selection uncovered ifEmpty: [ SANoUncovered new signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> variableTypesProfile: testMethodModel [
+	variableTypes := (SAVariableTypeProfiler initializeWith: config)
+		testMethods: {testMethodModel testMethod};
+		testClass: testMethodModel testClass;
+		run;
+		variablesTypes
 ]
