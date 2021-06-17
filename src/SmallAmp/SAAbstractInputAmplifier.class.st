@@ -35,6 +35,11 @@ SAAbstractInputAmplifier >> isTransplantation [
 	^ false
 ]
 
+{ #category : #testing }
+SAAbstractInputAmplifier >> isTypeSensitive [
+	^ false
+]
+
 { #category : #'as yet unclassified' }
 SAAbstractInputAmplifier >> namingPrefix [
 	^ self class name
