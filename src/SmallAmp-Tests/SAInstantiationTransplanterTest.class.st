@@ -77,7 +77,7 @@ SAInstantiationTransplanterTest >> tearDown [
 
 { #category : #tests }
 SAInstantiationTransplanterTest >> testCase1 [
-	| aSAObjectInstantiationExtractor item res codes |
+	| aSAObjectInstantiationExtractor item res codes type |
 	self genClass1.
 	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
 	aSAObjectInstantiationExtractor testClass: cls.
@@ -88,6 +88,8 @@ SAInstantiationTransplanterTest >> testCase1 [
 		with: (cls >> #testO1) sourceCode
 		class: cls
 		targets: {ByteString}.
+	type := self variableTypesProfile: item.
+	transplanter variableTypes: type.
 	res := item inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 3.
@@ -118,6 +120,8 @@ SAInstantiationTransplanterTest >> testCase1 [
 		with: (cls >> #testO0) sourceCode
 		class: cls
 		targets: {ByteString}.
+	type := self variableTypesProfile: item.
+	transplanter variableTypes: type.
 	res := item inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 3.
@@ -132,6 +136,8 @@ SAInstantiationTransplanterTest >> testCase1 [
 		with: (cls >> #testO2) sourceCode
 		class: cls
 		targets: {ByteString}.
+	type := self variableTypesProfile: item.
+	transplanter variableTypes: type.
 	res := item inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 3.
@@ -143,12 +149,12 @@ SAInstantiationTransplanterTest >> testCase1 [
 	1 + 1.
 	s2 := '':'' join: {''Foo'' . ''Bar''}.
 	4 + 1.
-	''ss'' size'.
+	''ss'' size'
 ]
 
 { #category : #tests }
 SAInstantiationTransplanterTest >> testCase2 [
-	| aSAObjectInstantiationExtractor items res codes |
+	| aSAObjectInstantiationExtractor items res codes type |
 	self genClass2.
 	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
 	aSAObjectInstantiationExtractor testClass: cls.
@@ -161,6 +167,8 @@ SAInstantiationTransplanterTest >> testCase2 [
 				with: (cls >> sel) sourceCode
 				class: cls
 				targets: {ByteString} ].
+	type := self variableTypesProfile: items first.
+	transplanter variableTypes: type.
 	res := items first inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 6.
@@ -193,6 +201,8 @@ SAInstantiationTransplanterTest >> testCase2 [
 				nextPutAll: ''Foo'';
 				lf;
 				nextPutAll: ''Bar'' ]'.
+	type := self variableTypesProfile: items second.
+	transplanter variableTypes: type.
 	res := items second inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 6.
@@ -227,6 +237,8 @@ SAInstantiationTransplanterTest >> testCase2 [
 	s1 := x asString'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
+	type := self variableTypesProfile: items third.
+	transplanter variableTypes: type.
 	res := items third inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 6.
@@ -293,12 +305,16 @@ SAInstantiationTransplanterTest >> testCase2 [
 	''ss'' size'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
+	type := self variableTypesProfile: (items at: 4).
+	transplanter variableTypes: type.
 	res := (items at: 4) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 3.
 	{}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
+	type := self variableTypesProfile: (items at: 5).
+	transplanter variableTypes: type.
 	res := (items at: 5) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 6.
@@ -338,6 +354,8 @@ SAInstantiationTransplanterTest >> testCase2 [
 	s0 := z'}
 		doWithIndex:
 			[ :expected :index | self assertMethodSourceCode: (codes at: index) equals: expected ].
+	type := self variableTypesProfile: (items at: 6).
+	transplanter variableTypes: type.
 	res := (items at: 6) inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 6.
@@ -363,19 +381,21 @@ SAInstantiationTransplanterTest >> testCase2 [
 
 { #category : #tests }
 SAInstantiationTransplanterTest >> testCase3 [
-	| aSAObjectInstantiationExtractor items res codes |
+	| aSAObjectInstantiationExtractor items res codes type |
 	self genClass3.
 	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
 	aSAObjectInstantiationExtractor testClass: cls.
 	aSAObjectInstantiationExtractor run.
 	transplanter
 		instantiationPatterns: aSAObjectInstantiationExtractor patterns.
-	items := #(testO0 )
+	items := #(testO0)
 		collect: [ :sel | 
 			SATestMethod
 				with: (cls >> sel) sourceCode
 				class: cls
 				targets: {ByteString} ].
+	type := self variableTypesProfile: items first.
+	transplanter variableTypes: type.
 	res := items first inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 2.
@@ -401,6 +421,14 @@ SAInstantiationTransplanterTest >> testCase3 [
 			stream
 				nextPutAll: s balance asString;
 				lf;
-				nextPutAll: ''Foo'' ]'.
-	
+				nextPutAll: ''Foo'' ]'
+]
+
+{ #category : #'as yet unclassified' }
+SAInstantiationTransplanterTest >> variableTypesProfile: testMethodModel [
+	^ (SAVariableTypeProfiler initializeWith: config)
+		testMethods: {testMethodModel testMethod};
+		testClass: testMethodModel testClass;
+		run;
+		variablesTypes
 ]
