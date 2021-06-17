@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ -z "$SMALLAMP_CI_HOME" ]; then
+    echo "Must provide SMALLAMP_CI_HOME in environment" 1>&2
+    exit 2;
+fi
+
+cd $SMALLAMP_CI_HOME
+python3 runner.py -g
