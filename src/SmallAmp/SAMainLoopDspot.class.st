@@ -20,8 +20,6 @@ SAMainLoopDspot >> amplify [
 	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			SmallAmp <~ aTestMethod selector.
-			self variableTypesProfile: aTestMethod.
 			self amplifyATestMethod: aTestMethod ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
@@ -31,6 +29,8 @@ SAMainLoopDspot >> amplify [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	| theATS theV theU |
+			SmallAmp <~ aTestMethod selector.
+			self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
