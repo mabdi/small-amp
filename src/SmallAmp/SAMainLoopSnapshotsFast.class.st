@@ -16,6 +16,20 @@ SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod [
 		
 ]
 
+{ #category : #private }
+SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
+	aList
+		do: [ :tcase | self
+				saveCrashEvidence:
+					{(#testClass -> tcase testClass name).
+					(#testMethod -> tcase testMethod)} asDictionary.
+					.tcase assertionAmplifyBy: assertAmplifier ]
+		
+		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
+	^ aList reject: [ :tcase | tcase testMethod isNil ]
+	
+]
+
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> eventFile [
 	^ FileLocator imageDirectory / '_smallamp_last_event.json'
@@ -87,6 +101,12 @@ SAMainLoopSnapshotsFast >> saveTheState: anState [
 	FLSerializer serialize: anState toFileNamed: self stateFile basename
 ]
 
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> selectionFrom: aList [
+	aList ifEmpty: [ ^ {} ].
+	^ selection selectSnapshot: aList
+]
+
 { #category : #initialization }
 SAMainLoopSnapshotsFast >> setTestMethod: aTestMethod status: anStatus [
 	| file str json |
@@ -94,6 +114,7 @@ SAMainLoopSnapshotsFast >> setTestMethod: aTestMethod status: anStatus [
 	json := file exists
 		ifTrue: [ STONJSON fromStream: file readStream ]
 		ifFalse: [ Dictionary new ].
+	json at: '_current_' put: aTestMethod selector.
 	json at: aTestMethod selector put: anStatus.
 	str := STONJSON toString: json.
 	self methods_state_file writeStream
@@ -110,6 +131,18 @@ SAMainLoopSnapshotsFast >> setTestMethodFinished: aTestMethod [
 { #category : #initialization }
 SAMainLoopSnapshotsFast >> setTestMethodStarting: aTestMethod [
 	self setTestMethod: aTestMethod status: 'starting'
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> setupSelection [
+	super setupSelection.
+	selection
+		onBeforeMutant: [ :mutant :index | 
+			self
+				saveCrashEvidence:
+					{(#testClass -> testClass name).
+					(#mutant -> mutant asDictionaryObject)} asDictionary ].
+	selection onMutationEvaluation: [ 0 ]
 ]
 
 { #category : #'as yet unclassified' }
