@@ -215,6 +215,40 @@ def runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, i
    syso('Running command: {}'.format(cmd))
    c.run(timeout=4 * 60 * 60)
 
+def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className):
+   tout = 15*60 # every 15 minute check for freeze
+   tout_files = ['_smallamp_crash_evidence.json']
+   
+   os.system('cp '+ imgFile + ' Sandbox.image')
+   os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
+   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} 2>&1 | tee -a out/{}.log'.format(vm, mode, className, className)
+   cmd2 = '{} Sandbox.image  2>&1 | tee -a out/{}.log'.format(vm, className)
+   
+   cmd = cmd1
+   while True:
+      c = Command(cmd)
+      syso('Running command: {}'.format(cmd))
+      c.run(timeout=tout, files=tout_files)
+      if c.code() == 0:
+            syso('Amplification finished for className: {}'.format(className))
+            break
+      if c.timedout:
+         syso('Amplification Terminated because timeout, className: {}'.format(className))
+      else:
+         syso('A possible crash for className: {}'.format(className))
+      timestamp = int(time.time())
+      os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
+      os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
+
+      with open('_smallamp_methods_state.json') as jsonFile:
+         jsonObject = json.loads(jsonFile.read())
+      testMethod = jsonObject['_current_']
+      jsonObject[testMethod] = 'recovered'
+      with open('_smallamp_methods_state.json', 'w') as jsonFile:
+         jsonFile.write(json.dumps(jsonObject))
+      
+      cmd = cmd2
+
 def runAmplificationCI_snapshoted(imgFile, vm, mode, className):
    tout = 15*60 # every 15 minute check for freeze
    tout_files = ['_smallamp_last_state.fl', '_smallamp_crash_evidence.json', '_smallamp_last_event.json']
@@ -243,6 +277,35 @@ def runAmplificationCI_snapshoted(imgFile, vm, mode, className):
       os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
       os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
       cmd = cmd2
+
+# def verifyCrashes(imgFile, vm):
+#    tout = 60 # 60 seconds to check the freeze
+#    os.system('cp '+ imgFile + ' Sandbox.image')
+#    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
+#    for filename_event in glob.glob('./crash_event_*.json'):
+#       ts = filename_event[10:] # TODO not accurate
+#       filename_evidence = 'crash_evidence_' + ts
+#       json_event = json.loads(open(filename_event))
+#       json_evidence = json.loads(open(filename_evidence)) 
+#       # json_evidence :=> testClass testMethod mutant
+#       # json_event :=> event(assertion_amplification mutation_testing) testClass 
+#       if json_event['event'] == 'assertion_amplification':
+#          with open('smallAmp_crash_'+ts+'.st.crash') as f:
+#             f.write("| selector | selector := {} compile: '{}'. {} run: selector".format(json_evidence['testClass'], json_evidence['testMethod']))
+#       if json_event['event'] == 'mutation_testing':
+
+#       cmd = '{} Sandbox.image eval {}'.format(vm, '')
+#       c = Command(cmd)
+#       syso('Running command: {}'.format(cmd))
+#       c.run(timeout=tout)
+#       if c.code() == 0:
+#             syso('No crash'.format())
+#             return
+#       if c.timedout:
+#          syso('Freeze'.format())
+#       else:
+#          syso('Crash'.format())
+         
 
 def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
    zipFileLogs = zipDirectory + '/' + repo + '_job_' + str(job_id) + '_' + str(int(time.time())) + 'logs.zip'
@@ -322,11 +385,14 @@ def runAmplificationCI(args):
           continue
        syso('Amplifying: ' + className + ' (i: ' + str(i) + ', all: '+ str(total_jobs) + ')' )
        if 'Snapshots' in mode:
-          runAmplificationCI_snapshoted(imgFile, vm, mode, className)
+          if 'Fast' in mode:
+            runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
+          else:
+            runAmplificationCI_snapshoted(imgFile, vm, mode, className)
        else:
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
           
+   # verifyCrashes(repo, base)
    os.chdir(cwd)
-
    runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base)
 
