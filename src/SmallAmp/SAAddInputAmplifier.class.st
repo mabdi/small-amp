@@ -1,9 +1,6 @@
 Class {
 	#name : #SAAddInputAmplifier,
-	#superclass : #SAAbstractInputAmplifier,
-	#instVars : [
-		'variableTypes'
-	],
+	#superclass : #SAAbstractTypeSensitiveInputAmplifier,
 	#category : #'SmallAmp-Core'
 }
 
@@ -11,7 +8,6 @@ Class {
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
 	results := OrderedCollection new.
-	self profileVariableTypes.
 	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
 	results addAll: (self applySetupMessageAddOn: aMethodAST).
@@ -176,13 +172,4 @@ SAAddInputAmplifier >> nodesFor: variableName [
 	^ methods
 		collect:
 			[ :m | self createMessageNodeFor: m type: theType reveiver: variableName ]
-]
-
-{ #category : #removing }
-SAAddInputAmplifier >> profileVariableTypes [
-	variableTypes := (SAVariableTypeProfiler initializeWith: config)
-		testMethods: {testMethodModel testMethod};
-		testClass: testMethodModel testClass;
-		run;
-		variablesTypes
 ]

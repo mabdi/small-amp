@@ -69,6 +69,28 @@ SAGenericMethods >> addHelperMethodsToClass: generatedClass config: config [
 				, config serializationMaxDepth asString , ')'
 ]
 
+{ #category : #actions }
+SAGenericMethods >> allChangesForRepo: project fromCommitNamed: commitName [
+	| repo commit diff leafs targets |
+	repo := IceRepository registry detect: [ :x | x name = project ].
+	commit := repo commitishNamed: commitName.
+	diff := commit diffFromHead.
+	leafs := OrderedCollection new.
+	diff tree
+		allChildrenDo: [ :node | node children ifEmpty: [ leafs add: node ] ].
+	leafs := leafs reject: [ :n | n value isRemoval ].
+	leafs := leafs select: [ :n | n value definition isMethodDefinition ].
+	leafs := leafs
+		reject: [ :n | 
+			n value definition contextClass isNil
+				or: [ n value definition contextClass isTestCase
+						or: [ (n value definition contextClass
+								includesSelector: n value definition name) not ] ] ].
+	targets := leafs
+		collect: [ :n | n value definition contextClass >> n value definition name ].
+	^ targets
+]
+
 { #category : #'as yet unclassified' }
 SAGenericMethods >> allClassesForRepo: repoName [
 	Smalltalk

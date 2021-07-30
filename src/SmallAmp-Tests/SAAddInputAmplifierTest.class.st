@@ -47,7 +47,9 @@ SAAddInputAmplifierTest >> tearDown [
 
 { #category : #tests }
 SAAddInputAmplifierTest >> testAdd1 [
-	| res codes |
+	| res codes types |
+	types := self variableTypesProfile: item2Line.
+	amplifierNoProfile variableTypes: types.
 	res := item2Line inputAmplifyBy: amplifierNoProfile.
 	self assert: res size equals: 6.
 	codes := res
@@ -78,7 +80,9 @@ SAAddInputAmplifierTest >> testAdd1 [
 
 { #category : #tests }
 SAAddInputAmplifierTest >> testAdd2 [
-	| res codes |
+	| res codes types |
+	types := self variableTypesProfile: item2Line.
+	amplifierProfile variableTypes: types.
 	res := item2Line inputAmplifyBy: amplifierProfile.
 	self assert: res size equals: 15.
 	codes := res
@@ -109,7 +113,7 @@ SAAddInputAmplifierTest >> testAdd2 [
 
 { #category : #tests }
 SAAddInputAmplifierTest >> testInstanceVaribale [
-	| res item cls codes |
+	| res item cls codes types |
 	cls := SAGenericMethods new
 		makeClassFrom:
 			{'setUp f := FakeSmallBank new' . 'testO1 self assert: f balance equals: 0'}
@@ -118,6 +122,8 @@ SAAddInputAmplifierTest >> testInstanceVaribale [
 		with: (cls >> #testO1) sourceCode
 		class: cls
 		targets: {FakeSmallBank}.
+	types := self variableTypesProfile: item.
+	amplifierProfile variableTypes: types.
 	res := item inputAmplifyBy: amplifierProfile.
 	self assert: res size equals: 5.
 	codes := res
@@ -142,4 +148,13 @@ SAAddInputAmplifierTest >> testIsVariableGlobal [
 	self
 		assert: (amplifierNoProfile isVariableGlobal: self class name).
 		
+]
+
+{ #category : #'as yet unclassified' }
+SAAddInputAmplifierTest >> variableTypesProfile: testMethodModel [
+	^ (SAVariableTypeProfiler initializeWith: config)
+		testMethods: {testMethodModel testMethod};
+		testClass: testMethodModel testClass;
+		run;
+		variablesTypes
 ]

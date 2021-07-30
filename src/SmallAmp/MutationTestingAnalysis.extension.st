@@ -224,7 +224,7 @@ MutationTestingAnalysis >> smallAmpNewCovered: oldAnalysis [
 
 { #category : #'*SmallAmp' }
 MutationTestingAnalysis >> smallAmpScore [
-	^ self generalResult mutationScore
+	^ self generalResult mutationScoreFloat
 ]
 
 { #category : #'*SmallAmp' }

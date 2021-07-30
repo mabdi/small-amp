@@ -1,8 +1,7 @@
 Class {
 	#name : #SAInstantiationTransplanter,
-	#superclass : #SAAbstractInputAmplifier,
+	#superclass : #SAAbstractTypeSensitiveInputAmplifier,
 	#instVars : [
-		'variableTypes',
 		'instantiationPatterns',
 		'aMethodAST'
 	],
@@ -12,7 +11,6 @@ Class {
 { #category : #removing }
 SAInstantiationTransplanter >> amplifyInputs [
 	| results |
-	self profileVariableTypes.
 	results := OrderedCollection new.
 	aMethodAST := SAGenericMethods new
 		parsedMethodFrom: testMethodModel testMethod.
@@ -69,15 +67,6 @@ SAInstantiationTransplanter >> isTransplantation [
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanter >> namingPrefix [
 	^ 'T'
-]
-
-{ #category : #removing }
-SAInstantiationTransplanter >> profileVariableTypes [
-	variableTypes := (SAVariableTypeProfiler initializeWith: config)
-		testMethods: {testMethodModel testMethod};
-		testClass: testMethodModel testClass;
-		run;
-		variablesTypes
 ]
 
 { #category : #'as yet unclassified' }
