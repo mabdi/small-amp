@@ -6,14 +6,12 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod [
-	(self setTestMethodStarting: aTestMethod).
-		
+	self setTestMethodStarting: aTestMethod.
 	self snapshotHere: aTestMethod.
 	(self isRecoveredFromCrash: aTestMethod)
 		ifTrue: [ ^ self ].
 	super amplifyATestMethod: aTestMethod.
-	(self setTestMethodFinished: aTestMethod)
-		
+	
 ]
 
 { #category : #private }
@@ -31,49 +29,25 @@ SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> eventFile [
-	^ FileLocator imageDirectory / '_smallamp_last_event.json'
-]
-
-{ #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> evidenceFile [
 	^ FileLocator imageDirectory / '_smallamp_crash_evidence.json'
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> isEventPresent: anEvent [
-	^ self eventFile exists
+SAMainLoopSnapshotsFast >> filenameForCurrentTest [
+	^ FileLocator imageDirectory / '_smallamp_current_method_'
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> isRecoveredFromCrash: aTestMethod [
-	| file json record |
-	file := self methods_state_file.
-	json := STONJSON fromStream: file readStream.
-	record := json at: aTestMethod selector.
-	record == 'starting'
-		ifFalse: [ SmallAmp <~ 'skipping test method: ' , aTestMethod selector
-				, ' reason: ' , record.
-			^ true ]
+	| file current |
+	file := self filenameForCurrentTest.
+	current := file contents.
+	current == aTestMethod selector
 		ifTrue: [ ^ false ]
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> methods_state_file [
-	^ FileLocator imageDirectory / '_smallamp_methods_state.json'
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> resetCurrentState [
-	self stateFile exists
-		ifTrue: [ self stateFile delete ]
-]
-
-{ #category : #private }
-SAMainLoopSnapshotsFast >> restoreState [
-	self stateFile exists
-		ifFalse: [ ^ nil ].
-	^ FLMaterializer materializeFromFileNamed: self stateFile basename
+		ifFalse: [ SmallAmp <~ 'Recovered from a crash - skipping test method: '
+				, aTestMethod selector.
+			^ true ]
 ]
 
 { #category : #private }
@@ -86,21 +60,6 @@ SAMainLoopSnapshotsFast >> saveCrashEvidence: aDictionary [
 		close
 ]
 
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> saveEvent: anEvent [
-	| str |
-	str := STONJSON toString: anEvent.
-	(self eventFile) writeStream
-		truncate;
-		nextPutAll: str;
-		close
-]
-
-{ #category : #private }
-SAMainLoopSnapshotsFast >> saveTheState: anState [
-	FLSerializer serialize: anState toFileNamed: self stateFile basename
-]
-
 { #category : #actions }
 SAMainLoopSnapshotsFast >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
@@ -108,29 +67,15 @@ SAMainLoopSnapshotsFast >> selectionFrom: aList [
 ]
 
 { #category : #initialization }
-SAMainLoopSnapshotsFast >> setTestMethod: aTestMethod status: anStatus [
-	| file str json |
-	file := self methods_state_file.
-	json := file exists
-		ifTrue: [ STONJSON fromStream: file readStream ]
-		ifFalse: [ Dictionary new ].
-	json at: '_current_' put: aTestMethod selector.
-	json at: aTestMethod selector put: anStatus.
-	str := STONJSON toString: json.
-	self methods_state_file writeStream
-		truncate;
-		nextPutAll: str;
-		close
-]
-
-{ #category : #initialization }
-SAMainLoopSnapshotsFast >> setTestMethodFinished: aTestMethod [
-	self setTestMethod: aTestMethod status: 'success'
-]
-
-{ #category : #initialization }
 SAMainLoopSnapshotsFast >> setTestMethodStarting: aTestMethod [
-	self setTestMethod: aTestMethod status: 'starting'
+	| file |
+	file := self filenameForCurrentTest.
+	file exists
+		ifTrue: [ file delete ].
+	self filenameForCurrentTest writeStream
+		truncate;
+		nextPutAll: aTestMethod selector;
+		close
 ]
 
 { #category : #'as yet unclassified' }
@@ -146,21 +91,8 @@ SAMainLoopSnapshotsFast >> setupSelection [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> snapshot: anEvent [
-	anEvent at: #testClass put: testClass name.
-	self saveEvent: anEvent.
-	Smalltalk snapshot: true andQuit: false.
-	^ self isEventPresent: anEvent
-]
-
-{ #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> snapshotHere: aTestMethod [
 	self evidenceFile exists
 		ifTrue: [ self evidenceFile delete ].
 	Smalltalk snapshot: true andQuit: false
-]
-
-{ #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> stateFile [
-	^ FileLocator imageDirectory / '_smallamp_last_state.fl'
 ]
