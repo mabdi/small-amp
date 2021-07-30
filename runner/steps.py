@@ -240,12 +240,8 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className):
       os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
       os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
 
-      with open('_smallamp_methods_state.json') as jsonFile:
-         jsonObject = json.loads(jsonFile.read())
-      testMethod = jsonObject['_current_']
-      jsonObject[testMethod] = 'recovered'
-      with open('_smallamp_methods_state.json', 'w') as jsonFile:
-         jsonFile.write(json.dumps(jsonObject))
+      with open('_smallamp_current_method_', 'w') as currentFile:
+         currentFile.write('')
       
       cmd = cmd2
 
