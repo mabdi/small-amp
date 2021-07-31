@@ -6,10 +6,10 @@ MutationTestingAnalysis >> discardFailings [
 	fails := OrderedCollection new.
 	(mutantsEvaluationStrategy testCasesToEvaluate: testCases for: self)
 		do: [ :aTestCase | 
-			[ aTestCase run ]
+			[ aTestCase runChecked ]
 				on: TestsWithErrorsException
 				do: [ :ex | fails add: aTestCase ] ].
-	testCases := testCases reject: [ :t  | fails includes: t ]
+	testCases := testCases reject: [ :t | fails includes: t ]
 ]
 
 { #category : #'*SmallAmp' }

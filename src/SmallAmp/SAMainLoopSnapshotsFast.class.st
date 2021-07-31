@@ -43,10 +43,12 @@ SAMainLoopSnapshotsFast >> isRecoveredFromCrash: aTestMethod [
 	| file current |
 	file := self filenameForCurrentTest.
 	current := file contents.
-	current == aTestMethod selector
+	current = aTestMethod selector
 		ifTrue: [ ^ false ]
-		ifFalse: [ SmallAmp <~ 'Recovered from a crash - skipping test method: '
-				, aTestMethod selector.
+		ifFalse: [ SmallAmp
+				<~
+					('Recovered from a crash - skipping test method: '
+						, aTestMethod selector).
 			^ true ]
 ]
 
