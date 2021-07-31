@@ -9,6 +9,7 @@ from config import *
 from zipfile import ZipFile
 import time
 from command import Command
+import subprocess
 
 def duplicateVM(force, projectName):
    destinationURL = projectsDirectory + projectName
@@ -216,6 +217,7 @@ def runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, i
    c.run(timeout=4 * 60 * 60)
 
 def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className):
+   syso('runAmplificationCI_snapshotsFast')
    tout = 15*60 # every 15 minute check for freeze
    tout_files = ['_smallamp_crash_evidence.json']
    
@@ -237,9 +239,10 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className):
       else:
          syso('A possible crash for className: {}'.format(className))
       timestamp = int(time.time())
+      syso(subprocess.check_output('ls -al', shell=True, text=True))
       os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
       os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
-
+      syso(subprocess.check_output('ls -al', shell=True, text=True))
       with open('_smallamp_current_method_', 'w') as currentFile:
          currentFile.write('')
       
