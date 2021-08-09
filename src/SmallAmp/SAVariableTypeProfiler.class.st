@@ -69,21 +69,22 @@ SAVariableTypeProfiler >> executeAfterNode: node context: theContext [
 
 { #category : #removing }
 SAVariableTypeProfiler >> executeAfterNode: node context: theContext object: theObject [
+
 	| type |
 	self variablesTypes
 		at: self class instanceVariablesKey
 		ifAbsent: [ self profileInstanceVariables: theObject ].
 	node isVariable ifFalse: [ ^ self ].
-	node isGlobal
-		ifTrue: [ "type := self class environment at: node name" ^ self ].	"don't waist resources by keeping Globals"
-	node isTemp
-		ifTrue: [ type := (theContext tempNamed: node name) class ].
-	node isInstance
-		ifTrue: [ type := (theObject instVarNamed: node name) class ].
-	type
-		ifNotNil: [ self variablesTypes
-				at: node methodNode selector , ':' , node name
-				put: type ]
+	node isLiteralVariable ifTrue: [ "type := self class environment at: node name" 
+		^ self ]. "don't waist resources by keeping Globals"
+	node isTempVariable ifTrue: [ 
+		type := (theContext tempNamed: node name) class ].
+	node isInstanceVariable ifTrue: [ 
+		type := (theObject instVarNamed: node name) class ].
+	type ifNotNil: [ 
+		self variablesTypes
+			at: node methodNode selector , ':' , node name
+			put: type ]
 ]
 
 { #category : #'as yet unclassified' }

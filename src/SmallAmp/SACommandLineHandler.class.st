@@ -97,6 +97,9 @@ SACommandLineHandler >> runInMode [
 	mode = 'diffSnapshotsFast'
 		ifTrue: [ cnf := SAConfig diffBased.
 			cnf mainloop: SAMainLoopSnapshotsFast  ].
+	mode = 'dspotFast'
+		ifTrue: [ cnf := SAConfig dspotAllamps.
+			cnf mainloop: SAMainLoopSnapshotsFast  ].
 	mode = 'diff'
 		ifTrue: [ cnf := SAConfig diffBased.
 			cnf mainloop: SAMainLoopDspot ].

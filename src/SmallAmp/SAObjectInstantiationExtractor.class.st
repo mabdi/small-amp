@@ -12,42 +12,37 @@ Class {
 
 { #category : #running }
 SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: theContext object: theObject [
+
 	| val argVars instVars tempVars leftHandSide samples |
 	"skip x:= 10"
-	theNode value isLiteralNode & theNode value isLiteralArray not
+	theNode value isLiteralNode & theNode value isLiteralArray not 
 		ifTrue: [ ^ self ].
-	theNode value isVariable
-		ifTrue: [ ^ self ].
+	theNode value isVariable ifTrue: [ ^ self ].
 	instVars := theNode value allVariables select: #isInstance.
-	tempVars := (theNode value allVariables select: #isTemp)
-		reject: #isArgument.
+	tempVars := (theNode value allVariables select: #isTemp) reject:
+		            #isArgument.
 	argVars := theNode value allVariables select: #isArgument.
 	samples := Dictionary new.
-	instVars := instVars
-		collect: [ :v | 
-			val := theObject instVarNamed: v name.
-			val isLiteral
-				ifTrue: [ samples at: v name put: val ].
-			v name -> val class ].
-	tempVars := tempVars
-		collect: [ :v | 
-			val := theContext tempNamed: v name.
-			val isLiteral
-				ifTrue: [ samples at: v name put: val ].
-			v name -> val class ].
-	theNode variable isTemp
-		ifTrue: [ leftHandSide := theContext tempNamed: theNode variable name ].
-	theNode variable isInstance
-		ifTrue: [ leftHandSide := theObject instVarNamed: theNode variable name ].
+	instVars := instVars collect: [ :v | 
+		            val := theObject instVarNamed: v name.
+		            val isLiteral ifTrue: [ samples at: v name put: val ].
+		            v name -> val class ].
+	tempVars := tempVars collect: [ :v | 
+		            val := theContext tempNamed: v name.
+		            val isLiteral ifTrue: [ samples at: v name put: val ].
+		            v name -> val class ].
+	theNode variable isTempVariable ifTrue: [ 
+		leftHandSide := theContext tempNamed: theNode variable name ].
+	theNode variable isInstanceVariable ifTrue: [ 
+		leftHandSide := theObject instVarNamed: theNode variable name ].
 	leftHandSide ifNil: [ "self halt" ].
 	patterns at: leftHandSide class name ifAbsentPut: [ Set new ].
-	(patterns at: leftHandSide class name)
-		add:
-			{(#node -> theNode value copy).
+	(patterns at: leftHandSide class name) add: { 
+			(#node -> theNode value copy).
 			(#instVars -> instVars asDictionary).
 			"(#argVars -> argVars asDictionary)."
 			(#samples -> samples).
-			(#tempVars -> tempVars asDictionary)} asDictionary
+			(#tempVars -> tempVars asDictionary) } asDictionary
 ]
 
 { #category : #initialization }

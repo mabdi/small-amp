@@ -57,10 +57,11 @@ SAMuTalkFirstFailOracleReduction >> getAssertTransformer [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> hasAnySelfCall: newTree [
+
 	"keep if has any msg call to self"
 
-	^ newTree allChildren
-		anySatisfy: [ :node | node isMessage and: [ node receiver isSelf ] ]
+	^ newTree allChildren anySatisfy: [ :node | 
+		  node isMessage and: [ node receiver isSelfVariable ] ]
 ]
 
 { #category : #'as yet unclassified' }
