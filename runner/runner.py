@@ -122,7 +122,8 @@ def githubCIMain():
       "total_jobs": int(os.getenv('SMALLAMP_ALLJOBS')),
       "iteration": os.getenv('SMALLAMP_iteration'),
       "maxInputs": os.getenv('SMALLAMP_maxInputs'),
-      "mode": os.getenv('SMALLAMP_mode')
+      "mode": os.getenv('SMALLAMP_mode'),
+      "testClasses": os.getenv('SMALLAMP_testClasses')
    }
    print(args, flush=True)
    runAmplificationCI(args)

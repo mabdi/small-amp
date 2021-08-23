@@ -345,6 +345,17 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
    else:
       syso('No crashes found.')
 
+def loadTodoFile(base, cwd):
+   todoFile = base + '/' + todoFileName
+   if not os.path.exists(todoFile):
+     syso('todo file not found, skipping')
+     os.chdir(cwd)
+     return
+
+   with open(todoFile,"r") as f:
+      todo = f.readlines()
+
+   return todo
 
 def runAmplificationCI(args):
    repo = args['repo']
@@ -358,19 +369,17 @@ def runAmplificationCI(args):
    iteration = args['iteration']
    maxInputs = args['maxInputs']
    mode = args['mode']
+   testClasses = args['testClasses']
 
+   if testClasses:
+      todo = [x for x in testClasses.split(',')]
+   else:
+      todo = loadTodoFile()
    syso('CI for:'+ repo)
    cwd = os.getcwd()
    os.chdir(base)
 
-   todoFile = base + '/' + todoFileName
-   if not os.path.exists(todoFile):
-     syso('todo file not found, skipping')
-     os.chdir(cwd)
-     return
-
-   with open(todoFile,"r") as f:
-      todo = f.readlines()
+   
 
    if not os.path.exists('out'):
        os.makedirs('out')
