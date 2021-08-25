@@ -39,12 +39,15 @@ SAInstantiationTransplanterTest >> genClass2 [
 
 { #category : #'as yet unclassified' }
 SAInstantiationTransplanterTest >> genClass3 [
+
 	cls := SAGenericMethods new
-		makeClassFrom:
-			{'setUp s := FakeSmallBank new. s deposit: 10'.
-			'testO0 | s0 | s0 := ''Hi''' . 'testO1 | s2 t | t := FakeSmallBank new. t deposit: 34. s2 := String streamContents: [ :stream |  stream nextPutAll: t balance asString;lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
-			'testO2 | s2 | s2 := String streamContents: [ :stream |  stream nextPutAll: s balance asString;lf;nextPutAll: ''Foo'' ]'}
-		instanceVars: 's'
+		       makeClassFrom:
+			       { 
+			'setUp s := FakeSmallBank new. s deposit: 10'.
+			'testO0 | s0 | s0 := ''Hi'''. 
+			'testO1 | s2 t | t := FakeSmallBank new. t deposit: 34. s2 := String streamContents: [ :stream |  stream nextPutAll: t balance asString;lf;nextPutAll: ''Bar'' ]. 4+ 1. ''ss'' size '.
+			'testO2 | s2 | s2 := String streamContents: [ :stream |  stream nextPutAll: s balance asString;lf;nextPutAll: ''Foo'' ]' }
+		       instanceVars: 's'
 ]
 
 { #category : #running }
@@ -381,28 +384,25 @@ SAInstantiationTransplanterTest >> testCase2 [
 
 { #category : #tests }
 SAInstantiationTransplanterTest >> testCase3 [
+
 	| aSAObjectInstantiationExtractor items res codes type |
 	self genClass3.
 	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
 	aSAObjectInstantiationExtractor testClass: cls.
 	aSAObjectInstantiationExtractor run.
-	transplanter
-		instantiationPatterns: aSAObjectInstantiationExtractor patterns.
-	items := #(testO0)
-		collect: [ :sel | 
-			SATestMethod
-				with: (cls >> sel) sourceCode
-				class: cls
-				targets: {ByteString} ].
+	transplanter instantiationPatterns:
+		aSAObjectInstantiationExtractor patterns.
+	items := #( testO0 ) collect: [ :sel | 
+		         SATestMethod
+			         with: (cls >> sel) sourceCode
+			         class: cls
+			         targets: { ByteString } ].
 	type := self variableTypesProfile: items first.
 	transplanter variableTypes: type.
 	res := items first inputAmplifyBy: transplanter.
 	codes := self sortResult: res.
 	self assert: codes size equals: 2.
-	self
-		assertMethodSourceCode: codes first
-		equals:
-			'test
+	self assertMethodSourceCode: codes first equals: 'test
 	| s0 t |
 	t := FakeSmallBank new.
 	s0 := String
@@ -411,10 +411,7 @@ SAInstantiationTransplanterTest >> testCase3 [
 				nextPutAll: t balance asString;
 				lf;
 				nextPutAll: ''Bar'' ]'.
-	self
-		assertMethodSourceCode: codes second
-		equals:
-			'test
+	self assertMethodSourceCode: codes second equals: 'test
 	| s0 |
 	s0 := String
 		streamContents: [ :stream | 
@@ -422,6 +419,164 @@ SAInstantiationTransplanterTest >> testCase3 [
 				nextPutAll: s balance asString;
 				lf;
 				nextPutAll: ''Foo'' ]'
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor1 [
+
+	| aSAObjectInstantiationExtractor |
+	self genClass1.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: cls.
+	aSAObjectInstantiationExtractor run.
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 1.
+	self assert:
+		(aSAObjectInstantiationExtractor patterns includesKey: #ByteString).
+	self
+		assert:
+		(aSAObjectInstantiationExtractor patterns at: #ByteString) size
+		equals: 3.
+	self
+		assertSourceCode:
+		'String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]'
+		in:
+			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+				 collect: [ :x | (x at: #node) formattedCode ]).
+	self
+		assertSourceCode: '1 asString'
+		in:
+			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+				 collect: [ :x | (x at: #node) formattedCode ]).
+	self
+		assertSourceCode: ''':'' join: { ''Foo''. ''Bar'' }'
+		in:
+			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+				 collect: [ :x | (x at: #node) formattedCode ]).
+	self assert: ((aSAObjectInstantiationExtractor patterns at: #ByteString) allSatisfy: [ :x | (x at: #tempVars) isEmpty & (x at: #instVars) isEmpty & (x at: #samples) isEmpty])
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor2 [
+
+	| aSAObjectInstantiationExtractor |
+	self genClass2.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: cls.
+	aSAObjectInstantiationExtractor run.
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 1.
+	self assert:
+		(aSAObjectInstantiationExtractor patterns includesKey: #ByteString).
+	self
+		assert:
+		(aSAObjectInstantiationExtractor patterns at: #ByteString) size
+		equals: 3.
+	self
+		assertSourceCode:
+		'String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]'
+		in:
+			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+				 collect: [ :x | (x at: #node) formattedCode ]).
+
+	self assert:
+		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+			 anySatisfy: [ :x | (x at: #node) dump
+					 = (RBParser parseExpression: 'x asString') dump
+					 & ((x at: #instVars) includesAssociation: (#x-> SmallInteger)) & (x at: #tempVars) isEmpty
+					 & ((x at: #samples) includesAssociation: #x -> 10)
+				 ]).
+	self assert:
+		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+			 anySatisfy: [ :x | (x at: #node) dump
+					 = (RBParser parseExpression: 'c asString') dump
+					 & ((x at: #instVars) isEmpty) & ((x at: #tempVars) includesAssociation: #c -> SmallInteger)
+					 & ((x at: #samples) includesAssociation: #c -> 15)
+				 ]).
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor3 [
+
+	| aSAObjectInstantiationExtractor |
+	self genClass3.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: cls.
+	aSAObjectInstantiationExtractor run.
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 2.
+	self assert:
+		(aSAObjectInstantiationExtractor patterns includesKey: #FakeSmallBank).
+	self assert:
+		(aSAObjectInstantiationExtractor patterns includesKey: #ByteString).
+	
+	self
+		assert:
+		(aSAObjectInstantiationExtractor patterns at: #ByteString) size
+		equals: 3.
+	self
+		assertSourceCode:
+		'String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]'
+		in:
+			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+				 collect: [ :x | (x at: #node) formattedCode ]).
+
+	self assert:
+		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+			 anySatisfy: [ :x | 
+				 (x at: #node) dump
+				 = (RBParser parseExpression: 'x asString') dump
+				 & ((x at: #instVars) includesAssociation: #x -> SmallInteger)
+				 & (x at: #tempVars) isEmpty
+				 & ((x at: #samples) includesAssociation: #x -> 10) ]).
+	self assert:
+		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
+			 anySatisfy: [ :x | 
+				 (x at: #node) dump
+				 = (RBParser parseExpression: 'c asString') dump
+				 & (x at: #instVars) isEmpty
+				 & ((x at: #tempVars) includesAssociation: #c -> SmallInteger)
+				 & ((x at: #samples) includesAssociation: #c -> 15) ])
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor4 [
+
+	| aSAObjectInstantiationExtractor aCls |
+	aCls := SAGenericMethods new
+		        makeClassFrom:
+		        { 'testO0 | s0 s2 s3 | s0 := ''Hi''. s3 := s0' }
+		        instanceVars: ''.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: aCls.
+	aSAObjectInstantiationExtractor run.
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 0.
+	
+]
+
+{ #category : #tests }
+SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor5 [
+
+	| aSAObjectInstantiationExtractor aCls |
+	aCls := SAGenericMethods new
+		        makeClassFrom: { 'testO0 | s0 s2 s3 | s0 := #(a b)' }
+		        instanceVars: ''.
+	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
+	aSAObjectInstantiationExtractor testClass: aCls.
+	aSAObjectInstantiationExtractor run.
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 1.
+	self assert:
+		(aSAObjectInstantiationExtractor patterns includesKey: #Array).
+	self
+		assert: (aSAObjectInstantiationExtractor patterns at: #Array) size
+		equals: 1.
+	self
+		assertSourceCode:
+			((aSAObjectInstantiationExtractor patterns at: #Array) asArray
+				 first at: #node) formattedCode
+		equals: '#(a b)'.
+	self assert:
+		((aSAObjectInstantiationExtractor patterns at: #Array) allSatisfy: [ 
+			 :x | 
+			 (x at: #tempVars) isEmpty & (x at: #instVars) isEmpty
+			 & (x at: #samples) isEmpty ])
 ]
 
 { #category : #'as yet unclassified' }

@@ -19,9 +19,7 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 		ifTrue: [ ^ self ].
 	theNode value isVariable ifTrue: [ ^ self ].
 	instVars := theNode value allVariables select: #isInstance.
-	tempVars := (theNode value allVariables select: #isTemp) reject:
-		            #isArgument.
-	argVars := theNode value allVariables select: #isArgument.
+	tempVars := theNode value allVariables select: #isTemp.
 	samples := Dictionary new.
 	instVars := instVars collect: [ :v | 
 		            val := theObject instVarNamed: v name.
@@ -35,7 +33,8 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 		leftHandSide := theContext tempNamed: theNode variable name ].
 	theNode variable isInstanceVariable ifTrue: [ 
 		leftHandSide := theObject instVarNamed: theNode variable name ].
-	leftHandSide ifNil: [ "self halt" ].
+	leftHandSide ifNil: [ self halt ].
+	leftHandSide class name = #UndefinedObject ifTrue: [ self halt ].
 	patterns at: leftHandSide class name ifAbsentPut: [ Set new ].
 	(patterns at: leftHandSide class name) add: { 
 			(#node -> theNode value copy).

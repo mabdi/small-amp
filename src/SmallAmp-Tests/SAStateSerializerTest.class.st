@@ -95,14 +95,17 @@ SAStateSerializerTest >> testArrayDeep [
 
 { #category : #tests }
 SAStateSerializerTest >> testBlock [
+
 	| item obj |
-	obj := [:x | 1 + 2].
+	obj := [ :x | 1 + 2 ].
 	item := obj
-		smallAmpAcceptSerializerVisitor: self getASerializer
-		atDepth: 0.
+		        smallAmpAcceptSerializerVisitor: self getASerializer
+		        atDepth: 0.
 	self assert: item class equals: SAObservationBlockClosure.
-	self assert: item theClass equals: BlockClosure.
-	self assert: item theValue sourceNode equals: [:x | 1 + 2] sourceNode
+	self assert: item theClass equals: [ ] class.
+	self
+		assert: item theValue sourceNode
+		equals: [ :x | 1 + 2 ] sourceNode
 ]
 
 { #category : #tests }
@@ -184,7 +187,7 @@ SAStateSerializerTest >> testFilterObserversOn [
 	"an OrderedCollection(SAObservationPrimitive>>#isPrimitive)"
 	obj := #key -> 0.
 	res := serializer filterObserversOn: obj.
-	self assert: res size equals: 5.
+	self assert: ((res collect: #selector) includesAll: #(name value)).
 	"an OrderedCollection(LookupKey>>#isVariableBinding LookupKey>>#key LookupKey>>#name Association>>#needsFullDefinition Association>>#value)"
 	obj := 1 @ 1.
 	res := serializer filterObserversOn: obj.
