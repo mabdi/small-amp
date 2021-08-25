@@ -28,9 +28,10 @@ SAMainLoopDspot >> amplify [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
+
 	| theATS theV theU |
-			SmallAmp <~ aTestMethod selector.
-			self variableTypesProfile: aTestMethod.
+	SmallAmp <~ aTestMethod selector.
+	self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
@@ -39,17 +40,18 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	theATS addAll: theU.
 	(1 to: config iterations)
 		do: [ :gen | 
+			SmallAmp <~ ('iteration: ', gen asString).
 			theV := self inputAmplificationFrom: theV.
 			theU := self assertionAmplificationFor: (theV collect: #clone).
 			theU := self selectionFrom: theU.
 			theATS addAll: theU ]
-		displayingProgress: 'Main loop' , ' (' , config iterations asString , ')'.
-	theATS := theATS
-		collect: [ :item | 
-			| c |
-			c := item cleanedUpCopy.
-			c signAsSmallAmp.
-			c ].
+		displayingProgress:
+		'Main loop' , ' (' , config iterations asString , ')'.
+	theATS := theATS collect: [ :item | 
+		          | c |
+		          c := item cleanedUpCopy.
+		          c signAsSmallAmp.
+		          c ].
 	resultPeople addAll: theATS
 ]
 
@@ -65,20 +67,21 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 
 { #category : #actions }
 SAMainLoopDspot >> finalSteps [
+
 	| generatedClass readable |
+	SmallAmp <~ 'final steps'.
 	generatedClass := SAGenericMethods new
-		buildTestClassAndLogWith: (resultPeople collect: #testMethod)
-		using: testClass smallAmpOriginalTestCase.
+		                  buildTestClassAndLogWith:
+		                  (resultPeople collect: #testMethod)
+		                  using: testClass smallAmpOriginalTestCase.
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
 	SAGenericMethods new moveClassToFinal: readable.
-	finalResult
-		amplifiedAnalysis:
-			(selection
-				analysisFor: {finalResult amplifiedClass}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal)
+	finalResult amplifiedAnalysis: (selection
+			 analysisFor: { finalResult amplifiedClass }
+			 targets: targetClasses
+			 ignore: finalResult failedSelectorInOriginal)
 	"self installAmplifiedTests: readable"
 ]
 
