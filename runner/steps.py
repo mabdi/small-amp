@@ -370,16 +370,19 @@ def runAmplificationCI(args):
    maxInputs = args['maxInputs']
    mode = args['mode']
    testClasses = args['testClasses']
-
-   if testClasses:
-      todo = [x for x in testClasses.split(',')]
-   else:
-      todo = loadTodoFile()
+   
    syso('CI for:'+ repo)
    cwd = os.getcwd()
    os.chdir(base)
-
    
+   if testClasses:
+      syso('Parsing workflow input')
+      todo = [x for x in testClasses.split(',')]
+   else:
+      syso('Loading todo file')
+      todo = loadTodoFile(base, cwd)
+   
+   syso('Todo file:' + str(todo))
 
    if not os.path.exists('out'):
        os.makedirs('out')
