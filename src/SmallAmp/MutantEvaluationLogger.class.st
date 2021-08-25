@@ -36,9 +36,12 @@ MutantEvaluationLogger >> initialize [
 
 { #category : #evaluation }
 MutantEvaluationLogger >> installMetaLinkTo: aNode [
+
+	aNode isSequence ifTrue: [ aNode statements ifEmpty: [ ^ self ]  ].
 	aNode isMessage
 		ifFalse: [ aNode link: self getMetaLink ]
-		ifTrue: [ aNode isInlined
+		ifTrue: [ 
+			aNode isInlined
 				ifTrue: [ self installMetaLinkTo: aNode receiver ]
 				ifFalse: [ aNode link: self getMetaLinkMessage ] ]
 ]
