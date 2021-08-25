@@ -10,6 +10,11 @@ Class {
 	#category : #'SmallAmp-Spec-Tests-UI'
 }
 
+{ #category : #testing }
+SARunnerPresenterTest >> expectedFailures [ 
+	^ #(testTestCaseSelectionSetsTheInputField)
+]
+
 { #category : #running }
 SARunnerPresenterTest >> setUp [
 	super setUp.

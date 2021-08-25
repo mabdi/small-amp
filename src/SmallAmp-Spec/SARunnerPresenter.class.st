@@ -89,12 +89,12 @@ SARunnerPresenter >> diff: aMethod with: anotherMethod [
 
 { #category : #initialization }
 SARunnerPresenter >> initializePresenters [
+
 	testCasesList := self newList.
 	testCasesList
 		beSingleSelection;
-		display: [ :testConfiguration | 
-			testConfiguration displayString ];
-		icons: [ :testConfiguration |
+		display: [ :testConfiguration | testConfiguration displayString ];
+		displayIcon: [ :testConfiguration | 
 			self iconNamed: testConfiguration icon ].
 	testTargetTextInput := self newTextInput.
 	testTargetTextInput enabled: false.
