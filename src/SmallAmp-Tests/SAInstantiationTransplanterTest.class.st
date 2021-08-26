@@ -73,9 +73,9 @@ SAInstantiationTransplanterTest >> sortResult: res [
 ]
 
 { #category : #running }
-SAInstantiationTransplanterTest >> tearDown [ 
-	cls ifNotNil: [
-	cls removeFromSystem].
+SAInstantiationTransplanterTest >> tearDown [
+
+cls ifNotNil: [ cls removeFromSystem ]
 ]
 
 { #category : #tests }
@@ -501,19 +501,17 @@ SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor3 [
 	aSAObjectInstantiationExtractor := SAObjectInstantiationExtractor new.
 	aSAObjectInstantiationExtractor testClass: cls.
 	aSAObjectInstantiationExtractor run.
-	self assert: aSAObjectInstantiationExtractor patterns size equals: 2.
-	self assert:
-		(aSAObjectInstantiationExtractor patterns includesKey: #FakeSmallBank).
+	self assert: aSAObjectInstantiationExtractor patterns size equals: 1.
 	self assert:
 		(aSAObjectInstantiationExtractor patterns includesKey: #ByteString).
-	
+
 	self
 		assert:
 		(aSAObjectInstantiationExtractor patterns at: #ByteString) size
-		equals: 3.
+		equals: 2.
 	self
 		assertSourceCode:
-		'String streamContents: [ :stream |  stream nextPutAll: ''Foo'';lf;nextPutAll: ''Bar'' ]'
+		'String streamContents: [ :stream |  stream nextPutAll: t balance asString;lf;nextPutAll: ''Bar'' ]'
 		in:
 			((aSAObjectInstantiationExtractor patterns at: #ByteString) 
 				 collect: [ :x | (x at: #node) formattedCode ]).
@@ -521,19 +519,14 @@ SAInstantiationTransplanterTest >> testSAObjectInstantiationExtractor3 [
 	self assert:
 		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
 			 anySatisfy: [ :x | 
-				 (x at: #node) dump
-				 = (RBParser parseExpression: 'x asString') dump
-				 & ((x at: #instVars) includesAssociation: #x -> SmallInteger)
-				 & (x at: #tempVars) isEmpty
-				 & ((x at: #samples) includesAssociation: #x -> 10) ]).
+				 ((x at: #instVars) includesAssociation: #s -> FakeSmallBank)
+				 & (x at: #tempVars) isEmpty & (x at: #samples) isEmpty ]).
 	self assert:
 		((aSAObjectInstantiationExtractor patterns at: #ByteString) 
 			 anySatisfy: [ :x | 
-				 (x at: #node) dump
-				 = (RBParser parseExpression: 'c asString') dump
-				 & (x at: #instVars) isEmpty
-				 & ((x at: #tempVars) includesAssociation: #c -> SmallInteger)
-				 & ((x at: #samples) includesAssociation: #c -> 15) ])
+				 (x at: #instVars) isEmpty & ((x at: #tempVars) 
+					 includesAssociation:
+					 #t -> FakeSmallBank) & (x at: #samples) isEmpty ])
 ]
 
 { #category : #tests }
