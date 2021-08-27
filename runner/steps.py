@@ -382,7 +382,7 @@ def runAmplificationCI(args):
       syso('Loading todo file')
       todo = loadTodoFile(base, cwd)
    
-   syso('Todo file:' + str(todo))
+   syso('Todo list:' + str(todo))
 
    if not os.path.exists('out'):
        os.makedirs('out')
@@ -395,14 +395,22 @@ def runAmplificationCI(args):
        if not className:
           continue
        syso('Amplifying: ' + className + ' (i: ' + str(i) + ', all: '+ str(total_jobs) + ')' )
-       if 'Snapshots' in mode:
-          if 'Fast' in mode:
-            runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
-          else:
-            runAmplificationCI_snapshoted(imgFile, vm, mode, className)
-       else:
+       
+       
+       if mode == 'dspotSnapshots':
+          runAmplificationCI_snapshoted(imgFile, vm, mode, className)
+       if mode == 'dspot':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
-          
+       if mode == 'diffSnapshots':
+          runAmplificationCI_snapshoted(imgFile, vm, mode, className)
+       if mode == 'diffSnapshotsFast':
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
+       if mode == 'dspotFast':
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
+       if mode == 'diff':
+          runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
+         
+         
    # verifyCrashes(repo, base)
    os.chdir(cwd)
    runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base)
