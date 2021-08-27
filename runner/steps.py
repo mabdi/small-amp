@@ -335,6 +335,8 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
    file_paths = []
    file_paths.extend(glob.glob(base+'/crash_event_*.json'))
    file_paths.extend(glob.glob(base+'/crash_evidence_*.json'))
+   file_paths.extend(glob.glob(base+'/PharoDebug_*.json'))
+   
    
    if len(file_paths) > 0:
       with ZipFile(zipFileResults, 'w') as zip:
