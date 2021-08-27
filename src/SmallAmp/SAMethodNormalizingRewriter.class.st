@@ -29,12 +29,11 @@ SAMethodNormalizingRewriter >> addTemporaryVariables [
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> extractVariableFrom: aNode [
-	aNode isAssignment
-		ifTrue: [ ^ aNode variable ].
-	aNode isSelfOrSuper
-		ifTrue: [ ^ self generateATemp ].
-	(aNode isVariable and: [ aNode name first isUppercase not ])
-		ifTrue: [ ^ aNode ].
+
+	aNode isAssignment ifTrue: [ ^ aNode variable ].
+	aNode isSelfOrSuperVariable ifTrue: [ ^ self generateATemp ].
+	(aNode isVariable and: [ aNode name first isUppercase not ]) ifTrue: [ 
+		^ aNode ].
 	^ self generateATemp
 ]
 
@@ -82,30 +81,33 @@ SAMethodNormalizingRewriter >> normalizeAssignment: anAssignmentNode assignTo: a
 
 { #category : #'as yet unclassified' }
 SAMethodNormalizingRewriter >> normalizeCascadeNode: aCascadeNode assignTo: assignTo [
+
 	| receiver result receiverVar aVariable tmpMsg |
 	result := OrderedCollection new.
 	receiver := aCascadeNode messages anyOne receiver.
 	receiverVar := receiver.
-	({receiverVar isMessage.
-	receiverVar isCascade.
-	receiverVar isAssignment} anySatisfy: #value)
-		ifTrue: [ receiverVar := self extractVariableFrom: receiverVar ].
-	(receiverVar isSelfOrSuper or: [receiverVar name first isUppercase])
+	({ 
+		 receiverVar isMessage.
+		 receiverVar isCascade.
+		 receiverVar isAssignment } anySatisfy: #value) ifTrue: [ 
+		receiverVar := self extractVariableFrom: receiverVar ].
+	(receiverVar isSelfOrSuperVariable or: [ receiverVar name first isUppercase ]) 
 		ifTrue: [ receiverVar := self generateATemp ].
 	aVariable := assignTo ifNil: [ receiverVar ] ifNotNil: [ assignTo ].
 	"tmp := self extractVariableFrom: receiver."
-	result
-		addAll: (receiver smallAmpNormalizeWith: self assignTo: receiverVar).
-	aCascadeNode messages
-		doWithIndex: [ :amsg :i | 
-			tmpMsg := amsg copy.
-			receiver isVariable
-				ifTrue: [ tmpMsg receiver: receiver ]
-				ifFalse: [ tmpMsg receiver: receiverVar ].
-			i = aCascadeNode messages size
-				ifTrue: [ result
-						addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: aVariable) ]
-				ifFalse: [ result addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: nil) ] ].
+	result addAll:
+		(receiver smallAmpNormalizeWith: self assignTo: receiverVar).
+	aCascadeNode messages doWithIndex: [ :amsg :i | 
+		tmpMsg := amsg copy.
+		receiver isVariable
+			ifTrue: [ tmpMsg receiver: receiver ]
+			ifFalse: [ tmpMsg receiver: receiverVar ].
+		i = aCascadeNode messages size
+			ifTrue: [ 
+				result addAll:
+					(tmpMsg smallAmpNormalizeWith: self assignTo: aVariable) ]
+			ifFalse: [ 
+			result addAll: (tmpMsg smallAmpNormalizeWith: self assignTo: nil) ] ].
 	^ result
 ]
 

@@ -155,16 +155,16 @@ SAMuTalkFirstFailOracleReduction >> removeErrorBlocks: newTree [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> stripMethod: newTree [
+
 	| last |
 	last := 0.
-	newTree statements
-		withIndexDo: [ :stmt :idx | 
-			(stmt allChildren
-				anySatisfy: [ :s | s isMessage and: [ s receiver isSelf ] ])
-				ifTrue: [ last := idx ] ].
-	[ newTree statements size > last ]
-		whileTrue: [ newTree statements removeLast ].
-	^ newTree formattedCode 
+	newTree statements withIndexDo: [ :stmt :idx | 
+		(stmt allChildren anySatisfy: [ :s | 
+			 s isMessage and: [ s receiver isSelfVariable ] ]) ifTrue: [ 
+			last := idx ] ].
+	[ newTree statements size > last ] whileTrue: [ 
+		newTree statements removeLast ].
+	^ newTree formattedCode
 ]
 
 { #category : #running }

@@ -16,7 +16,7 @@ SAObjectInstantiationExtractorTest >> testNumber1 [
 	self assert: instance patterns size equals: 1.
 	self
 		assert: (((instance patterns at: #FakeSmallBank) asArray first) at: #node)
-		equals: (RBParser parseExpression: 'FakeSmallBank  new')
+		equals: (RBParser parseExpression: 'FakeSmallBank  with: #empty')
 ]
 
 { #category : #tests }

@@ -16,8 +16,9 @@ FakeSmallBankTest >> testDeposit [
 
 { #category : #tests }
 FakeSmallBankTest >> testInit [
+
 	| b |
-	b := FakeSmallBank new.
+	b := FakeSmallBank with: #empty.
 	self assert: b balance equals: 0
 ]
 

@@ -34,7 +34,7 @@ SAHashAssertionAmplifierTest >> testCase1 [
 		equals:
 			'testInit
 	| b |
-	b := FakeSmallBank new.
+	b := FakeSmallBank with: #empty.
 	self
 		assertObjectState: FakeSmallBank
 		varName: ''FakeSmallBank''
@@ -53,7 +53,7 @@ SAHashAssertionAmplifierTest >> testCase1 [
 			'testInit
 	<smallAmpCoveres: ''RemoveCaretOperator#FakeSmallBank#rand#28#50''>
 	| b |
-	b := FakeSmallBank new.
+	b := FakeSmallBank with: #empty.
 	self assert: b class equals: FakeSmallBank.
 	self assert: b rand class equals: SmallInteger'
 ]

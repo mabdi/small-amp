@@ -7,6 +7,12 @@ Class {
 	#category : #'SmallAmp-Tests-Fakes'
 }
 
+{ #category : #'instance creation' }
+FakeSmallBank class >> with: message [
+	
+	^ self new
+]
+
 { #category : #accessing }
 FakeSmallBank >> balance [
 	^ balance

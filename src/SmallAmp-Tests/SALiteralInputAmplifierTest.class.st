@@ -36,15 +36,13 @@ SALiteralInputAmplifierTest >> testArrayDouble [
 
 { #category : #tests }
 SALiteralInputAmplifierTest >> testBoolean [
+
 	| res |
-	res := SALiteralInputAmplifier new
-		amplifyInputsSource: 'foo |a| a:=false'.
-	self
-		assert: res asString
-		equals:
-			'an OrderedCollection(''foo
+	res := SALiteralInputAmplifier new amplifyInputsSource:
+		       'foo |a| a:=false'.
+	self assertMethodSourceCode: res first equals: 'foo
 	| a |
-	a := true'')'
+	a := true'
 ]
 
 { #category : #tests }
@@ -125,13 +123,11 @@ SALiteralInputAmplifierTest >> testFraction [
 
 { #category : #tests }
 SALiteralInputAmplifierTest >> testInteger [
+
 	| res |
-	res := SALiteralInputAmplifier new
-		amplifyInputsSource:  'foo |a| a:=10'.
-	self
-		assert: (res at: 1) asString
-		equals:
-			'foo
+	res := SALiteralInputAmplifier new amplifyInputsSource:
+		       'foo |a| a:=10'.
+	self assertMethodSourceCode: (res at: 1) asString equals: 'foo
 	| a |
 	a := 11'
 ]
@@ -197,13 +193,11 @@ SALiteralInputAmplifierTest >> testLiteralArray [
 
 { #category : #tests }
 SALiteralInputAmplifierTest >> testString [
+
 	| res |
-	res := SALiteralInputAmplifier new
-		amplifyInputsSource: 'foo |a| a:=''Hello World'''.
-	self
-		assert: (res at: 1) asString
-		equals:
-			'foo
+	res := SALiteralInputAmplifier new amplifyInputsSource:
+		       'foo |a| a:=''Hello World'''.
+	self assertMethodSourceCode: (res at: 1) asString equals: 'foo
 	| a |
 	a := '''''
 ]
