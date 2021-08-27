@@ -223,6 +223,31 @@ SAMainLoopDspot >> regenerateMethod: aMethodName [
 					ifNone: [ ^ nil ] ] ]
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> scoreMuthodsUnderTestBy: analysis [
+
+	| methodsScore |
+	methodsScore := Dictionary new.
+	analysis particularResults do: [ :mutant | 
+		| currentScore |
+		currentScore := methodsScore
+			                at: mutant mutant originalMethod name
+			                ifAbsentPut: 0.
+		methodsScore
+			at: mutant mutant originalMethod name
+			put: currentScore + 1 ].
+		^ methodsScore 
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> scoreTests: analysis [
+
+	| methodsScore |
+	methodsScore := self scoreMuthodsUnderTestBy: analysis .
+	theTS do: [ :testModel | testModel scoreWith: methodsScore ]
+	
+]
+
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
@@ -231,14 +256,17 @@ SAMainLoopDspot >> selectionFrom: aList [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> setupSelection [
+
+	| analysis |
 	selection := config selection initializeWith: config.
-	finalResult
-		originalAnalysis:
-			(selection
-				initialAnalysisFor: {testClass smallAmpOriginalTestCase}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal).
-	selection uncovered ifEmpty: [ SANoUncovered new signal ]
+	analysis := selection
+		            initialAnalysisFor:
+		            { testClass smallAmpOriginalTestCase }
+		            targets: targetClasses
+		            ignore: finalResult failedSelectorInOriginal.
+	finalResult originalAnalysis: analysis.
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	self scoreTests: analysis
 ]
 
 { #category : #'as yet unclassified' }

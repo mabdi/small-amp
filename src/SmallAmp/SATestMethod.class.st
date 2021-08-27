@@ -139,6 +139,21 @@ SATestMethod >> renamedCopy: postfix [
 	^ obj
 ]
 
+{ #category : #'as yet unclassified' }
+SATestMethod >> scoreWith: methodsScore [
+
+	| immediateCovered totalCovered |
+	immediateCovered := SACoverageCountingHelper new
+		                    testMethod: self testMethod;
+		                    testClass: self testClass;
+		                    findImmediateCoveredMethods.
+	totalCovered := SACoverageCountingHelper new
+		                testMethod: self testMethod;
+		                testClass: self testClass;
+		                findAllCoveredMethods.
+	^ immediateCovered * 2 + totalCovered
+]
+
 { #category : #accessing }
 SATestMethod >> selector [
 	^ selector ifNil: [ 
