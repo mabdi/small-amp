@@ -7,7 +7,8 @@ Class {
 		'testTargets',
 		'selector',
 		'selectorOriginal',
-		'observedState'
+		'observedState',
+		'score'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -139,6 +140,12 @@ SATestMethod >> renamedCopy: postfix [
 	^ obj
 ]
 
+{ #category : #accessing }
+SATestMethod >> score [
+
+	^ score
+]
+
 { #category : #'as yet unclassified' }
 SATestMethod >> scoreWith: methodsScore [
 
@@ -161,7 +168,7 @@ SATestMethod >> scoreWith: methodsScore [
 		                   sum.
 
 	self flag: #todo. "make me configurable"
-	^ sumImmediateCovered * 2 + (sumTotalCovered )
+	score := sumImmediateCovered * 2 + sumTotalCovered
 ]
 
 { #category : #accessing }

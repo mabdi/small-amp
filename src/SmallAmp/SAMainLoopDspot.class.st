@@ -15,13 +15,14 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
+
 	theTS := self initTs.
 	self setupSelection.
 	self methodProfiling.
-	theTS
-		do: [ :aTestMethod | 
-			self amplifyATestMethod: aTestMethod ]
-		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
+	self rankedPopulation
+		do: [ :aTestMethod | self amplifyATestMethod: aTestMethod ]
+		displayingProgress: [ :aTestMethod | 
+		'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
 	^ finalResult
 ]
@@ -193,6 +194,13 @@ SAMainLoopDspot >> prettifying [
 	| prettifier |
 	prettifier := config prettifier initializeWith: config.
 			prettifier prettify: finalResult amplifiedClass
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> rankedPopulation [
+
+	^ (theTS select: [ :mtd | mtd score > 0 ]) sort: [ :a :b | 
+		a score > b score ]
 ]
 
 { #category : #actions }
