@@ -142,16 +142,26 @@ SATestMethod >> renamedCopy: postfix [
 { #category : #'as yet unclassified' }
 SATestMethod >> scoreWith: methodsScore [
 
-	| immediateCovered totalCovered |
+	| immediateCovered totalCovered sumImmediateCovered sumTotalCovered |
 	immediateCovered := SACoverageCountingHelper new
+		                    selector: self selector;
 		                    testMethod: self testMethod;
 		                    testClass: self testClass;
+		                    coverageOn: methodsScore keys;
 		                    findImmediateCoveredMethods.
 	totalCovered := SACoverageCountingHelper new
+		                selector: self selector;
 		                testMethod: self testMethod;
 		                testClass: self testClass;
+		                coverageOn: methodsScore keys;
 		                findAllCoveredMethods.
-	^ immediateCovered * 2 + totalCovered
+	sumImmediateCovered := (immediateCovered collect: [ :x | 
+		                        methodsScore at: x ]) sum.
+	sumTotalCovered := (totalCovered collect: [ :x | methodsScore at: x ])
+		                   sum.
+
+	self flag: #todo. "make me configurable"
+	^ sumImmediateCovered * 2 + (sumTotalCovered )
 ]
 
 { #category : #accessing }

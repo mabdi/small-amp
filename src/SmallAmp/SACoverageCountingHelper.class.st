@@ -16,8 +16,11 @@ Class {
 { #category : #'as yet unclassified' }
 SACoverageCountingHelper >> checkInCoverageScope: receiver selector: selector [
 
-(coverageOn includes: receiver class) ifTrue: [ 
-		covereds add: (receiver class lookupSelector: selector) name ]
+	| method |
+	method := receiver class lookupSelector: selector.
+	method class = SAProfilingProxy ifTrue: [ method := method method ].
+	(coverageOn includes: method ) ifTrue: [ 
+		covereds add: method ]
 ]
 
 { #category : #accessing }
@@ -35,13 +38,10 @@ SACoverageCountingHelper >> executeBeforeSendReceiver: receiver selector: select
 { #category : #'as yet unclassified' }
 SACoverageCountingHelper >> findAllCoveredMethods [
 
-	"Install proxies (by metalink?) to all methods under test in the scope.
-	"
-
-	^ self
-		  generateAndRunProfiler: [ 
-			  self installProxies ]
-		  cleaner: [ self uninstallProxies. self removeTempClass ]
+	^ self generateAndRunProfiler: [ self installProxies ] cleaner: [ 
+		  self uninstallProxies.
+		  self removeTempClass ].
+	
 ]
 
 { #category : #'as yet unclassified' }
@@ -98,8 +98,8 @@ SACoverageCountingHelper >> installMessageSendingMetalinks [
 { #category : #'as yet unclassified' }
 SACoverageCountingHelper >> installProxies [
 
-	coverageOn do: [ :cls | 
-		cls methods do: [ :mtd | self installProxyOn: mtd ] ]
+	coverageOn  
+		 do: [ :mtd | self installProxyOn: mtd ] 
 ]
 
 { #category : #'as yet unclassified' }

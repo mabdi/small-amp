@@ -61,6 +61,11 @@ SAProfilingProxy class >> on: aCompiledMethod profiler: action [
 	^ self basicNew initializeOn: aCompiledMethod profiler: action
 ]
 
+{ #category : #comparing }
+SAProfilingProxy >> = sth [
+	^ self method = sth
+]
+
 { #category : #initialization }
 SAProfilingProxy >> doesNotUnderstand: aMessage [
 	"Messages not understood by myself are forwarded to the CompiledMethod I hold."
@@ -71,6 +76,12 @@ SAProfilingProxy >> doesNotUnderstand: aMessage [
 { #category : #printing }
 SAProfilingProxy >> gtDisplayString [
 	^ self class name
+]
+
+{ #category : #comparing }
+SAProfilingProxy >> hash [
+
+	^ self method hash
 ]
 
 { #category : #initialization }

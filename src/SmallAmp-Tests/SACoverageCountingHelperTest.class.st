@@ -45,17 +45,16 @@ SACoverageCountingHelperTest >> testAllCoveredMethods [
 	b2 := FakeSmallBank new.
 	b2 loadFrom: b1.'.
 	allCovered := SACoverageCountingHelper new
-		                    selector: #testTempLoadFrom;
-		                    testMethod: testMethod;
-		                    testClass: self getTestClass;
-		                    coverageOn: { self getClassUnderTest }.
+		              selector: #testTempLoadFrom;
+		              testMethod: testMethod;
+		              testClass: self getTestClass;
+		              coverageOn: self getClassUnderTest methods.
 	allCovered := allCovered findAllCoveredMethods.
 	self assert: allCovered isNotEmpty.
 	self assert: (allCovered includesAll: ({ 
-				(self getClassUnderTest >> #deposit:).  
-				(self getClassUnderTest >> #balance).
-				  (self getClassUnderTest >> #initialize) } collect: #name)).
-	
+				  (self getClassUnderTest >> #deposit:).
+				  (self getClassUnderTest >> #balance).
+				  (self getClassUnderTest >> #initialize) } ))
 ]
 
 { #category : #tests }
@@ -67,11 +66,10 @@ SACoverageCountingHelperTest >> testImmediateCovered [
 		                    testMethod:
 			                    (FakeSmallBankTest >> #testWithdraw) sourceCode;
 		                    testClass: self getTestClass;
-		                    coverageOn: { self getClassUnderTest }.
+		                    coverageOn: self getClassUnderTest methods.
 	immediateCovered := immediateCovered findImmediateCoveredMethods.
 	self assert: immediateCovered isNotEmpty.
-	self assert: (immediateCovered includesAll:
-			 (self getMethodsUnderTest collect: #name)).
-	self deny: (immediateCovered includes: 
-				  (self getClassUnderTest >> #initialize) name)
+	self assert: (immediateCovered includesAll: self getMethodsUnderTest).
+	self deny: (immediateCovered includes:
+			 (self getClassUnderTest >> #initialize) )
 ]

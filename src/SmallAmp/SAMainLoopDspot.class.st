@@ -231,12 +231,12 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: analysis [
 	analysis particularResults do: [ :mutant | 
 		| currentScore |
 		currentScore := methodsScore
-			                at: mutant mutant originalMethod name
+			                at: mutant mutant originalMethod 
 			                ifAbsentPut: 0.
 		methodsScore
-			at: mutant mutant originalMethod name
+			at: mutant mutant originalMethod 
 			put: currentScore + 1 ].
-		^ methodsScore 
+	^ methodsScore
 ]
 
 { #category : #'as yet unclassified' }
