@@ -8,7 +8,10 @@ Class {
 		'selector',
 		'selectorOriginal',
 		'observedState',
-		'score'
+		'score',
+		'immediateCovered',
+		'totalCovered',
+		'isAmplified'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -65,6 +68,11 @@ SATestMethod >> clone [
 	^ obj
 ]
 
+{ #category : #initialization }
+SATestMethod >> initialize [ 
+	self isAmplified: false
+]
+
 { #category : #accessing }
 SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUnderTest [
 	self initialize.
@@ -93,6 +101,18 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 						formattedCode.
 			idx := idx + 1.
 			cp ]
+]
+
+{ #category : #accessing }
+SATestMethod >> isAmplified [
+
+	^ isAmplified
+]
+
+{ #category : #accessing }
+SATestMethod >> isAmplified: anObject [
+
+	isAmplified := anObject
 ]
 
 { #category : #removing }
@@ -149,23 +169,31 @@ SATestMethod >> score [
 { #category : #'as yet unclassified' }
 SATestMethod >> scoreWith: methodsScore [
 
-	| immediateCovered totalCovered sumImmediateCovered sumTotalCovered |
-	immediateCovered := SACoverageCountingHelper new
-		                    selector: self selector;
-		                    testMethod: self testMethod;
-		                    testClass: self testClass;
-		                    coverageOn: methodsScore keys;
-		                    findImmediateCoveredMethods.
-	totalCovered := SACoverageCountingHelper new
-		                selector: self selector;
-		                testMethod: self testMethod;
-		                testClass: self testClass;
-		                coverageOn: methodsScore keys;
-		                findAllCoveredMethods.
-	sumImmediateCovered := (immediateCovered collect: [ :x | 
-		                        methodsScore at: x ]) sum.
-	sumTotalCovered := (totalCovered collect: [ :x | methodsScore at: x ])
-		                   sum.
+	| sumImmediateCovered sumTotalCovered |
+	immediateCovered ifNil: [ 
+		immediateCovered := SACoverageCountingHelper new
+			                    selector: self selector;
+			                    testMethod: self testMethod;
+			                    testClass: self testClass;
+			                    coverageOn: methodsScore keys;
+			                    findImmediateCoveredMethods ].
+	totalCovered ifNil: [ 
+		totalCovered := SACoverageCountingHelper new
+			                selector: self selector;
+			                testMethod: self testMethod;
+			                testClass: self testClass;
+			                coverageOn: methodsScore keys;
+			                findAllCoveredMethods ].
+	sumImmediateCovered := immediateCovered
+		                        ifEmpty: [ 0 ]
+		                        ifNotEmpty: [ 
+		                       (immediateCovered collect: [ :x | 
+			                        methodsScore at: x ]) sum ].
+	sumTotalCovered := totalCovered
+		                   ifEmpty:   [ 0 ]
+		                    ifNotEmpty: [ 
+		                   (totalCovered collect: [ :x | methodsScore at: x ])
+			                   sum ].
 
 	self flag: #todo. "make me configurable"
 	score := sumImmediateCovered * 2 + sumTotalCovered

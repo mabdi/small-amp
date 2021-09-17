@@ -18,14 +18,16 @@ SATestMethodTest >> testInitFrom [
 { #category : #tests }
 SATestMethodTest >> testScoreWith [
 
-	| weights |
+	| weights model |
 	weights := { 
 		           (FakeSmallBank >> #deposit: -> 4).
 		           (FakeSmallBank >> #balance -> 1).
 		           (FakeSmallBank >> #initialize -> 5) } asDictionary.
+	model := SATestMethod from: FakeSmallBankTest >> #testDeposit.
+	((model) scoreWith:
+				 weights).
 	self
 		assert:
-			((SATestMethod from: FakeSmallBankTest >> #testDeposit) scoreWith:
-				 weights)
+			model score
 		equals: 35
 ]
