@@ -188,11 +188,11 @@ SATestMethod >> scoreWith: methodsScore [
 		                        ifEmpty: [ 0 ]
 		                        ifNotEmpty: [ 
 		                       (immediateCovered collect: [ :x | 
-			                        methodsScore at: x ]) sum ].
+			                        methodsScore at: x ifAbsent: [ 0 ] ]) sum ].
 	sumTotalCovered := totalCovered
 		                   ifEmpty:   [ 0 ]
 		                    ifNotEmpty: [ 
-		                   (totalCovered collect: [ :x | methodsScore at: x ])
+		                   (totalCovered collect: [ :x | methodsScore at: x ifAbsent: [ 0 ] ])
 			                   sum ].
 
 	self flag: #todo. "make me configurable"

@@ -58,6 +58,34 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	resultPeople addAll: theATS
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> amplifyNotRanking [
+
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
+	self scoreTests.
+	nextTest ifNotNil: [ :aTestMethod | 
+		self amplifyATestMethod: aTestMethod.
+		self scoreTests ].
+	self finalSteps.
+	^ finalResult
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> amplifyRanking [
+
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
+	self scoreTests.
+	nextTest ifNotNil: [ :aTestMethod | 
+		self amplifyATestMethod: aTestMethod.
+		self scoreTests ].
+	self finalSteps.
+	^ finalResult
+]
+
 { #category : #private }
 SAMainLoopDspot >> assertionAmplificationFor: aList [
 	aList
