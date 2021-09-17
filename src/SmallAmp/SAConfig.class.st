@@ -19,7 +19,8 @@ Class {
 		'testRunTimeOutMult',
 		'timeBudget',
 		'mainloop',
-		'hashClass'
+		'hashClass',
+		'ranking'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -34,9 +35,20 @@ SAConfig class >> default [
 ]
 
 { #category : #accessing }
+SAConfig class >> defaultRanking [
+
+	^ self dspotAllamps
+		ranking: true;
+		  minPop: 10;
+		  maxPop: 200;
+		  yourself
+]
+
+{ #category : #accessing }
 SAConfig class >> diffBased [
 
 	^ self new
+		ranking: false;
 		  iterations: 3;
 		  assertionAmplifier: SADiffAssertionAmplifier;
 		  flackyTestRepeat: 10;
@@ -69,6 +81,7 @@ SAConfig class >> diffBased [
 SAConfig class >> dspotAllamps [
 
 	^ self new
+		ranking: false;
 		  iterations: 3;
 		  assertionAmplifier: SADspotAssertionAmplifier;
 		  flackyTestRepeat: 10;

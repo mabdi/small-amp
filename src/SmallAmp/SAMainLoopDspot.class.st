@@ -18,15 +18,7 @@ Class {
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
 
-	theTS := self initTs.
-	self setupSelection.
-	self methodProfiling.
-	self scoreTests.
-	nextTest ifNotNil: [ :aTestMethod | 
-		self amplifyATestMethod: aTestMethod.
-		self scoreTests ].
-	self finalSteps.
-	^ finalResult
+	^ self config ranking ifTrue: [ self amplifyRanking  ] ifFalse: [ self amplifyNotRanking  ]
 ]
 
 { #category : #'as yet unclassified' }
