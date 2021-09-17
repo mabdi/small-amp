@@ -9,7 +9,8 @@ Class {
 		'assertAmplifier',
 		'instantiationExtractor',
 		'variableTypes',
-		'nextTest'
+		'nextTest',
+		'sumScores'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -125,8 +126,10 @@ SAMainLoopDspot >> initialize [
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop myScore: aScore [
 
-	| applyTransformation newcodes tmp amps testsSize |
-	testsSize :=  aScore * (config maxPop - config minPop) + config minPop.
+	| applyTransformation newcodes tmp amps testsSizeHalf |
+	testsSizeHalf := (0.5 * aScore / sumScores
+	                  * (config maxPop - config minPop) + config minPop)
+		                 asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
@@ -143,23 +146,23 @@ SAMainLoopDspot >> inputAmplificationFrom: pop myScore: aScore [
 	amps
 		do: [ :amp | 
 			| tmp2 |
-			tmp2 := (config maxPop / 2 / amps size) ceiling.
+			tmp2 := (testsSizeHalf / amps size) ceiling.
 			(pop shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := pop size > (testsSize / 2)
-		       ifTrue: [ tmp shuffle takeFirst: testsSize / 2 ]
+	tmp := pop size > (testsSizeHalf )
+		       ifTrue: [ tmp shuffle takeFirst: testsSizeHalf  ]
 		       ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 
 			| tmp2 |
-			tmp2 := (testsSize / 2 + 1 / tmp size) ceiling.
+			tmp2 := (testsSizeHalf + 1 / tmp size) ceiling.
 			(amps shuffle takeFirst: (tmp2 min: amps size)) do: [ :amp | 
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle takeFirst: testsSize
+	^ newcodes shuffle takeFirst: testsSizeHalf * 2
 ]
 
 { #category : #accessing }
@@ -255,10 +258,14 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 SAMainLoopDspot >> scoreTests [
 
 	| methodsScore |
+	selection uncovered ifEmpty: [ ^ self ].
 	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	nextTest := nil.
+	sumScores := 0.
 	(theTS reject: #isAmplified) do: [ :testModel | 
+		
 		testModel scoreWith: methodsScore.
+		sumScores := sumScores + testModel score.
 		nextTest
 			ifNil: [ nextTest := testModel ]
 			ifNotNil: [ 
