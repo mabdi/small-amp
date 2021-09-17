@@ -41,8 +41,8 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	theATS addAll: theU.
 	(1 to: config iterations)
 		do: [ :gen | 
-			SmallAmp <~ ('iteration: ', gen asString).
-			theV := self inputAmplificationFrom: theV.
+			SmallAmp <~ ('iteration: ' , gen asString).
+			theV := self inputAmplificationFrom: theV myScore: aTestMethod score.
 			theU := self assertionAmplificationFor: (theV collect: #clone).
 			theU := self selectionFrom: theU.
 			theATS addAll: theU ]
@@ -123,37 +123,82 @@ SAMainLoopDspot >> initialize [
 
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [
-	| applyTransformation newcodes tmp amps |
+
+	| applyTransformation newcodes tmp amps testsSize |
+	testsSize := config maxPop.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
-	amplifier isTypeSensitive
-		ifTrue: [ amplifier variableTypes: variableTypes ].
-	amplifier isTransplantation
-		ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-	newcodes addAll: (tcase inputAmplifyBy: amplifier) ].
-	tmp := (pop collect: #clone)
-		do: [ :tcase | 
-			tcase strip.
-			tcase normalize ].
+	                       amplifier isTypeSensitive ifTrue: [ 
+		                       amplifier variableTypes: variableTypes ].
+	                       amplifier isTransplantation ifTrue: [ 
+		                       amplifier instantiationPatterns:
+			                       instantiationExtractor patterns ].
+	                       newcodes addAll:
+		                       (tcase inputAmplifyBy: amplifier) ].
+	tmp := (pop collect: #clone) do: [ :tcase | 
+		       tcase strip.
+		       tcase normalize ].
 	amps
 		do: [ :amp | 
 			| tmp2 |
 			tmp2 := (config maxPop / 2 / amps size) ceiling.
-			(pop shuffle takeFirst: (tmp2 min: pop size))
-				do: [ :tcase | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := pop size > (config maxPop / 2)
-		ifTrue: [ tmp shuffle takeFirst: config maxPop / 2 ]
-		ifFalse: [ tmp ].
+			(pop shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 1' , ' (' , amps size asString , ')'.
+	tmp := pop size > (testsSize / 2)
+		       ifTrue: [ tmp shuffle takeFirst: testsSize / 2 ]
+		       ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 
 			| tmp2 |
-			tmp2 := ((config maxPop / 2 + 1) / tmp size) ceiling.
-			(amps shuffle takeFirst: (tmp2 min: amps size))
-				do: [ :amp | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle takeFirst: config maxPop
+			tmp2 := (testsSize / 2 + 1 / tmp size) ceiling.
+			(amps shuffle takeFirst: (tmp2 min: amps size)) do: [ :amp | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
+	^ newcodes shuffle takeFirst: testsSize
+]
+
+{ #category : #private }
+SAMainLoopDspot >> inputAmplificationFrom: pop myScore: aScore [
+
+	| applyTransformation newcodes tmp amps testsSize |
+	testsSize := config maxPop.
+	amps := self inputAmplifiers.
+	newcodes := OrderedCollection new.
+	applyTransformation := [ :amplifier :tcase | 
+	                       amplifier isTypeSensitive ifTrue: [ 
+		                       amplifier variableTypes: variableTypes ].
+	                       amplifier isTransplantation ifTrue: [ 
+		                       amplifier instantiationPatterns:
+			                       instantiationExtractor patterns ].
+	                       newcodes addAll:
+		                       (tcase inputAmplifyBy: amplifier) ].
+	tmp := (pop collect: #clone) do: [ :tcase | 
+		       tcase strip.
+		       tcase normalize ].
+	amps
+		do: [ :amp | 
+			| tmp2 |
+			tmp2 := (config maxPop / 2 / amps size) ceiling.
+			(pop shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 1' , ' (' , amps size asString , ')'.
+	tmp := pop size > (testsSize / 2)
+		       ifTrue: [ tmp shuffle takeFirst: testsSize / 2 ]
+		       ifFalse: [ tmp ].
+	tmp
+		do: [ :tcase | 
+			| tmp2 |
+			tmp2 := (testsSize / 2 + 1 / tmp size) ceiling.
+			(amps shuffle takeFirst: (tmp2 min: amps size)) do: [ :amp | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
+	^ newcodes shuffle takeFirst: testsSize
 ]
 
 { #category : #accessing }
