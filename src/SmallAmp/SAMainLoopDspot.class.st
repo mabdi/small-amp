@@ -71,7 +71,7 @@ SAMainLoopDspot >> amplifyRanking [
 	self setupSelection.
 	self methodProfiling.
 	self scoreTests.
-	nextTest ifNotNil: [ :aTestMethod | 
+	(nextTest isNotNil and: [self careTimeBudget]) whileTrue: [ :aTestMethod | 
 		self amplifyATestMethod: aTestMethod.
 		self scoreTests ].
 	self finalSteps.

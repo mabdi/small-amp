@@ -33,14 +33,6 @@ SAConfig class >> default [
 ]
 
 { #category : #accessing }
-SAConfig class >> defaultRanking [
-
-	^ self dspotAllamps
-		  maxPop: 200;
-		  yourself
-]
-
-{ #category : #accessing }
 SAConfig class >> diffBased [
 
 	^ self new
