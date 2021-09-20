@@ -123,6 +123,7 @@ def githubCIMain():
       "iteration": os.getenv('SMALLAMP_iteration'),
       "maxInputs": os.getenv('SMALLAMP_maxInputs'),
       "mode": os.getenv('SMALLAMP_mode'),
+      "timeBudget": os.getenv('SMALLAMP_timeBudget'),
       "testClasses": os.getenv('SMALLAMP_testClasses')
    }
    print(args, flush=True)
