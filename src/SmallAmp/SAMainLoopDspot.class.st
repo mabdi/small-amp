@@ -18,7 +18,7 @@ Class {
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
 
-	^ self config ranking ifTrue: [ self amplifyRanking  ] ifFalse: [ self amplifyNotRanking  ]
+	^ config ranking ifTrue: [ self amplifyRanking  ] ifFalse: [ self amplifyNotRanking  ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -36,7 +36,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	(1 to: config iterations)
 		do: [ :gen | 
 			SmallAmp <~ ('iteration: ' , gen asString).
-			theV := self inputAmplificationFrom: theV myScore: aTestMethod score.
+			theV := self inputAmplificationFrom: theV.
 			theU := self assertionAmplificationFor: (theV collect: #clone).
 			theU := self selectionFrom: theU.
 			theATS addAll: theU ]
@@ -144,12 +144,9 @@ SAMainLoopDspot >> initialize [
 ]
 
 { #category : #private }
-SAMainLoopDspot >> inputAmplificationFrom: pop myScore: aScore [
-
+SAMainLoopDspot >> inputAmplificationFrom: pop [ 
 	| applyTransformation newcodes tmp amps testsSizeHalf |
-	testsSizeHalf := (0.5 * aScore / sumScores
-	                  * (config maxPop - config minPop) + config minPop)
-		                 asInteger.
+	testsSizeHalf := (0.5 * config maxPop) asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 

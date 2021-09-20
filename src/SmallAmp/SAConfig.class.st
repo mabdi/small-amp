@@ -14,7 +14,6 @@ Class {
 		'testRunTimeOut',
 		'serializationMaxDepth',
 		'prettifier',
-		'minPop',
 		'maxPop',
 		'testRunTimeOutMult',
 		'timeBudget',
@@ -29,7 +28,6 @@ Class {
 SAConfig class >> default [
 
 	^ self dspotAllamps
-		  minPop: 10;
 		  maxPop: 200;
 		  yourself
 ]
@@ -38,8 +36,6 @@ SAConfig class >> default [
 SAConfig class >> defaultRanking [
 
 	^ self dspotAllamps
-		ranking: true;
-		  minPop: 10;
 		  maxPop: 200;
 		  yourself
 ]
@@ -48,8 +44,8 @@ SAConfig class >> defaultRanking [
 SAConfig class >> diffBased [
 
 	^ self new
+		iterations: 3;
 		ranking: false;
-		  iterations: 3;
 		  assertionAmplifier: SADiffAssertionAmplifier;
 		  flackyTestRepeat: 10;
 		  inputAmplifiers: { 
@@ -68,7 +64,6 @@ SAConfig class >> diffBased [
 		  testRunTimeOut: 300000;
 		  testRunTimeOutMult: 5;
 		  statementTimeOut: 2000;
-		  minPop: 10;
 		  maxPop: 100;
 		  debug: false;
 		  mainloop: SAMainLoopDspot;
@@ -102,7 +97,6 @@ SAConfig class >> dspotAllamps [
 		  testRunTimeOutMult: 5;
 		  statementTimeOut: 2000;
 		  maxPop: 100;
-		  minPop: 10;
 		  debug: false;
 		  mainloop: SAMainLoopDspot;
 		  timeBudget: 21600;
@@ -186,18 +180,6 @@ SAConfig >> maxPop: anObject [
 ]
 
 { #category : #accessing }
-SAConfig >> minPop [
-
-	^ minPop
-]
-
-{ #category : #accessing }
-SAConfig >> minPop: anObject [
-
-	minPop := anObject
-]
-
-{ #category : #accessing }
 SAConfig >> oracleReducion [
 	^ oracleReducion ifNil: [ selection defaultOracleReduction ]
 ]
@@ -226,6 +208,18 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
+]
+
+{ #category : #accessing }
+SAConfig >> ranking [
+
+	^ ranking
+]
+
+{ #category : #accessing }
+SAConfig >> ranking: anObject [
+
+	ranking := anObject
 ]
 
 { #category : #accessing }
