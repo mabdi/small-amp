@@ -7,7 +7,11 @@ Class {
 		'testTargets',
 		'selector',
 		'selectorOriginal',
-		'observedState'
+		'observedState',
+		'score',
+		'immediateCovered',
+		'totalCovered',
+		'isAmplified'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -64,6 +68,11 @@ SATestMethod >> clone [
 	^ obj
 ]
 
+{ #category : #initialization }
+SATestMethod >> initialize [ 
+	self isAmplified: false
+]
+
 { #category : #accessing }
 SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUnderTest [
 	self initialize.
@@ -92,6 +101,18 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 						formattedCode.
 			idx := idx + 1.
 			cp ]
+]
+
+{ #category : #accessing }
+SATestMethod >> isAmplified [
+
+	^ isAmplified
+]
+
+{ #category : #accessing }
+SATestMethod >> isAmplified: anObject [
+
+	isAmplified := anObject
 ]
 
 { #category : #removing }
@@ -137,6 +158,45 @@ SATestMethod >> renamedCopy: postfix [
 		       targets: self testTargets.
 	obj selectorAppend: postfix.
 	^ obj
+]
+
+{ #category : #accessing }
+SATestMethod >> score [
+
+	^ score
+]
+
+{ #category : #'as yet unclassified' }
+SATestMethod >> scoreWith: methodsScore [
+
+	| sumImmediateCovered sumTotalCovered |
+	immediateCovered ifNil: [ 
+		immediateCovered := SACoverageCountingHelper new
+			                    selector: self selector;
+			                    testMethod: self testMethod;
+			                    testClass: self testClass;
+			                    coverageOn: methodsScore keys;
+			                    findImmediateCoveredMethods ].
+	totalCovered ifNil: [ 
+		totalCovered := SACoverageCountingHelper new
+			                selector: self selector;
+			                testMethod: self testMethod;
+			                testClass: self testClass;
+			                coverageOn: methodsScore keys;
+			                findAllCoveredMethods ].
+	sumImmediateCovered := immediateCovered
+		                        ifEmpty: [ 0 ]
+		                        ifNotEmpty: [ 
+		                       (immediateCovered collect: [ :x | 
+			                        methodsScore at: x ifAbsent: [ 0 ] ]) sum ].
+	sumTotalCovered := totalCovered
+		                   ifEmpty:   [ 0 ]
+		                    ifNotEmpty: [ 
+		                   (totalCovered collect: [ :x | methodsScore at: x ifAbsent: [ 0 ] ])
+			                   sum ].
+
+	self flag: #todo. "make me configurable"
+	score := sumImmediateCovered * 2 + sumTotalCovered
 ]
 
 { #category : #accessing }

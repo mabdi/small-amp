@@ -5,7 +5,8 @@ Class {
 		'testClass',
 		'targetClasses',
 		'config',
-		'finalResult'
+		'finalResult',
+		'initalizeTime'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -22,8 +23,15 @@ SAMainLoop >> amplify [
 	^ self subclassResponsibility  
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoop >> careTimeBudget [
+	config timeBudget <= 0 ifTrue: [ ^ true ].
+	(self timestamp_now - initalizeTime) > config timeBudget ifTrue: [ ^ false ] 
+]
+
 { #category : #initialization }
 SAMainLoop >> initialize [
+	initalizeTime:= self timestamp_now.
 	finalResult := SAResultItem new.
 ]
 
@@ -35,6 +43,11 @@ SAMainLoop >> targetClasses [
 { #category : #accessing }
 SAMainLoop >> testClass [
 	^ testClass
+]
+
+{ #category : #initialization }
+SAMainLoop >> timestamp_now [
+	^ DateAndTime now asUnixTime
 ]
 
 { #category : #'instance creation' }

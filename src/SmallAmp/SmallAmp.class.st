@@ -140,7 +140,7 @@ SmallAmp >> amplifyAll [
 	amplifyList
 		do: [ :item | 
 			| instance |
-			self class <~ ('Run instance start: ' , item key name).
+			self class <~ ('Run instance start: ' , item key name, ', target: ', item value asString).
 			[ [ instance := self amplify: item key target: item value.
 			self class <~ 'Run instance finished successfully.'.
 			self class <~ ('Run instance finish: ' , item key name).

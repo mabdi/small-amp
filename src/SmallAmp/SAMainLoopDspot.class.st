@@ -8,22 +8,17 @@ Class {
 		'selection',
 		'assertAmplifier',
 		'instantiationExtractor',
-		'variableTypes'
+		'variableTypes',
+		'nextTest',
+		'sumScores'
 	],
 	#category : #'SmallAmp-Core'
 }
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplify [
-	theTS := self initTs.
-	self setupSelection.
-	self methodProfiling.
-	theTS
-		do: [ :aTestMethod | 
-			self amplifyATestMethod: aTestMethod ]
-		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
-	self finalSteps.
-	^ finalResult
+
+	^ config ranking ifTrue: [ self amplifyRanking  ] ifFalse: [ self amplifyNotRanking  ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -40,7 +35,7 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	theATS addAll: theU.
 	(1 to: config iterations)
 		do: [ :gen | 
-			SmallAmp <~ ('iteration: ', gen asString).
+			SmallAmp <~ ('iteration: ' , gen asString).
 			theV := self inputAmplificationFrom: theV.
 			theU := self assertionAmplificationFor: (theV collect: #clone).
 			theU := self selectionFrom: theU.
@@ -53,6 +48,34 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 		          c signAsSmallAmp.
 		          c ].
 	resultPeople addAll: theATS
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> amplifyNotRanking [
+
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
+	self scoreTests.
+	nextTest ifNotNil: [ :aTestMethod | 
+		self amplifyATestMethod: aTestMethod.
+		self scoreTests ].
+	self finalSteps.
+	^ finalResult
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> amplifyRanking [
+
+	theTS := self initTs.
+	self setupSelection.
+	self methodProfiling.
+	self scoreTests.
+	(nextTest isNotNil and: [self careTimeBudget]) whileTrue: [ :aTestMethod | 
+		self amplifyATestMethod: aTestMethod.
+		self scoreTests ].
+	self finalSteps.
+	^ finalResult
 ]
 
 { #category : #private }
@@ -121,38 +144,42 @@ SAMainLoopDspot >> initialize [
 ]
 
 { #category : #private }
-SAMainLoopDspot >> inputAmplificationFrom: pop [
-	| applyTransformation newcodes tmp amps |
+SAMainLoopDspot >> inputAmplificationFrom: pop [ 
+	| applyTransformation newcodes tmp amps testsSizeHalf |
+	testsSizeHalf := (0.5 * config maxPop) asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
-	amplifier isTypeSensitive
-		ifTrue: [ amplifier variableTypes: variableTypes ].
-	amplifier isTransplantation
-		ifTrue: [ amplifier instantiationPatterns: instantiationExtractor patterns ].
-	newcodes addAll: (tcase inputAmplifyBy: amplifier) ].
-	tmp := (pop collect: #clone)
-		do: [ :tcase | 
-			tcase strip.
-			tcase normalize ].
+	                       amplifier isTypeSensitive ifTrue: [ 
+		                       amplifier variableTypes: variableTypes ].
+	                       amplifier isTransplantation ifTrue: [ 
+		                       amplifier instantiationPatterns:
+			                       instantiationExtractor patterns ].
+	                       newcodes addAll:
+		                       (tcase inputAmplifyBy: amplifier) ].
+	tmp := (pop collect: #clone) do: [ :tcase | 
+		       tcase strip.
+		       tcase normalize ].
 	amps
 		do: [ :amp | 
 			| tmp2 |
-			tmp2 := (config maxPop / 2 / amps size) ceiling.
-			(pop shuffle takeFirst: (tmp2 min: pop size))
-				do: [ :tcase | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := pop size > (config maxPop / 2)
-		ifTrue: [ tmp shuffle takeFirst: config maxPop / 2 ]
-		ifFalse: [ tmp ].
+			tmp2 := (testsSizeHalf / amps size) ceiling.
+			(pop shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 1' , ' (' , amps size asString , ')'.
+	tmp := pop size > (testsSizeHalf )
+		       ifTrue: [ tmp shuffle takeFirst: testsSizeHalf  ]
+		       ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 
 			| tmp2 |
-			tmp2 := ((config maxPop / 2 + 1) / tmp size) ceiling.
-			(amps shuffle takeFirst: (tmp2 min: amps size))
-				do: [ :amp | applyTransformation value: amp value: tcase ] ]
-		displayingProgress: 'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle takeFirst: config maxPop
+			tmp2 := (testsSizeHalf + 1 / tmp size) ceiling.
+			(amps shuffle takeFirst: (tmp2 min: amps size)) do: [ :amp | 
+				applyTransformation value: amp value: tcase ] ]
+		displayingProgress:
+		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
+	^ newcodes shuffle takeFirst: testsSizeHalf * 2
 ]
 
 { #category : #accessing }
@@ -195,6 +222,13 @@ SAMainLoopDspot >> prettifying [
 			prettifier prettify: finalResult amplifiedClass
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> rankedPopulation [
+
+	^ (theTS select: [ :mtd | mtd score > 0 ]) sort: [ :a :b | 
+		a score > b score ]
+]
+
 { #category : #actions }
 SAMainLoopDspot >> regenerateMethod: aMethodName [
 	| method |
@@ -223,6 +257,51 @@ SAMainLoopDspot >> regenerateMethod: aMethodName [
 					ifNone: [ ^ nil ] ] ]
 ]
 
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
+
+	| methodsScore |
+	methodsScore := Dictionary new.
+	uncovered do: [ :mutant | 
+		| currentScore |
+		currentScore := methodsScore
+			                at: mutant mutant originalMethod
+			                ifAbsentPut: 0.
+		methodsScore at: mutant mutant originalMethod put: currentScore + 1 ].
+	^ methodsScore
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> scoreTests [
+
+	| methodsScore |
+	selection uncovered ifEmpty: [ ^ self ].
+	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
+	nextTest := nil.
+	sumScores := 0.
+	(theTS reject: #isAmplified) do: [ :testModel | 
+		
+		testModel scoreWith: methodsScore.
+		sumScores := sumScores + testModel score.
+		nextTest
+			ifNil: [ nextTest := testModel ]
+			ifNotNil: [ 
+			testModel score > nextTest score ifTrue: [ nextTest := testModel ] ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> scoreTests: analysis [
+
+	| methodsScore |
+	methodsScore := self scoreMuthodsUnderTestBy: analysis.
+	nextTest := nil.
+	(theTS reject: #isAmplified) do: [ :testModel | 
+		testModel scoreWith: methodsScore.
+		nextTest
+			ifNil: [ nextTest := testModel ]
+			ifNotNil: [ testModel score > nextTest score ifTrue: [ nextTest := testModel  ] ] ]
+]
+
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
 	aList ifEmpty: [ ^ {} ].
@@ -231,14 +310,17 @@ SAMainLoopDspot >> selectionFrom: aList [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> setupSelection [
+
+	| analysis |
 	selection := config selection initializeWith: config.
-	finalResult
-		originalAnalysis:
-			(selection
-				initialAnalysisFor: {testClass smallAmpOriginalTestCase}
-				targets: targetClasses
-				ignore: finalResult failedSelectorInOriginal).
-	selection uncovered ifEmpty: [ SANoUncovered new signal ]
+	analysis := selection
+		            initialAnalysisFor:
+		            { testClass smallAmpOriginalTestCase }
+		            targets: targetClasses
+		            ignore: finalResult failedSelectorInOriginal.
+	finalResult originalAnalysis: analysis.
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	
 ]
 
 { #category : #'as yet unclassified' }

@@ -14,3 +14,20 @@ SATestMethodTest >> testInitFrom [
 		raise: Error.
 	SATestMethod from: SmallBankTest >> #testDeposit "No Error"
 ]
+
+{ #category : #tests }
+SATestMethodTest >> testScoreWith [
+
+	| weights model |
+	weights := { 
+		           (FakeSmallBank >> #deposit: -> 4).
+		           (FakeSmallBank >> #balance -> 1).
+		           (FakeSmallBank >> #initialize -> 5) } asDictionary.
+	model := SATestMethod from: FakeSmallBankTest >> #testDeposit.
+	((model) scoreWith:
+				 weights).
+	self
+		assert:
+			model score
+		equals: 35
+]

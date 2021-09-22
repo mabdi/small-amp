@@ -18,77 +18,82 @@ Class {
 		'testRunTimeOutMult',
 		'timeBudget',
 		'mainloop',
-		'hashClass'
+		'hashClass',
+		'ranking'
 	],
 	#category : #'SmallAmp-Model'
 }
 
 { #category : #accessing }
 SAConfig class >> default [
+
 	^ self dspotAllamps
-		maxPop: 10;
-		yourself
+		  maxPop: 200;
+		  yourself
 ]
 
 { #category : #accessing }
 SAConfig class >> diffBased [
+
 	^ self new
 		iterations: 3;
-		assertionAmplifier: SADiffAssertionAmplifier;
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{(SALiteralInputAmplifier -> 1).
-			(SARemoveInputAmplifier -> 1).
-			(SADuplicateInputAmplifier -> 1).
-			(SAAddInputAmplifier -> 1).
-			(SARotateLiteralsInputAmplifier -> 1).
-			(SAUniqLiteralsInputAmplifier -> 1).
-			(SAInstantiationTransplanter -> 1).
-			(SANullifyInputAmplifier -> 1)};
-		profiler: SAProxyProfiler new;
-		selection: SAMutationTestingDiffSelection ;
-		oracleReducion: SANoOracleReduction ;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		statementTimeOut: 2000;
-		maxPop: 100;
-		debug: false;
-		mainloop: SAMainLoopDspot;
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
+		ranking: false;
+		  assertionAmplifier: SADiffAssertionAmplifier;
+		  flackyTestRepeat: 10;
+		  inputAmplifiers: { 
+				  (SALiteralInputAmplifier -> 1).
+				  (SARemoveInputAmplifier -> 1).
+				  (SADuplicateInputAmplifier -> 1).
+				  (SAAddInputAmplifier -> 1).
+				  (SARotateLiteralsInputAmplifier -> 1).
+				  (SAUniqLiteralsInputAmplifier -> 1).
+				  (SAInstantiationTransplanter -> 1).
+				  (SANullifyInputAmplifier -> 1) };
+		  profiler: SAProxyProfiler new;
+		  selection: SAMutationTestingDiffSelection;
+		  oracleReducion: SANoOracleReduction;
+		  prettifier: SADefaultPrettification;
+		  testRunTimeOut: 300000;
+		  testRunTimeOutMult: 5;
+		  statementTimeOut: 2000;
+		  maxPop: 100;
+		  debug: false;
+		  mainloop: SAMainLoopDspot;
+		  timeBudget: 21600;
+		  serializationMaxDepth: 3;
+		  yourself
 ]
 
 { #category : #accessing }
 SAConfig class >> dspotAllamps [
+
 	^ self new
-		iterations: 3;
-		assertionAmplifier: SADspotAssertionAmplifier;
-		flackyTestRepeat: 10;
-		inputAmplifiers:
-			{(SALiteralInputAmplifier -> 1).
-			(SARemoveInputAmplifier -> 1).
-			(SADuplicateInputAmplifier -> 1).
-			(SAAddInputAmplifier -> 1).
-			(SARotateLiteralsInputAmplifier -> 1).
-			(SAUniqLiteralsInputAmplifier -> 1).
-			(SAInstantiationTransplanter -> 1).
-			(SANullifyInputAmplifier -> 1)};
-		profiler: SAProxyProfiler new;
-		selection: SADSpotSelection;
-		oracleReducion: SAMuTalkFirstFailOracleReduction;
-		prettifier: SADefaultPrettification;
-		testRunTimeOut: 300000;
-		testRunTimeOutMult: 5;
-		
-		statementTimeOut: 2000;
-		maxPop: 100;
-		debug: false;
-		mainloop: SAMainLoopDspot;
-		timeBudget: 21600;
-		serializationMaxDepth: 3;
-		yourself
+		ranking: false;
+		  iterations: 3;
+		  assertionAmplifier: SADspotAssertionAmplifier;
+		  flackyTestRepeat: 10;
+		  inputAmplifiers: { 
+				  (SALiteralInputAmplifier -> 1).
+				  (SARemoveInputAmplifier -> 1).
+				  (SADuplicateInputAmplifier -> 1).
+				  (SAAddInputAmplifier -> 1).
+				  (SARotateLiteralsInputAmplifier -> 1).
+				  (SAUniqLiteralsInputAmplifier -> 1).
+				  (SAInstantiationTransplanter -> 1).
+				  (SANullifyInputAmplifier -> 1) };
+		  profiler: SAProxyProfiler new;
+		  selection: SADSpotSelection;
+		  oracleReducion: SAMuTalkFirstFailOracleReduction;
+		  prettifier: SADefaultPrettification;
+		  testRunTimeOut: 300000;
+		  testRunTimeOutMult: 5;
+		  statementTimeOut: 2000;
+		  maxPop: 100;
+		  debug: false;
+		  mainloop: SAMainLoopDspot;
+		  timeBudget: 21600;
+		  serializationMaxDepth: 3;
+		  yourself
 ]
 
 { #category : #accessing }
@@ -195,6 +200,18 @@ SAConfig >> profiler [
 SAConfig >> profiler: anObject [
 	profiler := anObject.
 	profiler config: self
+]
+
+{ #category : #accessing }
+SAConfig >> ranking [
+
+	^ ranking
+]
+
+{ #category : #accessing }
+SAConfig >> ranking: anObject [
+
+	ranking := anObject
 ]
 
 { #category : #accessing }

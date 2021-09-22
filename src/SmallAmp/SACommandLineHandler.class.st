@@ -73,13 +73,18 @@ SACommandLineHandler >> extraInformation [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> runInMode [
-	| cmd testClass aTestClass mode cnf |
+	| cmd testClass timeBudget aTestClass mode cnf |
 	cmd := '--testClass='.
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
 		ifFound: [ :arg | testClass := arg allButFirst: cmd size ]
 		ifNone: [ SmallAmp <~ '--testClass=TestClassName is required'.
 			^ self ].
+	cmd := '--timeBudget='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0. ].
 	cmd := '--mode='.
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
@@ -99,6 +104,9 @@ SACommandLineHandler >> runInMode [
 			cnf mainloop: SAMainLoopSnapshotsFast  ].
 	mode = 'dspotFast'
 		ifTrue: [ cnf := SAConfig dspotAllamps.
+			timeBudget > 0 ifTrue: [ 
+				cnf timeBudget: timeBudget * 60.
+				cnf ranking: true. ].
 			cnf mainloop: SAMainLoopSnapshotsFast  ].
 	mode = 'diff'
 		ifTrue: [ cnf := SAConfig diffBased.
