@@ -68,5 +68,7 @@ class Command(object):
             self.log('run-if exit')
 
     def code(self):
+        self.log('code called. check None: {}'.format(self.process is None))
         if self.process:
+            self.log('code called. return code: {}'.format(self.process.returncode))
             return self.process.returncode
