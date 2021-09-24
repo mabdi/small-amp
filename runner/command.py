@@ -1,6 +1,7 @@
 import subprocess, threading, os
 import datetime
 import signal
+import sys
 
 class Command(object):
     def __init__(self, cmd, redirectTo = None, verbose=False):
@@ -24,9 +25,19 @@ class Command(object):
                 self.process = subprocess.Popen(self.cmd.split(' '), shell=False, preexec_fn=os.setsid)
                 self.process.communicate()
             else:
+                self.process = subprocess.Popen(self.cmd.split(' '), shell=False, stdout=subprocess.PIPE, 
+                                        stderr=subprocess.PIPE, preexec_fn=os.setsid)
                 with open(self.redirectTo, 'wb') as f:
-                    self.process = subprocess.Popen(self.cmd.split(' '), shell=False, stdout=f, stderr=f, preexec_fn=os.setsid)
-                    self.process.communicate()
+                    while self.process.poll() is None:
+                        self.process.communicate()
+                        line = self.process.stdout.readline()
+                        if line:
+                            f.write(line)
+                            sys.stdout.write(line)
+                        line = self.process.stderr.readline()
+                        if line:
+                            f.write(line)
+                            sys.stdout.write(line)
             self.log('run#target exit')
 
         thread = threading.Thread(target=target)
