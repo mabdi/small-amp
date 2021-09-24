@@ -30,14 +30,12 @@ class Command(object):
                 with open(self.redirectTo, 'wb') as f:
                     while self.process.poll() is None:
                         stdout_data, stderr_data = self.process.communicate()
-                        line = stderr_data.readline()
-                        if line:
-                            f.write(line)
-                            sys.stdout.write(line)
-                        line = stdout_data.readline()
-                        if line:
-                            f.write(line)
-                            sys.stdout.write(line)
+                        if stderr_data:
+                            f.write(stderr_data)
+                            sys.stdout.write(stderr_data)
+                        if stdout_data:
+                            f.write(stdout_data)
+                            sys.stdout.write(stdout_data)
             self.log('run#target exit')
 
         thread = threading.Thread(target=target)
