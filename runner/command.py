@@ -70,5 +70,6 @@ class Command(object):
     def code(self):
         self.log('code called. check None: {}'.format(self.process is None))
         if self.process:
-            self.log('code called. return code: {}'.format(self.process.returncode))
+            returnCode = self.process.poll()
+            self.log('code called. poll: {}, return code: {}'.format(returnCode, self.process.returncode))
             return self.process.returncode
