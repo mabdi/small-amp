@@ -216,19 +216,19 @@ def runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, i
    syso('Running command: {}'.format(cmd))
    c.run(timeout=4 * 60 * 60)
 
-def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className):
+def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    syso('runAmplificationCI_snapshotsFast')
    tout = 15*60 # every 15 minute check for freeze
    tout_files = ['_smallamp_crash_evidence.json']
    
    os.system('cp '+ imgFile + ' Sandbox.image')
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
-   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} 2>&1 | tee -a out/{}.log'.format(vm, mode, className, className)
+   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={} 2>&1 | tee -a out/{}.log'.format(vm, mode, className, timeBudget, className)
    cmd2 = '{} Sandbox.image  2>&1 | tee -a out/{}.log'.format(vm, className)
    
    cmd = cmd1
    while True:
-      c = Command(cmd)
+      c = Command(cmd, verbose=True)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if c.code() == 0:
@@ -335,6 +335,8 @@ def runAmplificationCI_storeAsZips(zipDirectory, repo, job_id, base):
    file_paths = []
    file_paths.extend(glob.glob(base+'/crash_event_*.json'))
    file_paths.extend(glob.glob(base+'/crash_evidence_*.json'))
+   file_paths.extend(glob.glob(base+'/PharoDebug_*.json'))
+   
    
    if len(file_paths) > 0:
       with ZipFile(zipFileResults, 'w') as zip:
@@ -370,6 +372,7 @@ def runAmplificationCI(args):
    maxInputs = args['maxInputs']
    mode = args['mode']
    testClasses = args['testClasses']
+   timeBudget = args['timeBudget']
    
    syso('CI for:'+ repo)
    cwd = os.getcwd()
@@ -404,9 +407,9 @@ def runAmplificationCI(args):
        if mode == 'diffSnapshots':
           runAmplificationCI_snapshoted(imgFile, vm, mode, className)
        if mode == 'diffSnapshotsFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
        if mode == 'dspotFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
        if mode == 'diff':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
          
