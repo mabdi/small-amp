@@ -73,5 +73,6 @@ class Command(object):
             poll = self.process.poll()
             wait = self.process.poll()
             returnCode = self.process.returncode
-            self.log('code called. poll: {}, wait: {}, return code: {}'.format(poll, wait, returnCode))
+            pid = self.process.pid
+            self.log('code called.pid: {}, poll: {}, wait: {}, return code: {}'.format(pid, poll, wait, returnCode))
             return returnCode
