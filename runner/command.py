@@ -29,13 +29,14 @@ class Command(object):
                                         stderr=subprocess.PIPE, preexec_fn=os.setsid)
                 with open(self.redirectTo, 'wb') as f:
                     while self.process.poll() is None:
-                        stdout_data, stderr_data = self.process.communicate()
-                        if stderr_data:
-                            f.write(stderr_data)
-                            sys.stdout.write(stderr_data)
-                        if stdout_data:
-                            f.write(stdout_data)
-                            sys.stdout.write(stdout_data)
+                        line = self.process.stdout.readline()
+                        if line:
+                            f.write(line)
+                            sys.stdout.write(line)
+                        line = self.process.stderr.readline()
+                        if line:
+                            f.write(line)
+                            sys.stdout.write(line)
             self.log('run#target exit')
 
         thread = threading.Thread(target=target)
