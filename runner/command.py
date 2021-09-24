@@ -3,11 +3,12 @@ import datetime
 import signal
 
 class Command(object):
-    def __init__(self, cmd, verbose=False):
+    def __init__(self, cmd, redirectTo = None, verbose=False):
         self.cmd = cmd
         self.process = None
         self.timedout = False
         self.verbose = verbose
+        self.redirectTo = redirectTo
         self.logs = []
 
     def log(self, txt):
@@ -18,9 +19,14 @@ class Command(object):
     def run(self, timeout, files=[]):
         self.log('run enter')
         def target():
-            self.log('run#target enter')
-            self.process = subprocess.Popen(self.cmd, shell=False, preexec_fn=os.setsid)
-            self.process.communicate()
+            self.log('run#target enter, redirectTo: {}'.format(self.redirectTo))
+            if self.redirectTo is None:
+                self.process = subprocess.Popen(self.cmd.split(' '), shell=False, preexec_fn=os.setsid)
+                self.process.communicate()
+            else:
+                with open(self.redirectTo, 'wb') as f:
+                    self.process = subprocess.Popen(self.cmd.split(' '), shell=False, stdout=f, stderr=f, preexec_fn=os.setsid)
+                    self.process.communicate()
             self.log('run#target exit')
 
         thread = threading.Thread(target=target)

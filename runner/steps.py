@@ -223,12 +223,13 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    
    os.system('cp '+ imgFile + ' Sandbox.image')
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
-   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={} 2>&1 | tee -a out/{}.log'.format(vm, mode, className, timeBudget, className)
-   cmd2 = '{} Sandbox.image  2>&1 | tee -a out/{}.log'.format(vm, className)
+   redirectTo = 'out/{}.log'.format(className)
+   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={}'.format(vm, mode, className, timeBudget)
+   cmd2 = '{} Sandbox.image'.format(vm)
    
    cmd = cmd1
    while True:
-      c = Command(cmd, verbose=True)
+      c = Command(cmd, redirectTo=redirectTo, verbose=True)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if c.code() == 0:
