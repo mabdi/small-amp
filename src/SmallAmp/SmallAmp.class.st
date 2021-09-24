@@ -135,6 +135,7 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 { #category : #actions }
 SmallAmp >> amplifyAll [
 	| res |
+	self class <~ ('SmallAmp pid: ' , OSPlatform current resultOfCommand: 'echo $PPID').
 	SAGenericMethods new preRunChecks.
 	res := SAResult new.
 	amplifyList
