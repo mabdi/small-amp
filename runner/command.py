@@ -27,7 +27,7 @@ class Command(object):
             else:
                 self.process = subprocess.Popen(self.cmd.split(' '), shell=False, stdout=subprocess.PIPE, 
                                         stderr=subprocess.PIPE, preexec_fn=os.setsid, text=True)
-                with open(self.redirectTo, 'wb') as f:
+                with open(self.redirectTo, 'w') as f:
                     while self.process.poll() is None:
                         line = self.process.stdout.readline()
                         if line:
