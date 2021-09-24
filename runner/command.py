@@ -29,12 +29,12 @@ class Command(object):
                                         stderr=subprocess.PIPE, preexec_fn=os.setsid)
                 with open(self.redirectTo, 'wb') as f:
                     while self.process.poll() is None:
-                        self.process.communicate()
-                        line = self.process.stdout.readline()
+                        stdout_data, stderr_data = self.process.communicate()
+                        line = stderr_data.readline()
                         if line:
                             f.write(line)
                             sys.stdout.write(line)
-                        line = self.process.stderr.readline()
+                        line = stdout_data.readline()
                         if line:
                             f.write(line)
                             sys.stdout.write(line)
