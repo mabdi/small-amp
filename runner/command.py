@@ -19,7 +19,7 @@ class Command(object):
         self.log('run enter')
         def target():
             self.log('run#target enter')
-            self.process = subprocess.Popen(self.cmd, shell=True, preexec_fn=os.setsid)
+            self.process = subprocess.Popen(self.cmd, shell=False, preexec_fn=os.setsid)
             self.process.communicate()
             self.log('run#target exit')
 
