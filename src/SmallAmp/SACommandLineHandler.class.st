@@ -35,6 +35,8 @@ SACommandLineHandler >> activate [
 		ifTrue: [ self extraInformation ].
 	(self hasOption: 'mode')
 		ifTrue: [ self runInMode ].
+	(self hasOption: 'resume')
+		ifTrue: [ self resumeRunning ].
 	self end
 ]
 
@@ -69,6 +71,11 @@ SACommandLineHandler >> extraInformation [
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: resstr;
 		close
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> resumeRunning [
+	Semaphore new wait
 ]
 
 { #category : #'as yet unclassified' }

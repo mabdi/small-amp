@@ -56,10 +56,10 @@ SAMainLoopDspot >> amplifyNotRanking [
 	theTS := self initTs.
 	self setupSelection.
 	self methodProfiling.
-	self scoreTests.
-	nextTest ifNotNil: [ :aTestMethod | 
-		self amplifyATestMethod: aTestMethod.
-		self scoreTests ].
+	theTS
+		do: [ :aTestMethod | 
+			self amplifyATestMethod: aTestMethod ]
+		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
 	^ finalResult
 ]
