@@ -229,7 +229,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    
    cmd = cmd1
    while True:
-      c = Command(cmd, redirectTo=redirectTo, verbose=True)
+      c = Command(cmd, redirectTo=redirectTo, verbose=False)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if c.code() == 0:
