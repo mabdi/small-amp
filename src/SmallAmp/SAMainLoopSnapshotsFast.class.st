@@ -82,14 +82,24 @@ SAMainLoopSnapshotsFast >> setTestMethodStarting: aTestMethod [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> setupSelection [
-	super setupSelection.
+
+	| analysis |
+	selection := config selection initializeWith: config.
 	selection
 		onBeforeMutant: [ :mutant :index | 
 			self
 				saveCrashEvidence:
 					{(#testClass -> testClass name).
 					(#mutant -> mutant asDictionaryObject)} asDictionary ].
-	selection onMutationEvaluation: [ 0 ]
+	selection onMutationEvaluation: [ 0 ].
+	analysis := selection
+		            initialAnalysisFor:
+		            { testClass smallAmpOriginalTestCase }
+		            targets: targetClasses
+		            ignore: finalResult failedSelectorInOriginal.
+	finalResult originalAnalysis: analysis.
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	
 ]
 
 { #category : #'as yet unclassified' }
