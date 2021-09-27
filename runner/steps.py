@@ -225,7 +225,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
    redirectTo = 'out/{}.log'.format(className)
    cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={}'.format(vm, mode, className, timeBudget)
-   cmd2 = '{} Sandbox.image'.format(vm)
+   cmd2 = '{} Sandbox.image smallamp --resume'.format(vm)
    
    cmd = cmd1
    while True:
