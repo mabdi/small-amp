@@ -12,7 +12,7 @@ options:
 Class {
 	#name : #SACommandLineHandler,
 	#superclass : #CommandLineHandler,
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Core'
 }
 
 { #category : #accessing }
