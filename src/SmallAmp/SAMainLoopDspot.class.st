@@ -275,12 +275,11 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 SAMainLoopDspot >> scoreTests [
 
 	| methodsScore |
-	selection uncovered ifEmpty: [ ^ self ].
-	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	nextTest := nil.
 	sumScores := 0.
+	selection uncovered ifEmpty: [ ^ self ].
+	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	(theTS reject: #isAmplified) do: [ :testModel | 
-		
 		testModel scoreWith: methodsScore.
 		sumScores := sumScores + testModel score.
 		nextTest
