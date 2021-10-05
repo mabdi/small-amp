@@ -73,6 +73,7 @@ SAMainLoopDspot >> amplifyRanking [
 	self scoreTests.
 	[nextTest isNotNil and: [self careTimeBudget]] whileTrue: [  
 		self amplifyATestMethod: nextTest.
+		nextTest isAmplified: true.
 		self scoreTests ].
 	self finalSteps.
 	^ finalResult
