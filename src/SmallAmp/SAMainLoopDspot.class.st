@@ -60,7 +60,9 @@ SAMainLoopDspot >> amplifyNotRanking [
 	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			self amplifyATestMethod: aTestMethod ]
+			self careTimeBudget 
+				ifTrue: [ self amplifyATestMethod: aTestMethod ]
+			 ]
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
 	^ finalResult
