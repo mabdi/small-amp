@@ -51,10 +51,14 @@ SACommandLineHandler >> end [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalStats [
-	| prefix |
+	| prefix doGrind |
 	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix allButFirst: '--stat=' size.
-	SAGenericMethods new metricsEval: prefix
+	self arguments 
+		detect: [ :arg | arg beginsWith: '--doGrind' ]
+		ifFound: [doGrind := true] 
+		ifNone: [doGrind := false].
+	SAGenericMethods new metricsEval: prefix doGrind: doGrind
 ]
 
 { #category : #accessing }
