@@ -10,7 +10,8 @@ Class {
 		'instantiationExtractor',
 		'variableTypes',
 		'nextTest',
-		'sumScores'
+		'sumScores',
+		'numberOfAmplified'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -25,6 +26,7 @@ SAMainLoopDspot >> amplify [
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 
 	| theATS theV theU |
+	numberOfAmplified := numberOfAmplified + 1.
 	SmallAmp <~ aTestMethod selector.
 	self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
@@ -101,6 +103,7 @@ SAMainLoopDspot >> finalSteps [
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
+	finalResult numberOfAmplifiedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: { finalResult amplifiedClass }
@@ -141,7 +144,8 @@ SAMainLoopDspot >> initTs [
 { #category : #initialization }
 SAMainLoopDspot >> initialize [
 	super initialize.
-	resultPeople := OrderedCollection new
+	resultPeople := OrderedCollection new.
+	numberOfAmplified := 0
 ]
 
 { #category : #private }
