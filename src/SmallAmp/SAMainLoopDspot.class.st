@@ -62,7 +62,7 @@ SAMainLoopDspot >> amplifyNotRanking [
 		do: [ :aTestMethod | 
 			self careTimeBudget 
 				ifTrue: [ self amplifyATestMethod: aTestMethod ]
-				ifFalse: [ SmallAmp <~ 'No time budget. Skipping: ', aTestMethod selector ]
+				ifFalse: [ SmallAmp <~ ('No time budget. Skipping: ', aTestMethod selector) ]
 			 ] 
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
