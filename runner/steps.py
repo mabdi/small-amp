@@ -411,6 +411,8 @@ def runAmplificationCI(args):
           runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
        if mode == 'dspotFast':
           runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+       if mode == 'dspotFastRank':
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
        if mode == 'diff':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
          
