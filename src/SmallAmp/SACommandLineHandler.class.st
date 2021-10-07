@@ -12,7 +12,7 @@ options:
 Class {
 	#name : #SACommandLineHandler,
 	#superclass : #CommandLineHandler,
-	#category : #'SmallAmp-Helpers'
+	#category : #'SmallAmp-Core'
 }
 
 { #category : #accessing }
@@ -109,11 +109,17 @@ SACommandLineHandler >> runInMode [
 	mode = 'diffSnapshotsFast'
 		ifTrue: [ cnf := SAConfig diffBased.
 			cnf mainloop: SAMainLoopSnapshotsFast  ].
-	mode = 'dspotFast'
+	mode = 'dspotFastRank'
 		ifTrue: [ cnf := SAConfig dspotAllamps.
 			timeBudget > 0 ifTrue: [ 
 				cnf timeBudget: timeBudget * 60.
 				cnf ranking: true. ].
+			cnf mainloop: SAMainLoopSnapshotsFast  ].
+	mode = 'dspotFast'
+		ifTrue: [ cnf := SAConfig dspotAllamps.
+			timeBudget > 0 ifTrue: [ 
+				cnf timeBudget: timeBudget * 60.
+				cnf ranking: false. ].
 			cnf mainloop: SAMainLoopSnapshotsFast  ].
 	mode = 'diff'
 		ifTrue: [ cnf := SAConfig diffBased.

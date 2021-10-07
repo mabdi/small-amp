@@ -13,7 +13,8 @@ Class {
 		'originalCoverage',
 		'timeBudgetFinished',
 		'numberOfOriginalTestMethods',
-		'totalTime'
+		'totalTime',
+		'numberOfAmplifiedMethods'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -184,6 +185,10 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ self numberOfOriginalTestMethods ]
 		key: #numberOfOriginalTestMethods
 		addTo: result.
+	self
+		safeFail: [ self numberOfAmplifiedMethods ]
+		key: #numberOfAmplifiedMethods
+		addTo: result.
 	^ result
 ]
 
@@ -332,6 +337,18 @@ SAResultItem >> notCoveredInOriginal [
 { #category : #reporting }
 SAResultItem >> numberOfAllMutationsInOriginal [
 	^ self originalAnalysis generalResult numberOfEvaluatedMutants
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfAmplifiedMethods [
+
+	^ numberOfAmplifiedMethods
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfAmplifiedMethods: anObject [
+
+	numberOfAmplifiedMethods := anObject
 ]
 
 { #category : #accessing }

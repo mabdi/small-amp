@@ -10,7 +10,8 @@ Class {
 		'instantiationExtractor',
 		'variableTypes',
 		'nextTest',
-		'sumScores'
+		'sumScores',
+		'numberOfAmplified'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -25,6 +26,7 @@ SAMainLoopDspot >> amplify [
 SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 
 	| theATS theV theU |
+	numberOfAmplified := numberOfAmplified + 1.
 	SmallAmp <~ aTestMethod selector.
 	self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
@@ -58,7 +60,10 @@ SAMainLoopDspot >> amplifyNotRanking [
 	self methodProfiling.
 	theTS
 		do: [ :aTestMethod | 
-			self amplifyATestMethod: aTestMethod ]
+			self careTimeBudget 
+				ifTrue: [ self amplifyATestMethod: aTestMethod ]
+				ifFalse: [ SmallAmp <~ 'No time budget. Skipping: ', aTestMethod selector ]
+			 ] 
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
 	^ finalResult
@@ -71,8 +76,9 @@ SAMainLoopDspot >> amplifyRanking [
 	self setupSelection.
 	self methodProfiling.
 	self scoreTests.
-	(nextTest isNotNil and: [self careTimeBudget]) whileTrue: [ :aTestMethod | 
-		self amplifyATestMethod: aTestMethod.
+	[nextTest isNotNil and: [self careTimeBudget]] whileTrue: [  
+		self amplifyATestMethod: nextTest.
+		nextTest isAmplified: true.
 		self scoreTests ].
 	self finalSteps.
 	^ finalResult
@@ -100,6 +106,7 @@ SAMainLoopDspot >> finalSteps [
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
+	finalResult numberOfAmplifiedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: { finalResult amplifiedClass }
@@ -140,7 +147,8 @@ SAMainLoopDspot >> initTs [
 { #category : #initialization }
 SAMainLoopDspot >> initialize [
 	super initialize.
-	resultPeople := OrderedCollection new
+	resultPeople := OrderedCollection new.
+	numberOfAmplified := 0
 ]
 
 { #category : #private }
@@ -275,12 +283,11 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 SAMainLoopDspot >> scoreTests [
 
 	| methodsScore |
-	selection uncovered ifEmpty: [ ^ self ].
-	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	nextTest := nil.
 	sumScores := 0.
+	selection uncovered ifEmpty: [ ^ self ].
+	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	(theTS reject: #isAmplified) do: [ :testModel | 
-		
 		testModel scoreWith: methodsScore.
 		sumScores := sumScores + testModel score.
 		nextTest

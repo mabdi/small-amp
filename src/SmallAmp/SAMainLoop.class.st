@@ -26,7 +26,7 @@ SAMainLoop >> amplify [
 { #category : #'as yet unclassified' }
 SAMainLoop >> careTimeBudget [
 	config timeBudget <= 0 ifTrue: [ ^ true ].
-	(self timestamp_now - initalizeTime) > config timeBudget ifTrue: [ ^ false ] 
+	^ (self timestamp_now - initalizeTime) < config timeBudget
 ]
 
 { #category : #initialization }
