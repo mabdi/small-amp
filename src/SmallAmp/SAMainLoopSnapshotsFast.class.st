@@ -16,8 +16,11 @@ SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod [
 
 { #category : #private }
 SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
-		do: [ :tcase | self
+		do: [ :tcase | 
+			self careTimeBudget ifFalse: [ ^ {  } ].
+			self
 				saveCrashEvidence:
 					{(#testClass -> tcase testClass name).
 					(#testMethod -> tcase testMethod)} asDictionary.
@@ -64,6 +67,7 @@ SAMainLoopSnapshotsFast >> saveCrashEvidence: aDictionary [
 
 { #category : #actions }
 SAMainLoopSnapshotsFast >> selectionFrom: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList ifEmpty: [ ^ {} ].
 	^ selection selectSnapshot: aList
 ]

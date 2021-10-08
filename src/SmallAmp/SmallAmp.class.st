@@ -47,6 +47,7 @@ SmallAmp class >> <~ aString [
 	string := aString isString
 		ifFalse: [ aString asString ]
 		ifTrue: [ aString ].
+	aString traceCr.
 	Stdio stdout
 		nextPutAll: Time nowUTC print24;
 		nextPutAll: String space;

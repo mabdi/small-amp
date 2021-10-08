@@ -86,8 +86,10 @@ SAMainLoopDspot >> amplifyRanking [
 
 { #category : #private }
 SAMainLoopDspot >> assertionAmplificationFor: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
 		do: [ :tcase | 
+			self careTimeBudget ifFalse: [ ^ {  } ].
 			tcase assertionAmplifyBy: assertAmplifier.
 			 ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
@@ -154,10 +156,12 @@ SAMainLoopDspot >> initialize [
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [ 
 	| applyTransformation newcodes tmp amps testsSizeHalf |
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	testsSizeHalf := (0.5 * config maxPop) asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
+								  self careTimeBudget ifFalse: [ ^ {  } ].
 	                       amplifier isTypeSensitive ifTrue: [ 
 		                       amplifier variableTypes: variableTypes ].
 	                       amplifier isTransplantation ifTrue: [ 
@@ -311,6 +315,7 @@ SAMainLoopDspot >> scoreTests: analysis [
 
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList ifEmpty: [ ^ {} ].
 			^ selection select: aList 
 ]
@@ -328,6 +333,12 @@ SAMainLoopDspot >> setupSelection [
 	finalResult originalAnalysis: analysis.
 	selection uncovered ifEmpty: [ SANoUncovered new signal ].
 	
+]
+
+{ #category : #accessing }
+SAMainLoopDspot >> timeBudgetFinished [
+	super timeBudgetFinished.
+	finalResult timeBudgetFinished: true.
 ]
 
 { #category : #'as yet unclassified' }

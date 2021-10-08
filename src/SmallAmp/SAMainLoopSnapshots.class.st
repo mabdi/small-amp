@@ -7,6 +7,7 @@ Class {
 { #category : #private }
 SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 	| toSkip aList |
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList := aListInput.
 	toSkip := 0.
 	self snapshotPoint: #assertion_amplification.
@@ -16,6 +17,7 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 			toSkip := state at: #toSkip ].
 	aList
 		withIndexDo: [ :tcase :index | 
+			self careTimeBudget ifFalse: [ ^ {  } ].
 			toSkip = index
 				ifTrue: [ tcase testMethod: nil ].
 			toSkip > index
@@ -88,6 +90,7 @@ SAMainLoopSnapshots >> saveTheState: anState [
 
 { #category : #actions }
 SAMainLoopSnapshots >> selectionFrom: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList ifEmpty: [ ^ {} ].
 	^ selection selectSnapshot: aList
 ]
