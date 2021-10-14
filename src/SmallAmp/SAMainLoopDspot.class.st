@@ -89,8 +89,9 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
 		do: [ :tcase | 
-			self careTimeBudget ifFalse: [ ^ {  } ].
-			tcase assertionAmplifyBy: assertAmplifier.
+			self careTimeBudget 
+				ifTrue: [ tcase assertionAmplifyBy: assertAmplifier. ] 
+				ifFalse: [ tcase testMethod: nil  ].
 			 ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
@@ -161,14 +162,14 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
-								  self careTimeBudget ifFalse: [ ^ {  } ].
+								  self careTimeBudget ifTrue: [ 
 	                       amplifier isTypeSensitive ifTrue: [ 
 		                       amplifier variableTypes: variableTypes ].
 	                       amplifier isTransplantation ifTrue: [ 
 		                       amplifier instantiationPatterns:
 			                       instantiationExtractor patterns ].
 	                       newcodes addAll:
-		                       (tcase inputAmplifyBy: amplifier) ].
+		                       (tcase inputAmplifyBy: amplifier)  ]. ].
 	tmp := (pop collect: #clone) do: [ :tcase | 
 		       tcase strip.
 		       tcase normalize ].
@@ -315,7 +316,7 @@ SAMainLoopDspot >> scoreTests: analysis [
 
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
-	self careTimeBudget ifFalse: [ ^ {  } ].
+	
 	aList ifEmpty: [ ^ {} ].
 			^ selection select: aList 
 ]

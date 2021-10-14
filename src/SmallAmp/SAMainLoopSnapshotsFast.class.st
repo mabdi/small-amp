@@ -19,12 +19,15 @@ SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
 	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
 		do: [ :tcase | 
-			self careTimeBudget ifFalse: [ ^ {  } ].
-			self
+			self careTimeBudget ifFalse: [ tcase testMethod: nil ]
+			ifTrue: [
+				self
 				saveCrashEvidence:
 					{(#testClass -> tcase testClass name).
 					(#testMethod -> tcase testMethod)} asDictionary.
-					.tcase assertionAmplifyBy: assertAmplifier ]
+					.tcase assertionAmplifyBy: assertAmplifier
+				].
+			 ]
 		
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
@@ -67,7 +70,7 @@ SAMainLoopSnapshotsFast >> saveCrashEvidence: aDictionary [
 
 { #category : #actions }
 SAMainLoopSnapshotsFast >> selectionFrom: aList [
-	self careTimeBudget ifFalse: [ ^ {  } ].
+	
 	aList ifEmpty: [ ^ {} ].
 	^ selection selectSnapshot: aList
 ]

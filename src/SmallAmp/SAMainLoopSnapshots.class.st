@@ -17,8 +17,11 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 			toSkip := state at: #toSkip ].
 	aList
 		withIndexDo: [ :tcase :index | 
-			self careTimeBudget ifFalse: [ ^ {  } ].
-			toSkip = index
+			
+			self careTimeBudget 
+				ifFalse: [ tcase testMethod: nil  ]
+				ifTrue: [
+					toSkip = index
 				ifTrue: [ tcase testMethod: nil ].
 			toSkip > index
 				ifFalse: [ toSkip := index.
@@ -31,7 +34,9 @@ SAMainLoopSnapshots >> assertionAmplificationFor: aListInput [
 							{(#testClass -> tcase testClass name).
 							(#testMethod -> tcase testMethod)} asDictionary.
 					tcase assertionAmplifyBy: assertAmplifier.
-					 ] ].
+					 ] 
+					].
+			].
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
 ]
 
@@ -90,7 +95,6 @@ SAMainLoopSnapshots >> saveTheState: anState [
 
 { #category : #actions }
 SAMainLoopSnapshots >> selectionFrom: aList [
-	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList ifEmpty: [ ^ {} ].
 	^ selection selectSnapshot: aList
 ]
