@@ -32,6 +32,8 @@ SALiteralInputAmplifier >> allLiteralArrayNode [
 SALiteralInputAmplifier >> allLiteralNodes [
 	| allLiterals |
 	allLiterals := aMethodAST allChildren select: #isLiteralNode.
+	allLiterals := allLiterals reject: #isLiteralArray.
+	allLiterals := allLiterals reject: #isDynamicArray.
 	allLiterals := allLiterals
 		reject: [ :node | node parent isLiteralArray and: [ node parent isForByteArray ]  ].
 	^ allLiterals
