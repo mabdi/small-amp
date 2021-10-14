@@ -204,6 +204,13 @@ SALiteralMutator >> mutateString: aValue [
 ]
 
 { #category : #'as yet unclassified' }
+SALiteralMutator >> mutateSymbol: aValue [
+	| nodes |
+	nodes := OrderedCollection new.
+	^ nodes
+]
+
+{ #category : #'as yet unclassified' }
 SALiteralMutator >> mutateTrue: aValue [
 	| nodes |
 	nodes := OrderedCollection new.

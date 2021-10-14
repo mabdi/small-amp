@@ -38,6 +38,13 @@ SALiteralMutatorTest >> testMutateArrayNode [
 ]
 
 { #category : #test }
+SALiteralMutatorTest >> testMutateByteSymbol [
+	|res|
+	res := mutator mutateSymbol: #a.
+	self assertEmpty: res
+]
+
+{ #category : #test }
 SALiteralMutatorTest >> testMutateCharacter [
 	mutator mutateCharacter: Character null
 ]
@@ -86,4 +93,12 @@ SALiteralMutatorTest >> testMutateLiteralArrayNode [
 	self
 		assertSourceCode: t2 fourth formattedCode
 		equals: '#[1 2 3  4 0]'
+]
+
+{ #category : #test }
+SALiteralMutatorTest >> testMutateSymbol [
+
+	|res|
+	res := mutator mutateSymbol: #abc.
+	self assertEmpty: res
 ]
