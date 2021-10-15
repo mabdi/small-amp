@@ -104,7 +104,7 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 SAMainLoopDspot >> doInitialAssertionAmplification [
 	| theV theU theATS |
 	theATS := OrderedCollection new.
-	theV := OrderedCollection withAll: theTS.
+	theV := OrderedCollection withAll: self rankedPopulation.
 	theV do: #strip.
 	theU := self assertionAmplificationFor: (theV collect: #clone).
 	theU := self selectionFrom: theU.
