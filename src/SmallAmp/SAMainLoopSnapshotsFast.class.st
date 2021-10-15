@@ -5,12 +5,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod [
+SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification [
 	self setTestMethodStarting: aTestMethod.
 	self snapshotHere: aTestMethod.
 	(self isRecoveredFromCrash: aTestMethod)
 		ifTrue: [ ^ self ].
-	super amplifyATestMethod: aTestMethod.
+	super amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification.
 	
 ]
 

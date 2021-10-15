@@ -23,7 +23,7 @@ SAMainLoopDspot >> amplify [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
+SAMainLoopDspot >> amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification [
 
 	| theATS theV theU |
 	numberOfAmplified := numberOfAmplified + 1.
@@ -32,9 +32,11 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
-	theU := self assertionAmplificationFor: (theV collect: #clone).
-	theU := self selectionFrom: theU.
-	theATS addAll: theU.
+	doInitialAssertionAmplification 
+		ifTrue: [ 
+			theU := self assertionAmplificationFor: (theV collect: #clone).
+			theU := self selectionFrom: theU.
+			theATS addAll: theU ].
 	(1 to: config iterations)
 		do: [ :gen | 
 			SmallAmp <~ ('iteration: ' , gen asString).
@@ -61,7 +63,7 @@ SAMainLoopDspot >> amplifyNotRanking [
 	theTS
 		do: [ :aTestMethod | 
 			self careTimeBudget 
-				ifTrue: [ self amplifyATestMethod: aTestMethod ]
+				ifTrue: [ self amplifyATestMethod: aTestMethod initialAssertionAmplification: true ]
 				ifFalse: [ SmallAmp <~ ('No time budget. Skipping: ', aTestMethod selector) ]
 			 ] 
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
@@ -76,8 +78,9 @@ SAMainLoopDspot >> amplifyRanking [
 	self setupSelection.
 	self methodProfiling.
 	self scoreTests.
+	self doInitialAssertionAmplification.
 	[nextTest isNotNil and: [self careTimeBudget]] whileTrue: [  
-		self amplifyATestMethod: nextTest.
+		self amplifyATestMethod: nextTest initialAssertionAmplification: false.
 		nextTest isAmplified: true.
 		self scoreTests ].
 	self finalSteps.
@@ -95,6 +98,23 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 			 ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> doInitialAssertionAmplification [
+	| theV theU theATS |
+	theATS := OrderedCollection new.
+	theV := OrderedCollection withAll: theTS.
+	theV do: #strip.
+	theU := self assertionAmplificationFor: (theV collect: #clone).
+	theU := self selectionFrom: theU.
+	theATS addAll: theU.
+	theATS := theATS collect: [ :item | 
+		          | c |
+		          c := item cleanedUpCopy.
+		          c signAsSmallAmp.
+		          c ].
+	resultPeople addAll: theATS.
 ]
 
 { #category : #actions }
