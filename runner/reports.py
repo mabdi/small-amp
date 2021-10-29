@@ -388,6 +388,14 @@ def reportAmp_backend(directory, fix):
       if className in blacklistclasses:
          result.append({'stat':'blacklist','className':className})
          continue
+      for aNum in range(2,10):
+         if os.path.exists(directory + "/"+ className + str(aNum)+ '.json'):
+            with open(directory + "/"+ className + str(aNum)+ '.json') as f:
+               jsonStr = f.read()
+            jsonObj = json.loads(jsonStr)
+            result.append({'stat':'success','className':className+ str(aNum),'jsonObj':jsonObj,'xjson': xjson})
+
+
       if os.path.exists(directory + "/"+ className + '.json'):
             with open(directory + "/"+ className + '.json') as f:
                jsonStr = f.read()
