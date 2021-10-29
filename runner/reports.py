@@ -287,19 +287,25 @@ def do_fix(old_result):
    for target,testslist in target2test.items():
       obj = testslist[0]
       if len(testslist) > 1:
-         originalTestCase = obj['jsonObj']['originalTestCase']
-         obj['className'] = originalTestCase
-         mutationScoreBefore = obj['jsonObj']['mutationScoreBefore']
-         allNewKilled = [mutant for x in testslist for mutant in x['jsonObj']['newCovered']]
-         newCovered = list({ "{}:{}:{}:{}".format(item['method'], item['operatorClass'], item['mutationStart'], item['mutationEnd']) : item for item in allNewKilled }.values())
-         obj['jsonObj']['newCovered'] = newCovered
-         #uniqKilledMutants = { }
-         mutationScoreImprove = (100.0) * (len(newCovered) / obj['jsonObj']['numberOfAllMutationsInOriginal'])
-         obj['jsonObj']['mutationScoreAfter'] = mutationScoreBefore + mutationScoreImprove
-         obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
-         obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
-         obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
-      result.append(obj)
+         if len({x['jsonObj']['testCase'] for x in testslist}) == 1 :
+            for x in testslist:
+               result.append(x)
+         else:
+            originalTestCase = obj['jsonObj']['originalTestCase']
+            obj['className'] = originalTestCase
+            mutationScoreBefore = obj['jsonObj']['mutationScoreBefore']
+            allNewKilled = [mutant for x in testslist for mutant in x['jsonObj']['newCovered']]
+            newCovered = list({ "{}:{}:{}:{}".format(item['method'], item['operatorClass'], item['mutationStart'], item['mutationEnd']) : item for item in allNewKilled }.values())
+            obj['jsonObj']['newCovered'] = newCovered
+            #uniqKilledMutants = { }
+            mutationScoreImprove = (100.0) * (len(newCovered) / obj['jsonObj']['numberOfAllMutationsInOriginal'])
+            obj['jsonObj']['mutationScoreAfter'] = mutationScoreBefore + mutationScoreImprove
+            obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
+            obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
+            obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
+            result.append(obj)
+      else:
+         result.append(obj)
 
    return result
 
