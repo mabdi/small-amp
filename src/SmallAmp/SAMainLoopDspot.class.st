@@ -23,7 +23,7 @@ SAMainLoopDspot >> amplify [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
+SAMainLoopDspot >> amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification [
 
 	| theATS theV theU |
 	numberOfAmplified := numberOfAmplified + 1.
@@ -32,9 +32,11 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod [
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
-	theU := self assertionAmplificationFor: (theV collect: #clone).
-	theU := self selectionFrom: theU.
-	theATS addAll: theU.
+	doInitialAssertionAmplification 
+		ifTrue: [ 
+			theU := self assertionAmplificationFor: (theV collect: #clone).
+			theU := self selectionFrom: theU.
+			theATS addAll: theU ].
 	(1 to: config iterations)
 		do: [ :gen | 
 			SmallAmp <~ ('iteration: ' , gen asString).
@@ -61,8 +63,8 @@ SAMainLoopDspot >> amplifyNotRanking [
 	theTS
 		do: [ :aTestMethod | 
 			self careTimeBudget 
-				ifTrue: [ self amplifyATestMethod: aTestMethod ]
-				ifFalse: [ SmallAmp <~ 'No time budget. Skipping: ', aTestMethod selector ]
+				ifTrue: [ self amplifyATestMethod: aTestMethod initialAssertionAmplification: true ]
+				ifFalse: [ SmallAmp <~ ('No time budget. Skipping: ', aTestMethod selector) ]
 			 ] 
 		displayingProgress: [ :aTestMethod | 'Amplifying: ' , aTestMethod selector ].
 	self finalSteps.
@@ -76,8 +78,9 @@ SAMainLoopDspot >> amplifyRanking [
 	self setupSelection.
 	self methodProfiling.
 	self scoreTests.
+	self doInitialAssertionAmplification.
 	[nextTest isNotNil and: [self careTimeBudget]] whileTrue: [  
-		self amplifyATestMethod: nextTest.
+		self amplifyATestMethod: nextTest initialAssertionAmplification: false.
 		nextTest isAmplified: true.
 		self scoreTests ].
 	self finalSteps.
@@ -86,12 +89,32 @@ SAMainLoopDspot >> amplifyRanking [
 
 { #category : #private }
 SAMainLoopDspot >> assertionAmplificationFor: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
 		do: [ :tcase | 
-			tcase assertionAmplifyBy: assertAmplifier.
+			self careTimeBudget 
+				ifTrue: [ tcase assertionAmplifyBy: assertAmplifier. ] 
+				ifFalse: [ tcase testMethod: nil  ].
 			 ]
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> doInitialAssertionAmplification [
+	| theV theU theATS |
+	theATS := OrderedCollection new.
+	theV := OrderedCollection withAll: self rankedPopulation.
+	theV do: #strip.
+	theU := self assertionAmplificationFor: (theV collect: #clone).
+	theU := self selectionFrom: theU.
+	theATS addAll: theU.
+	theATS := theATS collect: [ :item | 
+		          | c |
+		          c := item cleanedUpCopy.
+		          c signAsSmallAmp.
+		          c ].
+	resultPeople addAll: theATS.
 ]
 
 { #category : #actions }
@@ -154,17 +177,19 @@ SAMainLoopDspot >> initialize [
 { #category : #private }
 SAMainLoopDspot >> inputAmplificationFrom: pop [ 
 	| applyTransformation newcodes tmp amps testsSizeHalf |
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	testsSizeHalf := (0.5 * config maxPop) asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
+								  self careTimeBudget ifTrue: [ 
 	                       amplifier isTypeSensitive ifTrue: [ 
 		                       amplifier variableTypes: variableTypes ].
 	                       amplifier isTransplantation ifTrue: [ 
 		                       amplifier instantiationPatterns:
 			                       instantiationExtractor patterns ].
 	                       newcodes addAll:
-		                       (tcase inputAmplifyBy: amplifier) ].
+		                       (tcase inputAmplifyBy: amplifier)  ]. ].
 	tmp := (pop collect: #clone) do: [ :tcase | 
 		       tcase strip.
 		       tcase normalize ].
@@ -311,6 +336,7 @@ SAMainLoopDspot >> scoreTests: analysis [
 
 { #category : #actions }
 SAMainLoopDspot >> selectionFrom: aList [
+	
 	aList ifEmpty: [ ^ {} ].
 			^ selection select: aList 
 ]
@@ -328,6 +354,12 @@ SAMainLoopDspot >> setupSelection [
 	finalResult originalAnalysis: analysis.
 	selection uncovered ifEmpty: [ SANoUncovered new signal ].
 	
+]
+
+{ #category : #accessing }
+SAMainLoopDspot >> timeBudgetFinished [
+	super timeBudgetFinished.
+	finalResult timeBudgetFinished: true.
 ]
 
 { #category : #'as yet unclassified' }

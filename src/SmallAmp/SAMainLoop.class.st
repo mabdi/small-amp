@@ -26,7 +26,8 @@ SAMainLoop >> amplify [
 { #category : #'as yet unclassified' }
 SAMainLoop >> careTimeBudget [
 	config timeBudget <= 0 ifTrue: [ ^ true ].
-	^ (self timestamp_now - initalizeTime) < config timeBudget
+	(self timestamp_now - initalizeTime) < config timeBudget ifFalse: [ self timeBudgetFinished. ^false ].
+	^ true
 ]
 
 { #category : #initialization }
@@ -43,6 +44,11 @@ SAMainLoop >> targetClasses [
 { #category : #accessing }
 SAMainLoop >> testClass [
 	^ testClass
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoop >> timeBudgetFinished [
+	SmallAmp <~ 'timeBudgetFinished'
 ]
 
 { #category : #initialization }

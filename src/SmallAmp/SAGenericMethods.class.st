@@ -442,7 +442,7 @@ SAGenericMethods >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars
 ]
 
 { #category : #actions }
-SAGenericMethods >> metricsEval: repoName [
+SAGenericMethods >> metricsEval: repoName doGrind: doGrind [
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId helper |
 	helper := SAGenericMethods new.
 	classes := helper allClassesForRepo: repoName.
@@ -473,8 +473,9 @@ SAGenericMethods >> metricsEval: repoName [
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
 		close.
-	targetedTests := self grindTestClass: targetedTests.
-	targetedTests := targetedTests asOrderedCollection sort: [:cls1 :cls2 | cls1 name asString < cls2 name asString  ].
+	doGrind ifTrue: 
+	[targetedTests := self grindTestClass: targetedTests.
+	targetedTests := targetedTests asOrderedCollection sort: [:cls1 :cls2 | cls1 name asString < cls2 name asString  ]].
 	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll: (Character lf join: targetedTests);
 		lf;

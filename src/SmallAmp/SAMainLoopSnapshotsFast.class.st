@@ -5,23 +5,29 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod [
+SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification [
 	self setTestMethodStarting: aTestMethod.
 	self snapshotHere: aTestMethod.
 	(self isRecoveredFromCrash: aTestMethod)
 		ifTrue: [ ^ self ].
-	super amplifyATestMethod: aTestMethod.
+	super amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification.
 	
 ]
 
 { #category : #private }
 SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
+	self careTimeBudget ifFalse: [ ^ {  } ].
 	aList
-		do: [ :tcase | self
+		do: [ :tcase | 
+			self careTimeBudget ifFalse: [ tcase testMethod: nil ]
+			ifTrue: [
+				self
 				saveCrashEvidence:
 					{(#testClass -> tcase testClass name).
 					(#testMethod -> tcase testMethod)} asDictionary.
-					.tcase assertionAmplifyBy: assertAmplifier ]
+					.tcase assertionAmplifyBy: assertAmplifier
+				].
+			 ]
 		
 		displayingProgress: 'Assertion Amplification' , ' (' , aList size asString , ')'.
 	^ aList reject: [ :tcase | tcase testMethod isNil ]
@@ -64,6 +70,7 @@ SAMainLoopSnapshotsFast >> saveCrashEvidence: aDictionary [
 
 { #category : #actions }
 SAMainLoopSnapshotsFast >> selectionFrom: aList [
+	
 	aList ifEmpty: [ ^ {} ].
 	^ selection selectSnapshot: aList
 ]

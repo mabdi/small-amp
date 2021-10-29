@@ -43,16 +43,25 @@ Class {
 
 { #category : #'as yet unclassified' }
 SmallAmp class >> <~ aString [
-	| string |
+	| string isCommandLine |
+	isCommandLine := false.
 	string := aString isString
 		ifFalse: [ aString asString ]
 		ifTrue: [ aString ].
-	Stdio stdout
-		nextPutAll: Time nowUTC print24;
-		nextPutAll: String space;
-		nextPutAll: string;
-		lf;
-		flush
+	-1000 to: 1000 do: [ :n | 
+	(Smalltalk vm getSystemAttribute: n) ifNotNil: [ :x | 
+		(x includesSubstring: ('--',SACommandLineHandler commandName)) ifTrue: [ isCommandLine := true ] ] 
+	].
+	isCommandLine 
+		ifFalse: [ aString traceCr ] 
+		ifTrue: [
+			Stdio stdout
+				nextPutAll: Time nowUTC print24;
+				nextPutAll: String space;
+				nextPutAll: string;
+				lf;
+				flush
+		]
 ]
 
 { #category : #'as yet unclassified' }
@@ -134,7 +143,7 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 
 { #category : #actions }
 SmallAmp >> amplifyAll [
-	| res |
+	| res objRes |
 	self class <~ ('SmallAmp pid: ' , (OSPlatform current resultOfCommand: 'echo $PPID')).
 	SAGenericMethods new preRunChecks.
 	res := SAResult new.
@@ -143,8 +152,9 @@ SmallAmp >> amplifyAll [
 			| instance |
 			self class <~ ('Run instance start: ' , item key name, ', target: ', item value asString).
 			[ [ instance := self amplify: item key target: item value.
+				objRes := instance asDictionaryObject .
 			self class <~ 'Run instance finished successfully.'.
-			self class <~ ('Run instance finish: ' , item key name).
+			self class <~ ('Run instance finish: ' , item key name , ', improved: ', ((objRes at: #mutationScoreAfter) - (objRes at: #mutationScoreBefore) ) asString, '%').
 			res addResult: instance for: item ]
 				on: SANoGreenTest , SANoUncovered
 				do: [ :x | x asString traceCr ] ]
