@@ -379,51 +379,6 @@ SAGenericMethods >> getId [
 	^ self class instanceId
 ]
 
-{ #category : #actions }
-SAGenericMethods >> grindTestClass: targetedTests [
-	^ targetedTests
-		flatCollect: [ :cls | 
-			cls allTestSelectors size > 20
-				ifTrue: [ SAGenericMethods new grindTestClass: cls size: 20 ]
-				ifFalse: [ {cls} ] ]
-]
-
-{ #category : #'as yet unclassified' }
-SAGenericMethods >> grindTestClass: testClass size: testNumber [
-	| currentTests currentIndex tests result tempClass helpers firstClass |
-	currentIndex := 1.
-	firstClass := true.
-	result := OrderedCollection new.
-	tests := testClass testSelectors.
-	helpers := testClass methods
-		reject: [ :m | tests includes: m selector ].
-	[ currentIndex < tests size ]
-		whileTrue: [ currentTests := tests
-				copyFrom: currentIndex
-				to: (currentIndex + testNumber - 1 min: tests size).
-			currentIndex := currentIndex + testNumber.
-			currentTests ifEmpty: [ ^ result ].
-			tempClass := testClass superclass
-				subclass: (testClass name asString , self getId asString) asSymbol
-				instanceVariableNames: testClass instanceVariablesString
-				classVariableNames: testClass classVariablesString
-				package: self defaultTempPackage.
-			currentTests
-				do:
-					[ :selector | tempClass compile: (testClass lookupSelector: selector) sourceCode ].
-			helpers do: [ :h | tempClass compile: h sourceCode ].
-			firstClass
-				ifTrue: [ tempClass class compile: self srcAllTestSelectors.
-					firstClass := false ].
-			tempClass class compile: self srcDefaultTimeLimit.
-			tempClass class
-				compile: 'smallAmpOriginalTestCase ^ ' , testClass name.
-			tempClass class
-				compile: 'smallAmpTargetClasses ^ self smallAmpOriginalTestCase smallAmpTargetClasses'.
-			result add: tempClass ].
-	^ result
-]
-
 { #category : #'as yet unclassified' }
 SAGenericMethods >> makeClassFrom: arrayOfTestMethods [
 	^ self makeClassFrom: arrayOfTestMethods  instanceVars: '' 
@@ -442,29 +397,32 @@ SAGenericMethods >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars
 ]
 
 { #category : #actions }
-SAGenericMethods >> metricsEval: repoName doGrind: doGrind [
+SAGenericMethods >> metricsEval: repoName shred: shred [
+
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId helper |
 	helper := SAGenericMethods new.
 	classes := helper allClassesForRepo: repoName.
 	commitId := helper commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
-	targetedTests := tests
-		select: [ :s | s smallAmpTargetClasses isNotNil ].
+	targetedTests := tests select: [ :s | 
+		                 s smallAmpTargetClasses isNotNil ].
 	testsuite := TestSuite new.
 	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
 	testrun := testsuite run.
 	testMethodTargeted := testsuite tests.
-	stat := {(#classes -> classes size).
-	(#tests -> tests size).
-	(#loc -> loc).
-	(#commitId -> commitId).
-	(#targetedTests -> targetedTests size).
-	(#targetedTestsMethods -> testMethodTargeted size).
-	(#allGreen -> (testrun failureCount + testrun errorCount = 0)).
-	(#testsFails -> testrun failureCount).
-	(#testsErrors -> testrun errorCount).
-	(#testsPasses -> testrun passedCount)} asString.
+	stat := { 
+		        (#classes -> classes size).
+		        (#tests -> tests size).
+		        (#loc -> loc).
+		        (#commitId -> commitId).
+		        (#targetedTests -> targetedTests size).
+		        (#targetedTestsMethods -> testMethodTargeted size).
+		        (#allGreen
+		         -> (testrun failureCount + testrun errorCount = 0)).
+		        (#testsFails -> testrun failureCount).
+		        (#testsErrors -> testrun errorCount).
+		        (#testsPasses -> testrun passedCount) } asString.
 	(FileLocator imageDirectory / (repoName , '.stat')) writeStream
 		nextPutAll: stat;
 		lf;
@@ -473,9 +431,10 @@ SAGenericMethods >> metricsEval: repoName doGrind: doGrind [
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
 		close.
-	doGrind ifTrue: 
-	[targetedTests := self grindTestClass: targetedTests.
-	targetedTests := targetedTests asOrderedCollection sort: [:cls1 :cls2 | cls1 name asString < cls2 name asString  ]].
+	shred > 0 ifTrue: [ 
+		targetedTests := self shredTestClass: targetedTests max: shred.
+		targetedTests := targetedTests asOrderedCollection sort: [ :cls1 :cls2 | 
+			                 cls1 name asString < cls2 name asString ] ].
 	(FileLocator imageDirectory / self todoFile) writeStream
 		nextPutAll: (Character lf join: targetedTests);
 		lf;
@@ -544,6 +503,42 @@ SAGenericMethods >> parsedMethodFrom: aSourceCode [
 { #category : #factory }
 SAGenericMethods >> parserClass [
 	^ RBParser
+]
+
+{ #category : #'as yet unclassified' }
+SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber [
+	| currentTests currentIndex tests result tempClass helpers firstClass |
+	currentIndex := 1.
+	firstClass := true.
+	result := OrderedCollection new.
+	tests := testClass testSelectors.
+	helpers := testClass methods
+		reject: [ :m | tests includes: m selector ].
+	[ currentIndex < tests size ]
+		whileTrue: [ currentTests := tests
+				copyFrom: currentIndex
+				to: (currentIndex + testNumber - 1 min: tests size).
+			currentIndex := currentIndex + testNumber.
+			currentTests ifEmpty: [ ^ result ].
+			tempClass := testClass superclass
+				subclass: (testClass name asString , self getId asString) asSymbol
+				instanceVariableNames: testClass instanceVariablesString
+				classVariableNames: testClass classVariablesString
+				package: self defaultTempPackage.
+			currentTests
+				do:
+					[ :selector | tempClass compile: (testClass lookupSelector: selector) sourceCode ].
+			helpers do: [ :h | tempClass compile: h sourceCode ].
+			firstClass
+				ifTrue: [ tempClass class compile: self srcAllTestSelectors.
+					firstClass := false ].
+			tempClass class compile: self srcDefaultTimeLimit.
+			tempClass class
+				compile: 'smallAmpOriginalTestCase ^ ' , testClass name.
+			tempClass class
+				compile: 'smallAmpTargetClasses ^ self smallAmpOriginalTestCase smallAmpTargetClasses'.
+			result add: tempClass ].
+	^ result
 ]
 
 { #category : #actions }
@@ -658,6 +653,15 @@ SAGenericMethods >> safeFail: block key: aKey addTo: aDictionary [
 				.
 			'N/A' ].
 	aDictionary at: aKey put: theValue
+]
+
+{ #category : #actions }
+SAGenericMethods >> shredTestClass: targetedTests max: maxNum [
+
+	^ targetedTests flatCollect: [ :cls | 
+		  cls allTestSelectors size > maxNum
+			  ifTrue: [ SAGenericMethods new performShredingOnTestClass: cls size: 20 ]
+			  ifFalse: [ { cls } ] ]
 ]
 
 { #category : #'method operations' }
