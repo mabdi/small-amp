@@ -51,14 +51,15 @@ SACommandLineHandler >> end [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalStats [
-	| prefix doGrind |
+
+	| prefix shred |
 	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix allButFirst: '--stat=' size.
-	self arguments 
-		detect: [ :arg | arg beginsWith: '--doGrind' ]
-		ifFound: [doGrind := true] 
-		ifNone: [doGrind := false].
-	SAGenericMethods new metricsEval: prefix doGrind: doGrind
+	self arguments
+		detect: [ :arg | arg beginsWith: '--shred=' ]
+		ifFound: [ :arg | shred := arg allButFirst: '--shred=' size ]
+		ifNone: [ shred := 0 ].
+	SAGenericMethods new metricsEval: prefix shred: shred
 ]
 
 { #category : #accessing }

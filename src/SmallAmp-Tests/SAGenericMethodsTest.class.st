@@ -81,7 +81,7 @@ SAGenericMethodsTest >> testGrindTestClassSize [
 		package: helper defaultTempPackage.
 	1 to: 32 do: [ :i | cls compile: 'testNum' , i asString , ' self assert: true' ].
 	cls compile: 'helperMethod ^ 1'.
-	grinded := helper grindTestClass: cls size: 20.
+	grinded := helper performShredingOnTestClass: cls size: 20.
 	self assert: cls smallAmpOriginalTestCase equals: cls.
 	self assert: grinded size equals: 2.
 	self assert: grinded first testSelectors size equals: 20.

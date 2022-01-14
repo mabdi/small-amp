@@ -14,7 +14,7 @@ Class {
 		'timeBudgetFinished',
 		'numberOfOriginalTestMethods',
 		'totalTime',
-		'numberOfAmplifiedMethods',
+		'numberOfProcessedMethods',
 		'testClassTimeToRunInMillis'
 	],
 	#category : #'SmallAmp-Model'
@@ -192,12 +192,12 @@ SAResultItem >> asDictionaryObject [
 		key: #numberOfOriginalTestMethods
 		addTo: result.
 	self
-		safeFail: [ self testClassTimeToRunInMillis  ]
+		safeFail: [ self testClassTimeToRunInMillis ]
 		key: #testClassTimeToRunInMillis
 		addTo: result.
 	self
-		safeFail: [ self numberOfAmplifiedMethods ]
-		key: #numberOfAmplifiedMethods
+		safeFail: [ self numberOfProcessedMethods ]
+		key: #numberOfProcessedMethods
 		addTo: result.
 	^ result
 ]
@@ -350,18 +350,6 @@ SAResultItem >> numberOfAllMutationsInOriginal [
 ]
 
 { #category : #accessing }
-SAResultItem >> numberOfAmplifiedMethods [
-
-	^ numberOfAmplifiedMethods
-]
-
-{ #category : #accessing }
-SAResultItem >> numberOfAmplifiedMethods: anObject [
-
-	numberOfAmplifiedMethods := anObject
-]
-
-{ #category : #accessing }
 SAResultItem >> numberOfOriginalTestMethods [
 	^ numberOfOriginalTestMethods
 ]
@@ -369,6 +357,18 @@ SAResultItem >> numberOfOriginalTestMethods [
 { #category : #accessing }
 SAResultItem >> numberOfOriginalTestMethods: anObject [
 	numberOfOriginalTestMethods := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfProcessedMethods [
+
+	^ numberOfProcessedMethods
+]
+
+{ #category : #accessing }
+SAResultItem >> numberOfProcessedMethods: anObject [
+
+	numberOfProcessedMethods := anObject
 ]
 
 { #category : #accessing }
