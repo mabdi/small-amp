@@ -360,8 +360,10 @@ def reportAmp(directory, projectName, fix, verbose):
                   xjson['targetChurn'],
                   xjson['testChurn'],
                   xjson['directTestingOriginal'],
-                  max(number_of_changes(jsonObj['amplifiedMethods']) or [0])
-
+                  max(number_of_changes(jsonObj['amplifiedMethods']) or [0]),
+                  jsonObj.get('numberOfProcessedMethods','NA'),
+                  jsonObj.get('testClassTimeToRunInMillis','NA'),
+                  jsonObj.get('timeBudgetFinished','NA')
                ]))
       elif row['stat'] == 'error':
           print(projectName + ',' + row['className'] + ',' + 'Finished with Error ({}) {}'.format(row['errDet'],row['lastMethod']))
