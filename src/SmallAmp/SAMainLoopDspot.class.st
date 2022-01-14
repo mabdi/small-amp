@@ -130,6 +130,7 @@ SAMainLoopDspot >> finalSteps [
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
 	finalResult numberOfAmplifiedMethods: numberOfAmplified.
+	finalResult testClassTimeToRunInMillis: testRunTimeoutMillis.
 	SAGenericMethods new moveClassToFinal: readable.
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: { finalResult amplifiedClass }

@@ -14,7 +14,8 @@ Class {
 		'timeBudgetFinished',
 		'numberOfOriginalTestMethods',
 		'totalTime',
-		'numberOfAmplifiedMethods'
+		'numberOfAmplifiedMethods',
+		'testClassTimeToRunInMillis'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -100,6 +101,7 @@ SAResultItem >> amplifiedTestCoverage [
 
 { #category : #reporting }
 SAResultItem >> asDictionaryObject [
+
 	| result |
 	result := Dictionary new.
 	result at: #unixtime put: DateAndTime now asUnixTime.
@@ -133,8 +135,8 @@ SAResultItem >> asDictionaryObject [
 		key: #timeTotal
 		addTo: result.
 	self
-		safeFail:
-			[ (targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
+		safeFail: [ 
+			(targetClasses collect: [ :c | c linesOfCode + c class linesOfCode ])
 				inject: 0
 				into: [ :accum :each | accum + each ] ]
 		key: #targetLoc
@@ -144,7 +146,8 @@ SAResultItem >> asDictionaryObject [
 		key: #testLoc
 		addTo: result.
 	self
-		safeFail: [ (self amplifiedMethods collect: #linesOfCode)
+		safeFail: [ 
+			(self amplifiedMethods collect: #linesOfCode)
 				inject: 0
 				into: [ :accum :each | accum + each ] ]
 		key: #testAmpLoc
@@ -157,7 +160,7 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ (self methodsNotProfiled collect: #name) asArray ]
 		key: #methodsNotProfiled
 		addTo: result.
-	
+
 	self
 		safeFail: [ (self failedSelectorInOriginal collect: #name) asArray ]
 		key: #testMethodsIgnored
@@ -167,23 +170,30 @@ SAResultItem >> asDictionaryObject [
 		key: #numberOfAllMutationsInOriginal
 		addTo: result.
 	self
-		safeFail: [ (self notCoveredInOriginal
-				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		safeFail: [ 
+			(self notCoveredInOriginal collect: [ :m | 
+				 m mutant asDictionaryObject ]) asArray ]
 		key: #notCoveredInOriginal
 		addTo: result.
 	self
-		safeFail: [ (self newCovered collect: [ :m | m mutant asDictionaryObject ])
+		safeFail: [ 
+			(self newCovered collect: [ :m | m mutant asDictionaryObject ])
 				asArray ]
 		key: #newCovered
 		addTo: result.
 	self
-		safeFail: [ (self notCoveredInAmplified
-				collect: [ :m | m mutant asDictionaryObject ]) asArray ]
+		safeFail: [ 
+			(self notCoveredInAmplified collect: [ :m | 
+				 m mutant asDictionaryObject ]) asArray ]
 		key: #notCoveredInAmplified
 		addTo: result.
 	self
 		safeFail: [ self numberOfOriginalTestMethods ]
 		key: #numberOfOriginalTestMethods
+		addTo: result.
+	self
+		safeFail: [ self testClassTimeToRunInMillis  ]
+		key: #testClassTimeToRunInMillis
 		addTo: result.
 	self
 		safeFail: [ self numberOfAmplifiedMethods ]
@@ -482,6 +492,18 @@ SAResultItem >> testClass [
 { #category : #accessing }
 SAResultItem >> testClass: anObject [
 	testClass := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> testClassTimeToRunInMillis [
+
+	^ testClassTimeToRunInMillis
+]
+
+{ #category : #accessing }
+SAResultItem >> testClassTimeToRunInMillis: anObject [
+
+	testClassTimeToRunInMillis := anObject
 ]
 
 { #category : #accessing }
