@@ -57,7 +57,7 @@ SACommandLineHandler >> evalStats [
 	prefix := prefix allButFirst: '--stat=' size.
 	self arguments
 		detect: [ :arg | arg beginsWith: '--shred=' ]
-		ifFound: [ :arg | shred := arg allButFirst: '--shred=' size ]
+		ifFound: [ :arg | shred := (arg allButFirst: '--shred=' size) asInteger ]
 		ifNone: [ shred := 0 ].
 	SAGenericMethods new metricsEval: prefix shred: shred
 ]

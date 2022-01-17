@@ -192,6 +192,10 @@ SAResultItem >> asDictionaryObject [
 		key: #numberOfOriginalTestMethods
 		addTo: result.
 	self
+		safeFail: [ self numberOfTestMethodsBeforeShreding ]
+		key: #numberOfTestMethodsBeforeShreding
+		addTo: result.
+	self
 		safeFail: [ self testClassTimeToRunInMillis ]
 		key: #testClassTimeToRunInMillis
 		addTo: result.
@@ -369,6 +373,12 @@ SAResultItem >> numberOfProcessedMethods [
 SAResultItem >> numberOfProcessedMethods: anObject [
 
 	numberOfProcessedMethods := anObject
+]
+
+{ #category : #'as yet unclassified' }
+SAResultItem >> numberOfTestMethodsBeforeShreding [
+
+	^ testClass smallAmpOriginalTestCase testSelectors size
 ]
 
 { #category : #accessing }
