@@ -174,15 +174,15 @@ SADSpotSelection >> matrixFromMutalk: aResult [
 
 { #category : #'as yet unclassified' }
 SADSpotSelection >> mutalkRun: aPopulation [
+
 	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
-	^ self
-		mutalkRunClass: testClasses
-		targetClasses: targetClasses
+	testClasses := { (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass smallAmpOriginalTestCase) }.
+	^ self mutalkRunClass: testClasses targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }
@@ -209,13 +209,17 @@ SADSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
 
 { #category : #'as yet unclassified' }
 SADSpotSelection >> mutalkRunSnapshot: aPopulation [
+
 	| testClasses testClass targetClasses |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
-	^ self mutalkRunSnapshotClass: testClasses targetClasses: targetClasses
+	testClasses := { (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass smallAmpOriginalTestCase) }.
+	^ self
+		  mutalkRunSnapshotClass: testClasses
+		  targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }

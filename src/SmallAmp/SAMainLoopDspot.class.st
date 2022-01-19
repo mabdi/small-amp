@@ -130,7 +130,6 @@ SAMainLoopDspot >> finalSteps [
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
-	finalResult testClassTimeToRunInMillis: testRunTimeoutMillis.
 	SAGenericMethods new moveClassToFinal: readable.
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: { finalResult amplifiedClass }
@@ -141,31 +140,33 @@ SAMainLoopDspot >> finalSteps [
 
 { #category : #actions }
 SAMainLoopDspot >> initTs [
+
 	| result testMethods |
-	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
-		asMilliSeconds ]
+	[ 
+	testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
+		                        asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
-	testRunTimeoutMillis := {1000.
-	testRunTimeoutMillis} max.
-		assertAmplifier := config assertionAmplifier initializeWith: config.
+	finalResult testClassTimeToRunInMillis: testRunTimeoutMillis.
+	testRunTimeoutMillis := { 
+		                        1000.
+		                        testRunTimeoutMillis } max.
+	assertAmplifier := config assertionAmplifier initializeWith: config.
 
 	assertAmplifier testRunTimeoutMillis: testRunTimeoutMillis.
-	testMethods := result expectedPasses
-		collect:
-			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
-	finalResult
-		failedSelectorInOriginal:
-			(result failures , result expectedDefects
-				collect: [ :failed | failed class lookupSelector: failed selector ])
-				asOrderedCollection.
+	testMethods := result expectedPasses collect: [ :passed | 
+		               (passed class lookupSelector: passed selector)
+			               sourceCode ].
+	finalResult failedSelectorInOriginal:
+		(result failures , result expectedDefects collect: [ :failed | 
+			 failed class lookupSelector: failed selector ])
+			asOrderedCollection.
 	testMethods ifEmpty: [ SANoGreenTest new signal ].
 	finalResult numberOfOriginalTestMethods: testMethods size.
-	^ testMethods
-		collect: [ :tcase | 
-			(SATestMethod with: tcase class: testClass targets: targetClasses)
-				selectorAppend: '_amp';
-				yourself ]
+	^ testMethods collect: [ :tcase | 
+		  (SATestMethod with: tcase class: testClass targets: targetClasses)
+			  selectorAppend: '_amp';
+			  yourself ]
 ]
 
 { #category : #initialization }
