@@ -363,6 +363,8 @@ def reportAmp(directory, projectName, fix, verbose):
                   max(number_of_changes(jsonObj['amplifiedMethods']) or [0]),
                   jsonObj.get('numberOfProcessedMethods','NA'),
                   jsonObj.get('testClassTimeToRunInMillis','NA'),
+                  jsonObj.get('numberOfAllMutationsInOriginal','NA'),
+                  jsonObj.get('numberOfTestMethodsBeforeShreding','NA'),
                   jsonObj.get('timeBudgetFinished','NA')
                ]))
       elif row['stat'] == 'error':
