@@ -181,7 +181,8 @@ SADSpotSelection >> mutalkRun: aPopulation [
 	testClasses := { (self astHelper
 		                buildTestClassWith:
 		                (aPopulation collect: [ :tcase | tcase testMethod ])
-		                using: testClass smallAmpOriginalTestCase) }.
+		                using: testClass ) }.
+	testClass smallAmpOriginalTestCase = testClass ifFalse: [ testClasses add: testClass smallAmpOriginalTestCase ].
 	^ self mutalkRunClass: testClasses targetClasses: targetClasses
 ]
 
@@ -216,7 +217,9 @@ SADSpotSelection >> mutalkRunSnapshot: aPopulation [
 	testClasses := { (self astHelper
 		                buildTestClassWith:
 		                (aPopulation collect: [ :tcase | tcase testMethod ])
-		                using: testClass smallAmpOriginalTestCase) }.
+		                using: testClass) }.
+	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
+		testClasses add: testClass smallAmpOriginalTestCase ].
 	^ self
 		  mutalkRunSnapshotClass: testClasses
 		  targetClasses: targetClasses
