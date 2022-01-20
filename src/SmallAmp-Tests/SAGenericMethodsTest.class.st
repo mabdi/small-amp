@@ -163,23 +163,33 @@ SAGenericMethodsTest >> testRunSafelyTimeOutSemaphor [
 { #category : #tests }
 SAGenericMethodsTest >> testShreding [
 
-	| tests testClassUnderTest |
+	| tests shredMax testClassUnderTest |
 	testClassUnderTest := FakeLong1Test.
-	tests := SAGenericMethods new shredTestClass: { testClassUnderTest } max: 5.
-	self assert: tests size equals: (testClassUnderTest testSelectors size / 5) ceiling.
+	shredMax := 5.
+	self assert: testClassUnderTest testSelectors size > (shredMax * 2).
+	tests := SAGenericMethods new
+		         shredTestClass: { testClassUnderTest }
+		         max: shredMax.
+	self
+		assert: tests size
+		equals: (testClassUnderTest testSelectors size / shredMax) ceiling.
 	self
 		assert: tests first methods size
-		equals: testClassUnderTest methods size - testClassUnderTest testSelectors size + 5.
+		equals: testClassUnderTest methods size
+			- testClassUnderTest testSelectors size + shredMax.
 	self
 		assert: tests first allTestSelectors asSet
 		equals:
-		(testClassUnderTest superclass allTestSelectors asSet union:
-			 tests first testSelectors).
-	self assert: tests second allTestSelectors size equals: 5.
+			(testClassUnderTest superclass allTestSelectors asSet union:
+				 tests first testSelectors).
+	self assert: tests second allTestSelectors size equals: shredMax.
 	self
 		assert: tests last allTestSelectors size
-		equals: testClassUnderTest testSelectors size - ((tests size - 1) * 5).
-	self assert: tests first smallAmpOriginalTestCase equals: testClassUnderTest.
+		equals:
+		testClassUnderTest testSelectors size - (tests size - 1 * shredMax).
+	self
+		assert: tests first smallAmpOriginalTestCase
+		equals: testClassUnderTest.
 	self
 		assert: tests first smallAmpOriginalTestCase
 		equals: tests second smallAmpOriginalTestCase.
@@ -189,6 +199,14 @@ SAGenericMethodsTest >> testShreding [
 	self
 		assert: tests first smallAmpTargetClasses
 		equals: tests second smallAmpTargetClasses.
+	self assert: testClassUnderTest smallAmpOriginalTestCase equals: testClassUnderTest.	
+	self deny: tests first smallAmpOriginalTestCase equals: tests first.
+	self
+		assert: tests first anImportantMethodInClassSide
+		equals: tests second anImportantMethodInClassSide.
+	self
+		assert: tests first anImportantMethodInClassSide
+		equals: testClassUnderTest anImportantMethodInClassSide.
 	tests do: [ :test | test removeFromSystem ]
 ]
 

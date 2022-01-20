@@ -507,37 +507,41 @@ SAGenericMethods >> parserClass [
 
 { #category : #'as yet unclassified' }
 SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber [
+
 	| currentTests currentIndex tests result tempClass helpers firstClass |
 	currentIndex := 1.
 	firstClass := true.
 	result := OrderedCollection new.
 	tests := testClass testSelectors.
-	helpers := testClass methods
-		reject: [ :m | tests includes: m selector ].
-	[ currentIndex < tests size ]
-		whileTrue: [ currentTests := tests
-				copyFrom: currentIndex
-				to: (currentIndex + testNumber - 1 min: tests size).
-			currentIndex := currentIndex + testNumber.
-			currentTests ifEmpty: [ ^ result ].
-			tempClass := testClass superclass
-				subclass: (testClass name asString , self getId asString) asSymbol
-				instanceVariableNames: testClass instanceVariablesString
-				classVariableNames: testClass classVariablesString
-				package: self defaultTempPackage.
-			currentTests
-				do:
-					[ :selector | tempClass compile: (testClass lookupSelector: selector) sourceCode ].
-			helpers do: [ :h | tempClass compile: h sourceCode ].
-			firstClass
-				ifTrue: [ tempClass class compile: self srcAllTestSelectors.
-					firstClass := false ].
-			tempClass class compile: self srcDefaultTimeLimit.
-			tempClass class
-				compile: 'smallAmpOriginalTestCase ^ ' , testClass name.
-			tempClass class
-				compile: 'smallAmpTargetClasses ^ self smallAmpOriginalTestCase smallAmpTargetClasses'.
-			result add: tempClass ].
+	helpers := testClass methods reject: [ :m | 
+		           tests includes: m selector ].
+	[ currentIndex < tests size ] whileTrue: [ 
+		currentTests := tests
+			                copyFrom: currentIndex
+			                to: (currentIndex + testNumber - 1 min: tests size).
+		currentIndex := currentIndex + testNumber.
+		currentTests ifEmpty: [ ^ result ].
+		tempClass := testClass superclass
+			             subclass:
+			             (testClass name asString , self getId asString)
+				             asSymbol
+			             instanceVariableNames:
+			             testClass instanceVariablesString
+			             classVariableNames: testClass classVariablesString
+			             package: self defaultTempPackage.
+		testClass class methods do: [ :classSideMethod | tempClass class compile: classSideMethod sourceCode].
+		currentTests do: [ :selector | 
+			tempClass compile: (testClass lookupSelector: selector) sourceCode ].
+		helpers do: [ :h | tempClass compile: h sourceCode ].
+		firstClass ifTrue: [ 
+			tempClass class compile: self srcAllTestSelectors.
+			firstClass := false ].
+		tempClass class compile: self srcDefaultTimeLimit.
+		tempClass class compile:
+			'smallAmpOriginalTestCase ^ ' , testClass name.
+		tempClass class compile:
+			'smallAmpTargetClasses ^ self smallAmpOriginalTestCase smallAmpTargetClasses'.
+		result add: tempClass ].
 	^ result
 ]
 

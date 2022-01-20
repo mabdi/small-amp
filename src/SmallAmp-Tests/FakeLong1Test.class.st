@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+FakeLong1Test class >> anImportantMethodInClassSide [
+	^ 1
+]
+
+{ #category : #'as yet unclassified' }
 FakeLong1Test >> helper1 [
 ]
 
