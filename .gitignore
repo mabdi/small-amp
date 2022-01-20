@@ -22,3 +22,4 @@ SqueakDebug.log
 github-*.zip
 
 /pharo-projects-files
+.DS_Store

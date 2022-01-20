@@ -381,7 +381,9 @@ def runAmplificationCI(args):
    
    if testClasses:
       syso('Parsing workflow input')
-      todo = [x for x in testClasses.split(',')]
+      todoInput = [x for x in testClasses.split(',')]
+      todoFile = loadTodoFile(base, cwd)
+      todo = [y for x in todoInput for y in todoFile if x in y]
    else:
       syso('Loading todo file')
       todo = loadTodoFile(base, cwd)
