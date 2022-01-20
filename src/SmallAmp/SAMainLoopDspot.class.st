@@ -314,18 +314,21 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> scoreTests [
 
-	| methodsScore |
+	| methodsScore random tmp |
 	nextTest := nil.
 	sumScores := 0.
+	tmp := 0.
+	random := Random new next.
 	selection uncovered ifEmpty: [ ^ self ].
 	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel scoreWith: methodsScore.
-		sumScores := sumScores + testModel score.
-		nextTest
-			ifNil: [ nextTest := testModel ]
-			ifNotNil: [ 
-			testModel score > nextTest score ifTrue: [ nextTest := testModel ] ] ]
+		sumScores := sumScores + testModel score ].
+	(theTS reject: #isAmplified) do: [ :testModel |
+		testModel scoreWith: testModel score / sumScores.
+		tmp <= random & (random < tmp + testModel score) ifTrue: [ 
+			nextTest := testModel ].
+		tmp := tmp + testModel score ]
 ]
 
 { #category : #'as yet unclassified' }
