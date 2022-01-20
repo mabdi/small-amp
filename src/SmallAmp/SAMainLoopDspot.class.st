@@ -131,10 +131,11 @@ SAMainLoopDspot >> finalSteps [
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
-	testClasses := { finalResult amplifiedClass }.
-	finalResult amplifiedClass smallAmpOriginalTestCase = finalResult amplifiedClass ifFalse: [ 
+	testClasses := OrderedCollection with: finalResult amplifiedClass.
+	finalResult amplifiedClass smallAmpOriginalTestCase
+	= finalResult amplifiedClass ifFalse: [ 
 		testClasses add: finalResult amplifiedClass smallAmpOriginalTestCase ].
-	
+
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: testClasses
 			 targets: targetClasses
@@ -352,7 +353,7 @@ SAMainLoopDspot >> setupSelection [
 
 	| analysis testClasses |
 	selection := config selection initializeWith: config.
-	testClasses := { testClass }.
+	testClasses := OrderedCollection with: testClass.
 	testClass smallAmpOriginalTestCase = testClass ifFalse:
 	[testClasses add: testClass smallAmpOriginalTestCase].
 	analysis := selection

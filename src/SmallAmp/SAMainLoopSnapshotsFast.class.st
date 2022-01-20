@@ -97,7 +97,7 @@ SAMainLoopSnapshotsFast >> setupSelection [
 				(#testClass -> testClass name).
 				(#mutant -> mutant asDictionaryObject) } asDictionary ].
 	selection onMutationEvaluation: [ 0 ].
-	testClasses := { testClass }.
+	testClasses := OrderedCollection with: testClass.
 	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
 		testClasses add: testClass smallAmpOriginalTestCase ].
 	
