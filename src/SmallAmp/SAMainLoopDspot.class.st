@@ -125,16 +125,16 @@ SAMainLoopDspot >> finalSteps [
 	generatedClass := SAGenericMethods new
 		                  buildTestClassAndLogWith:
 		                  (resultPeople collect: #testMethod)
-		                  using: testClass.
+		                  using: testClass smallAmpOriginalTestCase.
 	finalResult amplifiedClass: generatedClass.
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
 	testClasses := OrderedCollection with: finalResult amplifiedClass.
-	finalResult amplifiedClass smallAmpOriginalTestCase
-	= finalResult amplifiedClass ifFalse: [ 
-		testClasses add: finalResult amplifiedClass smallAmpOriginalTestCase ].
+	testClass smallAmpOriginalTestCase
+	= testClass ifFalse: [ 
+		testClasses add: testClass smallAmpOriginalTestCase ].
 
 	finalResult amplifiedAnalysis: (selection
 			 analysisFor: testClasses
