@@ -174,15 +174,18 @@ SADSpotSelection >> matrixFromMutalk: aResult [
 
 { #category : #'as yet unclassified' }
 SADSpotSelection >> mutalkRun: aPopulation [
-	| testClasses testClass targetClasses |
+
+	| testClasses testClass targetClasses tempTestClass |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
-	^ self
-		mutalkRunClass: testClasses
-		targetClasses: targetClasses
+	tempTestClass :=  (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass).
+	testClasses := OrderedCollection with: tempTestClass.
+	tempTestClass smallAmpOriginalTestCase = tempTestClass ifFalse: [ 
+		testClasses add: tempTestClass smallAmpOriginalTestCase ].
+	^ self mutalkRunClass: testClasses targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }
@@ -209,13 +212,20 @@ SADSpotSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
 
 { #category : #'as yet unclassified' }
 SADSpotSelection >> mutalkRunSnapshot: aPopulation [
-	| testClasses testClass targetClasses |
+
+	| testClasses testClass targetClasses tempTestClass |
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
-	^ self mutalkRunSnapshotClass: testClasses targetClasses: targetClasses
+	tempTestClass := (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass).
+	testClasses := OrderedCollection with: tempTestClass .
+	tempTestClass smallAmpOriginalTestCase = tempTestClass ifFalse: [ 
+		testClasses add: tempTestClass smallAmpOriginalTestCase ].
+	^ self
+		  mutalkRunSnapshotClass: testClasses
+		  targetClasses: targetClasses
 ]
 
 { #category : #'as yet unclassified' }

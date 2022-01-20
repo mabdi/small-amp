@@ -160,6 +160,56 @@ SAGenericMethodsTest >> testRunSafelyTimeOutSemaphor [
 		do: [ self assert: true ]
 ]
 
+{ #category : #tests }
+SAGenericMethodsTest >> testShreding [
+
+	| tests shredMax testClassUnderTest |
+	testClassUnderTest := FakeLong1Test.
+	shredMax := 5.
+	self assert: testClassUnderTest testSelectors size > (shredMax * 2).
+	tests := SAGenericMethods new
+		         shredTestClass: { testClassUnderTest }
+		         max: shredMax.
+	self
+		assert: tests size
+		equals: (testClassUnderTest testSelectors size / shredMax) ceiling.
+	self
+		assert: tests first methods size
+		equals: testClassUnderTest methods size
+			- testClassUnderTest testSelectors size + shredMax.
+	self
+		assert: tests first allTestSelectors asSet
+		equals:
+			(testClassUnderTest superclass allTestSelectors asSet union:
+				 tests first testSelectors).
+	self assert: tests second allTestSelectors size equals: shredMax.
+	self
+		assert: tests last allTestSelectors size
+		equals:
+		testClassUnderTest testSelectors size - (tests size - 1 * shredMax).
+	self
+		assert: tests first smallAmpOriginalTestCase
+		equals: testClassUnderTest.
+	self
+		assert: tests first smallAmpOriginalTestCase
+		equals: tests second smallAmpOriginalTestCase.
+	self
+		assert: tests first smallAmpTargetClasses
+		equals: testClassUnderTest smallAmpTargetClasses.
+	self
+		assert: tests first smallAmpTargetClasses
+		equals: tests second smallAmpTargetClasses.
+	self assert: testClassUnderTest smallAmpOriginalTestCase equals: testClassUnderTest.	
+	self deny: tests first smallAmpOriginalTestCase equals: tests first.
+	self
+		assert: tests first anImportantMethodInClassSide
+		equals: tests second anImportantMethodInClassSide.
+	self
+		assert: tests first anImportantMethodInClassSide
+		equals: testClassUnderTest anImportantMethodInClassSide.
+	tests do: [ :test | test removeFromSystem ]
+]
+
 { #category : #test }
 SAGenericMethodsTest >> testStrip [
 	| sourceCode expectingCode result |

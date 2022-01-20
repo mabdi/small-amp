@@ -120,7 +120,7 @@ SAMainLoopDspot >> doInitialAssertionAmplification [
 { #category : #actions }
 SAMainLoopDspot >> finalSteps [
 
-	| generatedClass readable |
+	| generatedClass readable testClasses |
 	SmallAmp <~ 'final steps'.
 	generatedClass := SAGenericMethods new
 		                  buildTestClassAndLogWith:
@@ -130,10 +130,14 @@ SAMainLoopDspot >> finalSteps [
 	readable := self makeReadable.
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
-	finalResult testClassTimeToRunInMillis: testRunTimeoutMillis.
 	SAGenericMethods new moveClassToFinal: readable.
+	testClasses := OrderedCollection with: finalResult amplifiedClass.
+	testClass smallAmpOriginalTestCase
+	= testClass ifFalse: [ 
+		testClasses add: testClass smallAmpOriginalTestCase ].
+
 	finalResult amplifiedAnalysis: (selection
-			 analysisFor: { finalResult amplifiedClass }
+			 analysisFor: testClasses
 			 targets: targetClasses
 			 ignore: finalResult failedSelectorInOriginal)
 	"self installAmplifiedTests: readable"
@@ -141,31 +145,33 @@ SAMainLoopDspot >> finalSteps [
 
 { #category : #actions }
 SAMainLoopDspot >> initTs [
+
 	| result testMethods |
-	[ testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
-		asMilliSeconds ]
+	[ 
+	testRunTimeoutMillis := [ result := testClass suite run ] timeToRun
+		                        asMilliSeconds ]
 		valueWithin: config testRunTimeOut milliSeconds
 		onTimeout: [ self error: 'Original test class timeout' ].
-	testRunTimeoutMillis := {1000.
-	testRunTimeoutMillis} max.
-		assertAmplifier := config assertionAmplifier initializeWith: config.
+	finalResult testClassTimeToRunInMillis: testRunTimeoutMillis.
+	testRunTimeoutMillis := { 
+		                        1000.
+		                        testRunTimeoutMillis } max.
+	assertAmplifier := config assertionAmplifier initializeWith: config.
 
 	assertAmplifier testRunTimeoutMillis: testRunTimeoutMillis.
-	testMethods := result expectedPasses
-		collect:
-			[ :passed | (passed class lookupSelector: passed selector) sourceCode ].
-	finalResult
-		failedSelectorInOriginal:
-			(result failures , result expectedDefects
-				collect: [ :failed | failed class lookupSelector: failed selector ])
-				asOrderedCollection.
+	testMethods := result expectedPasses collect: [ :passed | 
+		               (passed class lookupSelector: passed selector)
+			               sourceCode ].
+	finalResult failedSelectorInOriginal:
+		(result failures , result expectedDefects collect: [ :failed | 
+			 failed class lookupSelector: failed selector ])
+			asOrderedCollection.
 	testMethods ifEmpty: [ SANoGreenTest new signal ].
 	finalResult numberOfOriginalTestMethods: testMethods size.
-	^ testMethods
-		collect: [ :tcase | 
-			(SATestMethod with: tcase class: testClass targets: targetClasses)
-				selectorAppend: '_amp';
-				yourself ]
+	^ testMethods collect: [ :tcase | 
+		  (SATestMethod with: tcase class: testClass targets: targetClasses)
+			  selectorAppend: '_amp';
+			  yourself ]
 ]
 
 { #category : #initialization }
@@ -227,7 +233,7 @@ SAMainLoopDspot >> makeReadable [
 	| readable reducer prettifier |
 	reducer := (config oracleReducion initializeWith: config)
 		with: finalResult amplifiedClass
-		from: testClass smallAmpOriginalTestCase
+		from: testClass
 		target: targetClasses
 		uncovered: finalResult notCoveredInOriginal.
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
@@ -308,18 +314,21 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> scoreTests [
 
-	| methodsScore |
+	| methodsScore random tmp |
 	nextTest := nil.
 	sumScores := 0.
+	tmp := 0.
+	random := Random new next.
 	selection uncovered ifEmpty: [ ^ self ].
 	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel scoreWith: methodsScore.
-		sumScores := sumScores + testModel score.
-		nextTest
-			ifNil: [ nextTest := testModel ]
-			ifNotNil: [ 
-			testModel score > nextTest score ifTrue: [ nextTest := testModel ] ] ]
+		sumScores := sumScores + testModel score ].
+	(theTS reject: #isAmplified) do: [ :testModel |
+		testModel scoreWith: testModel score / sumScores.
+		tmp <= random & (random < tmp + testModel score) ifTrue: [ 
+			nextTest := testModel ].
+		tmp := tmp + testModel score ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -345,16 +354,17 @@ SAMainLoopDspot >> selectionFrom: aList [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> setupSelection [
 
-	| analysis |
+	| analysis testClasses |
 	selection := config selection initializeWith: config.
+	testClasses := OrderedCollection with: testClass.
+	testClass smallAmpOriginalTestCase = testClass ifFalse:
+	[testClasses add: testClass smallAmpOriginalTestCase].
 	analysis := selection
-		            initialAnalysisFor:
-		            { testClass smallAmpOriginalTestCase }
+		            initialAnalysisFor: testClasses
 		            targets: targetClasses
 		            ignore: finalResult failedSelectorInOriginal.
 	finalResult originalAnalysis: analysis.
-	selection uncovered ifEmpty: [ SANoUncovered new signal ].
-	
+	selection uncovered ifEmpty: [ SANoUncovered new signal ]
 ]
 
 { #category : #accessing }
