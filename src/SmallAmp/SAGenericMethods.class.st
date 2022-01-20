@@ -575,11 +575,15 @@ SAGenericMethods >> removeAssertions: aMethod [
 
 { #category : #removing }
 SAGenericMethods >> removeClass: theClass source: sid [
-	"theClass removeFromSystem"
 
-	theClass superclass addObsoleteSubclass: theClass.
+	theClass package name = self defaultTempPackage ifFalse: [ 
+		
+		^ self ].
+	theClass removeFromSystem
+
+	"theClass superclass addObsoleteSubclass: theClass.
 	theClass environment forgetClass: theClass logged: false.
-	theClass obsolete
+	theClass obsolete"
 ]
 
 { #category : #'method operations' }
