@@ -660,7 +660,7 @@ SAGenericMethods >> shredTestClass: targetedTests max: maxNum [
 
 	^ targetedTests flatCollect: [ :cls | 
 		  cls allTestSelectors size > maxNum
-			  ifTrue: [ SAGenericMethods new performShredingOnTestClass: cls size: 20 ]
+			  ifTrue: [ SAGenericMethods new performShredingOnTestClass: cls size: maxNum ]
 			  ifFalse: [ { cls } ] ]
 ]
 

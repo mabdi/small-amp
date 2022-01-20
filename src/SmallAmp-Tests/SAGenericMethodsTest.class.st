@@ -160,6 +160,38 @@ SAGenericMethodsTest >> testRunSafelyTimeOutSemaphor [
 		do: [ self assert: true ]
 ]
 
+{ #category : #tests }
+SAGenericMethodsTest >> testShreding [
+
+	| tests testClassUnderTest |
+	testClassUnderTest := FakeLong1Test.
+	tests := SAGenericMethods new shredTestClass: { testClassUnderTest } max: 5.
+	self assert: tests size equals: (testClassUnderTest testSelectors size / 5) ceiling.
+	self
+		assert: tests first methods size
+		equals: testClassUnderTest methods size - testClassUnderTest testSelectors size + 5.
+	self
+		assert: tests first allTestSelectors asSet
+		equals:
+		(testClassUnderTest superclass allTestSelectors asSet union:
+			 tests first testSelectors).
+	self assert: tests second allTestSelectors size equals: 5.
+	self
+		assert: tests last allTestSelectors size
+		equals: testClassUnderTest testSelectors size - ((tests size - 1) * 5).
+	self assert: tests first smallAmpOriginalTestCase equals: testClassUnderTest.
+	self
+		assert: tests first smallAmpOriginalTestCase
+		equals: tests second smallAmpOriginalTestCase.
+	self
+		assert: tests first smallAmpTargetClasses
+		equals: testClassUnderTest smallAmpTargetClasses.
+	self
+		assert: tests first smallAmpTargetClasses
+		equals: tests second smallAmpTargetClasses.
+	tests do: [ :test | test removeFromSystem ]
+]
+
 { #category : #test }
 SAGenericMethodsTest >> testStrip [
 	| sourceCode expectingCode result |
