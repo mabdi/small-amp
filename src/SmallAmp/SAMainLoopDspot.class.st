@@ -230,12 +230,13 @@ SAMainLoopDspot >> inputAmplifiers [
 
 { #category : #actions }
 SAMainLoopDspot >> makeReadable [
+
 	| readable reducer prettifier |
 	reducer := (config oracleReducion initializeWith: config)
-		with: finalResult amplifiedClass
-		from: testClass
-		target: targetClasses
-		uncovered: finalResult notCoveredInOriginal.
+		           with: finalResult amplifiedClass
+		           from: testClass smallAmpOriginalTestCase
+		           target: targetClasses
+		           uncovered: finalResult notCoveredInOriginal.
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
 	prettifier := config prettifier initializeWith: config.
