@@ -90,7 +90,7 @@ SAMainLoopSnapshotsFast >> setTestMethodStarting: aTestMethod [
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> setupSelection [
 
-	| analysis testClasses |
+	| analysis testClasses testResult |
 	selection := config selection initializeWith: config.
 	selection onBeforeMutant: [ :mutant :index | 
 		self saveCrashEvidence: { 
@@ -100,13 +100,15 @@ SAMainLoopSnapshotsFast >> setupSelection [
 	testClasses := OrderedCollection with: testClass.
 	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
 		testClasses add: testClass smallAmpOriginalTestCase ].
-	
+
 	analysis := selection
 		            initialAnalysisFor: testClasses
 		            targets: targetClasses
 		            ignore: finalResult failedSelectorInOriginal.
 	finalResult originalAnalysis: analysis.
-	selection uncovered ifEmpty: [ SANoUncovered new signal ]
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	testResult := testClass suite run.
+	testResult defects ifNotEmpty: [ SAFlakyMutationTesting new signal ]
 ]
 
 { #category : #'as yet unclassified' }

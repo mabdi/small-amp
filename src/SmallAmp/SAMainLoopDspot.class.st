@@ -355,17 +355,19 @@ SAMainLoopDspot >> selectionFrom: aList [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> setupSelection [
 
-	| analysis testClasses |
+	| analysis testClasses testResult |
 	selection := config selection initializeWith: config.
 	testClasses := OrderedCollection with: testClass.
-	testClass smallAmpOriginalTestCase = testClass ifFalse:
-	[testClasses add: testClass smallAmpOriginalTestCase].
+	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
+		testClasses add: testClass smallAmpOriginalTestCase ].
 	analysis := selection
 		            initialAnalysisFor: testClasses
 		            targets: targetClasses
 		            ignore: finalResult failedSelectorInOriginal.
 	finalResult originalAnalysis: analysis.
-	selection uncovered ifEmpty: [ SANoUncovered new signal ]
+	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	testResult := testClass suite run.
+	testResult defects ifNotEmpty: [ SAFlakyMutationTesting new signal ]
 ]
 
 { #category : #accessing }
