@@ -143,31 +143,40 @@ SmallAmp >> amplify: aTestClass target: targetClasses [
 
 { #category : #actions }
 SmallAmp >> amplifyAll [
+
 	| res objRes |
-	self class <~ ('SmallAmp pid: ' , (OSPlatform current resultOfCommand: 'echo $PPID')).
+	self class
+	<~
+	('SmallAmp pid: '
+	 , (OSPlatform current resultOfCommand: 'echo $PPID')).
 	SAGenericMethods new preRunChecks.
 	res := SAResult new.
 	amplifyList
 		do: [ :item | 
 			| instance |
-			self class <~ ('Run instance start: ' , item key name, ', target: ', item value asString).
-			[ [ instance := self amplify: item key target: item value.
-				objRes := instance asDictionaryObject .
+			self class
+			<~ ('Run instance start: ' , item key name , ', target: '
+				 , item value asString).
+			[ 
+			[ 
+			instance := self amplify: item key target: item value.
+			objRes := instance asDictionaryObject.
 			self class <~ 'Run instance finished successfully.'.
-			self class <~ ('Run instance finish: ' , item key name , ', improved: ', ((objRes at: #mutationScoreAfter) - (objRes at: #mutationScoreBefore) ) asString, '%').
+			self class
+			<~ ('Run instance finish: ' , item key name , ', improved: '
+				 ,
+					 ((objRes at: #mutationScoreAfter)
+					  - (objRes at: #mutationScoreBefore)) asString , '%').
 			res addResult: instance for: item ]
-				on: SANoGreenTest , SANoUncovered
+				on: SANoGreenTest , SANoUncovered, SAFlakyMutationTesting 
 				do: [ :x | x asString traceCr ] ]
 				on: Error
 				do: [ :ex | 
-					config debug
-						ifTrue: [ ex signal ].
+					config debug ifTrue: [ ex signal ].
 					self class <~ ('Run instance crashed: ' , item key name).
 					self class <~ ('Error details:' , ex description).
-					self class
-						<~
-							(String
-								streamContents: [ :stream | ex signalerContext errorReportOn: stream ]) ] ]
+					self class <~ (String streamContents: [ :stream | 
+						 ex signalerContext errorReportOn: stream ]) ] ]
 		displayingProgress: [ :item | 'Processing ' , item key name ].
 	^ res
 ]
