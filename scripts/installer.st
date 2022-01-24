@@ -1,4 +1,4 @@
-| gitClone artifacts all_st package repo repoName |
+| gitClone artifacts all_st package repo repoName diff |
 
 'Script started' traceCr.
 gitClone := Smalltalk os environment asDictionary at: #GITHUB_WORKSPACE ifAbsent: [ 'GITHUB_WORKSPACE missing' traceCr. Smalltalk exitFailure ].
