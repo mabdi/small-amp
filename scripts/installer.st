@@ -5,6 +5,7 @@ gitClone := Smalltalk os environment asDictionary at: #GITHUB_WORKSPACE ifAbsent
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'reponame missing' traceCr. Smalltalk exitFailure ].
 
 repo := IceRepository registry detect: [ :r | r name = repoName ].
+Stdio stdout << 'Repo found. Its loaded from: '; << repo location asAbsolute  pathString; lf; flush.
 diff := repo workingCopyDiff.
 Stdio stdout << 'Diff before import: '; << diff packages asString; lf; flush.
 
@@ -26,6 +27,6 @@ Stdio stdout << 'Classes installed'; lf; flush.
 diff := repo workingCopyDiff.
 Stdio stdout << 'Diff after: '; << diff packages asString; lf; flush.
 
-repo index updateDiskWorkingCopy: repo workingCopyDiff.
+repo index updateDiskWorkingCopy: diff.
 Stdio stdout << 'done'; lf; flush.      
 Smalltalk snapshot: true andQuit: true
