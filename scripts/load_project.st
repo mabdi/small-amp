@@ -1,4 +1,4 @@
-| repoName baseline load load_path gitClone commitId env_GITHUB_REPOSITORY env_GITHUB_REF_NAME |
+| repoName baseline load load_path gitClone commitId env_GITHUB_REPOSITORY env_GITHUB_REF_NAME repo |
 
 baseline := Smalltalk os environment asDictionary at: #project_baseline ifAbsent: [ 'project_baseline missing' traceCr. Smalltalk exitFailure ].
 load := Smalltalk os environment asDictionary at: #project_load ifAbsent: [ 'project_load missing, set to nil' traceCr. nil ].
@@ -30,8 +30,12 @@ IceRepository registry
    	           r := r createRepository.
 		   r register.
 		   ].
-commitId := (IceRepository registry detect: [ :n | n name = repoName ]) branch commit shortId.
+repo := (IceRepository registry detect: [ :n | n name = repoName ]).
+Smalltalk os environment at: #GitCloneLocation put: repo location asAbsolute  pathString
+
+commitId := repo branch commit shortId.
 
 ('Project registered in Iceberg ', commitId asString) traceCr.
+('ENV set: GitCloneLocation:', (Smalltalk os environment at: #GitCloneLocation) ) traceCr.
 
 Smalltalk snapshot: true andQuit: true
