@@ -1,4 +1,4 @@
-| repoName baseline load load_path gitClone commitId |
+| repoName baseline load load_path gitClone commitId env_GITHUB_REPOSITORY env_GITHUB_REF_NAME |
 
 baseline := Smalltalk os environment asDictionary at: #project_baseline ifAbsent: [ 'project_baseline missing' traceCr. Smalltalk exitFailure ].
 load := Smalltalk os environment asDictionary at: #project_load ifAbsent: [ 'project_load missing, set to nil' traceCr. nil ].
