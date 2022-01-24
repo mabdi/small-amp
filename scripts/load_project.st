@@ -31,7 +31,7 @@ IceRepository registry
 		   r register.
 		   ].
 repo := (IceRepository registry detect: [ :n | n name = repoName ]).
-Smalltalk os environment at: #GitCloneLocation put: repo location asAbsolute  pathString
+Smalltalk os environment at: #GitCloneLocation put: repo location asAbsolute  pathString.
 
 commitId := repo branch commit shortId.
 
