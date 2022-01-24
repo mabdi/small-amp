@@ -5,12 +5,14 @@ load := Smalltalk os environment asDictionary at: #project_load ifAbsent: [ 'pro
 load_path := Smalltalk os environment asDictionary at: #project_repository ifAbsent: [ 'project_repository missing' traceCr. Smalltalk exitFailure  ].
 
 gitClone := Smalltalk os environment asDictionary at: #GITHUB_WORKSPACE ifAbsent: [ 'GITHUB_WORKSPACE missing' traceCr. Smalltalk exitFailure ].
+env_GITHUB_REPOSITORY := Smalltalk os environment asDictionary at: #GITHUB_REPOSITORY ifAbsent: [ 'GITHUB_REPOSITORY missing' traceCr. Smalltalk exitFailure ].
+env_GITHUB_REF_NAME := Smalltalk os environment asDictionary at: #GITHUB_REF_NAME ifAbsent: [ 'GITHUB_REF_NAME missing' traceCr. Smalltalk exitFailure ].
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'reponame missing' traceCr. Smalltalk exitFailure ].
 
 [ | b |
      b := Metacello new
         baseline: baseline;
-        repository: 'tonel://', load_path;
+        repository: 'github://', env_GITHUB_REPOSITORY , ':', env_GITHUB_REF_NAME;
         onUpgrade: [ :ex | ex useIncoming ];
         onConflictUseIncoming.
      load ifNotNil: [ b load: load ] ifNil: [ b load ]
@@ -21,6 +23,7 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'rep
 IceRepository registry
 		detect: [ :r | r name = repoName ]
 		ifNone: [ |r tmp|
+		   'Project is not registered. I try to register it.' traceCr.
 		   r := IceRepositoryCreator new
 				repository: nil;
 				location: gitClone asFileReference.
