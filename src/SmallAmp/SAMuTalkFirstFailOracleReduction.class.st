@@ -212,34 +212,36 @@ SAMuTalkFirstFailOracleReduction >> synthesisWhenFor: observations [
 
 { #category : #running }
 SAMuTalkFirstFailOracleReduction >> transformBackAndMakeCommentsBaseOn: listOfIds in: aParseTree [
-	| searchFor rewriter parser tree empty toComment |
+
+	| searchFor rewriter parser tree empty toComment testComment commentGenerator |
 	toComment := OrderedCollection new.
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
 	parser allChildren do: [ :each | each comments: nil ].
 	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
 	empty := RBParser parseExpression: ''.
-	rewriter
-		addRule:
-			(RBBlockReplaceRule
-				searchFor: searchFor
-				replaceWith: [ :node | 
-					| thisId theAssertion |
-					thisId := (((node arguments at: 2) body statements at: 1)
-						arguments at: 1) value.
-					theAssertion := node receiver body statements at: 1.
-					listOfIds
-						detect: [ :p | p value = thisId ]
-						ifFound: [ :p | 
-							toComment add: p key.
-							theAssertion ]
-						ifNone: [ empty ] ]).
+	rewriter addRule:
+		(RBBlockReplaceRule searchFor: searchFor replaceWith: [ :node | 
+			 | thisId theAssertion |
+			 thisId := (((node arguments at: 2) body statements at: 1)
+				            arguments at: 1) value.
+			 theAssertion := node receiver body statements at: 1.
+			 listOfIds
+				 detect: [ :p | p value = thisId ]
+				 ifFound: [ :p | 
+					 toComment add: p key.
+					 theAssertion ]
+				 ifNone: [ empty ] ]).
 	rewriter executeTree: parser.
 	tree := rewriter tree.
-	(self synthesisCommentFrom: toComment) ifNotNil: [ :x | tree := self astHelper
-		addComment: x
-		toMethodAST: tree ]
-	.
+	commentGenerator := SAPrettyCommentGenerator new
+		               methodAST: tree;
+		               particularResults: particularResults;
+		               toComment: toComment.
+	testComment := commentGenerator generateComment.
+	tree := commentGenerator purgeDecorators:  tree.
+	testComment ifNotNil: [ :x | 
+		tree := self astHelper addComment: x toMethodAST: tree ].
 	^ tree
 ]
 

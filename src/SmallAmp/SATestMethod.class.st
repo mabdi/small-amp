@@ -59,12 +59,14 @@ SATestMethod >> cleanedUpCopy [
 
 { #category : #copying }
 SATestMethod >> clone [
+
 	| obj |
 	obj := self class
-		       with: self testMethod 
+		       with: self testMethod
 		       class: self testClass
 		       targets: self testTargets.
 	obj testMethod: self testMethod.
+	obj selectorOriginal: self selectorOriginal.
 	^ obj
 ]
 
@@ -75,12 +77,12 @@ SATestMethod >> initialize [
 
 { #category : #accessing }
 SATestMethod >> initializeWith: aTestMethod class: aTestClass targets: objectsUnderTest [
+
 	self initialize.
 	testMethod := aTestMethod.
 	testClass := aTestClass.
 	testTargets := objectsUnderTest.
-	selectorOriginal := self astHelper extractMethodName:
-		                                   aTestMethod
+	selectorOriginal := self astHelper extractMethodName: aTestMethod
 ]
 
 { #category : #cleanup }
@@ -151,12 +153,14 @@ SATestMethod >> removeAssertionsAndExtract [
 
 { #category : #removing }
 SATestMethod >> renamedCopy: postfix [
+
 	| obj |
 	obj := self class
 		       with: self testMethod
 		       class: self testClass
 		       targets: self testTargets.
 	obj selectorAppend: postfix.
+	obj selectorOriginal: self selectorOriginal.
 	^ obj
 ]
 
@@ -219,8 +223,17 @@ SATestMethod >> selectorOriginal [
 ]
 
 { #category : #accessing }
+SATestMethod >> selectorOriginal: anObject [
+
+	selectorOriginal := anObject
+]
+
+{ #category : #accessing }
 SATestMethod >> signAsSmallAmp [
-	testMethod := self astHelper signAsSmallAmp: testMethod 
+
+	testMethod := self astHelper
+		              signAsSmallAmp: testMethod
+		              original: testClass smallAmpOriginalTestCase >> selectorOriginal
 ]
 
 { #category : #removing }

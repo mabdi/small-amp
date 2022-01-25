@@ -13,6 +13,12 @@ SAGenericMethods class >> defaultPragma [
 ]
 
 { #category : #'as yet unclassified' }
+SAGenericMethods class >> defaultPragmaWithOriginal [
+
+	^ #madeBySmallAmpFrom:
+]
+
+{ #category : #'as yet unclassified' }
 SAGenericMethods class >> instanceId [
 	instanceId ifNil: [ instanceId:=0 ].
 	instanceId := instanceId + 1.
@@ -680,6 +686,17 @@ SAGenericMethods >> signAsSmallAmp: src [
 		ifFalse: [ ast
 				addPragma: (RBPragmaNode selector: self defaultPragma arguments: {}) ].
 			^ ast formattedCode 
+]
+
+{ #category : #'method operations' }
+SAGenericMethods >> signAsSmallAmp: src original: aTestMethod [
+
+	| ast |
+	ast := self parsedMethodFrom: src.
+	(ast hasPragmaNamed: self class defaultPragmaWithOriginal) ifFalse: [ 
+		ast addPragma:
+			(RBPragmaNode selector: self class defaultPragmaWithOriginal arguments: { (RBLiteralValueNode value: aTestMethod name )}) ].
+	^ ast formattedCode
 ]
 
 { #category : #'method operations' }

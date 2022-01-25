@@ -167,78 +167,34 @@ SA2OracleReduction >> stripMethod: newTree [
 ]
 
 { #category : #running }
-SA2OracleReduction >> synthesisCommentFrom: toComment [
-	| when |
-	toComment ifEmpty: [ ^ nil ].
-	^ String
-		streamContents: [ :s | 
-			s
-				nextPutAll: 'I test correctness of: ';
-				cr;
-				cr.
-			toComment
-				do: [ :m | 
-					when := self
-						synthesisWhenFor:
-							(particularResults detect: [ :x | x mutant = m ] ifNone: [ ^ nil]) mutantEvaluation
-								observation.
-					s
-						nextPutAll: '- ';
-						nextPutAll: m smallAmpCommentText.
-					when
-						ifNotNil: [ s
-								nextPutAll: ' when ';
-								nextPutAll: when ].
-					s
-						cr;
-						cr ] ]
-]
-
-{ #category : #running }
-SA2OracleReduction >> synthesisWhenFor: observations [
-	| a |
-	observations ifEmpty: [ ^ nil ].
-	observations
-		keysDo: [ :key | 
-			(observations at: key) = SmallInteger maxVal
-				ifTrue: [ observations at: key put: 'SmallInteger maxVal' ].
-			(observations at: key) = SmallInteger minVal
-				ifTrue: [ observations at: key put: 'SmallInteger minVal' ] ].
-	a := OrderedCollection new.
-	observations associationsDo: [ :k | a add: k ].
-	^ a asArray asString 
-]
-
-{ #category : #running }
 SA2OracleReduction >> transformBackAndMakeCommentsBaseOn: listOfIds in: aParseTree [
-	| searchFor rewriter parser tree empty toComment |
+
+	| searchFor rewriter parser tree empty toComment testComment |
 	toComment := OrderedCollection new.
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
 	parser allChildren do: [ :each | each comments: nil ].
 	searchFor := '[`.@assertStatement] on: Error do: [ self smallamp_logs: `#id. self assert: false ] '.
 	empty := RBParser parseExpression: ''.
-	rewriter
-		addRule:
-			(RBBlockReplaceRule
-				searchFor: searchFor
-				replaceWith: [ :node | 
-					| thisId theAssertion |
-					thisId := (((node arguments at: 2) body statements at: 1)
-						arguments at: 1) value.
-					theAssertion := node receiver body statements at: 1.
-					listOfIds
-						detect: [ :p | p value = thisId ]
-						ifFound: [ :p | 
-							toComment add: p key.
-							theAssertion ]
-						ifNone: [ empty ] ]).
+	rewriter addRule:
+		(RBBlockReplaceRule searchFor: searchFor replaceWith: [ :node | 
+			 | thisId theAssertion |
+			 thisId := (((node arguments at: 2) body statements at: 1)
+				            arguments at: 1) value.
+			 theAssertion := node receiver body statements at: 1.
+			 listOfIds
+				 detect: [ :p | p value = thisId ]
+				 ifFound: [ :p | 
+					 toComment add: p key.
+					 theAssertion ]
+				 ifNone: [ empty ] ]).
 	rewriter executeTree: parser.
 	tree := rewriter tree.
-	(self synthesisCommentFrom: toComment) ifNotNil: [ :x | tree := self astHelper
-		addComment: x
-		toMethodAST: tree ]
-	.
+	testComment := SAPrettyCommentGenerator new methodAST: tree; particularResults: particularResults; toComment: toComment; generateComment.
+	(testComment) ifNotNil: [ :x | 
+		tree := self astHelper addComment: x toMethodAST: tree ].
+	(self synthesisCommentFrom: toComment) ifNotNil: [ :x | 
+		tree := self astHelper addComment: x toMethodAST: tree ].
 	^ tree
 ]
 

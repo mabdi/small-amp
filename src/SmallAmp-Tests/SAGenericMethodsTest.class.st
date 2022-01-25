@@ -211,6 +211,20 @@ SAGenericMethodsTest >> testShreding [
 ]
 
 { #category : #test }
+SAGenericMethodsTest >> testSignAsSmallAmpOriginal [
+
+	| newSrc pragma |
+	newSrc := SAGenericMethods new
+		          signAsSmallAmp: 'testHi self assert: true'
+		          original: self class >> #testSignAsSmallAmpOriginal.
+	pragma := SAGenericMethods defaultPragmaWithOriginal asString , ''''
+	          , (self class >> #testSignAsSmallAmpOriginal) name , ''''.
+	self
+		assertMethodSourceCode: newSrc
+		equals: 'testHi <' , pragma , '> self assert: true'
+]
+
+{ #category : #test }
 SAGenericMethodsTest >> testStrip [
 	| sourceCode expectingCode result |
 	sourceCode := 'foo
