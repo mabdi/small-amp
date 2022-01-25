@@ -64,7 +64,10 @@ SAPrettyCommentGenerator >> generateCommentCoverageItem: newCov [
 
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> generateCommentCoverageItems [
-	^ '\n' join: (newCovered collect: [:newC | self generateCommentCoverageItem: newC ])
+
+	^ '' join:
+		  (newCovered collect: [ :newC | 
+			   self generateCommentCoverageItem: newC ])
 ]
 
 { #category : #'as yet unclassified' }
@@ -162,7 +165,8 @@ SAPrettyCommentGenerator >> templateCoverageItem [
 			Operation: {5}
 			Code snippet: `{6}`
 			Variables value: {7}
-			Mutant id: {8}'
+			Mutant id: {8}
+		'
 ]
 
 { #category : #'as yet unclassified' }
