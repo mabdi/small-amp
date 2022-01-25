@@ -128,17 +128,30 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
+
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self
-				transformBackAndMakeCommentsBaseOn: listOfPairs
-				in: theMethod ast.
+				           transformBackAndMakeCommentsBaseOn: listOfPairs
+				           in: theMethod ast.
 			self removeErrorBlocks: newTree.
+			self removeEmptyLines: newTree.
 			(self hasAnySelfCall: newTree)
 				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> removeEmptyLines: tree [
+
+	| empty toRemove  |
+	
+	empty := RBParser parseExpression: ''.
+	
+	toRemove := tree allChildren select: [ :n | n = empty ].
+	toRemove do: [ :n | n parent statements remove: n ]
 ]
 
 { #category : #adding }
@@ -235,11 +248,11 @@ SAMuTalkFirstFailOracleReduction >> transformBackAndMakeCommentsBaseOn: listOfId
 	rewriter executeTree: parser.
 	tree := rewriter tree.
 	commentGenerator := SAPrettyCommentGenerator new
-		               methodAST: tree;
-		               particularResults: particularResults;
-		               toComment: toComment.
+		                    methodAST: tree;
+		                    particularResults: particularResults;
+		                    toComment: toComment.
 	testComment := commentGenerator generateComment.
-	tree := commentGenerator purgeDecorators:  tree.
+	tree := commentGenerator purgeDecorators: tree.
 	testComment ifNotNil: [ :x | 
 		tree := self astHelper addComment: x toMethodAST: tree ].
 	^ tree

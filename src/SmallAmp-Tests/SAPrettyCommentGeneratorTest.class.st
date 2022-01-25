@@ -74,7 +74,7 @@ SAPrettyCommentGeneratorTest >> testq [
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
 
-	"(readable >> readable testSelectors first) sourceCode inspect."
-	readable removeFromSystem.
+	[ (readable >> readable testSelectors first) inspect ]. readable
+		removeFromSystem.
 	generatedClass removeFromSystem
 ]
