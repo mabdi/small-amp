@@ -9,10 +9,12 @@ env_GITHUB_REPOSITORY := Smalltalk os environment asDictionary at: #GITHUB_REPOS
 env_GITHUB_REF_NAME := Smalltalk os environment asDictionary at: #GITHUB_REF_NAME ifAbsent: [ 'GITHUB_REF_NAME missing' traceCr. Smalltalk exitFailure ].
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'reponame missing' traceCr. Smalltalk exitFailure ].
 
+"        repository: 'github://', env_GITHUB_REPOSITORY , ':', env_GITHUB_REF_NAME;"
+
 [ | b |
      b := Metacello new
         baseline: baseline;
-        repository: 'github://', env_GITHUB_REPOSITORY , ':', env_GITHUB_REF_NAME;
+        repository: 'gitlocal://', load_path;
         onUpgrade: [ :ex | ex useIncoming ];
         onConflictUseIncoming.
      load ifNotNil: [ b load: load ] ifNil: [ b load ]
