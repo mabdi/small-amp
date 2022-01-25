@@ -136,6 +136,7 @@ SAAddInputAmplifier >> getArgumentNodeFor: aKey [
 		ifAbsent: [ ^ config profiler profile
 				at: aKey
 				ifPresent: [ :aClass | 
+					aClass isMeta ifTrue: [ ^ nil ].
 					^ aClass smallAmpDefaultInstantiation ]
 				ifAbsent: [ ^ nil ] ]
 ]

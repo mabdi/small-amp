@@ -162,11 +162,11 @@ SAPrettyCommentGenerator >> templateChangesOnlyAssertionAmp [
 SAPrettyCommentGenerator >> templateCoverageItem [
 
 	^ '	*	In `{1}>> #{2}` from {3} to {4}:
-			Operation: {5}
-			Code snippet: `{6}`
-			Variables value: {7}
-			Mutant id: {8}
-		'
+		Operation: {5}
+		Code snippet: `{6}`
+		Variables value: {7}
+		Mutant id: {8}
+'
 ]
 
 { #category : #'as yet unclassified' }
@@ -174,7 +174,7 @@ SAPrettyCommentGenerator >> templateText [
 
 	^ 'SmallAmp has derived this test from `{1}` by {2}.
 	This test can cover {3}:
-	{4}'
+{4}'
 ]
 
 { #category : #'as yet unclassified' }
