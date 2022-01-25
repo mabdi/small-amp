@@ -12,7 +12,7 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'rep
 [ | b |
      b := Metacello new
         baseline: baseline;
-        repository: 'github://', env_GITHUB_REPOSITORY , ':', env_GITHUB_REF_NAME;
+        repository: 'gitlocal://', load_path;
         onUpgrade: [ :ex | ex useIncoming ];
         onConflictUseIncoming.
      load ifNotNil: [ b load: load ] ifNil: [ b load ]
@@ -31,13 +31,8 @@ IceRepository registry
 		   r register.
 		   ].
 repo := (IceRepository registry detect: [ :n | n name = repoName ]).
-"Smalltalk os environment at: #GitCloneLocation put: repo location asAbsolute  pathString."
-
-OSPlatform current runCommand: 'echo "GitCloneLocation=',repo location asAbsolute  pathString,'" >> $GITHUB_ENV'.
-
 commitId := repo branch commit shortId.
 
 ('Project registered in Iceberg ', commitId asString) traceCr.
-('ENV set: GitCloneLocation:', repo location asAbsolute  pathString ) traceCr.
 
 Smalltalk snapshot: true andQuit: true
