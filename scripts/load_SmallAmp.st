@@ -4,7 +4,7 @@ tonel := Smalltalk os environment asDictionary at: #SMALLAMP_TONEL ifAbsent: [ '
 
 [ Metacello new
         baseline: 'SmallAmp';
-        repository: 'tonel://', tonel ,'/src';
+        repository: 'gitlocal://', tonel;
         onUpgrade: [ :ex | ex useIncoming ];
         onConflictUseIncoming;
         load: 'core' 

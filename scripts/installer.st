@@ -1,8 +1,14 @@
-| gitClone artifacts all_st package repo repoName |
+| gitClone artifacts all_st package repo repoName diff toCommit visitor |
 
 'Script started' traceCr.
 gitClone := Smalltalk os environment asDictionary at: #GITHUB_WORKSPACE ifAbsent: [ 'GITHUB_WORKSPACE missing' traceCr. Smalltalk exitFailure ].
 repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'reponame missing' traceCr. Smalltalk exitFailure ].
+
+toCommit:= OrderedCollection new.
+repo := IceRepository registry detect: [ :r | r name = repoName ].
+Stdio stdout << 'Repo found. Its loaded from: '; << repo location asAbsolute  pathString; lf; flush.
+diff := repo workingCopyDiff.
+Stdio stdout << 'Diff before import: '; << diff packages asString; lf; flush.
 
 all_st := FileLocator imageDirectory childrenMatching: '*.st'.
 Stdio stdout << 'all_st: '; << (all_st collect: #asString); lf; flush.
@@ -14,11 +20,21 @@ Stdio stdout << 'File in done'; lf; flush.
 package := RPackageOrganizer default packageNamed: 'SmallAmpFinalClasses'.
 package classes do: [ :aClass |
   aClass testSelectors do: [ :selector | 
-      aClass superclass compile: (aClass lookupSelector: selector) sourceCode ]].
+      Stdio stdout << 'Compiling:'; << aClass superclass name; << '>>'; << selector asString; << ', from: '; << aClass name; lf; flush.
+      aClass superclass compile: (aClass lookupSelector: selector) sourceCode.
+      toCommit add: (aClass superclass >> selector).
+  ]].
 
 Stdio stdout << 'Classes installed'; lf; flush.      
-repo := IceRepository registry detect: [ :r | r name = repoName ].
-Stdio stdout << 'Repo:'; << repo asString; lf; flush.      
-repo index updateDiskWorkingCopy: repo workingCopyDiff.
+
+visitor := SANewChangesDiffVisitor new methodsToCommit: toCommit.
+
+diff := repo workingCopyDiff.
+diff accept: visitor.
+diff := diff copyWithOnly: visitor newTree.
+
+Stdio stdout << 'Diff after: '; << diff packages asString; lf; flush.
+
+repo index updateDiskWorkingCopy: diff.
 Stdio stdout << 'done'; lf; flush.      
 Smalltalk snapshot: true andQuit: true
