@@ -15,7 +15,7 @@ SAGenericMethods class >> defaultPragma [
 { #category : #'as yet unclassified' }
 SAGenericMethods class >> defaultPragmaWithOriginal [
 
-	^ #madeBySmallAmpFrom:
+	^ #smallAmpFrom:
 ]
 
 { #category : #'as yet unclassified' }
