@@ -164,7 +164,7 @@ SAPrettyCommentGenerator >> templateCoverageItem [
 	^ '	*	In `{1}>> #{2}` from {3} to {4}:
 		Operation: {5}
 		Code snippet: `{6}`
-		Variables value: {7}
+		Dynamic state: {7}
 		Mutant id: {8}
 '
 ]
