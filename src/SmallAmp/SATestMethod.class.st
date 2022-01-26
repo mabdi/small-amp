@@ -234,10 +234,8 @@ SATestMethod >> signAsSmallAmp [
 	testMethod := self astHelper
 		              signAsSmallAmp: testMethod
 		              original:
-		              testClass smallAmpOriginalTestCase >> selectorOriginal.
-		testMethod := self astHelper
-		              signAsSmallAmp: testMethod
-		              
+		              (testClass smallAmpOriginalTestCase lookupSelector: selectorOriginal).
+	testMethod := self astHelper signAsSmallAmp: testMethod
 ]
 
 { #category : #removing }
