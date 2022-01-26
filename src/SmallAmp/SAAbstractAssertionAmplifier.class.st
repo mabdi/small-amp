@@ -25,7 +25,10 @@ SAAbstractAssertionAmplifier >> amplifyAssertionsFor: aTestModel [
 	testMethodModel := aTestModel.
 	[ ^ self amplifyAssertions ]
 		on: Error
-		do: [ :x | config debug ifTrue: [self halt]. ^ nil ]
+		do: [ :x | 
+			SmallAmp <~ ('SmallAmp debug info: ',self class name ,'>>amplifyAssertionsFor: , Exception is skipped: ',x class name, '-> ', x description, '-> ', aTestModel selector).
+			
+			config debug ifTrue: [self halt]. ^ nil ]
 ]
 
 { #category : #accessing }

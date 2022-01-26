@@ -21,13 +21,14 @@ SAAbstractInputAmplifier >> amplifyInputs [
 
 { #category : #removing }
 SAAbstractInputAmplifier >> amplifyInputsFor: aTestMethodModel [
+
 	testMethodModel := aTestMethodModel.
 	[ ^ self amplifyInputs ]
 		on: Error
 		do: [ :x | 
-			config debug
-				ifTrue: [ self halt ].
-			^ {} ]
+			SmallAmp <~ ('SmallAmp debug info: ',self class name ,'>>amplifyInputsFor: , Exception is skipped: ',x class name, '-> ', x description, '-> ', aTestMethodModel selector).
+			config debug ifTrue: [ self halt ].
+			^ {  } ]
 ]
 
 { #category : #testing }
