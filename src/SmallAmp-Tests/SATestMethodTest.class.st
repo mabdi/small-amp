@@ -31,3 +31,26 @@ SATestMethodTest >> testScoreWith [
 			model score
 		equals: 35
 ]
+
+{ #category : #tests }
+SATestMethodTest >> testScoreWith_empty [
+
+	| weights model |
+	weights := {  } asDictionary.
+	model := SATestMethod from: FakeSmallBankTest >> #testDeposit.
+	model scoreWith: weights.
+	self assert: model score equals: 0
+]
+
+{ #category : #tests }
+SATestMethodTest >> testScoreWith_zero [
+
+	| weights model |
+	weights := { 
+		           (FakeSmallBank >> #deposit: -> 0).
+		           (FakeSmallBank >> #balance -> 0).
+		           (FakeSmallBank >> #initialize -> 0) } asDictionary.
+	model := SATestMethod from: FakeSmallBankTest >> #testDeposit.
+	model scoreWith: weights.
+	self assert: model score equals: 0
+]

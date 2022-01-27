@@ -170,6 +170,11 @@ SATestMethod >> score [
 	^ score
 ]
 
+{ #category : #accessing }
+SATestMethod >> score: aValue [
+	score:= aValue
+]
+
 { #category : #'as yet unclassified' }
 SATestMethod >> scoreWith: methodsScore [
 

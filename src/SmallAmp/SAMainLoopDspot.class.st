@@ -10,7 +10,6 @@ Class {
 		'instantiationExtractor',
 		'variableTypes',
 		'nextTest',
-		'sumScores',
 		'numberOfAmplified'
 	],
 	#category : #'SmallAmp-Core'
@@ -77,12 +76,14 @@ SAMainLoopDspot >> amplifyRanking [
 	theTS := self initTs.
 	self setupSelection.
 	self methodProfiling.
-	self scoreTests.
+	self scoreTestsWithUncovered: selection uncovered.
 	self doInitialAssertionAmplification.
-	[nextTest isNotNil and: [self careTimeBudget]] whileTrue: [  
-		self amplifyATestMethod: nextTest initialAssertionAmplification: false.
+	[ nextTest isNotNil and: [ self careTimeBudget ] ] whileTrue: [ 
+		self
+			amplifyATestMethod: nextTest
+			initialAssertionAmplification: false.
 		nextTest isAmplified: true.
-		self scoreTests ].
+		self scoreTestsWithUncovered: selection uncovered ].
 	self finalSteps.
 	^ finalResult
 ]
@@ -256,6 +257,12 @@ SAMainLoopDspot >> methodProfiling [
 	instantiationExtractor run
 ]
 
+{ #category : #private }
+SAMainLoopDspot >> nextTest [
+
+	^ nextTest
+]
+
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> prettifying [
 	| prettifier |
@@ -313,36 +320,29 @@ SAMainLoopDspot >> scoreMuthodsUnderTestBy: uncovered [
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopDspot >> scoreTests [
+SAMainLoopDspot >> scoreTestsWithUncovered: uncovered [
 
-	| methodsScore random tmp |
-	nextTest := nil.
-	sumScores := 0.
-	tmp := 0.
-	random := Random new next.
-	selection uncovered ifEmpty: [ ^ self ].
-	methodsScore := self scoreMuthodsUnderTestBy: selection uncovered.
-	(theTS reject: #isAmplified) do: [ :testModel | 
-		testModel scoreWith: methodsScore.
-		sumScores := sumScores + testModel score ].
-	(theTS reject: #isAmplified) do: [ :testModel |
-		testModel scoreWith: testModel score / sumScores.
-		tmp <= random & (random < tmp + testModel score) ifTrue: [ 
-			nextTest := testModel ].
-		tmp := tmp + testModel score ]
+	^ self scoreTestsWithUncovered: uncovered randomGen: Random new
 ]
 
 { #category : #'as yet unclassified' }
-SAMainLoopDspot >> scoreTests: analysis [
+SAMainLoopDspot >> scoreTestsWithUncovered: uncovered randomGen: randomGen [
 
-	| methodsScore |
-	methodsScore := self scoreMuthodsUnderTestBy: analysis.
+	| methodsScore random tmp sumScores |
 	nextTest := nil.
+	sumScores := 0.
+	tmp := 0.
+	random := randomGen next.
+	uncovered ifEmpty: [ ^ self ].
+	methodsScore := self scoreMuthodsUnderTestBy: uncovered.
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel scoreWith: methodsScore.
-		nextTest
-			ifNil: [ nextTest := testModel ]
-			ifNotNil: [ testModel score > nextTest score ifTrue: [ nextTest := testModel  ] ] ]
+		sumScores := sumScores + testModel score ].
+	(theTS reject: #isAmplified) do: [ :testModel | 
+		testModel score: testModel score / sumScores.
+		tmp <= random & (random < (tmp + testModel score)) ifTrue: [ 
+			nextTest := testModel ].
+		tmp := tmp + testModel score ]
 ]
 
 { #category : #actions }
@@ -370,10 +370,21 @@ SAMainLoopDspot >> setupSelection [
 	testResult defects ifNotEmpty: [ SAFlakyMutationTesting new signal ]
 ]
 
+{ #category : #private }
+SAMainLoopDspot >> theTS: anObject [
+
+	theTS := anObject
+]
+
 { #category : #accessing }
 SAMainLoopDspot >> timeBudgetFinished [
 	super timeBudgetFinished.
 	finalResult timeBudgetFinished: true.
+]
+
+{ #category : #private }
+SAMainLoopDspot >> uncovered [ 
+	^ selection uncovered 
 ]
 
 { #category : #'as yet unclassified' }
