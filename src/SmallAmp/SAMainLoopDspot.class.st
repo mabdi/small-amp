@@ -338,6 +338,7 @@ SAMainLoopDspot >> scoreTestsWithUncovered: uncovered randomGen: randomGen [
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel scoreWith: methodsScore.
 		sumScores := sumScores + testModel score ].
+	sumScores = 0 ifTrue: [ ^ self ].
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel score: testModel score / sumScores.
 		tmp <= random & (random < (tmp + testModel score)) ifTrue: [ 
