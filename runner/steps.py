@@ -228,7 +228,9 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    cmd2 = '{} Sandbox.image smallamp --resume'.format(vm)
    
    cmd = cmd1
-   while True:
+   n_crashed = 0
+   MAX_CRASH = 10
+   while n_crashed < MAX_CRASH:
       c = Command(cmd, redirectTo=redirectTo, verbose=False)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
@@ -239,6 +241,8 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
          syso('Amplification Terminated because timeout, className: {}'.format(className))
       else:
          syso('A possible crash for className: {}'.format(className))
+      n_crashed = n_crashed + 1   
+      syso('Number of crashed for this class up to now: ' + str(n_crashed))
       timestamp = int(time.time())
       syso(subprocess.check_output('ls -al', shell=True, text=True))
       os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
