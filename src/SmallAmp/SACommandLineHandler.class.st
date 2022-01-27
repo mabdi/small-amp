@@ -118,18 +118,17 @@ SACommandLineHandler >> loadAndCommit [
 	| gcnf gitClone all_st package repo repoName diff |
 	gitClone := self getEnv: #GITHUB_WORKSPACE required: true.
 	repoName := self getEnv: #reponame required: true.
-	
+
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	gcnf := repo getConfigurationGlobal: false.
-	gcnf username: (repo getConfigurationGlobal: true) username.
-
+	
 	SmallAmp
 	<~
-		('Repo found. Loaded from: {1}, username: {2}, global: {3}' format:
+		('Repo found. Loaded from: {1}, username: {2}, email: {3}' format:
 			 { 
 				 repo location asAbsolute pathString.
 				 gcnf username.
-				 (repo getConfigurationGlobal: true) username }).
+				 gcnf email }).
 	diff := repo workingCopyDiff.
 	SmallAmp <~ ('Diff before import: ' , diff packages asString).
 
