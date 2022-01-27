@@ -121,7 +121,7 @@ SACommandLineHandler >> loadAndCommit [
 
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	gcnf := repo getConfigurationGlobal: false.
-	
+
 	SmallAmp
 	<~
 		('Repo found. Loaded from: {1}, username: {2}, email: {3}' format:
@@ -133,7 +133,7 @@ SACommandLineHandler >> loadAndCommit [
 	SmallAmp <~ ('Diff before import: ' , diff packages asString).
 
 	all_st := FileLocator imageDirectory childrenMatching: '*.st'.
-	SmallAmp <~ ('all_st: ' , (all_st collect: #asString)).
+	SmallAmp <~ ('all_st: ' , (all_st collect: #asString) asString).
 	all_st do: [ :a_st | a_st asFileReference fileIn ].
 
 	SmallAmp <~ 'File in done'.
