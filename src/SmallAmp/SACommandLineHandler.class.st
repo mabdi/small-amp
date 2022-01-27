@@ -105,11 +105,11 @@ SACommandLineHandler >> installTest: selector from: aClass repo: repo [
 	commitText := 'A new test method is added: ' , test name.
 	commitText := test ast hasComments ifTrue: [ 
 		              commitText := '{1}
-{2}' format: { 
+		{2}' format: { 
 				                            commitText.
 				                            test ast comments first contents } ].
 	SmallAmp <~ 'Commiting test method'.
-	repo commitChanges: diff withMessage: commitText
+	repo workingCopy commitChanges: diff withMessage: commitText force: true
 ]
 
 { #category : #'as yet unclassified' }
