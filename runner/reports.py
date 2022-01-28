@@ -303,6 +303,7 @@ def do_fix(old_result):
             obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
             obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
             obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
+            obj['jsonObj']['duplicateMutants'] = len(allNewKilled) - len(newCovered)
             result.append(obj)
       else:
          result.append(obj)
