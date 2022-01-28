@@ -236,9 +236,9 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       MAX_CRASH = int(maxCrash)
    else:
       MAX_CRASH = 10
-   expire_time = int(datetime.datetime.now().timestamp()) + int(timeBudget) * 60
+   expire_time = int(datetime.now().timestamp()) + int(timeBudget) * 60
    while n_crashed < MAX_CRASH:
-      if int(datetime.datetime.now().timestamp()) > expire_time:
+      if int(datetime.now().timestamp()) > expire_time:
          syso('Time budget finished for this class. Exiting.')
          break
       c = Command(cmd, redirectTo=redirectTo, verbose=False, expire_time=expire_time)
