@@ -4,14 +4,21 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> amplify [ 
+	self heartbeat.
+	^ super amplify 
+]
+
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification [
+	self heartbeat.
 	self setTestMethodStarting: aTestMethod.
 	self snapshotHere: aTestMethod.
-	(self isRecoveredFromCrash: aTestMethod)
-		ifTrue: [ ^ self ].
-	super amplifyATestMethod: aTestMethod initialAssertionAmplification: doInitialAssertionAmplification.
-	
+	(self isRecoveredFromCrash: aTestMethod) ifTrue: [ ^ self ].
+	super
+		amplifyATestMethod: aTestMethod
+		initialAssertionAmplification: doInitialAssertionAmplification
 ]
 
 { #category : #private }
@@ -35,6 +42,18 @@ SAMainLoopSnapshotsFast >> assertionAmplificationFor: aList [
 ]
 
 { #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> careTimeBudget [
+		self heartbeat.
+		^ super careTimeBudget
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> doInitialAssertionAmplification [
+	self heartbeat.
+	^ super doInitialAssertionAmplification 
+]
+
+{ #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> evidenceFile [
 	^ FileLocator imageDirectory / '_smallamp_crash_evidence.json'
 ]
@@ -42,6 +61,35 @@ SAMainLoopSnapshotsFast >> evidenceFile [
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> filenameForCurrentTest [
 	^ FileLocator imageDirectory / '_smallamp_current_method_'
+]
+
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> finalSteps [
+	self heartbeat .
+	^ super finalSteps 
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> heartbeat [
+
+		| str |
+	str := 'beat'.
+	self heartbeatFile writeStream
+		truncate;
+		nextPutAll: str;
+		close
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> heartbeatFile [
+
+	^ FileLocator imageDirectory / '_smallamp_heartbeat.file'
+]
+
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> initTs [ 
+	self heartbeat.
+	^ super initTs.
 ]
 
 { #category : #'as yet unclassified' }
@@ -59,13 +107,28 @@ SAMainLoopSnapshotsFast >> isRecoveredFromCrash: aTestMethod [
 ]
 
 { #category : #private }
+SAMainLoopSnapshotsFast >> methodProfiling [ 
+	self heartbeat.
+	^ super methodProfiling 
+]
+
+{ #category : #private }
 SAMainLoopSnapshotsFast >> saveCrashEvidence: aDictionary [
+
 	| str |
+	self heartbeat.
 	str := STONJSON toString: aDictionary.
 	self evidenceFile writeStream
 		truncate;
 		nextPutAll: str;
 		close
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> scoreTestsWithUncovered: uncovered [
+
+	self heartbeat.
+	^ super scoreTestsWithUncovered: uncovered 
 ]
 
 { #category : #actions }
@@ -91,20 +154,22 @@ SAMainLoopSnapshotsFast >> setTestMethodStarting: aTestMethod [
 SAMainLoopSnapshotsFast >> setupSelection [
 
 	| analysis testClasses testResult |
+	self heartbeat.
 	selection := config selection initializeWith: config.
 	selection onBeforeMutant: [ :mutant :index | 
 		self saveCrashEvidence: { 
 				(#testClass -> testClass name).
 				(#mutant -> mutant asDictionaryObject) } asDictionary ].
-	selection onMutationEvaluation: [ 0 ].
+	selection onMutationEvaluation: [ self heartbeat.0 ].
 	testClasses := OrderedCollection with: testClass.
 	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
 		testClasses add: testClass smallAmpOriginalTestCase ].
-
+	self heartbeat.
 	analysis := selection
 		            initialAnalysisFor: testClasses
 		            targets: targetClasses
 		            ignore: finalResult failedSelectorInOriginal.
+	self heartbeat.
 	finalResult originalAnalysis: analysis.
 	selection uncovered ifEmpty: [ SANoUncovered new signal ].
 	testResult := testClass suite run.
@@ -113,7 +178,7 @@ SAMainLoopSnapshotsFast >> setupSelection [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> snapshotHere: aTestMethod [
-	self evidenceFile exists
-		ifTrue: [ self evidenceFile delete ].
+	self heartbeat.
+	self evidenceFile exists ifTrue: [ self evidenceFile delete ].
 	Smalltalk snapshot: true andQuit: false
 ]
