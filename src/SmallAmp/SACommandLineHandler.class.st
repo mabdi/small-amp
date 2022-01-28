@@ -165,15 +165,6 @@ SACommandLineHandler >> mode_diff [
 ]
 
 { #category : #modes }
-SACommandLineHandler >> mode_diffSnapshots [
-
-	| cnf |
-	cnf := SAConfig diffBased.
-	cnf mainloop: SAMainLoopSnapshots.
-	self runSmallAmp: aTestClass config: cnf
-]
-
-{ #category : #modes }
 SACommandLineHandler >> mode_diffSnapshotsFast [
 
 	| cnf |
@@ -226,15 +217,6 @@ SACommandLineHandler >> mode_dspotFastRank [
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: true ].
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
-]
-
-{ #category : #modes }
-SACommandLineHandler >> mode_dspotSnapshots [
-
-	| cnf |
-	cnf := SAConfig dspotAllamps.
-	cnf mainloop: SAMainLoopSnapshots.
 	self runSmallAmp: aTestClass config: cnf
 ]
 
@@ -304,9 +286,7 @@ SACommandLineHandler >> runInMode [
 		ifFound: [ :arg | mode := arg allButFirst: cmd size ].
 	aTestClass := Smalltalk globals at: testClass asSymbol.
 	SmallAmp <~ ('started mode: ' , mode , ' for: ' , aTestClass name).
-	mode = 'dspotSnapshots' ifTrue: [ self mode_dspotSnapshots ].
 	mode = 'dspot' ifTrue: [ self mode_dspot ].
-	mode = 'diffSnapshots' ifTrue: [ self mode_diffSnapshots ].
 	mode = 'diffSnapshotsFast' ifTrue: [ self mode_diffSnapshotsFast ].
 	mode = 'dspotFastRank' ifTrue: [ self mode_dspotFastRank ].
 	mode = 'dspotFast' ifTrue: [ self mode_dspotFast ].
