@@ -421,7 +421,12 @@ def runAmplificationCI(args):
           runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
        if mode == 'diff':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
-         
+
+       if mode == 'fseRank':
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+       if mode == 'fseNone':
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          
          
    # verifyCrashes(repo, base)
    os.chdir(cwd)
