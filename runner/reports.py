@@ -303,6 +303,7 @@ def do_fix(old_result):
             obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
             obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
             obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
+            obj['jsonObj']['duplicateMutants'] = len(allNewKilled) - len(newCovered)
             result.append(obj)
       else:
          result.append(obj)
@@ -365,7 +366,8 @@ def reportAmp(directory, projectName, fix, verbose):
                   jsonObj.get('testClassTimeToRunInMillis','NA'),
                   jsonObj.get('numberOfAllMutationsInOriginal','NA'),
                   jsonObj.get('numberOfTestMethodsBeforeShreding','NA'),
-                  jsonObj.get('timeBudgetFinished','NA')
+                  jsonObj.get('timeBudgetFinished','NA'),
+                  jsonObj.get('duplicateMutants','NA')
                ]))
       elif row['stat'] == 'error':
           print(projectName + ',' + row['className'] + ',' + 'Finished with Error ({}) {}'.format(row['errDet'],row['lastMethod']))
