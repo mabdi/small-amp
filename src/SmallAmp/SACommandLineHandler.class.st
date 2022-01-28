@@ -27,16 +27,13 @@ SACommandLineHandler class >> description [
 
 { #category : #activation }
 SACommandLineHandler >> activate [
-	self activateHelp
-		ifTrue: [ ^ self ].
-	(self hasOption: 'stat')
-		ifTrue: [ self evalStats ].
-	(self hasOption: 'xinfo')
-		ifTrue: [ self extraInformation ].
-	(self hasOption: 'mode')
-		ifTrue: [ self runInMode ].
-	(self hasOption: 'resume')
-		ifTrue: [ self resumeRunning ].
+
+	self activateHelp ifTrue: [ ^ self ].
+	(self hasOption: 'stat') ifTrue: [ self evalStats ].
+	(self hasOption: 'xinfo') ifTrue: [ self extraInformation ].
+	(self hasOption: 'mode') ifTrue: [ self runInMode ].
+	(self hasOption: 'resume') ifTrue: [ self resumeRunning ].
+	(self hasOption: 'loadAndCommit') ifTrue: [ self loadAndCommit ].
 	self end
 ]
 
@@ -76,6 +73,83 @@ SACommandLineHandler >> extraInformation [
 	(FileLocator imageDirectory / fileName) writeStream
 		nextPutAll: resstr;
 		close
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> getEnv: key required: isRequired [
+
+	^ Smalltalk os environment asDictionary at: key ifAbsent: [ 
+		  
+			  SmallAmp <~ (key , ' missing').isRequired ifTrue: [ 
+			  Smalltalk exitFailure ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> installTest: selector from: aClass repo: repo [
+
+	| toCommit visitor diff test commitText |
+	SmallAmp <~ ('Compiling: {1}>>{2} from: {3}' format: { 
+			 aClass superclass name.
+			 selector asString.
+			 aClass name }).
+	aClass superclass compile:
+		(aClass lookupSelector: selector) sourceCode.
+	test := aClass superclass >> selector.
+
+	toCommit := OrderedCollection new.
+	toCommit add: test.
+	visitor := SANewChangesDiffVisitor new methodsToCommit: toCommit.
+	diff := repo workingCopyDiff.
+	diff accept: visitor.
+	diff := diff copyWithOnly: visitor newTree.
+	commitText := 'A new test method is added: ' , test name.
+	commitText := test ast hasComments ifTrue: [ 
+		              commitText := '{1}
+		{2}' format: { 
+				                            commitText.
+				                            test ast comments first contents } ].
+	SmallAmp <~ 'Commiting test method'.
+	repo workingCopy commitChanges: diff withMessage: commitText force: true
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> loadAndCommit [
+
+	| gcnf gitClone all_st package repo repoName diff |
+	gitClone := self getEnv: #GITHUB_WORKSPACE required: true.
+	repoName := self getEnv: #reponame required: true.
+
+	repo := IceRepository registry detect: [ :r | r name = repoName ].
+	gcnf := repo getConfigurationGlobal: false.
+
+	SmallAmp
+	<~
+		('Repo found. Loaded from: {1}, username: {2}, email: {3}' format:
+			 { 
+				 repo location asAbsolute pathString.
+				 gcnf username.
+				 gcnf email }).
+	diff := repo workingCopyDiff.
+	SmallAmp <~ ('Diff before import: ' , diff packages asString).
+
+	all_st := FileLocator imageDirectory childrenMatching: '*.st'.
+	SmallAmp <~ ('all_st: ' , (all_st collect: #asString) asString).
+	all_st do: [ :a_st | a_st asFileReference fileIn ].
+
+	SmallAmp <~ 'File in done'.
+	(RPackageOrganizer default includesPackageNamed:
+		 'SmallAmpFinalClasses') ifFalse: [ 
+		SmallAmp <~ 'SmallAmpFinalClasses missing'.
+		Smalltalk exitFailure ].
+
+	package := RPackageOrganizer default packageNamed:
+		           'SmallAmpFinalClasses'.
+	package classes do: [ :aClass | 
+		aClass testSelectors do: [ :selector | 
+			self installTest: selector from: aClass repo: repo ] ].
+
+	SmallAmp <~ 'Importing done'.
+	Smalltalk snapshot: true andQuit: true
 ]
 
 { #category : #'as yet unclassified' }

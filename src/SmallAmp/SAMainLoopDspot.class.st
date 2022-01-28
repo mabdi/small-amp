@@ -26,16 +26,16 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod initialAssertionAmplification
 
 	| theATS theV theU |
 	numberOfAmplified := numberOfAmplified + 1.
-	SmallAmp <~ aTestMethod selector.
+	SmallAmp <~ ('{1}, score: {2}' format:
+		 { aTestMethod selector. aTestMethod score }).
 	self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
 	theV do: #strip.
-	doInitialAssertionAmplification 
-		ifTrue: [ 
-			theU := self assertionAmplificationFor: (theV collect: #clone).
-			theU := self selectionFrom: theU.
-			theATS addAll: theU ].
+	doInitialAssertionAmplification ifTrue: [ 
+		theU := self assertionAmplificationFor: (theV collect: #clone).
+		theU := self selectionFrom: theU.
+		theATS addAll: theU ].
 	(1 to: config iterations)
 		do: [ :gen | 
 			SmallAmp <~ ('iteration: ' , gen asString).
@@ -338,6 +338,7 @@ SAMainLoopDspot >> scoreTestsWithUncovered: uncovered randomGen: randomGen [
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel scoreWith: methodsScore.
 		sumScores := sumScores + testModel score ].
+	sumScores = 0 ifTrue: [ ^ self ].
 	(theTS reject: #isAmplified) do: [ :testModel | 
 		testModel score: testModel score / sumScores.
 		tmp <= random & (random < (tmp + testModel score)) ifTrue: [ 

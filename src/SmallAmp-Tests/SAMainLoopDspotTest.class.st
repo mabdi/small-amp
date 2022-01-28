@@ -35,3 +35,25 @@ SAMainLoopDspotTest >> testScoreTestsWithUncovered2 [
 		randomGen: randomGen.
 	self assert: instance nextTest selectorOriginal equals: #testWithdraw
 ]
+
+{ #category : #test }
+SAMainLoopDspotTest >> testScoreTestsWithUncovered3 [
+
+	| t instance cnf ts randomGen |
+	cnf := SAConfig default.
+	instance := SAMainLoopDspot
+		            with: cnf
+		            for: FakeSmallBankTest
+		            targets: { FakeSmallBank }.
+	randomGen := Random seed: 10.
+	ts := instance initTs.
+	t := ts detect: [ :m | m selectorOriginal = #testWithdraw ].
+	t isAmplified: true.
+	instance theTS: ts.
+
+	instance setupSelection.
+	instance
+		scoreTestsWithUncovered: instance uncovered
+		randomGen: randomGen.
+	self assert: instance nextTest isNil
+]
