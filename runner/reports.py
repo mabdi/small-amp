@@ -366,7 +366,8 @@ def reportAmp(directory, projectName, fix, verbose):
                   jsonObj.get('testClassTimeToRunInMillis','NA'),
                   jsonObj.get('numberOfAllMutationsInOriginal','NA'),
                   jsonObj.get('numberOfTestMethodsBeforeShreding','NA'),
-                  jsonObj.get('timeBudgetFinished','NA')
+                  jsonObj.get('timeBudgetFinished','NA'),
+                  jsonObj.get('duplicateMutants','NA')
                ]))
       elif row['stat'] == 'error':
           print(projectName + ',' + row['className'] + ',' + 'Finished with Error ({}) {}'.format(row['errDet'],row['lastMethod']))
