@@ -97,6 +97,18 @@ SAConfig class >> dspotAllamps [
 ]
 
 { #category : #accessing }
+SAConfig class >> dspotOldamps [
+
+	^ self dspotAllamps
+		  inputAmplifiers: { 
+				  (SALiteralInputAmplifier -> 1).
+				  (SARemoveInputAmplifier -> 1).
+				  (SADuplicateInputAmplifier -> 1).
+				  (SAAddInputAmplifier -> 1) };
+		  yourself
+]
+
+{ #category : #accessing }
 SAConfig >> assertionAmplifier [
 	^ assertionAmplifier
 ]

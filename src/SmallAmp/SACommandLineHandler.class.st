@@ -12,6 +12,9 @@ options:
 Class {
 	#name : #SACommandLineHandler,
 	#superclass : #CommandLineHandler,
+	#instVars : [
+		'aTestClass'
+	],
 	#category : #'SmallAmp-Core'
 }
 
@@ -152,6 +155,127 @@ SACommandLineHandler >> loadAndCommit [
 	Smalltalk snapshot: true andQuit: true
 ]
 
+{ #category : #modes }
+SACommandLineHandler >> mode_diff [
+
+	| cnf |
+	cnf := SAConfig diffBased.
+	cnf mainloop: SAMainLoopDspot.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_diffSnapshots [
+
+	| cnf |
+	cnf := SAConfig diffBased.
+	cnf mainloop: SAMainLoopSnapshots.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_diffSnapshotsFast [
+
+	| cnf |
+	cnf := SAConfig diffBased.
+	cnf mainloop: SAMainLoopSnapshotsFast.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_dspot [
+
+	| cnf |
+	cnf := SAConfig dspotAllamps.
+	cnf mainloop: SAMainLoopDspot.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_dspotFast [
+
+	| cnf timeBudget cmd |
+	cmd := '--timeBudget='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | 
+		timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0 ].
+
+	cnf := SAConfig dspotAllamps.
+	timeBudget > 0 ifTrue: [ 
+		cnf timeBudget: timeBudget * 60.
+		cnf ranking: false ].
+	cnf mainloop: SAMainLoopSnapshotsFast.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_dspotFastRank [
+
+	| cnf timeBudget cmd |
+	cmd := '--timeBudget='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | 
+		timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0 ].
+
+	cnf := SAConfig dspotAllamps.
+	timeBudget > 0 ifTrue: [ 
+		cnf timeBudget: timeBudget * 60.
+		cnf ranking: true ].
+	cnf mainloop: SAMainLoopSnapshotsFast.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_dspotSnapshots [
+
+	| cnf |
+	cnf := SAConfig dspotAllamps.
+	cnf mainloop: SAMainLoopSnapshots.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_fseNone [
+
+	| cnf timeBudget cmd |
+	cmd := '--timeBudget='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | 
+		timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0 ].
+
+	cnf := SAConfig dspotOldamps.
+	timeBudget > 0 ifTrue: [ 
+		cnf timeBudget: timeBudget * 60.
+		cnf ranking: false ].
+	cnf mainloop: SAMainLoopSnapshotsFast.
+	self runSmallAmp: aTestClass config: cnf
+]
+
+{ #category : #modes }
+SACommandLineHandler >> mode_fseRank [
+
+	| cnf timeBudget cmd |
+	cmd := '--timeBudget='.
+	self arguments
+		detect: [ :arg | arg beginsWith: cmd ]
+		ifFound: [ :arg | 
+		timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0 ].
+
+	cnf := SAConfig dspotOldamps.
+	timeBudget > 0 ifTrue: [ 
+		cnf timeBudget: timeBudget * 60.
+		cnf ranking: true ].
+	cnf mainloop: SAMainLoopSnapshotsFast.
+	self runSmallAmp: aTestClass config: cnf
+]
+
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> resumeRunning [
 	Semaphore new wait
@@ -159,52 +283,38 @@ SACommandLineHandler >> resumeRunning [
 
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> runInMode [
-	| cmd testClass timeBudget aTestClass mode cnf |
+
+	| cmd timeBudget testClass mode |
 	cmd := '--testClass='.
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
 		ifFound: [ :arg | testClass := arg allButFirst: cmd size ]
-		ifNone: [ SmallAmp <~ '--testClass=TestClassName is required'.
+		ifNone: [ 
+			SmallAmp <~ '--testClass=TestClassName is required'.
 			^ self ].
 	cmd := '--timeBudget='.
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
-		ifFound: [ :arg | timeBudget := (arg allButFirst: cmd size) asInteger ]
-		ifNone: [ timeBudget := 0. ].
+		ifFound: [ :arg | 
+		timeBudget := (arg allButFirst: cmd size) asInteger ]
+		ifNone: [ timeBudget := 0 ].
 	cmd := '--mode='.
 	self arguments
 		detect: [ :arg | arg beginsWith: cmd ]
 		ifFound: [ :arg | mode := arg allButFirst: cmd size ].
 	aTestClass := Smalltalk globals at: testClass asSymbol.
-	mode = 'dspotSnapshots'
-		ifTrue: [ cnf := SAConfig dspotAllamps.
-			cnf mainloop: SAMainLoopSnapshots ].
-	mode = 'dspot'
-		ifTrue: [ cnf := SAConfig dspotAllamps.
-			cnf mainloop: SAMainLoopDspot ].
-	mode = 'diffSnapshots'
-		ifTrue: [ cnf := SAConfig diffBased.
-			cnf mainloop: SAMainLoopSnapshots ].
-	mode = 'diffSnapshotsFast'
-		ifTrue: [ cnf := SAConfig diffBased.
-			cnf mainloop: SAMainLoopSnapshotsFast  ].
-	mode = 'dspotFastRank'
-		ifTrue: [ cnf := SAConfig dspotAllamps.
-			timeBudget > 0 ifTrue: [ 
-				cnf timeBudget: timeBudget * 60.
-				cnf ranking: true. ].
-			cnf mainloop: SAMainLoopSnapshotsFast  ].
-	mode = 'dspotFast'
-		ifTrue: [ cnf := SAConfig dspotAllamps.
-			timeBudget > 0 ifTrue: [ 
-				cnf timeBudget: timeBudget * 60.
-				cnf ranking: false. ].
-			cnf mainloop: SAMainLoopSnapshotsFast  ].
-	mode = 'diff'
-		ifTrue: [ cnf := SAConfig diffBased.
-			cnf mainloop: SAMainLoopDspot ].
 	SmallAmp <~ ('started mode: ' , mode , ' for: ' , aTestClass name).
-	self runSmallAmp: aTestClass config: cnf.
+	mode = 'dspotSnapshots' ifTrue: [ self mode_dspotSnapshots ].
+	mode = 'dspot' ifTrue: [ self mode_dspot ].
+	mode = 'diffSnapshots' ifTrue: [ self mode_diffSnapshots ].
+	mode = 'diffSnapshotsFast' ifTrue: [ self mode_diffSnapshotsFast ].
+	mode = 'dspotFastRank' ifTrue: [ self mode_dspotFastRank ].
+	mode = 'dspotFast' ifTrue: [ self mode_dspotFast ].
+	mode = 'diff' ifTrue: [ self mode_diff ].
+
+	mode = 'fseRank' ifTrue: [ self mode_fseRank ].
+	mode = 'fseNone' ifTrue: [ self mode_fseNone ].
+
 	SmallAmp <~ ('finished mode: ' , mode , ' for: ' , aTestClass name)
 ]
 
