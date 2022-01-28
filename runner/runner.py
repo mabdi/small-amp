@@ -124,6 +124,8 @@ def githubCIMain():
       "maxInputs": os.getenv('SMALLAMP_maxInputs'),
       "mode": os.getenv('SMALLAMP_mode'),
       "timeBudget": os.getenv('SMALLAMP_timeBudget'),
+      "maxCrash": os.getenv('SMALLAMP_MaxCrash'),
+      "freezeTimeOut": os.getenv('SMALLAMP_freezeTimeOut'),
       "testClasses": os.getenv('SMALLAMP_testClasses')
    }
    print(args, flush=True)

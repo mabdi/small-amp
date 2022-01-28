@@ -11,6 +11,7 @@ class Command(object):
         self.verbose = verbose
         self.redirectTo = redirectTo
         self.logs = []
+        self.retry = 10
 
     def log(self, txt):
         if self.verbose:
@@ -36,8 +37,9 @@ class Command(object):
 
         thread = threading.Thread(target=target)
         thread.start()
-        while True:
+        while self.retry>0:
             self.log('run-while enter')
+            self.retry = self.retry - 1
             thread.join(timeout)
             self.log('run-while-1, thread.is_alive={}'.format(thread.is_alive()))
             if not thread.is_alive():

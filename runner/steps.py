@@ -216,10 +216,13 @@ def runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, i
    syso('Running command: {}'.format(cmd))
    c.run(timeout=4 * 60 * 60)
 
-def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
+def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut):
    syso('runAmplificationCI_snapshotsFast')
    tout = 15*60 # every 15 minute check for freeze
-   tout_files = ['_smallamp_crash_evidence.json']
+   if freezeTimeOut:
+      tout = int(freezeTimeOut)
+   
+   tout_files = ['_smallamp_heartbeat.file']
    
    os.system('cp '+ imgFile + ' Sandbox.image')
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
@@ -229,7 +232,10 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    
    cmd = cmd1
    n_crashed = 0
-   MAX_CRASH = 10
+   if maxCrash:
+      MAX_CRASH = int(maxCrash)
+   else:
+      MAX_CRASH = 10
    while n_crashed < MAX_CRASH:
       c = Command(cmd, redirectTo=redirectTo, verbose=False)
       syso('Running command: {}'.format(cmd))
@@ -378,6 +384,8 @@ def runAmplificationCI(args):
    mode = args['mode']
    testClasses = args['testClasses']
    timeBudget = args['timeBudget']
+   freezeTimeOut = args['freezeTimeOut']
+   maxCrash = args['maxCrash']
    
    syso('CI for:'+ repo)
    cwd = os.getcwd()
@@ -414,18 +422,18 @@ def runAmplificationCI(args):
        if mode == 'diffSnapshots':
           runAmplificationCI_snapshoted(imgFile, vm, mode, className)
        if mode == 'diffSnapshotsFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'dspotFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'dspotFastRank':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'diff':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
 
        if mode == 'fseRank':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'fseNone':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
           
          
    # verifyCrashes(repo, base)
