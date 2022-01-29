@@ -257,10 +257,13 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       syso(subprocess.check_output('ls -al', shell=True, text=True))
       for file in tout_files:
          if os.path.exists(file):
+            syso('Deleting heartbeat file.')
             os.system('rm ' + file)
       if os.path.exists('_smallamp_crash_evidence.json'):
+         syso('The file _smallamp_crash_evidence.json is found. Backing up.')
          os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
       if os.path.exists('PharoDebug.log'):
+         syso('The file PharoDebug.log is found. Backing up.')
          os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
       with open('_smallamp_current_method_', 'w') as currentFile:
          currentFile.write('')
