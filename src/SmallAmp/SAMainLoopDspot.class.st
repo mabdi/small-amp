@@ -184,34 +184,36 @@ SAMainLoopDspot >> initialize [
 ]
 
 { #category : #private }
-SAMainLoopDspot >> inputAmplificationFrom: pop [ 
+SAMainLoopDspot >> inputAmplificationFrom: pop [
+
 	| applyTransformation newcodes tmp amps testsSizeHalf |
 	self careTimeBudget ifFalse: [ ^ {  } ].
 	testsSizeHalf := (0.5 * config maxPop) asInteger.
 	amps := self inputAmplifiers.
 	newcodes := OrderedCollection new.
 	applyTransformation := [ :amplifier :tcase | 
-								  self careTimeBudget ifTrue: [ 
-	                       amplifier isTypeSensitive ifTrue: [ 
-		                       amplifier variableTypes: variableTypes ].
-	                       amplifier isTransplantation ifTrue: [ 
-		                       amplifier instantiationPatterns:
-			                       instantiationExtractor patterns ].
-	                       newcodes addAll:
-		                       (tcase inputAmplifyBy: amplifier)  ]. ].
+	                       self careTimeBudget ifTrue: [ 
+		                       amplifier isTypeSensitive ifTrue: [ 
+			                       amplifier variableTypes: variableTypes ].
+		                       amplifier isTransplantation ifTrue: [ 
+			                       amplifier instantiationPatterns:
+				                       instantiationExtractor patterns ].
+		                       newcodes addAll:
+			                       (tcase inputAmplifyBy: amplifier) ] ].
 	tmp := (pop collect: #clone) do: [ :tcase | 
 		       tcase strip.
-		       tcase normalize ].
+		       tcase normalize.
+		tcase strip ].
 	amps
 		do: [ :amp | 
 			| tmp2 |
 			tmp2 := (testsSizeHalf / amps size) ceiling.
-			(pop shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
+			(tmp shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := pop size > (testsSizeHalf )
-		       ifTrue: [ tmp shuffle takeFirst: testsSizeHalf  ]
+	tmp := pop size > testsSizeHalf
+		       ifTrue: [ tmp shuffle takeFirst: testsSizeHalf ]
 		       ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 

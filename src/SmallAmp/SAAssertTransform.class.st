@@ -76,19 +76,24 @@ SAAssertTransform >> rewriteAllAssertsIn: aParseTree replaceBlock: aBlock [
 
 { #category : #running }
 SAAssertTransform >> transformAllAsserts: aParseTree extract: doExtract [
-	| rewriter parser empty tree |
+
+	| rewriter parser empty tree toClean |
+	toClean := OrderedCollection new.
 	rewriter := RBParseTreeRewriter new.
 	parser := self transformRemoveReturn: aParseTree copy.
 	empty := RBParser parseExpression: ''.
-	self getAllPatterns
-		do: [ :each | 
-			doExtract
-				ifTrue: [ rewriter replace: each key with: each value ]
-				ifFalse: [ rewriter
-						addRule:
-							(RBBlockReplaceRule searchFor: each key replaceWith: [ :node | empty ]) ] ].
+	self getAllPatterns do: [ :each | 
+		doExtract
+			ifTrue: [ rewriter replace: each key with: each value ]
+			ifFalse: [ 
+				rewriter addRule:
+					(RBBlockReplaceRule searchFor: each key replaceWith: [ :node | 
+						 node isAssignment ifTrue: [ toClean add: node ].
+						 empty ]) ] ].
 	rewriter executeTree: parser.
 	tree := rewriter tree.
+	tree allChildren do: [ :node | 
+		(toClean includes: node) ifTrue: [ node parent removeNode: node ] ].
 	^ tree
 ]
 
