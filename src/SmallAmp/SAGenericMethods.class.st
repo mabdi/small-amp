@@ -403,7 +403,7 @@ SAGenericMethods >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars
 ]
 
 { #category : #actions }
-SAGenericMethods >> metricsEval: repoName shred: shred [
+SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed [
 
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId helper |
 	helper := SAGenericMethods new.
@@ -438,7 +438,10 @@ SAGenericMethods >> metricsEval: repoName shred: shred [
 		lf;
 		close.
 	shred > 0 ifTrue: [ 
-		targetedTests := self shredTestClass: targetedTests max: shred.
+		targetedTests := self
+			                 shredTestClass: targetedTests
+			                 max: shred
+			                 seed: aSeed.
 		targetedTests := targetedTests asOrderedCollection sort: [ :cls1 :cls2 | 
 			                 cls1 name asString < cls2 name asString ] ].
 	(FileLocator imageDirectory / self todoFile) writeStream
@@ -512,30 +515,31 @@ SAGenericMethods >> parserClass [
 ]
 
 { #category : #'as yet unclassified' }
-SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber [
+SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber seed: aSeed [
 
-	| currentTests currentIndex tests result tempClass helpers firstClass |
+	| currentTests currentIndex tests result tempClass helpers firstClass upToIndex |
 	currentIndex := 1.
 	firstClass := true.
 	result := OrderedCollection new.
 	tests := testClass testSelectors.
+	tests := tests shuffleBy: (Random seed: aSeed).
 	helpers := testClass methods reject: [ :m | 
 		           tests includes: m selector ].
 	[ currentIndex < tests size ] whileTrue: [ 
-		currentTests := tests
-			                copyFrom: currentIndex
-			                to: (currentIndex + testNumber - 1 min: tests size).
+		upToIndex := currentIndex + testNumber - 1 min: tests size.
+		currentTests := tests copyFrom: currentIndex to: upToIndex.
 		currentIndex := currentIndex + testNumber.
 		currentTests ifEmpty: [ ^ result ].
 		tempClass := testClass superclass
 			             subclass:
-			             (testClass name asString , self getId asString)
-				             asSymbol
+				             (testClass name asString , currentIndex asString
+				              , 'To' , upToIndex asString) asSymbol
 			             instanceVariableNames:
 			             testClass instanceVariablesString
 			             classVariableNames: testClass classVariablesString
 			             package: self defaultTempPackage.
-		testClass class methods do: [ :classSideMethod | tempClass class compile: classSideMethod sourceCode].
+		testClass class methods do: [ :classSideMethod | 
+			tempClass class compile: classSideMethod sourceCode ].
 		currentTests do: [ :selector | 
 			tempClass compile: (testClass lookupSelector: selector) sourceCode ].
 		helpers do: [ :h | tempClass compile: h sourceCode ].
@@ -670,11 +674,15 @@ SAGenericMethods >> safeFail: block key: aKey addTo: aDictionary [
 ]
 
 { #category : #actions }
-SAGenericMethods >> shredTestClass: targetedTests max: maxNum [
+SAGenericMethods >> shredTestClass: targetedTests max: maxNum seed: aSeed [
 
 	^ targetedTests flatCollect: [ :cls | 
 		  cls allTestSelectors size > maxNum
-			  ifTrue: [ SAGenericMethods new performShredingOnTestClass: cls size: maxNum ]
+			  ifTrue: [ 
+				  self
+					  performShredingOnTestClass: cls
+					  size: maxNum
+					  seed: aSeed ]
 			  ifFalse: [ { cls } ] ]
 ]
 

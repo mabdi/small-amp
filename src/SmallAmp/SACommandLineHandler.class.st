@@ -52,14 +52,17 @@ SACommandLineHandler >> end [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalStats [
 
-	| prefix shred |
+	| prefix shred seed |
 	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix allButFirst: '--stat=' size.
 	self arguments
 		detect: [ :arg | arg beginsWith: '--shred=' ]
-		ifFound: [ :arg | shred := (arg allButFirst: '--shred=' size) asInteger ]
+		ifFound: [ :arg | 
+		shred := (arg allButFirst: '--shred=' size) asInteger ]
 		ifNone: [ shred := 0 ].
-	SAGenericMethods new metricsEval: prefix shred: shred
+	seed := self getEnv: #SmallAmp_ShredSeed required: false.
+	seed ifNil: [ seed := 10 ].
+	SAGenericMethods new metricsEval: prefix shred: shred seed: seed
 ]
 
 { #category : #accessing }

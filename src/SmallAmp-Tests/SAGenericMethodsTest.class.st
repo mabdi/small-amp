@@ -72,16 +72,18 @@ SAGenericMethodsTest >> testCleanUp [
 
 { #category : #test }
 SAGenericMethodsTest >> testGrindTestClassSize [
+
 	| helper cls grinded |
 	helper := SAGenericMethods new.
 	cls := TestCase
-		subclass: 'SAFakeTestForGrind' , helper getId asString
-		instanceVariableNames: 'i j k'
-		classVariableNames: 'a b c'
-		package: helper defaultTempPackage.
-	1 to: 32 do: [ :i | cls compile: 'testNum' , i asString , ' self assert: true' ].
+		       subclass: 'SAFakeTestForGrind' , helper getId asString
+		       instanceVariableNames: 'i j k'
+		       classVariableNames: 'a b c'
+		       package: helper defaultTempPackage.
+	1 to: 32 do: [ :i | 
+	cls compile: 'testNum' , i asString , ' self assert: true' ].
 	cls compile: 'helperMethod ^ 1'.
-	grinded := helper performShredingOnTestClass: cls size: 20.
+	grinded := helper performShredingOnTestClass: cls size: 20 seed: 10.
 	self assert: cls smallAmpOriginalTestCase equals: cls.
 	self assert: grinded size equals: 2.
 	self assert: grinded first testSelectors size equals: 20.
@@ -169,7 +171,8 @@ SAGenericMethodsTest >> testShreding [
 	self assert: testClassUnderTest testSelectors size > (shredMax * 2).
 	tests := SAGenericMethods new
 		         shredTestClass: { testClassUnderTest }
-		         max: shredMax.
+		         max: shredMax
+		seed: 1.
 	self
 		assert: tests size
 		equals: (testClassUnderTest testSelectors size / shredMax) ceiling.
@@ -199,7 +202,9 @@ SAGenericMethodsTest >> testShreding [
 	self
 		assert: tests first smallAmpTargetClasses
 		equals: tests second smallAmpTargetClasses.
-	self assert: testClassUnderTest smallAmpOriginalTestCase equals: testClassUnderTest.	
+	self
+		assert: testClassUnderTest smallAmpOriginalTestCase
+		equals: testClassUnderTest.
 	self deny: tests first smallAmpOriginalTestCase equals: tests first.
 	self
 		assert: tests first anImportantMethodInClassSide
