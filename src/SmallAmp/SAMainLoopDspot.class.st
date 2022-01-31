@@ -133,15 +133,16 @@ SAMainLoopDspot >> finalSteps [
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
-	testClasses := OrderedCollection with: finalResult amplifiedClassInitial.
+	resultPeople ifNotEmpty: [ 
+			testClasses := OrderedCollection with:
+		               finalResult amplifiedClassInitial.
 	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
 		testClasses add: testClass smallAmpOriginalTestCase ].
 
-	finalResult amplifiedAnalysis: (selection
-			 analysisFor: testClasses
-			 targets: targetClasses
-			 ignore: finalResult failedSelectorInOriginal)
-	"self installAmplifiedTests: readable"
+		finalResult amplifiedAnalysis: (selection
+				 analysisFor: testClasses
+				 targets: targetClasses
+				 ignore: finalResult failedSelectorInOriginal) ]
 ]
 
 { #category : #actions }

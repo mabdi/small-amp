@@ -56,7 +56,8 @@ SAResultItem class >> fromDictionaryObject: aJsonObj [
 
 { #category : #accessing }
 SAResultItem >> amplifiedAnalysis [
-	^ amplifiedAnalysis
+
+	^ amplifiedAnalysis ifNotNil: [ amplifiedAnalysis ] ifNil: [ originalAnalysis  ]
 ]
 
 { #category : #accessing }
@@ -99,7 +100,9 @@ SAResultItem >> amplifiedMethodsAssertionDensity [
 
 { #category : #reporting }
 SAResultItem >> amplifiedScore [
-	^ amplifiedAnalysis smallAmpScore 
+
+	^ self amplifiedAnalysis smallAmpScore
+
 ]
 
 { #category : #reporting }
@@ -255,15 +258,14 @@ SAResultItem >> initialize [
 
 { #category : #reporting }
 SAResultItem >> markDownOn: stream [
+
 	stream
 		nextPutAll: '|';
 		nextPutAll: testClass name;
 		nextPutAll: '|';
 		nextPutAll: (', ' join: (targetClasses collect: #name));
 		nextPutAll: '|';
-		nextPutAll:
-			(Duration
-				seconds: ((self totalTime)  / 1000) asInteger)
+		nextPutAll: (Duration seconds: (self totalTime / 1000) asInteger)
 				humanReadablePrintString;
 		nextPutAll: '|'.
 	self markDownOn: stream class: testClass analysis: originalAnalysis.
@@ -271,7 +273,7 @@ SAResultItem >> markDownOn: stream [
 	self
 		markDownOn: stream
 		class: amplifiedClass
-		analysis: amplifiedAnalysis.
+		analysis: self amplifiedAnalysis.
 	stream nextPutAll: '|'
 ]
 
@@ -348,12 +350,14 @@ SAResultItem >> methodsNotProfiled [
 
 { #category : #reporting }
 SAResultItem >> newCovered [
-	^ amplifiedAnalysis smallAmpNewCovered: originalAnalysis
+
+	^ self amplifiedAnalysis smallAmpNewCovered: originalAnalysis
 ]
 
 { #category : #reporting }
 SAResultItem >> notCoveredInAmplified [
-	^ amplifiedAnalysis smallAmpUncovered
+
+	^ self amplifiedAnalysis smallAmpUncovered
 ]
 
 { #category : #reporting }
@@ -494,7 +498,8 @@ SAResultItem >> saveResultToFileAs: testClassName [
 
 { #category : #reporting }
 SAResultItem >> stillAliveMutants [
-	^ amplifiedAnalysis smallAmpUncovered 
+
+	^ self amplifiedAnalysis smallAmpUncovered
 ]
 
 { #category : #accessing }
