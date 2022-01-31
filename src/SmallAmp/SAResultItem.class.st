@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'failedSelectorInOriginal',
+		'amplifiedClassInitial',
 		'amplifiedClass',
 		'amplifiedAnalysis',
 		'targetClasses',
@@ -71,6 +72,18 @@ SAResultItem >> amplifiedClass [
 { #category : #accessing }
 SAResultItem >> amplifiedClass: anObject [
 	amplifiedClass := anObject
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedClassInitial [
+
+	^ amplifiedClassInitial
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedClassInitial: anObject [
+
+	amplifiedClassInitial := anObject
 ]
 
 { #category : #reporting }
