@@ -34,7 +34,7 @@ SAObjectInstantiationExtractor >> executeAfterAssignmentNode: theNode context: t
 		            val := theObject instVarNamed: v name.
 		            val isLiteral ifTrue: [ samples at: v name put: val ].
 		            v name -> val class ].
-	tempVars := tempVars collect: [ :v | 
+	tempVars := (tempVars reject: #isSelfOrSuperVariable)  collect: [ :v | 
 		            [ 
 		            val := (theContext tempNamed: v name) value.
 		            val isLiteral ifTrue: [ samples at: v name put: val ] ]
