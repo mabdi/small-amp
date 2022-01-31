@@ -61,7 +61,7 @@ SACommandLineHandler >> evalStats [
 		shred := (arg allButFirst: '--shred=' size) asInteger ]
 		ifNone: [ shred := 0 ].
 	seed := self getEnv: #SmallAmp_ShredSeed required: false.
-	seed ifNil: [ seed := 10 ].
+	seed :=seed ifNil: [  10 ] ifNotNil: [seed asInteger].
 	SAGenericMethods new metricsEval: prefix shred: shred seed: seed
 ]
 
