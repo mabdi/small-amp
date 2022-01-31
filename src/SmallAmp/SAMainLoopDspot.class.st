@@ -256,12 +256,11 @@ SAMainLoopDspot >> methodProfiling [
 		self flag: #TODO. "why wee need cache profiles in config?"
 		config profiler profileClasses: targetClasses byRunning: testClass.
 		finalResult runProfile: config profiler ].
-	(config inputAmplifiers anySatisfy: [ :kvp | kvp key = SAInstantiationTransplanter & kvp value > 0 ]) ifTrue: [
-	instantiationExtractor := SAObjectInstantiationExtractor new.
-	instantiationExtractor testClass: testClass.
-	instantiationExtractor run	
-		].
-	
+	(config inputAmplifiers anySatisfy: [ :kvp | 
+		 (kvp key = SAInstantiationTransplanter) & (kvp value > 0) ]) ifTrue: [ 
+		instantiationExtractor := SAObjectInstantiationExtractor new.
+		instantiationExtractor testClass: testClass.
+		instantiationExtractor run ]
 ]
 
 { #category : #private }
