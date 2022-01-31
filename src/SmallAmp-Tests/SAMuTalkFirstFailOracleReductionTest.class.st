@@ -8,6 +8,30 @@ Class {
 }
 
 { #category : #test }
+SAMuTalkFirstFailOracleReductionTest >> testRemoveErrorBlocks [
+
+	| listOfIds instance mtd mtd2 mtdSrc |
+	mtdSrc := 'someMethod | a b c d e f | a := 1. [b:=2]on:Error do: [self smallamp_logs: 1. self assert: false]. d := [self do: 3]on:Error do: [self smallamp_logs: 2. self assert: false]'.
+	mtd := RBParser parseMethod: mtdSrc.
+	instance := SAMuTalkFirstFailOracleReduction new.
+	listOfIds := { (#some -> 1) }.
+	mtd2 := instance transformBackBaseOn: listOfIds in: mtd.
+	instance removeErrorBlocks: mtd2.
+	self
+		assertMethodSourceCode: mtd2 formattedCode
+		equals:
+		'someMethod | a b c d e f | a := 1. b:=2 '.
+	mtd := RBParser parseMethod: mtdSrc.
+	instance := SAMuTalkFirstFailOracleReduction new.
+	listOfIds := { (#some -> 2) }.
+	mtd2 := instance transformBackBaseOn: listOfIds in: mtd.
+	instance removeErrorBlocks: mtd2.
+	self
+		assertMethodSourceCode: mtd2 formattedCode
+		equals: 'someMethod | a b c d e f | a := 1. . d := self do: 3'
+]
+
+{ #category : #test }
 SAMuTalkFirstFailOracleReductionTest >> testStripMethod [
 	| instance mtd mtd2 |
 	mtd := RBParser

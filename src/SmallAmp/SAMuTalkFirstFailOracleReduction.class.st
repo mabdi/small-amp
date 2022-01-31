@@ -2,7 +2,8 @@ Class {
 	#name : #SAMuTalkFirstFailOracleReduction,
 	#superclass : #SAAbstractOracleReduction,
 	#instVars : [
-		'particularResults'
+		'particularResults',
+		'toComment'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -64,6 +65,13 @@ SAMuTalkFirstFailOracleReduction >> hasAnySelfCall: newTree [
 		  node isMessage and: [ node receiver isSelfVariable ] ]
 ]
 
+{ #category : #initialization }
+SAMuTalkFirstFailOracleReduction >> initialize [
+
+	toComment := OrderedCollection new.
+	
+]
+
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> installLoggers [
 	reducedTestClass class addInstVarNamed: 'smallamp_logs'.
@@ -89,6 +97,22 @@ SAMuTalkFirstFailOracleReduction >> installLoggers [
 			newTree := self addLoggerToAllAsserts: theMethod ast.
 			self addErrorBlocks: newTree.
 			reducedTestClass compile: newTree formattedCode ]
+]
+
+{ #category : #running }
+SAMuTalkFirstFailOracleReduction >> makeCommentsIn: aParseTree [
+
+	| tree testComment commentGenerator |
+	tree := aParseTree copy.
+	commentGenerator := SAPrettyCommentGenerator new
+		                    methodAST: tree;
+		                    particularResults: particularResults;
+		                    toComment: toComment.
+	testComment := commentGenerator generateComment.
+	tree := commentGenerator purgeDecorators: aParseTree.
+	testComment ifNotNil: [ :x | 
+		tree := self astHelper addComment: x toMethodAST: tree ].
+	^ tree
 ]
 
 { #category : #'as yet unclassified' }
@@ -134,9 +158,10 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		thenDo: [ :theMethod | 
 			| newTree |
 			newTree := self
-				           transformBackAndMakeCommentsBaseOn: listOfPairs
+				           transformBackBaseOn: listOfPairs
 				           in: theMethod ast.
-			self removeErrorBlocks: newTree.
+			newTree := self makeCommentsIn: newTree.
+				self removeErrorBlocks: newTree.
 			self removeEmptyLines: newTree.
 			(self hasAnySelfCall: newTree)
 				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
@@ -224,10 +249,10 @@ SAMuTalkFirstFailOracleReduction >> synthesisWhenFor: observations [
 ]
 
 { #category : #running }
-SAMuTalkFirstFailOracleReduction >> transformBackAndMakeCommentsBaseOn: listOfIds in: aParseTree [
+SAMuTalkFirstFailOracleReduction >> transformBackBaseOn: listOfIds in: aParseTree [
 
-	| searchFor rewriter parser tree empty toComment testComment commentGenerator |
-	toComment := OrderedCollection new.
+	| searchFor rewriter parser tree empty toCleanUp |
+	toCleanUp := OrderedCollection new.
 	rewriter := RBParseTreeRewriter new.
 	parser := aParseTree copy.
 	parser allChildren do: [ :each | each comments: nil ].
@@ -244,17 +269,14 @@ SAMuTalkFirstFailOracleReduction >> transformBackAndMakeCommentsBaseOn: listOfId
 				 ifFound: [ :p | 
 					 toComment add: p key.
 					 theAssertion ]
-				 ifNone: [ empty ] ]).
+				 ifNone: [ 
+					 node parent isAssignment ifTrue: [ toCleanUp add: node parent ].
+					 empty ] ]).
 	rewriter executeTree: parser.
 	tree := rewriter tree.
-	commentGenerator := SAPrettyCommentGenerator new
-		                    methodAST: tree;
-		                    particularResults: particularResults;
-		                    toComment: toComment.
-	testComment := commentGenerator generateComment.
-	tree := commentGenerator purgeDecorators: tree.
-	testComment ifNotNil: [ :x | 
-		tree := self astHelper addComment: x toMethodAST: tree ].
+	toCleanUp ifEmpty: [ ^ tree ].
+	tree allChildren do: [ :node | 
+		(toCleanUp includes: node) ifTrue: [ node parent removeNode: node ] ].
 	^ tree
 ]
 
