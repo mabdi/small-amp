@@ -171,12 +171,11 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> removeEmptyLines: tree [
 
-	| empty toRemove  |
-	
+	| empty toRemove |
 	empty := RBParser parseExpression: ''.
-	
+
 	toRemove := tree allChildren select: [ :n | n = empty ].
-	toRemove do: [ :n | n parent statements remove: n ]
+	toRemove do: [ :n | (n parent statements includes: n) ifTrue: [ n parent statements remove: n ]  ]
 ]
 
 { #category : #adding }
