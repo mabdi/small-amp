@@ -179,6 +179,7 @@ SATestMethod >> score: aValue [
 SATestMethod >> scoreWith: methodsScore [
 
 	| sumImmediateCovered sumTotalCovered |
+	(methodsScore allSatisfy: [ :item | item value = 0 ]) ifTrue: [ score := 0. ^ score  ].
 	immediateCovered ifNil: [ 
 		immediateCovered := SACoverageCountingHelper new
 			                    selector: self selector;
@@ -194,18 +195,16 @@ SATestMethod >> scoreWith: methodsScore [
 			                coverageOn: methodsScore keys;
 			                findAllCoveredMethods ].
 	sumImmediateCovered := immediateCovered
-		                        ifEmpty: [ 0 ]
-		                        ifNotEmpty: [ 
-		                       (immediateCovered collect: [ :x | 
-			                        methodsScore at: x ifAbsent: [ 0 ] ]) sum ].
-	sumTotalCovered := totalCovered
-		                   ifEmpty:   [ 0 ]
-		                    ifNotEmpty: [ 
-		                   (totalCovered collect: [ :x | methodsScore at: x ifAbsent: [ 0 ] ])
-			                   sum ].
+		                       ifEmpty: [ 0 ]
+		                       ifNotEmpty: [ 
+			                       (immediateCovered collect: [ :x | 
+				                        methodsScore at: x ifAbsent: [ 0 ] ]) sum ].
+	sumTotalCovered := totalCovered ifEmpty: [ 0 ] ifNotEmpty: [ 
+		                   (totalCovered collect: [ :x | 
+			                    methodsScore at: x ifAbsent: [ 0 ] ]) sum ].
 
 	self flag: #todo. "make me configurable"
-	score := sumImmediateCovered * 2 + sumTotalCovered
+	score := 1 + (sumImmediateCovered * 2) + sumTotalCovered
 ]
 
 { #category : #accessing }

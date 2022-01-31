@@ -33,7 +33,7 @@ SAMainLoopDspotTest >> testScoreTestsWithUncovered2 [
 	instance
 		scoreTestsWithUncovered: instance uncovered
 		randomGen: randomGen.
-	self assert: instance nextTest selectorOriginal equals: #testWithdraw
+	self assert: instance nextTest selectorOriginal equals: #testDeposit
 ]
 
 { #category : #test }
@@ -55,5 +55,5 @@ SAMainLoopDspotTest >> testScoreTestsWithUncovered3 [
 	instance
 		scoreTestsWithUncovered: instance uncovered
 		randomGen: randomGen.
-	self assert: instance nextTest isNil
+	self assert: instance nextTest isNotNil
 ]
