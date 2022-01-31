@@ -248,14 +248,18 @@ SAMainLoopDspot >> makeReadable [
 
 { #category : #private }
 SAMainLoopDspot >> methodProfiling [
-	config profiler
-		ifNotNil: [ config profiler reset.
-			self flag: #TODO.	"why wee need cache profiles in config?"
-			config profiler profileClasses: targetClasses byRunning: testClass.
-			finalResult runProfile: config profiler ].
+
+	config profiler ifNotNil: [ 
+		config profiler reset.
+		self flag: #TODO. "why wee need cache profiles in config?"
+		config profiler profileClasses: targetClasses byRunning: testClass.
+		finalResult runProfile: config profiler ].
+	(config inputAmplifiers anySatisfy: [ :kvp | kvp key = SAInstantiationTransplanter & kvp value > 0 ]) ifTrue: [
 	instantiationExtractor := SAObjectInstantiationExtractor new.
 	instantiationExtractor testClass: testClass.
-	instantiationExtractor run
+	instantiationExtractor run	
+		].
+	
 ]
 
 { #category : #private }
