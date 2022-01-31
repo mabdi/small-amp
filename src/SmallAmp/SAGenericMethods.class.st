@@ -517,7 +517,7 @@ SAGenericMethods >> parserClass [
 { #category : #'as yet unclassified' }
 SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber seed: aSeed [
 
-	| currentTests currentIndex tests result tempClass helpers firstClass upToIndex |
+	| currentTests currentIndex tests result tempClass helpers firstClass upToIndex className |
 	currentIndex := 1.
 	firstClass := true.
 	result := OrderedCollection new.
@@ -527,13 +527,14 @@ SAGenericMethods >> performShredingOnTestClass: testClass size: testNumber seed:
 		           tests includes: m selector ].
 	[ currentIndex < tests size ] whileTrue: [ 
 		upToIndex := currentIndex + testNumber - 1 min: tests size.
+		className := (testClass name asString , currentIndex asString
+				              , 'To' , upToIndex asString) asSymbol.
 		currentTests := tests copyFrom: currentIndex to: upToIndex.
 		currentIndex := currentIndex + testNumber.
 		currentTests ifEmpty: [ ^ result ].
 		tempClass := testClass superclass
 			             subclass:
-				             (testClass name asString , currentIndex asString
-				              , 'To' , upToIndex asString) asSymbol
+				             className
 			             instanceVariableNames:
 			             testClass instanceVariablesString
 			             classVariableNames: testClass classVariablesString
