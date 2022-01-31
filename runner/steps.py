@@ -216,10 +216,13 @@ def runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, i
    syso('Running command: {}'.format(cmd))
    c.run(timeout=4 * 60 * 60)
 
-def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
+def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut):
    syso('runAmplificationCI_snapshotsFast')
    tout = 15*60 # every 15 minute check for freeze
-   tout_files = ['_smallamp_crash_evidence.json']
+   if freezeTimeOut:
+      tout = int(freezeTimeOut)
+   
+   tout_files = ['_smallamp_heartbeat.file']
    
    os.system('cp '+ imgFile + ' Sandbox.image')
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
@@ -229,9 +232,16 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
    
    cmd = cmd1
    n_crashed = 0
-   MAX_CRASH = 10
+   if maxCrash:
+      MAX_CRASH = int(maxCrash)
+   else:
+      MAX_CRASH = 10
+   expire_time = int(datetime.now().timestamp()) + int(timeBudget) * 60
    while n_crashed < MAX_CRASH:
-      c = Command(cmd, redirectTo=redirectTo, verbose=False)
+      if int(datetime.now().timestamp()) > expire_time:
+         syso('Time budget finished for this class. Exiting.')
+         break
+      c = Command(cmd, redirectTo=redirectTo, verbose=False, expire_time=expire_time)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if c.code() == 0:
@@ -245,42 +255,21 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget):
       syso('Number of crashed for this class up to now: ' + str(n_crashed))
       timestamp = int(time.time())
       syso(subprocess.check_output('ls -al', shell=True, text=True))
-      os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
-      os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
-      syso(subprocess.check_output('ls -al', shell=True, text=True))
+      for file in tout_files:
+         if os.path.exists(file):
+            syso('Deleting heartbeat file.')
+            os.system('rm ' + file)
+      if os.path.exists('_smallamp_crash_evidence.json'):
+         syso('The file _smallamp_crash_evidence.json is found. Backing up.')
+         os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
+      if os.path.exists('PharoDebug.log'):
+         syso('The file PharoDebug.log is found. Backing up.')
+         os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
       with open('_smallamp_current_method_', 'w') as currentFile:
          currentFile.write('')
       
       cmd = cmd2
 
-def runAmplificationCI_snapshoted(imgFile, vm, mode, className):
-   tout = 15*60 # every 15 minute check for freeze
-   tout_files = ['_smallamp_last_state.fl', '_smallamp_crash_evidence.json', '_smallamp_last_event.json']
-   
-   os.system('cp '+ imgFile + ' Sandbox.image')
-   os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
-   #  cmd1 = '{} Sandbox.image smallamp --useSnapshots={} >> out/{}.log 2>&1'.format(vm, className, className)
-   #  cmd2 = '{} Sandbox.image  >> out/{}.log 2>&1'.format(vm, className)
-   cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} 2>&1 | tee -a out/{}.log'.format(vm, mode, className, className)
-   cmd2 = '{} Sandbox.image  2>&1 | tee -a out/{}.log'.format(vm, className)
-   
-   cmd = cmd1
-   while True:
-      c = Command(cmd)
-      syso('Running command: {}'.format(cmd))
-      c.run(timeout=tout, files=tout_files)
-      if c.code() == 0:
-            syso('Amplification finished for className: {}'.format(className))
-            break
-      if c.timedout:
-         syso('Amplification Terminated because timeout, className: {}'.format(className))
-      else:
-         syso('A possible crash for className: {}'.format(className))
-      timestamp = int(time.time())
-      os.system('cp _smallamp_last_event.json crash_event_{}.json'.format( timestamp ))
-      os.system('mv _smallamp_crash_evidence.json crash_evidence_{}.json'.format( timestamp ))
-      os.system('cp PharoDebug.log PharoDebug_{}.log'.format( timestamp ))
-      cmd = cmd2
 
 # def verifyCrashes(imgFile, vm):
 #    tout = 60 # 60 seconds to check the freeze
@@ -378,6 +367,8 @@ def runAmplificationCI(args):
    mode = args['mode']
    testClasses = args['testClasses']
    timeBudget = args['timeBudget']
+   freezeTimeOut = args['freezeTimeOut']
+   maxCrash = args['maxCrash']
    
    syso('CI for:'+ repo)
    cwd = os.getcwd()
@@ -407,25 +398,21 @@ def runAmplificationCI(args):
        syso('Amplifying: ' + className + ' (i: ' + str(i) + ', all: '+ str(total_jobs) + ')' )
        
        
-       if mode == 'dspotSnapshots':
-          runAmplificationCI_snapshoted(imgFile, vm, mode, className)
        if mode == 'dspot':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
-       if mode == 'diffSnapshots':
-          runAmplificationCI_snapshoted(imgFile, vm, mode, className)
        if mode == 'diffSnapshotsFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'dspotFast':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'dspotFastRank':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'diff':
           runAmplificationCI_not_snapshoted(imgFile, vm, mode, className, maxInputs, iteration)
 
        if mode == 'fseRank':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
        if mode == 'fseNone':
-          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget)
+          runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, maxCrash, freezeTimeOut)
           
          
    # verifyCrashes(repo, base)

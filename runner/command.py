@@ -4,13 +4,15 @@ import signal
 import sys
 
 class Command(object):
-    def __init__(self, cmd, redirectTo = None, verbose=False):
+    def __init__(self, cmd, redirectTo = None, verbose=False, expire_time=0):
         self.cmd = cmd
         self.process = None
         self.timedout = False
         self.verbose = verbose
         self.redirectTo = redirectTo
         self.logs = []
+        self.retry = 10
+        self.expire_time = expire_time
 
     def log(self, txt):
         if self.verbose:
@@ -36,8 +38,12 @@ class Command(object):
 
         thread = threading.Thread(target=target)
         thread.start()
-        while True:
+        while self.retry>0:
+            if self.expire_time > 0 and self.expire_time < int(datetime.datetime.now().timestamp()):
+                self.log('expire time passed')
+                break
             self.log('run-while enter')
+            self.retry = self.retry - 1
             thread.join(timeout)
             self.log('run-while-1, thread.is_alive={}'.format(thread.is_alive()))
             if not thread.is_alive():
