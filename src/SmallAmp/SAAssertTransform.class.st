@@ -88,10 +88,11 @@ SAAssertTransform >> transformAllAsserts: aParseTree extract: doExtract [
 			ifFalse: [ 
 				rewriter addRule:
 					(RBBlockReplaceRule searchFor: each key replaceWith: [ :node | 
-						 node isAssignment ifTrue: [ toClean add: node ].
+						 node parent isAssignment ifTrue: [ toClean add: node parent ].
 						 empty ]) ] ].
 	rewriter executeTree: parser.
 	tree := rewriter tree.
+	
 	tree allChildren do: [ :node | 
 		(toClean includes: node) ifTrue: [ node parent removeNode: node ] ].
 	^ tree
