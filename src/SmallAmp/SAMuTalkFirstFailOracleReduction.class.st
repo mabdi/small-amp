@@ -3,7 +3,8 @@ Class {
 	#superclass : #SAAbstractOracleReduction,
 	#instVars : [
 		'particularResults',
-		'toComment'
+		'toComment',
+		'reverts'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -45,6 +46,20 @@ SAMuTalkFirstFailOracleReduction >> addLoggerToAllAsserts: aParseTree [
 	^ self getAssertTransformer rewriteAllAssertsIn: aParseTree replaceBlock: b
 ]
 
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> checkTestIsCorrect: newTree mutants: mutantsToCheck [
+
+	| testCorrection |
+	testCorrection := SADefaultTestCorrection new.
+	testCorrection theClass: reducedTestClass.
+	testCorrection config: config.
+	(testCorrection checkIsGreenTest: newTree selector) ifFalse: [ 
+		^ false ].
+	^ testCorrection
+		  checkTest: newTree selector
+		  stillCovers: mutantsToCheck
+]
+
 { #category : #cleanup }
 SAMuTalkFirstFailOracleReduction >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
@@ -69,7 +84,7 @@ SAMuTalkFirstFailOracleReduction >> hasAnySelfCall: newTree [
 SAMuTalkFirstFailOracleReduction >> initialize [
 
 	toComment := OrderedCollection new.
-	
+	reverts := 0
 ]
 
 { #category : #'as yet unclassified' }
@@ -156,7 +171,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
-	| testCorrection isTestCorrect  mutantsToCheck|
+	| isTestCorrect mutantsToCheck |
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
@@ -169,15 +184,15 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 			(self hasAnySelfCall: newTree)
 				ifTrue: [ 
 					reducedTestClass compile: newTree formattedCode.
-					mutantsToCheck := (SADSpotSelection getNewCoveredFor: oldTree) collect: [:str | SADefaultTestCorrection createMutantFromString: str].
-
-					testCorrection := SADefaultTestCorrection new.
-					testCorrection theClass: reducedTestClass.
-					testCorrection config: config.
-					isTestCorrect := testCorrection
-						                 checkTest: newTree selector
-						                 stillCovers: mutantsToCheck.
+					mutantsToCheck := (SADSpotSelection getNewCoveredFor: oldTree) 
+						                  collect: [ :str | 
+						                  SADefaultTestCorrection 
+							                  createMutantFromString: str ].
+					isTestCorrect := self
+						                 checkTestIsCorrect: newTree
+						                 mutants: mutantsToCheck.
 					isTestCorrect ifFalse: [ 
+						reverts := reverts + 1.
 						reducedTestClass compile: oldTree formattedCode ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
@@ -202,6 +217,11 @@ SAMuTalkFirstFailOracleReduction >> removeErrorBlocks: newTree [
 				replaceNode: stmt
 				withNode: (stmt receiver statements at: 1) copy
 					 ]
+]
+
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> reverts [
+^ reverts
 ]
 
 { #category : #'as yet unclassified' }

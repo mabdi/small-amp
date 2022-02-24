@@ -44,9 +44,17 @@ SADefaultTestCorrection >> addErrorBlocksAroundAllAssertEqualsIn: aParseTree [
 ]
 
 { #category : #'as yet unclassified' }
+SADefaultTestCorrection >> checkIsGreenTest: selector [
+
+	| res |
+	res := self runTestMethod: selector.
+	^ res concretePassed isNotEmpty
+]
+
+{ #category : #'as yet unclassified' }
 SADefaultTestCorrection >> checkTest: selector stillCovers: coverage [
 
-	| originalMethod testCoverages analysis |
+	| originalMethod analysis |
 	originalMethod := theClass >> selector.
 	analysis := MutationTestingAnalysis
 		            for: { (TestCaseReference for: selector in: theClass) }
@@ -57,8 +65,8 @@ SADefaultTestCorrection >> checkTest: selector stillCovers: coverage [
 		            (SmallAmpMutationsGenerationStrategy new mutants:
 			             coverage).
 	analysis run.
-	
-	^ analysis generalResult  aliveMutants isEmpty
+
+	^ analysis generalResult aliveMutants isEmpty
 ]
 
 { #category : #'as yet unclassified' }

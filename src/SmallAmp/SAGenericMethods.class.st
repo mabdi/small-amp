@@ -491,8 +491,9 @@ SAGenericMethods >> old_buildTestClassWith: aCollection using: testClass [
 { #category : #compiling }
 SAGenericMethods >> onClass: aClass compile: aMethod [
 	
-	SystemAnnouncer uniqueInstance
-		suspendAllWhile: [ aClass compile: aMethod ]
+	aClass compile: aMethod.
+	"SystemAnnouncer uniqueInstance
+		suspendAllWhile: [ aClass compile: aMethod ]"
 ]
 
 { #category : #compiling }

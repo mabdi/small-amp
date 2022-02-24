@@ -16,7 +16,8 @@ Class {
 		'numberOfOriginalTestMethods',
 		'totalTime',
 		'numberOfProcessedMethods',
-		'testClassTimeToRunInMillis'
+		'testClassTimeToRunInMillis',
+		'oracleReductionReverts'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -215,6 +216,7 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ self testClassTimeToRunInMillis ]
 		key: #testClassTimeToRunInMillis
 		addTo: result.
+	self safeFail: [ self oracleReductionReverts ] key: #oracleReductionReverts addTo: result.
 	self
 		safeFail: [ self numberOfProcessedMethods ]
 		key: #numberOfProcessedMethods
@@ -396,6 +398,18 @@ SAResultItem >> numberOfProcessedMethods: anObject [
 SAResultItem >> numberOfTestMethodsBeforeShreding [
 
 	^ testClass smallAmpOriginalTestCase testSelectors size
+]
+
+{ #category : #accessing }
+SAResultItem >> oracleReductionReverts [
+
+	^ oracleReductionReverts
+]
+
+{ #category : #accessing }
+SAResultItem >> oracleReductionReverts: anObject [
+
+	oracleReductionReverts := anObject
 ]
 
 { #category : #accessing }

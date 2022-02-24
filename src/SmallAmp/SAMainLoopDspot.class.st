@@ -240,9 +240,11 @@ SAMainLoopDspot >> makeReadable [
 		           with: finalResult amplifiedClass
 		           from: testClass smallAmpOriginalTestCase
 		           target: targetClasses
-		           uncovered: (finalResult notCoveredInOriginal  collect: #mutant).
+		           uncovered:
+		           (finalResult notCoveredInOriginal collect: #mutant).
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
+	finalResult oracleReductionReverts: reducer reverts.
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
 	^ readable
