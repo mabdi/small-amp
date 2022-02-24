@@ -7,6 +7,24 @@ Class {
 	#category : #'SmallAmp-Tests-Core'
 }
 
+{ #category : #tests }
+SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
+
+	| ugly uncovered reducer readable |
+	ugly := FakeUglySmallBankTest.
+	uncovered := { 'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44' } 
+		             collect: [ :str | 
+		             SADefaultTestCorrection createMutantFromString:
+			             str ].
+	reducer := (SAMuTalkFirstFailOracleReduction initializeWith:
+		            SAConfig default)
+		           with: ugly
+		           from: FakeSmallBankTest
+		           target: { FakeSmallBank }
+		           uncovered: uncovered.
+	readable := reducer makeReducedResult
+]
+
 { #category : #test }
 SAMuTalkFirstFailOracleReductionTest >> testRemoveErrorBlocks [
 

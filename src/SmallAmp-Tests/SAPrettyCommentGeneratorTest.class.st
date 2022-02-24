@@ -66,7 +66,7 @@ SAPrettyCommentGeneratorTest >> testq [
 		            initialAnalysisFor: { FakeSmallBankTest }
 		            targets: FakeSmallBankTest smallAmpTargetClasses
 		            ignore: {  }.
-	uncovered := selection uncovered.
+	uncovered := selection uncovered collect: #mutant.
 	reducer := (SAMuTalkFirstFailOracleReduction initializeWith: cnf)
 		           with: generatedClass
 		           from: FakeSmallBankTest

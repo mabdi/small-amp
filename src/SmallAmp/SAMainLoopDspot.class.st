@@ -240,7 +240,7 @@ SAMainLoopDspot >> makeReadable [
 		           with: finalResult amplifiedClass
 		           from: testClass smallAmpOriginalTestCase
 		           target: targetClasses
-		           uncovered: finalResult notCoveredInOriginal.
+		           uncovered: (finalResult notCoveredInOriginal  collect: #mutant).
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
 	prettifier := config prettifier initializeWith: config.
