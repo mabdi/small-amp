@@ -153,18 +153,29 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
+	| testCorrection isTestCorrect  mutantsToCheck|
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
-			| newTree |
-			newTree := self
-				           transformBackBaseOn: listOfPairs
-				           in: theMethod ast.
+			| oldTree newTree |
+			oldTree := theMethod ast.
+			newTree := self transformBackBaseOn: listOfPairs in: theMethod ast.
 			newTree := self makeCommentsIn: newTree.
-				self removeErrorBlocks: newTree.
+			self removeErrorBlocks: newTree.
 			self removeEmptyLines: newTree.
 			(self hasAnySelfCall: newTree)
-				ifTrue: [ reducedTestClass compile: newTree formattedCode ]
+				ifTrue: [ 
+					reducedTestClass compile: newTree formattedCode.
+					mutantsToCheck := (SADSpotSelection getNewCoveredFor: oldTree) collect: [:str | SADefaultTestCorrection createMutantFromString: str].
+
+					testCorrection := SADefaultTestCorrection new.
+					testCorrection theClass: reducedTestClass.
+					testCorrection config: config.
+					isTestCorrect := testCorrection
+						                 checkTest: newTree selector
+						                 stillCovers: mutantsToCheck.
+					isTestCorrect ifFalse: [ 
+						reducedTestClass compile: oldTree formattedCode ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
 

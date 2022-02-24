@@ -16,6 +16,14 @@ SADSpotSelection class >> defaultOracleReduction [
 ]
 
 { #category : #'as yet unclassified' }
+SADSpotSelection class >> getNewCoveredFor: methodAST [
+^ (methodAST pragmas select: [ :pr | 
+		   pr selector asString
+		   = SAAbstractSelection defaultInfoPragma asString ]) collect: [ 
+		  :pr | pr arguments first value ]
+]
+
+{ #category : #'as yet unclassified' }
 SADSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis

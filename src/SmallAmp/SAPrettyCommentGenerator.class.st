@@ -15,10 +15,7 @@ Class {
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> extractNewCovered [
 
-	^ (methodAST pragmas select: [ :pr | 
-		   pr selector asString
-		   = SAAbstractSelection defaultInfoPragma asString ]) collect: [ 
-		  :pr | pr arguments first value ]
+	^  SADSpotSelection getNewCoveredFor: methodAST
 ]
 
 { #category : #'as yet unclassified' }

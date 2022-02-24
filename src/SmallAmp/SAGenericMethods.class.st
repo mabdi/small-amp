@@ -140,19 +140,23 @@ SAGenericMethods >> buildTestClassAndLogWith: aCollection using: testClass [
 
 { #category : #'method operations' }
 SAGenericMethods >> buildTestClassWith: aCollection using: testClass [
+
 	| tempClass |
 	tempClass := testClass
-		subclass: (testClass name asString , self getId asString) asSymbol
-		instanceVariableNames: ''
-		classVariableNames: ''
-		package: self defaultTempPackage.
+		             subclass:
+		             (testClass name asString , self getId asString)
+			             asSymbol
+		             instanceVariableNames: ''
+		             classVariableNames: ''
+		             package: self defaultTempPackage.
 	self onClass: tempClass class compile: self srcAllTestSelectors.
 	self onClass: tempClass class compile: self srcDefaultTimeLimit.
-	aCollection
-		do: [ :item | 
-			| ast |
-			ast := self parsedMethodFrom: item.
-			self onClass: tempClass compile: ast formattedCode ].
+	self onClass: tempClass class compile: self srcSmallAmpTargetClasses.
+		
+	aCollection do: [ :item | 
+		| ast |
+		ast := self parsedMethodFrom: item.
+		self onClass: tempClass compile: ast formattedCode ].
 	^ tempClass
 ]
 
@@ -721,6 +725,13 @@ SAGenericMethods >> srcAllTestSelectors [
 SAGenericMethods >> srcDefaultTimeLimit [
 	^ 'defaultTimeLimit
 	^ 3 seconds '
+]
+
+{ #category : #'method operations' }
+SAGenericMethods >> srcSmallAmpTargetClasses [
+
+	^ 'smallAmpTargetClasses
+	^ self superclass smallAmpTargetClasses'
 ]
 
 { #category : #'as yet unclassified' }
