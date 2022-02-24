@@ -37,6 +37,21 @@ MethodMutation >> smallAmpDecoratorText [
 ]
 
 { #category : #'*SmallAmp' }
+MethodMutation class >> smallAmpFromString: aMutantStringId [
+	| parts operator theClass theSelector mutationStart mutationEnd theMethod mutants |
+	parts := aMutantStringId splitOn: '#'.
+	parts size = 5 ifFalse: [ ^ nil ].
+	operator := (Smalltalk at: parts first asSymbol ifAbsent: [ ^ nil ]) new.
+	theClass := (Smalltalk at: parts second asSymbol ifAbsent: [ ^ nil ]) .
+	theSelector := (parts third asSymbol ).
+	mutationStart := (parts at: 4) asInteger.
+	mutationEnd := (parts at: 5) asInteger.
+	theMethod := (theClass >> theSelector).
+	mutants := operator mutationsFor: theMethod with: theMethod parseTree.
+	^ mutants detect: [:m | (m nodeToMutate start = mutationStart) & (m nodeToMutate stop = mutationEnd) ] ifNone: [ ^ nil]
+]
+
+{ #category : #'*SmallAmp' }
 MethodMutation >> uninstallDeep [
 	"UnInstall the mutant recompiling the original method into the class."
 

@@ -37,6 +37,42 @@ SADefaultTestCorrectionTest >> testAssertEqualsErrorBlocks [
 	'
 ]
 
+{ #category : #tests }
+SADefaultTestCorrectionTest >> testCreateMutantFromString [
+
+	| mutantsToCheck mutantsGenerated |
+	mutantsToCheck := { 'ReplaceMinusWithPlusMutantOperator#FakeSmallBank#withdraw:#60#75'.
+	                  'ReplaceGreaterOrEqualWithEqualMutantOperator#FakeSmallBank#withdraw:#19#35' }.
+	mutantsGenerated := mutantsToCheck collect: [ :str | 
+		                    SADefaultTestCorrection createMutantFromString:
+			                    str ].
+	self
+		assert: mutantsGenerated first smallAmpDecoratorText
+		equals: mutantsToCheck first.
+	self
+		assert: mutantsGenerated second smallAmpDecoratorText
+		equals: mutantsToCheck second.
+]
+
+{ #category : #tests }
+SADefaultTestCorrectionTest >> testStillCovering [
+
+	| fakeTest mutantsToCheck ins response |
+	fakeTest := FakeSmallBankTest >> #testWithdraw.
+	mutantsToCheck := { 'ReplaceMinusWithPlusMutantOperator#FakeSmallBank#withdraw:#60#75'.
+	                  'ReplaceGreaterOrEqualWithEqualMutantOperator#FakeSmallBank#withdraw:#19#35' } 
+		                  collect: [ :str | 
+		                  SADefaultTestCorrection createMutantFromString:
+			                  str ].
+	ins := SADefaultTestCorrection new.
+	ins theClass: fakeTest methodClass.
+	ins config: SAConfig default.
+	response := ins
+		            checkTest: fakeTest selector
+		            stillCovers: mutantsToCheck.
+	self assert: response
+]
+
 { #category : #test }
 SADefaultTestCorrectionTest >> testUpdateLiteralsInAssertionsIn [
 

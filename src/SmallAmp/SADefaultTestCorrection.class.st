@@ -4,6 +4,12 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SADefaultTestCorrection class >> createMutantFromString: aMutantStringId [
+
+	^ MethodMutation smallAmpFromString: aMutantStringId
+]
+
 { #category : #adding }
 SADefaultTestCorrection >> addErrorBlocksAroundAllAssertEqualsIn: aParseTree [
 
@@ -40,11 +46,19 @@ SADefaultTestCorrection >> addErrorBlocksAroundAllAssertEqualsIn: aParseTree [
 { #category : #'as yet unclassified' }
 SADefaultTestCorrection >> checkTest: selector stillCovers: coverage [
 
-	| originalMethod testCoverages |
+	| originalMethod testCoverages analysis |
 	originalMethod := theClass >> selector.
-testCoverages := self runCoverageOn: selector toCheck: coverage. 
-	testCoverages ifFalse: [ theClass compile: originalMethod sourceCode ].
-	^ testCoverages
+	analysis := MutationTestingAnalysis
+		            for: { (TestCaseReference for: selector in: theClass) }
+		            mutating: theClass smallAmpTargetClasses
+		            using: MutantOperator contents
+		            with: AllTestsMethodsRunningMutantEvaluationStrategy new
+		            with:
+		            (SmallAmpMutationsGenerationStrategy new mutants:
+			             coverage).
+	analysis run.
+	
+	^ analysis generalResult  aliveMutants isEmpty
 ]
 
 { #category : #'as yet unclassified' }
@@ -89,18 +103,6 @@ SADefaultTestCorrection >> revertManipulatedTestMethod [
 	theClass class removeInstVarNamed: 'smallamp_logs'.
 	
 
-]
-
-{ #category : #'as yet unclassified' }
-SADefaultTestCorrection >> runCoverageOn: testClass toCheck: coverage [
-
-	| analysis |
-	analysis := MutationTestingAnalysis
-		testCasesFrom: { testClass }
-		mutating: testClass smallAmpTargetClasses
-		using: MutantOperator contents
-		with: AllTestsMethodsRunningMutantEvaluationStrategy new
-		with: (SmallAmpMutationsGenerationStrategy new mutants: coverage)
 ]
 
 { #category : #'as yet unclassified' }
