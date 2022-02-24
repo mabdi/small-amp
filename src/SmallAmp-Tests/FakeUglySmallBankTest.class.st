@@ -7,6 +7,9 @@ Class {
 { #category : #tests }
 FakeUglySmallBankTest >> testMethod1 [
 
+	<smallAmpCoveres:
+	'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44'>
+	<madeBySmallAmpFrom: 'FakeSmallBankTest>>#testDeposit'>
 	| b |
 	b := FakeSmallBank new.
 	b deposit: 10.
@@ -31,6 +34,9 @@ FakeUglySmallBankTest >> testMethod1 [
 { #category : #tests }
 FakeUglySmallBankTest >> testMethod2impure [
 
+	<smallAmpCoveres:
+	'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44'>
+	<madeBySmallAmpFrom: 'FakeSmallBankTest>>#testDeposit'>
 	| b |
 	b := FakeSmallBank new.
 	b deposit: 10.
