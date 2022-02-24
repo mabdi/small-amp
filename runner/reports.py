@@ -445,6 +445,11 @@ def reportAmp_backend(directory, fix):
          lastMethod = ''
          result.append({'stat':'error','className':className,'errDet':errDet, 'lastMethod': lastMethod})
          continue
+      if 'SAFlakyMutationTesting' in log:
+         errDet = 'SAFlakyMutationTesting'
+         lastMethod = ''
+         result.append({'stat':'error','className':className,'errDet':errDet, 'lastMethod': lastMethod})
+         continue
       if 'SANoGreenTest' in log:
          errDet = 'SANoGreenTest'
          lastMethod = ''
