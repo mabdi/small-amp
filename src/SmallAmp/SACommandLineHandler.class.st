@@ -121,7 +121,7 @@ SACommandLineHandler >> installTest: selector from: aClass repo: repo [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> loadAndCommit [
 
-	| gcnf gitClone all_st package repo repoName diff |
+	| gcnf gitClone all_st package repo repoName diff jsons theJson |
 	gitClone := self getEnv: #GITHUB_WORKSPACE required: true.
 	repoName := self getEnv: #reponame required: true.
 
@@ -138,11 +138,17 @@ SACommandLineHandler >> loadAndCommit [
 	diff := repo workingCopyDiff.
 	SmallAmp <~ ('Diff before import: ' , diff packages asString).
 
-	all_st := FileLocator imageDirectory childrenMatching: '*.st'.
-	SmallAmp <~ ('all_st: ' , (all_st collect: #asString) asString).
-	all_st do: [ :a_st | a_st asFileReference fileIn ].
+	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
+	SmallAmp <~ ('all_jsons: ' , (jsons collect: #asString) asString).
+	jsons do: [ :aJson | 
+		aJson asFileReference readStreamDo: [ :readStream | 
+			theJson := STONJSON fromStream: readStream ].
+
+		(FileLocator imageDirectory / (theJson at: #amplifiedClass)) asFileReference fileIn ].
 
 	SmallAmp <~ 'File in done'.
+
+
 	(RPackageOrganizer default includesPackageNamed:
 		 'SmallAmpFinalClasses') ifFalse: [ 
 		SmallAmp <~ 'SmallAmpFinalClasses missing'.
