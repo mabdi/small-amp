@@ -144,7 +144,8 @@ SACommandLineHandler >> loadAndCommit [
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
 
-		(FileLocator imageDirectory / (theJson at: #amplifiedClass)) asFileReference fileIn ].
+		(FileLocator imageDirectory / ((theJson at: #amplifiedClass) , '.st'))
+			asFileReference fileIn ].
 
 	SmallAmp <~ 'File in done'.
 
