@@ -124,6 +124,7 @@ SACommandLineHandler >> loadAndCommit [
 	| gcnf gitClone all_st package repo repoName diff jsons theJson |
 	gitClone := self getEnv: #GITHUB_WORKSPACE required: true.
 	repoName := self getEnv: #reponame required: true.
+SAGenericMethods new contextInit.
 
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	gcnf := repo getConfigurationGlobal: false.
@@ -150,8 +151,7 @@ SACommandLineHandler >> loadAndCommit [
 			ifFalse: [ 
 				SmallAmp
 				<~
-				('The key #amplifiedClass not found. Skipping ' , aJson asString)
-				 ] ].
+				('The key #amplifiedClass not found. Skipping ' , aJson asString) ] ].
 
 	SmallAmp <~ 'File in done'.
 
