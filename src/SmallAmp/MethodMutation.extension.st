@@ -2,13 +2,16 @@ Extension { #name : #MethodMutation }
 
 { #category : #'*SmallAmp' }
 MethodMutation >> asDictionaryObject [
-	^ {(#operatorDescription -> operator description).
-	(#operatorClass -> operator class name).
-	(#class -> originalClass name).
-	(#method -> originalMethod selector).
-	(#mutatedNode -> self mutatedNode formattedCode).
-	(#mutationStart -> self nodeToMutate start).
-	(#mutationEnd -> self nodeToMutate stop)} asDictionary
+
+	^ { 
+		  (#id -> self smallAmpDecoratorText).
+		  (#operatorDescription -> operator description).
+		  (#operatorClass -> operator class name).
+		  (#class -> originalClass name).
+		  (#method -> originalMethod selector).
+		  (#mutatedNode -> self mutatedNode formattedCode).
+		  (#mutationStart -> self nodeToMutate start).
+		  (#mutationEnd -> self nodeToMutate stop) } asDictionary
 ]
 
 { #category : #'*SmallAmp' }
