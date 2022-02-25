@@ -238,13 +238,13 @@ SAMainLoopDspot >> logAmplifiedMethodsInfo [
 
 	| info |
 	info := resultPeople collect: [ :mmodel | 
-		        mmodel selector -> { 
+		        mmodel selector -> ({ 
 			        (#from -> mmodel getOriginalTestFullName).
 			        (#transformations -> mmodel getTransformationsList asArray).
 			        (#newCoverage
 			         ->
 			         (selection class getNewCoveredFor: mmodel parsedTree)
-				         asArray) asDictionary } ].
+				         asArray) } asDictionary) ].
 	finalResult amplifiedMethods: info asDictionary
 ]
 
