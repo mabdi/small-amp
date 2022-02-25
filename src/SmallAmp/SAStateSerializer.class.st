@@ -15,19 +15,19 @@ SAStateSerializer class >> withDepth: anInt [
 
 { #category : #'as yet unclassified' }
 SAStateSerializer >> filterObserversOn: theObject [
+
 	| methods theClass |
 	theClass := theObject class.
 	methods := OrderedCollection new.
-	self maxSuperClass
-		timesRepeat: [ theClass == Object
-				ifFalse: [ methods addAll: (theClass methods select: #smallAmpIsAccessor).
-					theClass := theClass superclass ] ].
-	methods := methods
-		select: [ :method | 
-			method selector first isLetter
-				and: [ (method selector indexOf: $:) = 0 ] ].
+	self maxSuperClass timesRepeat: [ 
+		theClass == Object ifFalse: [ 
+			methods addAll: (theClass methods select: #smallAmpIsAccessor).
+			theClass := theClass superclass ] ].
+	methods := methods select: [ :method | 
+		           method selector first isLetter and: [ 
+			           (method selector indexOf: $:) = 0 ] ].
 	methods := methods select: [ :m | m ast lastIsReturn ].
-	methods := methods select: [ :m | m smallAmpIsPure ].
+	methods := methods reject: [ :m | m ast smallAmpIsImpure ].
 	methods := methods sort: [ :a :b | a selector <= b selector ].
 	^ methods
 ]

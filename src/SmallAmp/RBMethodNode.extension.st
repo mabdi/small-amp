@@ -1,7 +1,10 @@
 Extension { #name : #RBMethodNode }
 
 { #category : #'*SmallAmp' }
-RBMethodNode >> smallAmpIsPure [
+RBMethodNode >> smallAmpIsImpure [
 
-	^ (self allVariables select: #isInstanceVariable) noneSatisfy: #isWrite
+	| allInstanceVars |
+	allInstanceVars := self allVariables select: #isInstanceVariable.
+	 (allInstanceVars anySatisfy: #isWrite)  ifTrue: [ ^ true ].
+^ false "false here means I dont know"
 ]

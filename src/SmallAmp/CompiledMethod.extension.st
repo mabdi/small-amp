@@ -33,6 +33,7 @@ CompiledMethod >> smallAmpIsAssertion [
 ]
 
 { #category : #'*SmallAmp' }
-CompiledMethod >> smallAmpIsPure [
-	^ self ast smallAmpIsPure
+CompiledMethod >> smallAmpIsImpure [
+
+	^ self ast smallAmpIsImpure
 ]
