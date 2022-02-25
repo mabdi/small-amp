@@ -9,6 +9,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SALiteralInputAmplifier class >> namingPostfix [
+	^ 'L'
+]
+
 { #category : #removing }
 SALiteralInputAmplifier >> allDynamicArrayNode [
 	^ (aMethodAST allChildren select: #isDynamicArray)
@@ -64,11 +69,6 @@ SALiteralInputAmplifier >> amplifyInputsSource: testCode [
 	mappings
 		do: [ :map | results addAll: (self replaceMappings: map on: aMethodAST) ].
 	^ results
-]
-
-{ #category : #'as yet unclassified' }
-SALiteralInputAmplifier >> namingPrefix [
-	^ 'L'
 ]
 
 { #category : #'as yet unclassified' }

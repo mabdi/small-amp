@@ -17,7 +17,8 @@ Class {
 		'totalTime',
 		'numberOfProcessedMethods',
 		'testClassTimeToRunInMillis',
-		'oracleReductionReverts'
+		'oracleReductionReverts',
+		'amplifiedMethods'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -90,7 +91,14 @@ SAResultItem >> amplifiedClassInitial: anObject [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethods [
-	^ self amplifiedClass smallAmpAmplifiedMethods
+
+  ^ amplifiedMethods
+]
+
+{ #category : #accessing }
+SAResultItem >> amplifiedMethods: anObject [
+
+	amplifiedMethods := anObject
 ]
 
 { #category : #reporting }

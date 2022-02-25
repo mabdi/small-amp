@@ -8,6 +8,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SAInstantiationTransplanter class >> namingPostfix [
+	^ 'T'
+]
+
 { #category : #removing }
 SAInstantiationTransplanter >> amplifyInputs [
 	| results |
@@ -62,11 +67,6 @@ SAInstantiationTransplanter >> isInScope: aType [
 { #category : #testing }
 SAInstantiationTransplanter >> isTransplantation [
 	^ true
-]
-
-{ #category : #'as yet unclassified' }
-SAInstantiationTransplanter >> namingPrefix [
-	^ 'T'
 ]
 
 { #category : #'as yet unclassified' }

@@ -4,6 +4,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SAUniqLiteralsInputAmplifier class >> namingPostfix [
+	^ 'U'
+]
+
 { #category : #removing }
 SAUniqLiteralsInputAmplifier >> amplifyInputs [
 	| aMethodAST results literals |
@@ -32,11 +37,6 @@ SAUniqLiteralsInputAmplifier >> getAllLiterals: aMethodAST [
 			result at: n value class ifAbsentPut: [ Set new ].
 			(result at: n value class) add: n value ].
 	^ result
-]
-
-{ #category : #'as yet unclassified' }
-SAUniqLiteralsInputAmplifier >> namingPrefix [
-	^ 'U'
 ]
 
 { #category : #removing }

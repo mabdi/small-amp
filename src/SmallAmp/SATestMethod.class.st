@@ -70,6 +70,29 @@ SATestMethod >> clone [
 	^ obj
 ]
 
+{ #category : #'as yet unclassified' }
+SATestMethod >> getOriginalTestFullName [
+
+	^ (testClass smallAmpOriginalTestCase lookupSelector:
+			               selectorOriginal) name
+]
+
+{ #category : #'as yet unclassified' }
+SATestMethod >> getTransformationsList [
+
+	| list |
+	self flag: #todo. "use annotations instead of file name for recording the transformations"
+	self flag: #todo. "use the details of transformations, like 2 is changed to 0"
+	list := ((self selector asString allButFirst:
+		          self selectorOriginal asString size) splitOn: '_') 
+		        reject: #isEmpty.
+	list := list reject: [ :item | item = 'amp' ].
+	list := list collect: [ :postfix | 
+		        (SAAbstractInputAmplifier findInputAmplifierWithPostfix:
+			         postfix) ifNil: [ postfix ] ifNotNil: [ :item | item ] ].
+	^ list
+]
+
 { #category : #initialization }
 SATestMethod >> initialize [ 
 	self isAmplified: false
@@ -94,12 +117,12 @@ SATestMethod >> inputAmplifyBy: anAmplifier [
 		collect: [ :mtd | 
 			| cp |
 			cp := self
-				renamedCopy: '_' , anAmplifier namingPrefix , idx asString.
+				renamedCopy: '_' , anAmplifier namingPostfix , idx asString.
 			cp
 				testMethod:
 					(self astHelper
 						renameMethodName: mtd
-						append: '_' , anAmplifier namingPrefix , idx asString)
+						append: '_' , anAmplifier namingPostfix , idx asString)
 						formattedCode.
 			idx := idx + 1.
 			cp ]
@@ -133,6 +156,12 @@ SATestMethod >> observedState [
 { #category : #accessing }
 SATestMethod >> observedState: anObject [
 	observedState := anObject
+]
+
+{ #category : #accessing }
+SATestMethod >> parsedTree [
+
+	^ self astHelper parsedMethodFrom: testMethod
 ]
 
 { #category : #printing }

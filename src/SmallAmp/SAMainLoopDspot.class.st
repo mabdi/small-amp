@@ -127,6 +127,7 @@ SAMainLoopDspot >> finalSteps [
 		                  buildTestClassAndLogWith:
 		                  (resultPeople collect: #testMethod)
 		                  using: testClass smallAmpOriginalTestCase.
+	self logAmplifiedMethodsInfo.
 	finalResult amplifiedClass: generatedClass.
 	finalResult amplifiedClassInitial: generatedClass.
 	readable := self makeReadable.
@@ -134,10 +135,10 @@ SAMainLoopDspot >> finalSteps [
 	finalResult numberOfProcessedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
 	resultPeople ifNotEmpty: [ 
-			testClasses := OrderedCollection with:
-		               finalResult amplifiedClassInitial.
-	testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
-		testClasses add: testClass smallAmpOriginalTestCase ].
+		testClasses := OrderedCollection with:
+			               finalResult amplifiedClassInitial.
+		testClass smallAmpOriginalTestCase = testClass ifFalse: [ 
+			testClasses add: testClass smallAmpOriginalTestCase ].
 
 		finalResult amplifiedAnalysis: (selection
 				 analysisFor: testClasses
@@ -230,6 +231,21 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 SAMainLoopDspot >> inputAmplifiers [
 	^ config inputAmplifiers
 		collect: [ :amplifier | amplifier key initializeWith: config ]
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> logAmplifiedMethodsInfo [
+
+	| info |
+	info := resultPeople collect: [ :mmodel | 
+		        mmodel selector -> { 
+			        (#from -> mmodel getOriginalTestFullName).
+			        (#transformations -> mmodel getTransformationsList asArray).
+			        (#newCoverage
+			         ->
+			         (selection class getNewCoveredFor: mmodel parsedTree)
+				         asArray) asDictionary } ].
+	finalResult amplifiedMethods: info asDictionary
 ]
 
 { #category : #actions }

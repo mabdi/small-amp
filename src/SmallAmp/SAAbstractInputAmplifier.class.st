@@ -8,10 +8,24 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SAAbstractInputAmplifier class >> findInputAmplifierWithPostfix: aPostfix [
+
+	^ self allSubclasses
+		  detect: [ :cls | cls namingPostfix = aPostfix ]
+		  ifNone: [ ^ nil ]
+]
+
 { #category : #removing }
 SAAbstractInputAmplifier class >> initializeWith: aConfig [
 	^ self new
 		  with: aConfig
+]
+
+{ #category : #'as yet unclassified' }
+SAAbstractInputAmplifier class >> namingPostfix [
+
+	^ self name
 ]
 
 { #category : #removing }
@@ -42,8 +56,9 @@ SAAbstractInputAmplifier >> isTypeSensitive [
 ]
 
 { #category : #'as yet unclassified' }
-SAAbstractInputAmplifier >> namingPrefix [
-	^ self class name
+SAAbstractInputAmplifier >> namingPostfix [
+
+	^ self class namingPostfix
 ]
 
 { #category : #removing }

@@ -4,6 +4,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SAAddInputAmplifier class >> namingPostfix [
+	^ 'A'
+]
+
 { #category : #removing }
 SAAddInputAmplifier >> amplifyInputs [
 	| results aMethodAST |
@@ -152,11 +157,6 @@ SAAddInputAmplifier >> isVariableGlobal: aName [
 	aName first isLowercase
 		ifTrue: [ ^ false ].
 	self class environment at: aName ifPresent: [^ true] ifAbsent: [ ^ false ]
-]
-
-{ #category : #'as yet unclassified' }
-SAAddInputAmplifier >> namingPrefix [
-	^ 'A'
 ]
 
 { #category : #private }

@@ -4,6 +4,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SARotateLiteralsInputAmplifier class >> namingPostfix [
+	^ 'O'
+]
+
 { #category : #removing }
 SARotateLiteralsInputAmplifier >> amplifyInputs [
 	| aMethodAST results literals |
@@ -36,11 +41,6 @@ SARotateLiteralsInputAmplifier >> getAllLiterals: aMethodAST [
 			result at: n value class ifAbsentPut: [ OrderedCollection new ].
 			(result at: n value class) add: n value ].
 	^ result
-]
-
-{ #category : #'as yet unclassified' }
-SARotateLiteralsInputAmplifier >> namingPrefix [
-	^ 'O'
 ]
 
 { #category : #removing }

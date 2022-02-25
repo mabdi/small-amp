@@ -4,6 +4,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SARemoveInputAmplifier class >> namingPostfix [
+	^ 'R'
+]
+
 { #category : #removing }
 SARemoveInputAmplifier >> amplifyInputs [
 | results aMethodAST |
@@ -27,9 +32,4 @@ SARemoveInputAmplifier >> applyMessageRemove: index on: aMethod [
 	(theCode includesSubstring: '<an unprintable nonliteral value>')
 		ifTrue: [ self error: 'sth is wrong. you shouldnt be here!' ].
 	^ theCode
-]
-
-{ #category : #'as yet unclassified' }
-SARemoveInputAmplifier >> namingPrefix [
-	^ 'R'
 ]

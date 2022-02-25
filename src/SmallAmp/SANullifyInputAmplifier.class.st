@@ -4,6 +4,11 @@ Class {
 	#category : #'SmallAmp-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SANullifyInputAmplifier class >> namingPostfix [
+	^ 'N'
+]
+
 { #category : #removing }
 SANullifyInputAmplifier >> amplifyInputs [
 	| aMethodAST results |
@@ -11,11 +16,6 @@ SANullifyInputAmplifier >> amplifyInputs [
 		parsedMethodFrom: testMethodModel testMethod.
 	results := self nullifyMessageNodes: aMethodAST.
 	^ results collect: #formattedCode
-]
-
-{ #category : #'as yet unclassified' }
-SANullifyInputAmplifier >> namingPrefix [
-	^ 'N'
 ]
 
 { #category : #'as yet unclassified' }
