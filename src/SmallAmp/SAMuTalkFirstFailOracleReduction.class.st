@@ -176,7 +176,7 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
 			| originalSource newTree |
-			originalSource := theMethod sourceCode.
+			originalSource := (testClass >> theMethod selector) sourceCode.
 			newTree := self transformBackBaseOn: listOfPairs in: theMethod ast.
 			newTree := self makeCommentsIn: newTree.
 			self removeErrorBlocks: newTree.
