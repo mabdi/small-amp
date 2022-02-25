@@ -45,7 +45,13 @@ MethodMutation class >> smallAmpFromString: aMutantStringId [
 	parts size = 5 ifFalse: [ ^ nil ].
 	operator := (Smalltalk at: parts first asSymbol ifAbsent: [ ^ nil ])
 		            new.
-	theClass := Smalltalk at: parts second asSymbol ifAbsent: [ ^ nil ].
+	(parts second endsWith: ' class') 
+	ifTrue: [ 		
+		theClass := Smalltalk at: (parts second allButLast: ' class' size) asSymbol ifAbsent: [ ^ nil ].
+		theClass := theClass class] 
+	ifFalse: [
+		theClass := Smalltalk at: parts second asSymbol ifAbsent: [ ^ nil ].
+	].
 	theSelector := parts third asSymbol.
 	mutationStart := (parts at: 4) asInteger.
 	mutationEnd := (parts at: 5) asInteger.
