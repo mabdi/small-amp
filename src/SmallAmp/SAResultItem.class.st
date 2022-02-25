@@ -144,7 +144,7 @@ SAResultItem >> asDictionaryObject [
 		key: #amplifiedClass
 		addTo: result.
 	self
-		safeFail: [ (self amplifiedMethods collect: #name) asArray ]
+		safeFail: [ self amplifiedMethods  ]
 		key: #amplifiedMethods
 		addTo: result.
 	self
@@ -224,7 +224,10 @@ SAResultItem >> asDictionaryObject [
 		safeFail: [ self testClassTimeToRunInMillis ]
 		key: #testClassTimeToRunInMillis
 		addTo: result.
-	self safeFail: [ self oracleReductionReverts ] key: #oracleReductionReverts addTo: result.
+	self
+		safeFail: [ self oracleReductionReverts ]
+		key: #oracleReductionReverts
+		addTo: result.
 	self
 		safeFail: [ self numberOfProcessedMethods ]
 		key: #numberOfProcessedMethods
