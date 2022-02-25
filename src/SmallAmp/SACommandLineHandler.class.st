@@ -143,9 +143,15 @@ SACommandLineHandler >> loadAndCommit [
 	jsons do: [ :aJson | 
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
-
-		(FileLocator imageDirectory / ((theJson at: #amplifiedClass) , '.st'))
-			asFileReference fileIn ].
+		(theJson includesKey: #amplifiedClass)
+			ifTrue: [ 
+				(FileLocator imageDirectory
+				 / ((theJson at: #amplifiedClass) , '.st')) asFileReference fileIn ]
+			ifFalse: [ 
+				SmallAmp
+				<~
+				('The key #amplifiedClass not found. Skipping ' , aJson asString)
+				 ] ].
 
 	SmallAmp <~ 'File in done'.
 
