@@ -175,8 +175,8 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
-			| oldTree newTree |
-			oldTree := theMethod ast.
+			| originalSource newTree |
+			originalSource := theMethod sourceCode.
 			newTree := self transformBackBaseOn: listOfPairs in: theMethod ast.
 			newTree := self makeCommentsIn: newTree.
 			self removeErrorBlocks: newTree.
@@ -184,8 +184,9 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 			(self hasAnySelfCall: newTree)
 				ifTrue: [ 
 					reducedTestClass compile: newTree formattedCode.
-					mutantsToCheck := (SADSpotSelection getNewCoveredFor: oldTree) 
-						                  collect: [ :str | 
+					mutantsToCheck := (SADSpotSelection getNewCoveredFor:
+						                   (self astHelper parsedMethodFrom:
+							                    originalSource)) collect: [ :str | 
 						                  SADefaultTestCorrection 
 							                  createMutantFromString: str ].
 					isTestCorrect := self
@@ -193,7 +194,7 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 						                 mutants: mutantsToCheck.
 					isTestCorrect ifFalse: [ 
 						reverts := reverts + 1.
-						reducedTestClass compile: oldTree formattedCode ] ]
+						reducedTestClass compile: originalSource ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
 
