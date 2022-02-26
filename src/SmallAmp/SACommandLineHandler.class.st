@@ -36,8 +36,21 @@ SACommandLineHandler >> activate [
 	(self hasOption: 'xinfo') ifTrue: [ self extraInformation ].
 	(self hasOption: 'mode') ifTrue: [ self runInMode ].
 	(self hasOption: 'resume') ifTrue: [ self resumeRunning ].
-	(self hasOption: 'loadAndCommit') ifTrue: [ self loadAndCommit ].
+	(self hasOption: 'loadAndCommit') ifTrue: [ ^ self loadAndCommit ].
+	(self hasOption: 'dashboardOutPut') ifTrue: [ ^ self dashboardOutPut ].
 	self end
+]
+
+{ #category : #'as yet unclassified' }
+SACommandLineHandler >> dashboardOutPut [
+
+	| root |
+	
+	root := 'TODO: read me from env'.
+	SASmallAmpDashboardJSONExporter new
+		saveTo: '__smallamp_dashboard_{1}_export.json';
+		root: root;
+		exportAll
 ]
 
 { #category : #accessing }
