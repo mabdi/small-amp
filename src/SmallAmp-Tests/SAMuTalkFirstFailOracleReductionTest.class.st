@@ -44,7 +44,7 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
-	self assert: ((readable >> #testMethod2impure) ast allStatements select: [ :node | node isMessage and: [ node selector = #assert:equals: ]  ]) size > 1 .
+	self assert: ((readable >> #testMethod2impure) ast allStatements select: [ :node | node isMessage and: [ node selector = #assert:equals: ]  ]) size equals: 1 .
 
 	readable removeFromSystem.
 ]

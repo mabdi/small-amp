@@ -60,6 +60,22 @@ SAMuTalkFirstFailOracleReduction >> checkTestIsCorrect: newTree mutants: mutants
 		  stillCovers: mutantsToCheck
 ]
 
+{ #category : #'as yet unclassified' }
+SAMuTalkFirstFailOracleReduction >> checkTestIsFixable: newTree mutants: mutantsToCheck [
+
+	| testCorrection theAST |
+	testCorrection := SADefaultTestCorrection new.
+	testCorrection theClass: reducedTestClass.
+	testCorrection config: config.
+	theAST := testCorrection updateLiteralsInAssertionsIn: newTree.
+	reducedTestClass compile: theAST formattedCode.
+	(testCorrection checkIsGreenTest: theAST selector) ifFalse: [ 
+		^ false ].
+	^ testCorrection
+		  checkTest: theAST selector
+		  stillCovers: mutantsToCheck
+]
+
 { #category : #cleanup }
 SAMuTalkFirstFailOracleReduction >> cleanUp: generatedClass [
 	config debug ifFalse: [ 
@@ -171,7 +187,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
-	| isTestCorrect mutantsToCheck |
+	| isTestCorrect mutantsToCheck isTestFixed |
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
@@ -193,8 +209,12 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 						                 checkTestIsCorrect: newTree
 						                 mutants: mutantsToCheck.
 					isTestCorrect ifFalse: [ 
-						reverts := reverts + 1.
-						reducedTestClass compile: originalSource ] ]
+						isTestFixed := self
+						                 checkTestIsFixable: newTree
+						                 mutants: mutantsToCheck.
+						isTestFixed ifFalse: 
+						[reverts := reverts + 1.
+						reducedTestClass compile: originalSource] ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
 
