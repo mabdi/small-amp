@@ -36,13 +36,17 @@ SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| package smallampJson result |
+	| package smallampJson result final |
 	package := RPackageOrganizer default packageNamed:
 		           'SmallAmpFinalClasses'.
+	final := Dictionary new.
 	package classes do: [ :aClass | 
 		smallampJson := self getJsonFor: aClass.
-		result:= self exportClass: aClass smallampJson: smallampJson.
-		self saveJson: result ]
+		result := self exportClass: aClass smallampJson: smallampJson.
+		result at: #results_json put: (self getJsonFileNameFor: aClass) basename.
+	
+		final at: aClass name put: result ].
+	self saveJson: final
 ]
 
 { #category : #'as yet unclassified' }
@@ -50,6 +54,10 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 
 	| result |
 	result := Dictionary new.
+	result at: #name put: aClass name.
+	result
+		at: #amplified_class_address
+		put: (smallampJson at: #amplifiedClass).
 	result
 		at: #amplified_tests
 		put: (aClass testSelectors collect: [ :selector | 
@@ -60,11 +68,18 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 ]
 
 { #category : #'as yet unclassified' }
+SASmallAmpDashboardJSONExporter >> getJsonFileNameFor: aClass [
+
+	^ FileLocator imageDirectory / (aClass name , '.json')
+		
+]
+
+{ #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> getJsonFor: aClass [
 
-	(FileLocator imageDirectory / (aClass name , '.json'))
-		  asFileReference readStreamDo: [ :readStream | 
-			^ STONJSON fromStream: readStream ]
+	(self getJsonFileNameFor: aClass)
+		asFileReference readStreamDo: [ :readStream | 
+		^ STONJSON fromStream: readStream ]
 ]
 
 { #category : #'as yet unclassified' }

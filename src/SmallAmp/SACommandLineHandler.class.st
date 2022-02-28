@@ -45,10 +45,9 @@ SACommandLineHandler >> activate [
 SACommandLineHandler >> dashboardOutPut [
 
 	| root |
-	
 	root := 'TODO: read me from env'.
 	SASmallAmpDashboardJSONExporter new
-		saveTo: '__smallamp_dashboard_{1}_export.json';
+		saveTo: '__smallamp_dashboard_export.json';
 		root: root;
 		exportAll
 ]
