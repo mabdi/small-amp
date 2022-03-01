@@ -143,7 +143,7 @@ SACommandLineHandler >> loadAndCommit [
 	| gcnf gitClone all_st package repo repoName diff jsons theJson |
 	gitClone := self getEnv: #GITHUB_WORKSPACE required: true.
 	repoName := self getEnv: #reponame required: true.
-SAGenericMethods new contextInit.
+	SAGenericMethods new contextInit.
 
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	gcnf := repo getConfigurationGlobal: false.
@@ -160,6 +160,9 @@ SAGenericMethods new contextInit.
 
 	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
 	SmallAmp <~ ('all_jsons: ' , (jsons collect: #asString) asString).
+	jsons ifEmpty: [ 
+	SmallAmp <~ 'Nothing to import. Exiting.'.
+	Smalltalk snapshot: true andQuit: true ].
 	jsons do: [ :aJson | 
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
