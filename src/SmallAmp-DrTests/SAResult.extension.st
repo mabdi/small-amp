@@ -2,25 +2,27 @@ Extension { #name : #SAResult }
 
 { #category : #'*SmallAmp-DrTests' }
 SAResult >> amplifiedClasses [
+
 	| subs |
-	subs := self results values
-		collect: [ :x | 
-			DTTreeNode new
-				name: x testClass name;
-				subResults:
-					{(DTTreeNode new
-						name: 'Original (' , x testClass name , '):';
-						subResults: (x originalMethods collect: #asResultForDrTest);
-						yourself).
-					(DTTreeNode new
-						name: 'Amplified (' , x amplifiedClass name , '):';
-						subResults: (x amplifiedMethods collect: #asResultForDrTest);
-						yourself)};
-				yourself ].
+	subs := self results values collect: [ :x | 
+		        DTTreeNode new
+			        name: x testClass name;
+			        subResults: { 
+					        (DTTreeNode new
+						         name: 'Original (' , x testClass name , '):';
+						         subResults:
+							         (x originalMethods collect: #asResultForDrTest);
+						         yourself).
+					        (DTTreeNode new
+						         name: 'Amplified (' , x amplifiedClass name , '):';
+						         subResults:
+							         (x amplifiedCompiledMethods collect: #asResultForDrTest);
+						         yourself) };
+			        yourself ].
 	^ DTTreeNode new
-		name: 'Amplified TestCase';
-		subResults: subs;
-		yourself
+		  name: 'Amplified TestCase';
+		  subResults: subs;
+		  yourself
 ]
 
 { #category : #'*SmallAmp-DrTests' }

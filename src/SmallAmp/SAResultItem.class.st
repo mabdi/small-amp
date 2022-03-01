@@ -90,6 +90,12 @@ SAResultItem >> amplifiedClassInitial: anObject [
 ]
 
 { #category : #reporting }
+SAResultItem >> amplifiedCompiledMethods [
+
+	^ self amplifiedClass smallAmpAmplifiedMethods
+]
+
+{ #category : #reporting }
 SAResultItem >> amplifiedMethods [
 
   ^ amplifiedMethods
@@ -103,8 +109,9 @@ SAResultItem >> amplifiedMethods: anObject [
 
 { #category : #reporting }
 SAResultItem >> amplifiedMethodsAssertionDensity [
-	self amplifiedMethods ifEmpty: [ ^ 0 ].
-	^ amplifiedClass smallAmpAssertionDensity 
+
+	self amplifiedCompiledMethods ifEmpty: [ ^ 0 ].
+	^ amplifiedClass smallAmpAssertionDensity
 ]
 
 { #category : #reporting }
@@ -144,7 +151,7 @@ SAResultItem >> asDictionaryObject [
 		key: #amplifiedClass
 		addTo: result.
 	self
-		safeFail: [ self amplifiedMethods  ]
+		safeFail: [ self amplifiedMethods ]
 		key: #amplifiedMethods
 		addTo: result.
 	self
@@ -172,7 +179,7 @@ SAResultItem >> asDictionaryObject [
 		addTo: result.
 	self
 		safeFail: [ 
-			(self amplifiedMethods collect: #linesOfCode)
+			(self amplifiedCompiledMethods collect: #linesOfCode)
 				inject: 0
 				into: [ :accum :each | accum + each ] ]
 		key: #testAmpLoc
