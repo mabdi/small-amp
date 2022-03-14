@@ -82,7 +82,7 @@ on:
         description: 'set true if you like to create a json output for web interface'
         required: false
         type: string
-        default: false
+        default: 'false'
       
     secrets:
       secret_github_token:
