@@ -46,13 +46,15 @@ SACommandLineHandler >> dashboardOutPut [
 
 	| root repo repoName |
 	repoName := self getEnv: #reponame required: true.
-	
+
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	root := repo subdirectory.
 	SASmallAmpDashboardJSONExporter new
 		saveTo: '__smallamp_dashboard_export.json';
 		root: root;
-		exportAll
+		exportAll.
+	SmallAmp <~ 'Exporting done'.
+	Smalltalk snapshot: true andQuit: true
 ]
 
 { #category : #accessing }
