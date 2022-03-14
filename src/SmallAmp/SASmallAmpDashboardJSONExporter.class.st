@@ -36,16 +36,31 @@ SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| package smallampJson result final |
-	package := RPackageOrganizer default packageNamed:
-		           'SmallAmpFinalClasses'.
+	| package smallampJson result final mutations jsons theJson aClass |
 	final := Dictionary new.
-	package classes do: [ :aClass | 
-		smallampJson := self getJsonFor: aClass.
-		result := self exportClass: aClass smallampJson: smallampJson.
-		result at: #results_json put: (self getJsonFileNameFor: aClass) basename.
 	
-		final at: aClass name put: result ].
+	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
+	jsons do: [ :aJson | 
+		aJson asFileReference readStreamDo: [ :readStream | 
+			theJson := STONJSON fromStream: readStream ].
+		(theJson includesKey: #amplifiedClass)
+			ifTrue: [ 
+				aClass:= (FileLocator imageDirectory
+				 / ((theJson at: #amplifiedClass) , '.st')).
+				
+				smallampJson := self getJsonFor: aClass.
+		result := self exportClass: aClass smallampJson: smallampJson.
+		result
+			at: #results_json
+			put: (self getJsonFileNameFor: aClass) basename.
+
+		final at: aClass name put: result  ]
+			 ].
+
+	
+	
+	mutations := self newKilledMutants: package classes.
+	final at: #new_killed_mutations put: mutations.
 	self saveJson: final
 ]
 
@@ -111,6 +126,16 @@ SASmallAmpDashboardJSONExporter >> getOriginalTestFor: test json: jsonObject [
 SASmallAmpDashboardJSONExporter >> killedMutantsFor: test json: smallampJson [
 
 	^ ((smallampJson at: #amplifiedMethods) at: test selector) at: #newCoverage
+]
+
+{ #category : #'as yet unclassified' }
+SASmallAmpDashboardJSONExporter >> newKilledMutants: classes [
+
+	| jsonObj mutants |
+	mutants := (classes flatCollect: [ :cls | 
+		            jsonObj := self getJsonFileNameFor: cls.
+		            (jsonObj at: #newCovered) ]) asArray.
+	^ mutants
 ]
 
 { #category : #accessing }
