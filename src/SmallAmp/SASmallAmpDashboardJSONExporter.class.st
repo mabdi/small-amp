@@ -38,27 +38,24 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 
 	| package smallampJson result final mutations jsons theJson aClass |
 	final := Dictionary new.
-	
+
 	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
 	jsons do: [ :aJson | 
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
-		(theJson includesKey: #amplifiedClass)
-			ifTrue: [ 
-				aClass:= (FileLocator imageDirectory
-				 / ((theJson at: #amplifiedClass) , '.st')).
-				
-				smallampJson := self getJsonFor: aClass.
-		result := self exportClass: aClass smallampJson: smallampJson.
-		result
-			at: #results_json
-			put: (self getJsonFileNameFor: aClass) basename.
+		(theJson includesKey: #amplifiedClass) ifTrue: [ 
+			aClass :=  (Smalltalk at: (theJson at: #amplifiedClass) ).
 
-		final at: aClass name put: result  ]
-			 ].
+			smallampJson := self getJsonFor: aClass.
+			result := self exportClass: aClass smallampJson: smallampJson.
+			result
+				at: #results_json
+				put: (self getJsonFileNameFor: aClass) basename.
 
-	
-	
+			final at: aClass name put: result ] ].
+
+
+
 	mutations := self newKilledMutants: package classes.
 	final at: #new_killed_mutations put: mutations.
 	self saveJson: final
