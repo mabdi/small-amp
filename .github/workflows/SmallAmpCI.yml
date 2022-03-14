@@ -23,11 +23,6 @@ on:
         required: false
         type: string
         default: 'NOCREATE'  
-#      SMALLAMP_MaxCrash:
-#        description: 'After X times of crash in a repo, we will skip the class'
-#        required: false
-#        type: string
-#        default: 10
       SMALLAMP_freezeTimeOut:
         description: 'check image freeze each 4*60 sec: a normal test method has a 3 minute time out'
         required: false
@@ -165,9 +160,10 @@ jobs:
       reponame: ${{ inputs.reponame }}
       iteration: ${{ inputs.iteration }}
       SMALLAMP_NOPUSH: ${{ inputs.SMALLAMP_NOPUSH }}
-      SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
+      SMALLAMP_MaxCrash: 10
       SMALLAMP_freezeTimeOut: ${{ inputs.SMALLAMP_freezeTimeOut }}
       SmallAmp_ShredSeed: ${{ inputs.SmallAmp_ShredSeed }}
+      SMALLAMP_DashboardJson: ${{ inputs.SMALLAMP_DashboardJson }}
     steps:
       - uses: actions/checkout@v2
         with:
