@@ -44,8 +44,8 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
 		(theJson includesKey: #amplifiedClass) ifTrue: [ 
-			aClass :=  (Smalltalk at: (theJson at: #amplifiedClass) ).
-
+			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
+			"aClass := aClass superclass."
 			smallampJson := self getJsonFor: aClass.
 			result := self exportClass: aClass smallampJson: smallampJson.
 			result
