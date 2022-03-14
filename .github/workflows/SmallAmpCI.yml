@@ -22,7 +22,12 @@ on:
         description: 'After X times of crash in a repo, we will skip the class'
         required: false
         type: string
-        default: 10
+        default: 10        
+      SMALLAMP_DashboardJson:
+        description: 'set to CREATE if you like to create a json output for web interface'
+        required: false
+        type: string
+        default: 'NOCREATE'  
       SMALLAMP_freezeTimeOut:
         description: 'check image freeze each 4*60 sec: a normal test method has a 3 minute time out'
         required: false
@@ -78,7 +83,6 @@ on:
         required: false
         type: string        
         default: ''
-      
     secrets:
       secret_github_token:
         required: true
@@ -164,6 +168,7 @@ jobs:
       SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
       SMALLAMP_freezeTimeOut: ${{ inputs.SMALLAMP_freezeTimeOut }}
       SmallAmp_ShredSeed: ${{ inputs.SmallAmp_ShredSeed }}
+      SMALLAMP_DashboardJson: ${{ inputs.SMALLAMP_DashboardJson }}
     steps:
       - uses: actions/checkout@v2
         with:
