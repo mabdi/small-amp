@@ -70,15 +70,14 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 	result at: #name put: aClass name.
 	result
 		at: #amplified_class_address
-		put: ((self getLocationFinder
-		  root: root) getPathOfClass:
+		put: ((self getLocationFinder root: root) getPathOfClass:
 				 (Smalltalk at: (smallampJson at: #amplifiedClass) asSymbol)).
 	result
 		at: #amplified_tests
 		put: (aClass testSelectors collect: [ :selector | 
-				 selector asSymbol -> (self
+				  (self
 					  amplifiedTestsFor: aClass >> selector asSymbol
-					  json: smallampJson) ]) asDictionary.
+					  json: smallampJson) ]) asArray.
 	^ result
 ]
 
