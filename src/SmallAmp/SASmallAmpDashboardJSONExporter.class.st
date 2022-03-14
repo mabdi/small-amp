@@ -36,9 +36,9 @@ SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| package smallampJson result final mutations jsons theJson aClass |
+	| package result final mutations jsons theJson aClass |
 	final := Dictionary new.
-
+	mutations := OrderedCollection new.
 	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
 	jsons do: [ :aJson | 
 		aJson asFileReference readStreamDo: [ :readStream | 
@@ -46,8 +46,8 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 		(theJson includesKey: #amplifiedClass) ifTrue: [ 
 			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
 			"aClass := aClass superclass."
-			smallampJson := self getJsonFor: aClass.
-			result := self exportClass: aClass smallampJson: smallampJson.
+			mutations addAll: (theJson at: #newCovered).
+			result := self exportClass: aClass smallampJson: theJson.
 			result
 				at: #results_json
 				put: (self getJsonFileNameFor: aClass) basename.
@@ -56,8 +56,7 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 
 
 
-	mutations := self newKilledMutants: package classes.
-	final at: #new_killed_mutations put: mutations.
+	final at: #new_killed_mutations put: mutations asArray.
 	self saveJson: final
 ]
 

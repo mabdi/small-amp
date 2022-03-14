@@ -44,8 +44,11 @@ SACommandLineHandler >> activate [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> dashboardOutPut [
 
-	| root |
-	root := 'TODO: read me from env'.
+	| root repo repoName |
+	repoName := self getEnv: #reponame required: true.
+	
+	repo := IceRepository registry detect: [ :r | r name = repoName ].
+	root := repo subdirectory.
 	SASmallAmpDashboardJSONExporter new
 		saveTo: '__smallamp_dashboard_export.json';
 		root: root;
