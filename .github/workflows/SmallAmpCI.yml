@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: 'PUSH'
+      SMALLAMP_MaxCrash:
+        description: 'After X times of crash in a repo, we will skip the class'
+        required: false
+        type: string
+        default: 10        
       SMALLAMP_DashboardJson:
         description: 'set to CREATE if you like to create a json output for web interface'
         required: false
@@ -127,7 +132,7 @@ jobs:
       reponame: ${{ inputs.reponame }}
       iteration: ${{ inputs.iteration }}
       SMALLAMP_NOPUSH: ${{ inputs.SMALLAMP_NOPUSH }}
-      SMALLAMP_MaxCrash: 10
+      SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
       SMALLAMP_freezeTimeOut: ${{ inputs.SMALLAMP_freezeTimeOut }}
       SmallAmp_ShredSeed: ${{ inputs.SmallAmp_ShredSeed }}
     steps:
@@ -160,7 +165,7 @@ jobs:
       reponame: ${{ inputs.reponame }}
       iteration: ${{ inputs.iteration }}
       SMALLAMP_NOPUSH: ${{ inputs.SMALLAMP_NOPUSH }}
-      SMALLAMP_MaxCrash: 10
+      SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
       SMALLAMP_freezeTimeOut: ${{ inputs.SMALLAMP_freezeTimeOut }}
       SmallAmp_ShredSeed: ${{ inputs.SmallAmp_ShredSeed }}
       SMALLAMP_DashboardJson: ${{ inputs.SMALLAMP_DashboardJson }}
