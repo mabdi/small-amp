@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: 'PUSH'
+      SMALLAMP_DashboardJson:
+        description: 'set to CREATE if you like to create a json output for web interface'
+        required: false
+        type: string
+        default: 'NOCREATE'  
       SMALLAMP_MaxCrash:
         description: 'After X times of crash in a repo, we will skip the class'
         required: false
@@ -78,12 +83,6 @@ on:
         required: false
         type: string        
         default: ''
-      SMALLAMP_DashboardJson:
-        description: 'set true if you like to create a json output for web interface'
-        required: false
-        type: string
-        default: 'false'
-      
     secrets:
       secret_github_token:
         required: true
