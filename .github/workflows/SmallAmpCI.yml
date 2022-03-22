@@ -190,7 +190,7 @@ jobs:
           action: push
           github-token: ${{secrets.secret_github_token}}
         env:
-          SMALLAMP_NEWBRANCH: ${{ inputs.SMALLAMP_NEWBRANCH }}
+          SMALLAMP_NEWBRANCH: ${{ inputs.new_branch_prefix }}
           iteration: ${{ env.iteration }}
           maxInputs: ${{ inputs.maxInputs }}
           shreds: ${{ inputs.shreds }}
