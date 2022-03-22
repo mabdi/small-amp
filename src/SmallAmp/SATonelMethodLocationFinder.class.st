@@ -108,7 +108,7 @@ SATonelMethodLocationFinder >> moveClass: aClass to: baseDirectory [
 		                ifTrue: [ aClass instanceSide ]
 		                ifFalse: [ aClass theNonMetaClass ].
 	folderName := root , '/' , pkg.
-	fileName := folderName , '/' , nonMetaClass name , '.class.st'.
+	fileName := nonMetaClass name , '.class.st'.
 	toDirectory := baseDirectory / folderName.
 	toDirectory ensureCreateDirectory.
 	aStream := self tonelStringFor: aClass.
