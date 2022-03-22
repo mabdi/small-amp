@@ -12,12 +12,13 @@ SATonelMethodLocationFinder >> getPathOfClass: aClass [
 
 	"Based on code in SmalltalkCI project"
 
-	| pkg nonMetaClass fileName |
+	| pkg nonMetaClass folderName fileName |
 	pkg := (RPackageOrganizer default packageOf: aClass) packageName.
 	nonMetaClass := (aClass respondsTo: #instanceSide)
 		                ifTrue: [ aClass instanceSide ]
 		                ifFalse: [ aClass theNonMetaClass ].
-	fileName := root, '/', pkg , '/' , nonMetaClass name , '.class.st'.
+	folderName := root , '/' , pkg.
+	fileName := folderName , '/' , nonMetaClass name , '.class.st'.
 	^ fileName
 ]
 
@@ -96,6 +97,26 @@ SATonelMethodLocationFinder >> locationFor: aCompiledTest [
 		              in: tonelString.
 	filename := self getPathOfClass: aClass.
 	^ SAMethodLocation new filename: filename; startline: offset; endline: methodStop; yourself
+]
+
+{ #category : #'as yet unclassified' }
+SATonelMethodLocationFinder >> moveClass: aClass to: baseDirectory [
+
+	| pkg nonMetaClass folderName fileName toDirectory aStream |
+	pkg := (RPackageOrganizer default packageOf: aClass) packageName.
+	nonMetaClass := (aClass respondsTo: #instanceSide)
+		                ifTrue: [ aClass instanceSide ]
+		                ifFalse: [ aClass theNonMetaClass ].
+	folderName := root , '/' , pkg.
+	fileName := folderName , '/' , nonMetaClass name , '.class.st'.
+	toDirectory := baseDirectory / folderName.
+	toDirectory ensureCreateDirectory.
+	aStream := self tonelStringFor: aClass.
+	(toDirectory / fileName)
+		ensureDelete;
+		binaryWriteStreamDo: [ :outputStream | 
+			(ZnCharacterWriteStream on: outputStream encoding: 'utf8') 
+				nextPutAll: aStream ]
 ]
 
 { #category : #accessing }

@@ -3,7 +3,9 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'saveTo',
-		'root'
+		'root',
+		'commitHash',
+		'stfilesSaveTo'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -20,9 +22,11 @@ SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
 			theJson := STONJSON fromStream: readStream ].
 		(theJson includesKey: #amplifiedClass) ifTrue: [ 
 			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
-			"aClass := aClass superclass."
 			mutations addAll: (theJson at: #newCovered).
+			"aClass := aClass superclass."
 			result := self exportClass: aClass smallampJson: theJson.
+			self moveClass: (Smalltalk at:
+		                   (theJson at: #amplifiedClass) asSymbol).
 			result
 				at: #results_json
 				put: (self getJsonFileNameFor: aClass) basename.
@@ -30,19 +34,16 @@ SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
 			classes add: result ] ].
 
 	aDictionary at: #amplified_classes put: classes asArray.
-	aDictionary at: #new_killed_mutations put: mutations asArray.
+	aDictionary at: #new_killed_mutations put: mutations asArray
 ]
 
 { #category : #adding }
 SASmallAmpDashboardJSONExporter >> addCommonMetadataTo: aDictionary [
 
-	| commitTo timestamp |
-	commitTo := Smalltalk os environment asDictionary
-		            at: #GITHUB_SHA
-		            ifAbsent: [ 'GITHUB_SHA not found' ].
+	|  timestamp |
 	timestamp := DateAndTime now asUnixTime.
 	aDictionary at: #timestamp put: timestamp.
-	aDictionary at: #head_commit_id put: commitTo
+	aDictionary at: #head_commit_id put: self commitHash 
 ]
 
 { #category : #'as yet unclassified' }
@@ -70,6 +71,18 @@ SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 		  asDictionary
 ]
 
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> commitHash [
+
+	^ commitHash
+]
+
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> commitHash: anObject [
+
+	commitHash := anObject
+]
+
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
@@ -83,19 +96,24 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJson [
 
-	| result |
+	| result lfinder amplified_class |
 	result := Dictionary new.
 	result at: #name put: aClass name.
+	lfinder := self getLocationFinder
+		           root: root;
+		           yourself.
+	amplified_class := Smalltalk at:
+		                   (smallampJson at: #amplifiedClass) asSymbol.
 	result
 		at: #amplified_class_address
-		put: ((self getLocationFinder root: root) getPathOfClass:
-				 (Smalltalk at: (smallampJson at: #amplifiedClass) asSymbol)).
+		put: (lfinder getPathOfClass: amplified_class).
+
 	result
 		at: #amplified_tests
 		put: (aClass testSelectors collect: [ :selector | 
-				  (self
-					  amplifiedTestsFor: aClass >> selector asSymbol
-					  json: smallampJson) ]) asArray.
+				 self
+					 amplifiedTestsFor: aClass >> selector asSymbol
+					 json: smallampJson ]) asArray.
 	^ result
 ]
 
@@ -146,6 +164,28 @@ SASmallAmpDashboardJSONExporter >> killedMutantsFor: test json: smallampJson [
 ]
 
 { #category : #'as yet unclassified' }
+SASmallAmpDashboardJSONExporter >> moveClass: aClass [
+
+	| lfinder |
+	lfinder := self getLocationFinder
+		           root: root;
+		           yourself.
+	lfinder moveClass: aClass to: self stfilesSaveTo
+]
+
+{ #category : #'as yet unclassified' }
+SASmallAmpDashboardJSONExporter >> moveClass: aClass smallampJson: smallampJson [
+
+	| lfinder amplified_class |
+	lfinder := self getLocationFinder
+		           root: root;
+		           yourself.
+	amplified_class := Smalltalk at:
+		                   (smallampJson at: #amplifiedClass) asSymbol.
+	lfinder moveClass: amplified_class to: self stfilesSaveTo
+]
+
+{ #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> newKilledMutants: classes [
 
 	| jsonObj mutants |
@@ -189,4 +229,16 @@ SASmallAmpDashboardJSONExporter >> saveTo [
 SASmallAmpDashboardJSONExporter >> saveTo: anObject [
 
 	saveTo := anObject
+]
+
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> stfilesSaveTo [
+
+	^ stfilesSaveTo
+]
+
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> stfilesSaveTo: anObject [
+
+	stfilesSaveTo := anObject
 ]

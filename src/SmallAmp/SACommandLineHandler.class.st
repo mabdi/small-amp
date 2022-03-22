@@ -44,13 +44,19 @@ SACommandLineHandler >> activate [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> dashboardOutPut [
 
-	| root repo repoName |
+	| root repo repoName commitTo |
 	repoName := self getEnv: #reponame required: true.
 
 	repo := IceRepository registry detect: [ :r | r name = repoName ].
 	root := repo subdirectory.
+	commitTo := Smalltalk os environment asDictionary
+		            at: #GITHUB_SHA
+		            ifAbsent: [ 'GITHUB_SHA not found' ].
+
 	SASmallAmpDashboardJSONExporter new
 		saveTo: '__smallamp_dashboard_export.json';
+		commitHash: commitTo;
+		stfilesSaveTo: FileLocator imageDirectory ;
 		root: root;
 		exportAll.
 	SmallAmp <~ 'Exporting done'.
