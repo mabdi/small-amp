@@ -83,6 +83,11 @@ on:
         required: false
         type: string        
         default: ''
+      new_branch_prefix:
+        description: 'The name of the new branch in pull-requests'
+        required: false
+        type: string        
+        default: 'SmallAmp'
     secrets:
       secret_github_token:
         required: true
@@ -185,6 +190,7 @@ jobs:
           action: push
           github-token: ${{secrets.secret_github_token}}
         env:
+          SMALLAMP_NEWBRANCH: ${{ inputs.SMALLAMP_NEWBRANCH }}
           iteration: ${{ env.iteration }}
           maxInputs: ${{ inputs.maxInputs }}
           shreds: ${{ inputs.shreds }}
