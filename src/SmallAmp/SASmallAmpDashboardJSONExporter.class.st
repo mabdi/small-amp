@@ -8,6 +8,43 @@ Class {
 	#category : #'SmallAmp-Helpers'
 }
 
+{ #category : #adding }
+SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
+
+	| classes mutations jsons theJson aClass result |
+	classes := OrderedCollection new.
+	mutations := OrderedCollection new.
+	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
+	jsons do: [ :aJson | 
+		aJson asFileReference readStreamDo: [ :readStream | 
+			theJson := STONJSON fromStream: readStream ].
+		(theJson includesKey: #amplifiedClass) ifTrue: [ 
+			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
+			"aClass := aClass superclass."
+			mutations addAll: (theJson at: #newCovered).
+			result := self exportClass: aClass smallampJson: theJson.
+			result
+				at: #results_json
+				put: (self getJsonFileNameFor: aClass) basename.
+
+			classes add: result ] ].
+
+	aDictionary at: #amplified_classes put: classes asArray.
+	aDictionary at: #new_killed_mutations put: mutations asArray.
+]
+
+{ #category : #adding }
+SASmallAmpDashboardJSONExporter >> addCommonMetadataTo: aDictionary [
+
+	| commitTo timestamp |
+	commitTo := Smalltalk os environment asDictionary
+		            at: #GITHUB_SHA
+		            ifAbsent: [ 'GITHUB_SHA not found' ].
+	timestamp := DateAndTime now asUnixTime.
+	aDictionary at: #timestamp put: timestamp.
+	aDictionary at: #head_commit_id put: commitTo
+]
+
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 
@@ -36,29 +73,10 @@ SASmallAmpDashboardJSONExporter >> amplifiedTestsFor: test json: smallampJson [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| result final mutations jsons theJson aClass classes |
+	| final |
 	final := Dictionary new.
-	classes := OrderedCollection new.
-	mutations := OrderedCollection new.
-	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
-	jsons do: [ :aJson | 
-		aJson asFileReference readStreamDo: [ :readStream | 
-			theJson := STONJSON fromStream: readStream ].
-		(theJson includesKey: #amplifiedClass) ifTrue: [ 
-			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
-			"aClass := aClass superclass."
-			mutations addAll: (theJson at: #newCovered).
-			result := self exportClass: aClass smallampJson: theJson.
-			result
-				at: #results_json
-				put: (self getJsonFileNameFor: aClass) basename.
-
-			classes add: result ] ].
-
-
-	final at: #amplified_classes put: classes asArray.
-
-	final at: #new_killed_mutations put: mutations asArray.
+	self addCommonMetadataTo: final.
+	self addAmplified_classesTo: final.
 	self saveJson: final
 ]
 
