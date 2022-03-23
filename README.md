@@ -5,14 +5,16 @@
 ## Scope
 
 SmallAmp is an open-source test amplification tool in Pharo Smalltalk.
-Developers can use SmallAmp on their projects to generate new test methods which increase the coverage. 
 It transforms existing test methods to generate a set of new test methods, then it filters all tests that increase the coverage.
-The tests then are provided for the developer to be revised and merge in the code base.
+The selected tests then are provided for the developer to be revised and merge in the code base.
 SmallAmp uses mutation testing as the default coverage metric.
+For more information check [Advanced topics](## Advanced topics).
 
-### What is test amplification?
+> **In a nutshell:** Developers can use SmallAmp on their projects to generate new test methods which increase the coverage. However, it is important to be an existing test suite with an acceptable test coverage.
 
-### What is mutation testing?
+You can use it in two ways:
+- Using SmallAmpCI to integrate it in GitHub-Actions. ([how to](## Using SmallAmpCI))
+- Run it locally on a Pharo image. ([how to](## Loading SmallAmp into a local image))
 
 ## Using SmallAmpCI
 
@@ -65,3 +67,13 @@ You can also ask SmallAmp to generate assertions for you:
 
 Add this line to your test method: `SmallAmp assertionsHere: self for: anObject` (replace `anObject` with a object from your test method).
 And run the test. Test will refactor itself and add new assertions.
+
+
+## Advanced topics
+
+### How SmallAmp works?
+
+
+### What is mutation testing?
+
+
