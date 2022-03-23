@@ -1,37 +1,38 @@
-# small-amp
+# SmallAmp
 [![Build Status](https://travis-ci.org/mabdi/small-amp.svg?branch=master)](https://travis-ci.org/mabdi/small-amp)
 [![smalltalkCI](https://github.com/mabdi/small-amp/actions/workflows/smalltalkCI.yml/badge.svg)](https://github.com/mabdi/small-amp/actions/workflows/smalltalkCI.yml)
 
-# Scope
+## Scope
 
 SmallAmp is an open-source test amplification tool in Pharo Smalltalk.
-Developers can use SmallAmp on their projects to generate new test methods which increase the test coverage. 
+Developers can use SmallAmp on their projects to generate new test methods which increase the coverage. 
 It transforms existing test methods to generate a set of new test methods, then it filters all tests that increase the coverage.
 The tests then are provided for the developer to be revised and merge in the code base.
+SmallAmp uses mutation testing as the default coverage metric.
 
-## What is test amplification?
+### What is test amplification?
 
-## What is mutation testing?
+### What is mutation testing?
 
-# Using SmallAmpCI
+## Using SmallAmpCI
 
-## How to setup GitHub-actions workflow?
+### How to setup GitHub-actions workflow?
 
-## (Optional) Annotatins on the project to help SmallAmp
+### (Optional) Annotatins on the project to help SmallAmp
 
-## How to review the outputs
+### How to review the outputs
 
-### Using GitHub web interface
-
-
-### Using a Pharo image
-
-## How to uninstall SmallAmp
+#### Using GitHub web interface
 
 
-# Loading SmallAmp into a local image
+#### Using a Pharo image
 
-## How to load
+### How to uninstall SmallAmp
+
+
+## Loading SmallAmp into a local image
+
+### How to load
 ```smalltalk
 Metacello new
   baseline: 'SmallAmp';
@@ -39,11 +40,11 @@ Metacello new
   load.
 ```
 
-## How to use: DrTests
+### How to use: DrTests
 
 SmallAmp can be used as a plugin for DrTest. More informaion [here](https://github.com/mabdi/small-amp/wiki/DrTests-Plugin).
 
-## How to use: Code
+### How to use: Code
 
 ```smalltalk
 	| result |
@@ -56,7 +57,7 @@ SmallAmp can be used as a plugin for DrTest. More informaion [here](https://gith
  
  You can find the generated testcases in `SmallAmpTempClasses` package. 
 
-## How to use: Hook
+### How to use: Hook
 
 You can also ask SmallAmp to generate assertions for you:
 
