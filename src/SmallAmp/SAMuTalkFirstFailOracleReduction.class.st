@@ -210,11 +210,12 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 						                 mutants: mutantsToCheck.
 					isTestCorrect ifFalse: [ 
 						isTestFixed := self
-						                 checkTestIsFixable: newTree
-						                 mutants: mutantsToCheck.
-						isTestFixed ifFalse: 
-						[reverts := reverts + 1.
-						reducedTestClass compile: originalSource] ] ]
+							               checkTestIsFixable: newTree
+							               mutants: mutantsToCheck.
+						isTestFixed ifFalse: [ 
+							reverts := reverts + 1.
+							config skipNonPretty ifTrue: [ reducedTestClass removeSelector: newTree selector ] ifFalse: [ 
+								reducedTestClass compile: originalSource ] ] ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
 ]
 

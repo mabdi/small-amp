@@ -19,7 +19,8 @@ Class {
 		'timeBudget',
 		'mainloop',
 		'hashClass',
-		'ranking'
+		'ranking',
+		'skipNonPretty'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -68,10 +69,11 @@ SAConfig class >> diffBased [
 SAConfig class >> dspotAllamps [
 
 	^ self new
-		ranking: false;
+		  ranking: false;
 		  iterations: 3;
 		  assertionAmplifier: SADspotAssertionAmplifier;
-		  flackyTestRepeat: 10;
+		  flackyTestRepeat: 3;
+		  skipNonPretty: true;
 		  inputAmplifiers: { 
 				  (SALiteralInputAmplifier -> 1).
 				  (SARemoveInputAmplifier -> 1).
@@ -244,6 +246,18 @@ SAConfig >> serializationMaxDepth [
 { #category : #accessing }
 SAConfig >> serializationMaxDepth: anObject [
 	serializationMaxDepth := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> skipNonPretty [
+
+	^ skipNonPretty
+]
+
+{ #category : #accessing }
+SAConfig >> skipNonPretty: anObject [
+
+	skipNonPretty := anObject
 ]
 
 { #category : #accessing }
