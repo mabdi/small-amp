@@ -47,6 +47,15 @@ SADefaultPrettification >> applyTransformChainIn: anAST index: anIndex [
 ]
 
 { #category : #'as yet unclassified' }
+SADefaultPrettification >> cleanUpTemps [
+
+	| newSrc |
+	theClass methods do: [ :method | 
+		newSrc := SAGenericMethods new cleanUp: method sourceCode.
+		theClass compile: newSrc  ]
+]
+
+{ #category : #'as yet unclassified' }
 SADefaultPrettification >> fixNamePostfixes: nameMapping [
 	| needsPostfix names idx |
 	names := (nameMapping collect: #value) asSet.
@@ -66,27 +75,29 @@ SADefaultPrettification >> initialize [
 
 { #category : #'as yet unclassified' }
 SADefaultPrettification >> isCascadePatternInAST: ast index: i [
+
 	| s1 s2 r1 r2 |
 	s1 := ast statements at: i.
 	s2 := ast statements at: i + 1.
-	s1 isAssignment | s1 isMessage | s1 isCascade
+	s1 isAssignment | s1 isMessage | s1 isCascade ifFalse: [ ^ false ].
+	s2 isAssignment | s2 isMessage | s2 isCascade ifFalse: [ ^ false ].
+	(s1 isAssignment not or: [ s1 value isMessage | s1 value isCascade ]) 
 		ifFalse: [ ^ false ].
-	s2 isAssignment | s2 isMessage | s2 isCascade
+	(s2 isAssignment not or: [ s2 value isMessage | s2 value isCascade ]) 
 		ifFalse: [ ^ false ].
-	(s1 isAssignment not or: [ s1 value isMessage | s1 value isCascade ])
-		ifFalse: [ ^ false ].
-	(s2 isAssignment not or: [ s2 value isMessage | s2 value isCascade ])
-		ifFalse: [ ^ false ].
-	r1 := s1 isAssignment ifTrue: [ s1 value receiver ] ifFalse: [ s1 receiver ].
-	r2 := s2 isAssignment ifTrue: [ s2 value receiver ] ifFalse: [ s2 receiver ].
-	
-	r1 = r2
-		ifFalse: [ ^ false ].
-	s1 isAssignment
-		ifTrue: [ i + 2 to: ast statements size do: [ :s | 
-				(((ast statements at: s) allVariables select: #isRead)
-					anySatisfy: [ :v | v = s1 variable ])
-					ifTrue: [ ^ false ] ] ].
+	r1 := s1 isAssignment
+		      ifTrue: [ s1 value receiver ]
+		      ifFalse: [ s1 receiver ].
+	r2 := s2 isAssignment
+		      ifTrue: [ s2 value receiver ]
+		      ifFalse: [ s2 receiver ].
+
+	r1 = r2 ifFalse: [ ^ false ].
+	(r1 isSelfVariable and: [ r1 parent selector asString beginsWithAnyOf: #(assert deny) ]) ifTrue: [ ^ false ].
+	s1 isAssignment ifTrue: [ 
+		i + 2 to: ast statements size do: [ :s | 
+			(((ast statements at: s) allVariables select: #isRead) anySatisfy: [ 
+				 :v | v = s1 variable ]) ifTrue: [ ^ false ] ] ].
 	^ true
 ]
 
@@ -140,8 +151,10 @@ SADefaultPrettification >> packStatementsInMethod: aMethodAST [
 
 { #category : #'as yet unclassified' }
 SADefaultPrettification >> prettify [
+
 	self packStatements.
-	self renameTempVariables
+	self renameTempVariables.
+	self cleanUpTemps
 ]
 
 { #category : #'as yet unclassified' }

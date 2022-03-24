@@ -2,7 +2,7 @@ Extension { #name : #MutantEvaluationResult }
 
 { #category : #'*SmallAmp-DrTests' }
 MutantEvaluationResult >> asResultForDrTest [
-	^ DTTestLeaf content: self
+	^ DTTestLeafNode content: self
 ]
 
 { #category : #'*SmallAmp-DrTests' }

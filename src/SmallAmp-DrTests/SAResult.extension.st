@@ -108,25 +108,3 @@ SAResult >> skippedTestMethods [
 		subResults: subs;
 		yourself
 ]
-
-{ #category : #'*SmallAmp-DrTests' }
-SAResult >> timeInformations [
-	| subs |
-	subs := self results values
-		collect: [ :x | 
-			| sums |
-			sums := x detailedTimeLabel
-				collect: [ :s | 
-					DTTreeNode new
-						name: s;
-						subResults: {};
-						yourself ].
-			DTTreeNode new
-				name: x totalTimeLabel;
-				subResults: sums;
-				yourself ].
-	^ DTTreeNode new
-		name: 'Running time: ';
-		subResults: subs;
-		yourself
-]

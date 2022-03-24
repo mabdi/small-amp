@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'particularResults',
 		'toComment',
-		'reverts'
+		'reverts',
+		'numberOfCompiledMethods'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -100,7 +101,8 @@ SAMuTalkFirstFailOracleReduction >> hasAnySelfCall: newTree [
 SAMuTalkFirstFailOracleReduction >> initialize [
 
 	toComment := OrderedCollection new.
-	reverts := 0
+	reverts := 0.
+	numberOfCompiledMethods := 0
 ]
 
 { #category : #'as yet unclassified' }
@@ -187,7 +189,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
-	| isTestCorrect mutantsToCheck isTestFixed |
+	| isTestCorrect mutantsToCheck isTestFixed ast |
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
@@ -214,9 +216,18 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 							               mutants: mutantsToCheck.
 						isTestFixed ifFalse: [ 
 							reverts := reverts + 1.
-							config skipNonPretty ifTrue: [ reducedTestClass removeSelector: newTree selector ] ifFalse: [ 
-								reducedTestClass compile: originalSource ] ] ] ]
-				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ]
+							config skipNonPretty
+								ifTrue: [ reducedTestClass removeSelector: newTree selector ]
+								ifFalse: [ reducedTestClass compile: originalSource ] ] ] ]
+				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ].
+	(reducedTestClass methods
+		select: #isTestMethod)
+		withIndexDo: [ :theMethod :index | 
+			ast := theMethod ast.
+			reducedTestClass removeSelector: ast selector.
+			ast selector: ('testAmplified_{1}' format: {index}) asSymbol. 
+			reducedTestClass compile: ast formattedCode
+			 ]
 ]
 
 { #category : #'as yet unclassified' }

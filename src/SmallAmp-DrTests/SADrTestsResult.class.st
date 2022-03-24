@@ -25,15 +25,15 @@ SADrTestsResult >> buildTreeFileOut [
 
 { #category : #accessing }
 SADrTestsResult >> buildTreeForUI [
+
 	<dtSmallAmpResultTreeNamed: 'Output of SmallAmp' order: 1>
-	^ DTTreeNode new
-		subResults:
-			{smallAmpResult amplifiedClasses.
-			smallAmpResult scores.
-			smallAmpResult coverage .
-			smallAmpResult skippedTestMethods.
-			smallAmpResult notProfiledMethods.
-			smallAmpResult timeInformations}
+	^ DTTreeNode new subResults: { 
+			  smallAmpResult amplifiedClasses.
+			  smallAmpResult scores.
+			  smallAmpResult coverage.
+			  smallAmpResult skippedTestMethods.
+			  smallAmpResult notProfiledMethods.
+			   }
 ]
 
 { #category : #'as yet unclassified' }

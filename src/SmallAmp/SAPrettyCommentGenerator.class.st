@@ -41,22 +41,23 @@ SAPrettyCommentGenerator >> generateComment [
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> generateCommentCoverageItem: newCov [
 
-	| parts mutant when code |
-	mutant := (particularResults
-		           detect: [ :x | x mutant smallAmpDecoratorText = newCov ]
-		           ifNone: [ ^ nil ]) .
+	| parts mutant when code1 code2 |
+	mutant := particularResults
+		          detect: [ :x | x mutant smallAmpDecoratorText = newCov ]
+		          ifNone: [ ^ nil ].
 	when := self synthesisWhenFor: mutant mutantEvaluation observation.
-	code := mutant mutant nodeToMutate formattedCode.
+	code1 := mutant mutant nodeToMutate formattedCode.
+	code2 := mutant mutant mutatedNode formattedCode.
 	parts := newCov splitOn: '#'.
 	^ self templateCoverageItem format: { 
 			  (parts at: 2).
 			  (parts at: 3).
 			  (parts at: 4).
 			  (parts at: 5).
-			  (parts at: 1).
-			  code.
+			  mutant mutant operator description.
+			  code1.
 			  when.
-			  newCov }
+			  code2 }
 ]
 
 { #category : #'as yet unclassified' }
@@ -158,11 +159,10 @@ SAPrettyCommentGenerator >> templateChangesOnlyAssertionAmp [
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> templateCoverageItem [
 
-	^ '	*	In `{1}>> #{2}` from {3} to {4}:
-		Operation: {5}
-		Code snippet: `{6}`
+	^ '	* It detects the injection of an artificial fault ({5}) in `{1}>> #{2}`:
+		original code snippet: `{6}`
+		Mutated code snippet: `{8}`
 		Dynamic state: {7}
-		Mutant id: {8}
 '
 ]
 

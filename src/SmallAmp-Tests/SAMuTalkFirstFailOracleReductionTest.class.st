@@ -12,7 +12,7 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
 
 	| ugly uncovered reducer readable |
 	ugly := FakeUglyPureSmallBankTest.
-		
+
 	uncovered := { 'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44' } 
 		             collect: [ :str | 
 		             SADefaultTestCorrection createMutantFromString: str ].
@@ -23,9 +23,13 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
-	self assert: ((readable >> #testMethod1) ast allStatements select: [ :node | node isMessage and: [ node selector = #assert:equals: ]  ]) size equals: 1 .
+	self
+		assert:
+			((readable >> #testAmplified_1) ast allStatements select: [ :node | 
+				 node isMessage and: [ node selector = #assert:equals: ] ]) size
+		equals: 1.
 
-	readable removeFromSystem.
+	readable removeFromSystem
 ]
 
 { #category : #tests }
@@ -33,7 +37,7 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 
 	| ugly uncovered reducer readable |
 	ugly := FakeUglyImpureSmallBankTest.
-		
+
 	uncovered := { 'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44' } 
 		             collect: [ :str | 
 		             SADefaultTestCorrection createMutantFromString: str ].
@@ -44,9 +48,14 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
-	self assert: ((readable >> #testMethod2impure) ast allStatements select: [ :node | node isMessage and: [ node selector = #assert:equals: ]  ]) size equals: 1 .
+	
+	self
+		assert:
+			((readable >> #testAmplified_1) ast allStatements select: [ :node | 
+				 node isMessage and: [ node selector = #assert:equals: ] ]) size
+		equals: 1.
 
-	readable removeFromSystem.
+	readable removeFromSystem
 ]
 
 { #category : #test }
