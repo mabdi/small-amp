@@ -220,14 +220,13 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 								ifTrue: [ reducedTestClass removeSelector: newTree selector ]
 								ifFalse: [ reducedTestClass compile: originalSource ] ] ] ]
 				ifFalse: [ reducedTestClass removeSelector: newTree selector ] ].
-	(reducedTestClass methods
-		select: #isTestMethod)
-		withIndexDo: [ :theMethod :index | 
-			ast := theMethod ast.
-			reducedTestClass removeSelector: ast selector.
-			ast selector: ('testAmplified_{1}' format: {index}) asSymbol. 
-			reducedTestClass compile: ast formattedCode
-			 ]
+	(reducedTestClass methods select: #isTestMethod) withIndexDo: [ 
+		:theMethod 
+		:index | 
+		ast := theMethod ast.
+		reducedTestClass removeSelector: ast selector.
+		ast selector: (self class defaultAmplifiedNameTemplate format: { index }) asSymbol.
+		reducedTestClass compile: ast formattedCode ]
 ]
 
 { #category : #'as yet unclassified' }

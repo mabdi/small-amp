@@ -15,6 +15,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SAAbstractOracleReduction class >> defaultAmplifiedNameTemplate [
+	^ 'testAmplified_{1}'
+]
+
+{ #category : #'as yet unclassified' }
 SAAbstractOracleReduction class >> initializeWith: aConfig [
 	^ self new
 		  with: aConfig

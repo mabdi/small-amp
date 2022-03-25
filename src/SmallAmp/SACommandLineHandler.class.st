@@ -116,13 +116,23 @@ SACommandLineHandler >> getEnv: key required: isRequired [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> installTest: selector from: aClass repo: repo [
 
-	| toCommit visitor diff test commitText |
+	| toCommit visitor diff test commitText ast newSelector |
 	SmallAmp <~ ('Compiling: {1}>>{2} from: {3}' format: { 
 			 aClass superclass name.
 			 selector asString.
 			 aClass name }).
-	aClass superclass compile:
-		(aClass lookupSelector: selector) sourceCode.
+	(aClass superclass includesSelector: selector)
+		ifTrue: [ 
+			newSelector := SAAbstractOracleReduction
+				               defaultAmplifiedNameTemplate format:
+				               { (aClass superclass allTestSelectors size + 1) }.
+			SmallAmp <~ ('Duplicate selector, renaming to: ' , newSelector).
+			ast := (aClass lookupSelector: selector) ast copy.
+			ast selector: newSelector.
+			aClass superclass compile: ast formattedCode  ]
+		ifFalse: [ 
+			aClass superclass compile:
+				(aClass lookupSelector: selector) sourceCode ].
 	test := aClass superclass >> selector.
 
 	toCommit := OrderedCollection new.
@@ -141,7 +151,7 @@ SACommandLineHandler >> installTest: selector from: aClass repo: repo [
 	commitText ifNil: [ 
 		SmallAmp <~ 'commit msg is nil'.
 
-		commitText := 'SmallAmp introduces ', test name ].
+		commitText := 'SmallAmp introduces ' , test name ].
 	repo workingCopy
 		commitChanges: diff
 		withMessage: commitText
