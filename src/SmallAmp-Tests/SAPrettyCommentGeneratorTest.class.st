@@ -7,6 +7,25 @@ Class {
 	#category : #'SmallAmp-Tests-Helpers'
 }
 
+{ #category : #test }
+SAPrettyCommentGeneratorTest >> testCodeSnipFrom [
+
+	| shortMethod shortNode instance longMethod longNode |
+	shortMethod := RBParser parseMethod: 'aShortMethod ^ 1'.
+	shortNode := shortMethod allChildren detect: [ :n | n isLiteralNode ].
+	instance := SAPrettyCommentGenerator new.
+	self assert: (instance codeSnipFrom: shortNode) equals: '^ 1'.
+
+	longMethod := RBParser parseMethod:
+		              'aLongerMethod (self something: aVariable) ifTrue: [ self do1 ] ifFalse: [self do2 ]'.
+	longNode := longMethod allChildren detect: [ :n | 
+		            n isMessage and: [ n selector = #ifTrue:ifFalse: ] ].
+	self
+		assert: ((instance codeSnipFrom: longNode)  copyWithRegex: '\s+' matchesReplacedWith: '')
+		equals:
+		('(self something: aVariable) ifTrue: [ self do1 ] ifFalse: [self do2 ]' copyWithRegex: '\s+' matchesReplacedWith: '')
+]
+
 { #category : #tests }
 SAPrettyCommentGeneratorTest >> testEndToEnd [
 
