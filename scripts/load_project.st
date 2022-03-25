@@ -20,7 +20,9 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'rep
      load ifNotNil: [ b load: load ] ifNil: [ b load ]
 ] on: Warning do: [ :w | w resume ].
 
-'Metacelo finished. lets register in Iceberg' traceCr.
+'List all installed repos:' traceCr.
+
+(IceRepository registry collect: #name) asString traceCr.
 
 IceRepository registry
 		detect: [ :r | r name = repoName ]
