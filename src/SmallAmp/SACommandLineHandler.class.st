@@ -114,22 +114,23 @@ SACommandLineHandler >> getEnv: key required: isRequired [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> installTest: selector from: aClass repo: repo [
+SACommandLineHandler >> installTest: orig_selector from: aClass repo: repo [
 
-	| toCommit visitor diff test commitText ast newSelector |
+	| selector toCommit visitor diff test commitText ast |
 	SmallAmp <~ ('Compiling: {1}>>{2} from: {3}' format: { 
 			 aClass superclass name.
 			 selector asString.
 			 aClass name }).
+	selector := orig_selector.		
 	(aClass superclass includesSelector: selector)
 		ifTrue: [ 
-			newSelector := SAAbstractOracleReduction
+			selector := SAAbstractOracleReduction
 				               defaultAmplifiedNameTemplate format:
 				               { (aClass superclass allTestSelectors size + 1) }.
-			SmallAmp <~ ('Duplicate selector, renaming to: ' , newSelector).
+			SmallAmp <~ ('Duplicate selector, renaming to: ' , selector).
 			ast := (aClass lookupSelector: selector) ast copy.
-			ast selector: newSelector.
-			aClass superclass compile: ast formattedCode  ]
+			ast selector: selector.
+			aClass superclass compile: ast formattedCode ]
 		ifFalse: [ 
 			aClass superclass compile:
 				(aClass lookupSelector: selector) sourceCode ].
