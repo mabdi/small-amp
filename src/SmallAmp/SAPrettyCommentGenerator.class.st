@@ -12,6 +12,12 @@ Class {
 	#category : #'SmallAmp-Helpers'
 }
 
+{ #category : #accessing }
+SAPrettyCommentGenerator >> codeSnipFrom: aNode [
+
+	^ ((aNode stop - aNode start) < self minCodeSnipLength ) ifTrue: [ aNode parent formattedCode ] ifFalse: [ aNode formattedCode  ] 
+]
+
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> extractNewCovered [
 
@@ -46,8 +52,8 @@ SAPrettyCommentGenerator >> generateCommentCoverageItem: newCov [
 		          detect: [ :x | x mutant smallAmpDecoratorText = newCov ]
 		          ifNone: [ ^ nil ].
 	when := self synthesisWhenFor: mutant mutantEvaluation observation.
-	code1 := mutant mutant nodeToMutate formattedCode.
-	code2 := mutant mutant mutatedNode formattedCode.
+	code1 := self codeSnipFrom: mutant mutant nodeToMutate.
+	code2 := self codeSnipFrom: mutant mutant mutatedNode.
 	parts := newCov splitOn: '#'.
 	^ self templateCoverageItem format: { 
 			  (parts at: 2).
@@ -102,6 +108,11 @@ SAPrettyCommentGenerator >> methodAST [
 SAPrettyCommentGenerator >> methodAST: anObject [
 
 	methodAST := anObject
+]
+
+{ #category : #accessing }
+SAPrettyCommentGenerator >> minCodeSnipLength [
+	^ 5
 ]
 
 { #category : #accessing }
