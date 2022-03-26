@@ -428,6 +428,7 @@ SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed [
 SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed from: aCommitId [
 
 	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
+	SmallAmp <~ ('Executing metricsEval: {1} shred: {2} seed: {3} from: {4}' format: {repoName. shred. aSeed. aCommitId}).
 	aCommitId
 		ifNotNil: [ 
 			classes := ((self
