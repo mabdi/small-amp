@@ -88,6 +88,11 @@ on:
         required: false
         type: string        
         default: 'SmallAmp'
+#      SmallAmp_CommitFrom:
+#        description: 'The commit id, amplify all changes from this commit'
+#        required: false
+#        type: string        
+#        default: ''
     secrets:
       secret_github_token:
         required: true
@@ -152,6 +157,7 @@ jobs:
           action: amplify
         env:
           SMALLAMP_PORTION: ${{ strategy.job-index }} 
+          SmallAmp_CommitFrom: ${{ github.event.before }}
           SMALLAMP_ALLJOBS: ${{ strategy.job-total }}
           SMALLAMP_iteration: ${{ env.iteration }}
           SMALLAMP_maxInputs: ${{ inputs.maxInputs }}
