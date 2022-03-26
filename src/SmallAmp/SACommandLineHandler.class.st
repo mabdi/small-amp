@@ -75,7 +75,7 @@ SACommandLineHandler >> end [
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> evalStats [
 
-	| prefix shred seed |
+	| prefix shred seed commitFrom |
 	prefix := self arguments detect: [ :arg | arg beginsWith: '--stat=' ].
 	prefix := prefix allButFirst: '--stat=' size.
 	self arguments
@@ -84,8 +84,9 @@ SACommandLineHandler >> evalStats [
 		shred := (arg allButFirst: '--shred=' size) asInteger ]
 		ifNone: [ shred := 0 ].
 	seed := self getEnv: #SmallAmp_ShredSeed required: false.
-	seed :=seed ifNil: [  10 ] ifNotNil: [seed asInteger].
-	SAGenericMethods new metricsEval: prefix shred: shred seed: seed
+	commitFrom := self getEnv: #SmallAmp_CommitFrom required: false.
+	seed := seed ifNil: [ 10 ] ifNotNil: [ seed asInteger ].
+	SAGenericMethods new metricsEval: prefix shred: shred seed: seed from:commitFrom
 ]
 
 { #category : #accessing }
@@ -108,9 +109,8 @@ SACommandLineHandler >> extraInformation [
 SACommandLineHandler >> getEnv: key required: isRequired [
 
 	^ Smalltalk os environment asDictionary at: key ifAbsent: [ 
-		  
-			  SmallAmp <~ (key , ' missing').isRequired ifTrue: [ 
-			  Smalltalk exitFailure ] ]
+		  SmallAmp <~ (key , ' missing').
+		  isRequired ifTrue: [ Smalltalk exitFailure ].nil ]
 ]
 
 { #category : #'as yet unclassified' }

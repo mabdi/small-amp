@@ -25,15 +25,16 @@ SADSpotSelection class >> getNewCoveredFor: methodAST [
 
 { #category : #'as yet unclassified' }
 SADSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
-		testCasesFrom: testClasses
-		mutating: targetClasses
-		using: MutantOperator contents
-		with:
-			(IgnoreFailingTestsMethodsEvaluationStrategy
-				newWith: aListOfMethods)
-		with: SmallAmpMutationsGenerationStrategy new.
+		             testCasesFrom: testClasses
+		             mutating: targetClasses
+		             using: MutantOperator contents
+		             with:
+		             (IgnoreFailingTestsMethodsEvaluationStrategy newWith:
+			              aListOfMethods)
+		             with: self getMutationsGenerationStrategy.
 	analysis1 runSmallAmp.
 	^ analysis1
 ]
@@ -92,6 +93,12 @@ SADSpotSelection >> finalizeShadowSelections [
 { #category : #enumerating }
 SADSpotSelection >> getMutantFromUncovereds: aMutantIndex [
 	^ {(uncovered at: aMutantIndex)}
+]
+
+{ #category : #'as yet unclassified' }
+SADSpotSelection >> getMutationsGenerationStrategy [
+
+	^ SmallAmpMutationsGenerationStrategy new 
 ]
 
 { #category : #cleanup }

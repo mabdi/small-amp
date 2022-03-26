@@ -174,6 +174,18 @@ SAGenericMethods >> buildTestClassWithModels: aModelsList using: testClass confi
 	^ tempClass
 ]
 
+{ #category : #actions }
+SAGenericMethods >> checkOutCommit: commitIdTo inRepo: repoName [
+
+	| repo commit |
+	repo := IceRepository registry
+		        detect: [ :r | r name = repoName ]
+		        ifNone: [ self error: 'repo not found' ].
+	commit := repo commitishNamed: commitIdTo.
+"commit checkout."
+repo setHead: commit
+]
+
 { #category : #cleanup }
 SAGenericMethods >> cleanUp: aSourceCode [
 	| mtd tmps rewriter |
@@ -409,10 +421,21 @@ SAGenericMethods >> makeClassFrom: arrayOfTestMethods instanceVars: instanceVars
 { #category : #actions }
 SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed [
 
-	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId helper |
-	helper := SAGenericMethods new.
-	classes := helper allClassesForRepo: repoName.
-	commitId := helper commitIdFor: repoName.
+	^ self metricsEval: repoName shred: shred seed: aSeed from: nil
+]
+
+{ #category : #actions }
+SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed from: aCommitId [
+
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId changes |
+	classes := aCommitId
+		           ifNotNil: [ 
+			           changes := ((self
+				                        allChangesForRepo: repoName
+				                        fromCommitNamed: aCommitId) collect:
+				                       #methodClass) asSet asArray ]
+		           ifNil: [ self allClassesForRepo: repoName ].
+	commitId := self commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
 	tests := classes select: #isTestCase.
 	targetedTests := tests select: [ :s | 
