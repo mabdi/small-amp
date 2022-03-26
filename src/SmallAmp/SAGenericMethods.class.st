@@ -427,19 +427,31 @@ SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed [
 { #category : #actions }
 SAGenericMethods >> metricsEval: repoName shred: shred seed: aSeed from: aCommitId [
 
-	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId changes |
-	classes := aCommitId
-		           ifNotNil: [ 
-			           changes := ((self
-				                        allChangesForRepo: repoName
-				                        fromCommitNamed: aCommitId) collect:
-				                       #methodClass) asSet asArray ]
-		           ifNil: [ self allClassesForRepo: repoName ].
+	| classes tests targetedTests testMethodTargeted stat testrun testsuite loc commitId |
+	aCommitId
+		ifNotNil: [ 
+			classes := ((self
+				             allChangesForRepo: repoName
+				             fromCommitNamed: aCommitId) collect: #methodClass)
+				           asSet asArray.
+			tests := (classes select: #isTestCase) asOrderedCollection.
+			self flag: #todo. "use a method in non test classes to relate them to the test class"
+			tests addAll:
+				(((classes reject: #isTestCase) collect: [ :inputClass | 
+					  Smalltalk globals
+						  at: ('{1}Test' format: { inputClass name }) asSymbol
+						  ifAbsent: [ nil ] ]) reject: #isNil).
+			targetedTests := tests select: [ :s | 
+				                 s smallAmpTargetClasses isNotNil ] ]
+		ifNil: [ 
+			classes := self allClassesForRepo: repoName.
+			tests := classes select: #isTestCase.
+			targetedTests := tests select: [ :s | 
+				                 s smallAmpTargetClasses isNotNil ] ].
 	commitId := self commitIdFor: repoName.
 	loc := (classes collect: #linesOfCode) sum.
-	tests := classes select: #isTestCase.
-	targetedTests := tests select: [ :s | 
-		                 s smallAmpTargetClasses isNotNil ].
+
+
 	testsuite := TestSuite new.
 	targetedTests do: [ :ts | testsuite addTests: ts buildSuite tests ].
 	testrun := testsuite run.
