@@ -85,8 +85,13 @@ SACommandLineHandler >> evalStats [
 		ifNone: [ shred := 0 ].
 	seed := self getEnv: #SmallAmp_ShredSeed required: false.
 	commitFrom := self getEnv: #SmallAmp_CommitFrom required: false.
+	commitFrom ifNotNil: [commitFrom ifEmpty: [ commitFrom  := nil ]].
 	seed := seed ifNil: [ 10 ] ifNotNil: [ seed asInteger ].
-	SAGenericMethods new metricsEval: prefix shred: shred seed: seed from:commitFrom
+	SAGenericMethods new
+		metricsEval: prefix
+		shred: shred
+		seed: seed
+		from: commitFrom
 ]
 
 { #category : #accessing }
