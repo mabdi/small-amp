@@ -18,6 +18,18 @@ SAPrettyCommentGenerator >> codeSnipFrom: aNode [
 	^ ((aNode stop - aNode start) < self minCodeSnipLength ) ifTrue: [ aNode parent formattedCode ] ifFalse: [ aNode formattedCode  ] 
 ]
 
+{ #category : #accessing }
+SAPrettyCommentGenerator >> codeSnipFromMutated: aNode original: aNodeOriginal [
+
+	^ aNode stop - aNode start < self minCodeSnipLength
+		  ifTrue: [ 
+			  | tmp |
+			  tmp := aNodeOriginal parent copy.
+			tmp replaceNode: aNodeOriginal  withNode: aNode. 
+			  tmp formattedCode ]
+		  ifFalse: [ aNode formattedCode ]
+]
+
 { #category : #'as yet unclassified' }
 SAPrettyCommentGenerator >> extractNewCovered [
 
@@ -53,7 +65,7 @@ SAPrettyCommentGenerator >> generateCommentCoverageItem: newCov [
 		          ifNone: [ ^ nil ].
 	when := self synthesisWhenFor: mutant mutantEvaluation observation.
 	code1 := self codeSnipFrom: mutant mutant nodeToMutate.
-	code2 := self codeSnipFrom: mutant mutant mutatedNode.
+	code2 := self codeSnipFromMutated: mutant mutant mutatedNode original: mutant mutant nodeToMutate .
 	parts := newCov splitOn: '#'.
 	^ self templateCoverageItem format: { 
 			  (parts at: 2).
@@ -92,9 +104,6 @@ SAPrettyCommentGenerator >> generateCommentWithCoverageInfo [
 			  (onlyAAmp
 				   ifTrue: [ self templateChangesOnlyAssertionAmp ]
 				   ifFalse: [ self templateChangesInputAndAssertionAmp ]).
-			  (newCovered size = 1
-				   ifTrue: [ self templateThisPart ]
-				   ifFalse: [ self templateTheseParts ]).
 			  self generateCommentCoverageItems }
 ]
 
@@ -181,8 +190,8 @@ SAPrettyCommentGenerator >> templateCoverageItem [
 SAPrettyCommentGenerator >> templateText [
 
 	^ 'SmallAmp has derived this test from `{1}` by {2}.
-	This test can cover {3}:
-{4}'
+	This test can:
+{3}'
 ]
 
 { #category : #'as yet unclassified' }
