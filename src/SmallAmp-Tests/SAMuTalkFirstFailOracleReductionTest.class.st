@@ -23,6 +23,8 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
+	readable allTestSelectors asString traceCr.
+	self assert: (readable allTestSelectors includes: #testAmplified_1).
 	self
 		assert:
 			((readable >> #testAmplified_1) ast allStatements select: [ :node | 
@@ -48,7 +50,9 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
-	
+	readable allTestSelectors asString traceCr.
+	self assert: (readable allTestSelectors includes: #testAmplified_1).
+
 	self
 		assert:
 			((readable >> #testAmplified_1) ast allStatements select: [ :node | 
