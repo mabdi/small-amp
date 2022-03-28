@@ -108,7 +108,7 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJson current: anObject [
 
-	| result lfinder amplifiedMethods |
+	| aCollection result lfinder amplifiedMethods |
 	anObject
 		ifNil: [ 
 			result := Dictionary new.
@@ -119,16 +119,19 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 			result
 				at: #amplified_class_address
 				put: (lfinder getPathOfClass: aClass).
-			result at: #amplified_tests put: OrderedCollection new ]
-		ifNotNil: [ result := anObject ].
+			aCollection := OrderedCollection new ]
+		ifNotNil: [ 
+			result := anObject.
+			aCollection := (result at: #amplified_tests) asOrderedCollection ].
 
 	amplifiedMethods := (smallampJson at: #amplifiedMethods) collect: [ 
 		                    :m | m at: #selector_pretty ].
-	(result at: #amplified_tests) addAll:
-		(amplifiedMethods collect: [ :selector | 
+	aCollection addAll: (amplifiedMethods collect: [ :selector | 
 			 self
 				 amplifiedTestsFor: aClass >> selector asSymbol
-				 json: smallampJson ]) asArray.
+				 json: smallampJson ]) .
+	result at: #amplified_tests put: aCollection asArray.
+
 	^ result
 ]
 
