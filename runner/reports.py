@@ -15,7 +15,18 @@ def mut_to_string(mut):
 #this.current_n = -1
 
 def number_of_changes(list_of_methods):
-    return [ re.search(r"_amp(.*)$", aDict['selector_generated']).group(1).count('_') for aDict in list_of_methods]
+   if len(list_of_methods) == 0:
+      return []
+   try:
+      tmp = list_of_methods
+      if isinstance(list_of_methods[0],dict):
+         tmp = [t['selector_generated'] for t in list_of_methods]
+      x = [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in tmp]
+      return x  
+   except Exception as eee:
+      sys.stderr.write(str(tmp))
+      raise eee
+   # return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
 
 def count_killed_mutants(lst):
    return Counter([ mut['operatorClass'] for mut in lst])
@@ -301,7 +312,7 @@ def do_fix(old_result):
             mutationScoreImprove = (100.0) * (len(newCovered) / obj['jsonObj']['numberOfAllMutationsInOriginal'])
             obj['jsonObj']['mutationScoreAfter'] = mutationScoreBefore + mutationScoreImprove
             obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
-            obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
+            obj['jsonObj']['amplifiedMethods'] = list(set([m['selector_generated'] for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
             obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
             obj['jsonObj']['duplicateMutants'] = len(allNewKilled) - len(newCovered)
             result.append(obj)
@@ -361,7 +372,7 @@ def reportAmp(directory, projectName, fix, verbose):
                   xjson['targetChurn'],
                   xjson['testChurn'],
                   xjson['directTestingOriginal'],
-                  max(number_of_changes(jsonObj['amplifiedMethods']) or [0]),
+                  max(number_of_changes( jsonObj['amplifiedMethods'] ) or [0]),
                   jsonObj.get('numberOfProcessedMethods','NA'),
                   jsonObj.get('testClassTimeToRunInMillis','NA'),
                   jsonObj.get('numberOfAllMutationsInOriginal','NA'),

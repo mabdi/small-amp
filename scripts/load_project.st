@@ -2,7 +2,7 @@
 
 baseline := Smalltalk os environment asDictionary at: #project_baseline ifAbsent: [ 'project_baseline missing' traceCr. Smalltalk exitFailure ].
 load := Smalltalk os environment asDictionary at: #project_load ifAbsent: [ 'project_load missing, set to nil' traceCr. nil ].
-load ifEmpty: [load := nil].
+load ifNotNil: [load ifEmpty: [load := nil]].
 
 load_path := Smalltalk os environment asDictionary at: #project_repository ifAbsent: [ 'project_repository missing' traceCr. Smalltalk exitFailure  ].
 
