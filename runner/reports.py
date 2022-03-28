@@ -16,11 +16,11 @@ def mut_to_string(mut):
 
 def number_of_changes(list_of_methods):
    try:
-      [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
-   except Exception:
+      x = [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
+      return x  
+   except Exception as eee:
       sys.stderr.write(str(list_of_methods))
-   return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
-   
+      raise eee
 
 def count_killed_mutants(lst):
    return Counter([ mut['operatorClass'] for mut in lst])
