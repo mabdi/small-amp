@@ -370,7 +370,9 @@ SACommandLineHandler >> runSmallAmpConfig: cnf [
 		ifPresent: [ :maxInputs | cnf maxPop: maxInputs asInteger ].
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_PORTION
-		ifPresent: [ :envVal | cnf ampNamesSuffix: envVal ].
+		ifPresent: [ :envVal | SmallAmp <~ ('config ampNamesSuffix: ' , envVal).
+		.
+			cnf ampNamesSuffix: envVal ].
 	(SmallAmp initializeWith: cnf)
 		testCase: aTestClass;
 		amplifyEval

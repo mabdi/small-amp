@@ -233,9 +233,12 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		:index | 
 		ast := theMethod ast.
 		oldSelector := ast selector.
-		suffix := config ampNamesSuffix ifNil: [''] ifNotNil: [ '_' , config ampNamesSuffix  ].
-		newSelector := (self class defaultAmplifiedNameTemplate format:
-			                { suffix . index }) asSymbol.
+		suffix := config ampNamesSuffix
+			          ifNil: [ '' ]
+			          ifNotNil: [ '_' , config ampNamesSuffix ].
+		newSelector := (self class defaultAmplifiedNameTemplate format: { 
+				                suffix.
+				                index }) asSymbol.
 
 		reducedTestClass removeSelector: oldSelector.
 
