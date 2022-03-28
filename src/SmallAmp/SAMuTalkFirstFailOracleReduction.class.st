@@ -5,7 +5,8 @@ Class {
 		'particularResults',
 		'toComment',
 		'reverts',
-		'numberOfCompiledMethods'
+		'numberOfCompiledMethods',
+		'namesMapping'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -102,7 +103,8 @@ SAMuTalkFirstFailOracleReduction >> initialize [
 
 	toComment := OrderedCollection new.
 	reverts := 0.
-	numberOfCompiledMethods := 0
+	numberOfCompiledMethods := 0.
+	namesMapping := Dictionary new.
 ]
 
 { #category : #'as yet unclassified' }
@@ -186,10 +188,16 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	^ particularResults
 ]
 
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> namesMapping [
+
+	^ namesMapping
+]
+
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
-	| isTestCorrect mutantsToCheck isTestFixed ast |
+	| isTestCorrect mutantsToCheck isTestFixed ast oldSelector newSelector |
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
@@ -224,8 +232,14 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		:theMethod 
 		:index | 
 		ast := theMethod ast.
-		reducedTestClass removeSelector: ast selector.
-		ast selector: (self class defaultAmplifiedNameTemplate format: { index }) asSymbol.
+		oldSelector := ast selector.
+		newSelector := (self class defaultAmplifiedNameTemplate format:
+			                { index }) asSymbol.
+
+		reducedTestClass removeSelector: oldSelector.
+
+		namesMapping at: oldSelector put: newSelector.
+		ast selector: newSelector.
 		reducedTestClass compile: ast formattedCode ]
 ]
 

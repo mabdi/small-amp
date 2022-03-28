@@ -150,9 +150,10 @@ SASmallAmpDashboardJSONExporter >> getLocationInFileFor: aCompiledTest class: aC
 SASmallAmpDashboardJSONExporter >> getOriginalTestFor: test json: jsonObject [
 
 	| methodName theClass selector |
-	methodName := ((jsonObject at: #amplifiedMethods) at: test selector asString) 
-		              at: #from.
-	theClass := (methodName splitOn: '>>') first asSymbol .
+	methodName := ((jsonObject at: #amplifiedMethods) detect: [ :m | 
+		   (m at: #selector_pretty) = test selector asString ]
+		               ) at: #from.
+	theClass := (methodName splitOn: '>>') first asSymbol.
 	selector := (methodName splitOn: '>>') second allButFirst asSymbol.
 	^ (Smalltalk at: theClass) >> selector
 ]
@@ -160,7 +161,8 @@ SASmallAmpDashboardJSONExporter >> getOriginalTestFor: test json: jsonObject [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> killedMutantsFor: test json: smallampJson [
 
-	^ ((smallampJson at: #amplifiedMethods) at: test selector) at: #newCoverage
+	^ ((smallampJson at: #amplifiedMethods) detect: [ :m | (m at: #selector_pretty) = test selector ] ) at:
+		  #newCoverage
 ]
 
 { #category : #'as yet unclassified' }

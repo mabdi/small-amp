@@ -238,14 +238,15 @@ SAMainLoopDspot >> logAmplifiedMethodsInfo [
 
 	| info |
 	info := resultPeople collect: [ :mmodel | 
-		        mmodel selector -> ({ 
+		        { 
+			        (#selector_generated -> mmodel selector).
 			        (#from -> mmodel getOriginalTestFullName).
 			        (#transformations -> mmodel getTransformationsList asArray).
 			        (#newCoverage
 			         ->
 			         (selection class getNewCoveredFor: mmodel parsedTree)
-				         asArray) } asDictionary) ].
-	finalResult amplifiedMethods: info asDictionary
+				         asArray) } asDictionary ].
+	finalResult amplifiedMethods: info asArray
 ]
 
 { #category : #actions }
@@ -261,6 +262,12 @@ SAMainLoopDspot >> makeReadable [
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
 	finalResult oracleReductionReverts: reducer reverts.
+	finalResult amplifiedMethods do: [ :methodInfo | 
+		| newSelector |
+		newSelector := reducer namesMapping at:
+			               (methodInfo at: #selector_generated).
+			methodInfo at: #selector_pretty put: newSelector
+			 ].
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
 	^ readable
