@@ -18,7 +18,7 @@ def number_of_changes(list_of_methods):
    try:
       [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
    except Exception:
-      sys.stderr.write(list_of_methods)
+      sys.stderr.write(str(list_of_methods))
    return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
    
 
