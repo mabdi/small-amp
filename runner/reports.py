@@ -15,7 +15,7 @@ def mut_to_string(mut):
 #this.current_n = -1
 
 def number_of_changes(list_of_methods):
-    return [ re.search(r"_amp(.*)$", txt).group(1).count('_') for txt in list_of_methods]
+    return [ re.search(r"_amp(.*)$", aDict['selector_generated']).group(1).count('_') for aDict in list_of_methods]
 
 def count_killed_mutants(lst):
    return Counter([ mut['operatorClass'] for mut in lst])
@@ -176,7 +176,7 @@ def reportAmpsStat(directory, projectName):
    for row in data:
      if row['stat'] == 'success':
        jsonObj = row['jsonObj']
-       thisAmps = [analyseMethodName(x) for x in jsonObj['amplifiedMethods']]
+       thisAmps = [analyseMethodName(x['selector_generated']) for x in jsonObj['amplifiedMethods']]
        for lst in thisAmps:
           lens[str(len(lst))] = lens.get(str(len(lst)),0) + 1
           if len(lst) == 0:
