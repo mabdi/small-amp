@@ -124,18 +124,14 @@ SACommandLineHandler >> installTest: orig_selector from: aClass repo: repo [
 	| selector toCommit visitor diff test commitText ast |
 	SmallAmp <~ ('Compiling: {1}>>{2} from: {3}' format: { 
 			 aClass superclass name.
-			 selector asString.
+			 orig_selector asString.
 			 aClass name }).
-	selector := orig_selector.		
+	selector := orig_selector.
 	(aClass superclass includesSelector: selector)
 		ifTrue: [ 
-			selector := SAAbstractOracleReduction
-				               defaultAmplifiedNameTemplate format:
-				               { (aClass superclass allTestSelectors size + 1) }.
-			SmallAmp <~ ('Duplicate selector, renaming to: ' , selector).
-			ast := (aClass lookupSelector: selector) ast copy.
-			ast selector: selector.
-			aClass superclass compile: ast formattedCode ]
+			SmallAmp <~ 'Duplicate selector, Use suffixes.'.
+			Smalltalk exitFailure.
+			 ]
 		ifFalse: [ 
 			aClass superclass compile:
 				(aClass lookupSelector: selector) sourceCode ].
@@ -364,13 +360,17 @@ SACommandLineHandler >> runInMode [
 ]
 
 { #category : #'as yet unclassified' }
-SACommandLineHandler >> runSmallAmp: aTestClass config: cnf [
+SACommandLineHandler >> runSmallAmpConfig: cnf [
+
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_iteration
 		ifPresent: [ :iter | cnf iterations: iter asInteger ].
 	Smalltalk os environment asDictionary
 		at: #SMALLAMP_maxInputs
 		ifPresent: [ :maxInputs | cnf maxPop: maxInputs asInteger ].
+	Smalltalk os environment asDictionary
+		at: #SMALLAMP_PORTION
+		ifPresent: [ :envVal | cnf ampNamesSuffix: envVal ].
 	(SmallAmp initializeWith: cnf)
 		testCase: aTestClass;
 		amplifyEval

@@ -20,7 +20,8 @@ Class {
 		'mainloop',
 		'hashClass',
 		'ranking',
-		'skipNonPretty'
+		'skipNonPretty',
+		'ampNamesSuffix'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -108,6 +109,18 @@ SAConfig class >> dspotOldamps [
 				  (SADuplicateInputAmplifier -> 1).
 				  (SAAddInputAmplifier -> 1) };
 		  yourself
+]
+
+{ #category : #accessing }
+SAConfig >> ampNamesSuffix [
+
+	^ ampNamesSuffix
+]
+
+{ #category : #accessing }
+SAConfig >> ampNamesSuffix: anObject [
+
+	ampNamesSuffix := anObject
 ]
 
 { #category : #accessing }

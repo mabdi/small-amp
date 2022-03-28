@@ -21,12 +21,13 @@ SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
 		aJson asFileReference readStreamDo: [ :readStream | 
 			theJson := STONJSON fromStream: readStream ].
 		(theJson includesKey: #amplifiedClass) ifTrue: [ 
-			aClass := Smalltalk at: (theJson at: #amplifiedClass) asSymbol.
+			aClass := (Smalltalk at: (theJson at: #amplifiedClass) asSymbol) superclass.
+			
 			mutations addAll: (theJson at: #newCovered).
 			"aClass := aClass superclass."
 			result := self exportClass: aClass smallampJson: theJson.
-			self moveClass: (Smalltalk at:
-		                   (theJson at: #amplifiedClass) asSymbol).
+			self moveClass:
+				(Smalltalk at: (theJson at: #amplifiedClass) asSymbol).
 			result
 				at: #results_json
 				put: (self getJsonFileNameFor: aClass) basename.

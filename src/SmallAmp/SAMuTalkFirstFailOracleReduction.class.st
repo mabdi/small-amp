@@ -197,7 +197,7 @@ SAMuTalkFirstFailOracleReduction >> namesMapping [
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 
-	| isTestCorrect mutantsToCheck isTestFixed ast oldSelector newSelector |
+	| isTestCorrect mutantsToCheck isTestFixed ast oldSelector newSelector suffix |
 	reducedTestClass methods
 		select: #isTestMethod
 		thenDo: [ :theMethod | 
@@ -233,8 +233,9 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		:index | 
 		ast := theMethod ast.
 		oldSelector := ast selector.
+		suffix := config ampNamesSuffix ifNil: [''] ifNotNil: [ '_' , config ampNamesSuffix  ].
 		newSelector := (self class defaultAmplifiedNameTemplate format:
-			                { index }) asSymbol.
+			                { suffix . index }) asSymbol.
 
 		reducedTestClass removeSelector: oldSelector.
 
