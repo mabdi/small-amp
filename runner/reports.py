@@ -15,13 +15,7 @@ def mut_to_string(mut):
 #this.current_n = -1
 
 def number_of_changes(list_of_methods):
-   try:
-    x = [ re.search(r"_amp(.*)$", aDict['selector_generated']).group(1).count('_') for aDict in list_of_methods]
-    return x
-   except Exception as er:
-      print(list_of_methods)
-      print('ERRRRR')
-      raise er
+   return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
    
 
 def count_killed_mutants(lst):
