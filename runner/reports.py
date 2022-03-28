@@ -15,14 +15,16 @@ def mut_to_string(mut):
 #this.current_n = -1
 
 def number_of_changes(list_of_methods):
+   if len(list_of_methods) == 0:
+      return []
    try:
       tmp = list_of_methods
-      if isinstance(list_of_methods,dict):
+      if isinstance(list_of_methods[0],dict):
          tmp = [t['selector_generated'] for t in list_of_methods]
       x = [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in tmp]
       return x  
    except Exception as eee:
-      sys.stderr.write(str(list_of_methods))
+      sys.stderr.write(str(tmp))
       raise eee
    # return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
 
