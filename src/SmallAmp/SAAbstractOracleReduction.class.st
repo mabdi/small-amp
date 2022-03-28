@@ -16,7 +16,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 SAAbstractOracleReduction class >> defaultAmplifiedNameTemplate [
-	^ 'testAmplified_{1}'
+
+	^ 'testAmplified_{1}{2}'
 ]
 
 { #category : #'as yet unclassified' }

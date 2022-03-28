@@ -24,8 +24,10 @@ SASmallAmpDashboardJSONExporterTest >> getJson [
 	"mutationScoreAfter" : 100.0,
 	"testClassTimeToRunInMillis" : 3,
 	"testAmpLoc" : "N/A",
-	"amplifiedMethods" : {
-		"testDeposit_amp_A1" : {
+	"amplifiedMethods" : [ 
+		{
+			"selector_generated" : "testDeposit_amp_A1",
+			"selector_pretty" : "testDeposit_amp_A1",
 			"from" : "FakeSmallBankTest>>#testDeposit",
 			"newCoverage" : [
 				"ReplaceIfTrueReceiverWithTrueOperator#FakeSmallBank#withdraw:#19#92"
@@ -34,14 +36,18 @@ SASmallAmpDashboardJSONExporterTest >> getJson [
 				"A1"
 			]
 		},
-		"testDeposit_amp" : {
+		{
+			"selector_generated" : "testDeposit_amp",
+			"selector_pretty" : "testDeposit_amp",
 			"from" : "FakeSmallBankTest>>#testDeposit",
 			"newCoverage" : [
 				"RemoveCaretOperator#FakeSmallBank#rand#28#50"
 			],
 			"transformations" : [ ]
 		},
-		"testWithdraw_amp_U0" : {
+		{
+			"selector_generated" : "testWithdraw_amp_U0",
+			"selector_pretty" : "testWithdraw_amp_U0",
 			"from" : "FakeSmallBankTest>>#testWithdraw",
 			"newCoverage" : [
 				"ReplaceGreaterOrEqualWithGreaterMutantOperator#FakeSmallBank#withdraw:#19#35"
@@ -50,7 +56,7 @@ SASmallAmpDashboardJSONExporterTest >> getJson [
 				"U0"
 			]
 		}
-	},
+	],
 	"testLoc" : "17",
 	"numberOfAllMutationsInOriginal" : 11,
 	"targetLoc" : 15,
