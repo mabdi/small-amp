@@ -301,7 +301,7 @@ def do_fix(old_result):
             mutationScoreImprove = (100.0) * (len(newCovered) / obj['jsonObj']['numberOfAllMutationsInOriginal'])
             obj['jsonObj']['mutationScoreAfter'] = mutationScoreBefore + mutationScoreImprove
             obj['jsonObj']['numberOfOriginalTestMethods'] = sum(x['jsonObj']['numberOfOriginalTestMethods'] for x in testslist)
-            obj['jsonObj']['amplifiedMethods'] = list(set([m for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
+            obj['jsonObj']['amplifiedMethods'] = list(set([m['selector_generated'] for x in testslist for m in x['jsonObj']['amplifiedMethods']]))
             obj['jsonObj']['timeTotal'] = sum(x['jsonObj']['timeTotal'] for x in testslist)
             obj['jsonObj']['duplicateMutants'] = len(allNewKilled) - len(newCovered)
             result.append(obj)
