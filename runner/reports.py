@@ -16,7 +16,7 @@ def mut_to_string(mut):
 
 def number_of_changes(list_of_methods):
    try:
-      x = [ re.search(r"_amp(.*)$", t['selector_pretty']).group(1).count('_') for t in list_of_methods]
+      x = [ re.search(r"_amp(.*)$", t['selector_generated']).group(1).count('_') for t in list_of_methods]
       return x  
    except Exception as eee:
       sys.stderr.write(str(list_of_methods))
