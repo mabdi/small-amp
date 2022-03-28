@@ -14,7 +14,7 @@ Class {
 SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
 
 	| classes mutations jsons theJson aClass result |
-	classes := OrderedCollection new.
+	classes := Dictionary new.
 	mutations := OrderedCollection new.
 	jsons := FileLocator imageDirectory childrenMatching: '*.json'.
 	jsons do: [ :aJson | 
@@ -26,15 +26,17 @@ SASmallAmpDashboardJSONExporter >> addAmplified_classesTo: aDictionary [
 
 			mutations addAll: (theJson at: #newCovered).
 			"aClass := aClass superclass."
-			result := self exportClass: aClass smallampJson: theJson.
+			result := self
+				          exportClass: aClass
+				          smallampJson: theJson
+				          current:
+				          (classes at: aClass name ifAbsent: [ nil ]).
 			self moveClass: aClass.
-			result
-				at: #results_json
-				put: aJson asFileReference basename.
+			result at: #results_json put: aJson asFileReference basename.
 
-			classes add: result ] ].
+			classes at: aClass name put: result ] ].
 
-	aDictionary at: #amplified_classes put: classes asArray.
+	aDictionary at: #amplified_classes put: classes values asArray.
 	aDictionary at: #new_killed_mutations put: mutations asArray
 ]
 
@@ -97,24 +99,36 @@ SASmallAmpDashboardJSONExporter >> exportAll [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJson [
 
-	| result lfinder amplified_class |
-	result := Dictionary new.
-	result at: #name put: aClass name.
-	lfinder := self getLocationFinder
-		           root: root;
-		           yourself.
-	amplified_class := Smalltalk at:
-		                   (smallampJson at: #amplifiedClass) asSymbol.
-	result
-		at: #amplified_class_address
-		put: (lfinder getPathOfClass: amplified_class).
+	^ self
+		  exportClass: aClass
+		  smallampJson: smallampJson
+		  current: nil
+]
 
-	result
-		at: #amplified_tests
-		put: (aClass testSelectors collect: [ :selector | 
-				 self
-					 amplifiedTestsFor: aClass >> selector asSymbol
-					 json: smallampJson ]) asArray.
+{ #category : #'as yet unclassified' }
+SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJson current: anObject [
+
+	| result lfinder amplifiedMethods |
+	anObject
+		ifNil: [ 
+			result := Dictionary new.
+			result at: #name put: aClass name.
+			lfinder := self getLocationFinder
+				           root: root;
+				           yourself.
+			result
+				at: #amplified_class_address
+				put: (lfinder getPathOfClass: aClass).
+			result at: #amplified_tests put: OrderedCollection new ]
+		ifNotNil: [ result := anObject ].
+
+	amplifiedMethods := (smallampJson at: #amplifiedMethods) collect: [ 
+		                    :m | m at: #selector_pretty ].
+	(result at: #amplified_tests) addAll:
+		(amplifiedMethods collect: [ :selector | 
+			 self
+				 amplifiedTestsFor: aClass >> selector asSymbol
+				 json: smallampJson ]) asArray.
 	^ result
 ]
 
