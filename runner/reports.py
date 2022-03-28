@@ -18,9 +18,10 @@ def number_of_changes(list_of_methods):
    try:
     x = [ re.search(r"_amp(.*)$", aDict['selector_generated']).group(1).count('_') for aDict in list_of_methods]
     return x
-   except:
+   except Exception as er:
       print(list_of_methods)
       print('ERRRRR')
+      raise er
    
 
 def count_killed_mutants(lst):
