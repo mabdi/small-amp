@@ -235,7 +235,7 @@ SAMuTalkFirstFailOracleReduction >> reduceMehtodsBasedOn: listOfPairs [
 		oldSelector := ast selector.
 		suffix := config ampNamesSuffix
 			          ifNil: [ '' ]
-			          ifNotNil: [ '_' , config ampNamesSuffix ].
+			          ifNotNil: [ config ampNamesSuffix, '_' ].
 		newSelector := (self class defaultAmplifiedNameTemplate format: { 
 				                suffix.
 				                index }) asSymbol.
