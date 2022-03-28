@@ -24,16 +24,6 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'rep
 
 (IceRepository registry collect: #name) asString traceCr.
 
-IceRepository registry
-		detect: [ :r | r name = repoName ]
-		ifNone: [ |r tmp|
-		   'Project is not registered. I try to register it.' traceCr.
-		   r := IceRepositoryCreator new
-				repository: nil;
-				location: gitClone asFileReference.
-   	           r := r createRepository.
-		   r register.
-		   ].
 repo := (IceRepository registry detect: [ :n | n name = repoName ]).
 commitId := repo branch commit shortId.
 
