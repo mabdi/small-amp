@@ -15,13 +15,16 @@ def mut_to_string(mut):
 #this.current_n = -1
 
 def number_of_changes(list_of_methods):
-   # try:
-   #    x = 
-   #    return x  
-   # except Exception as eee:
-   #    sys.stderr.write(str(list_of_methods))
-   #    raise eee
-   return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
+   try:
+      tmp = list_of_methods
+      if isinstance(list_of_methods,dict):
+         tmp = [t['selector_generated'] for t in list_of_methods]
+      x = [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in tmp]
+      return x  
+   except Exception as eee:
+      sys.stderr.write(str(list_of_methods))
+      raise eee
+   # return [ re.search(r"_amp(.*)$", t).group(1).count('_') for t in list_of_methods]
 
 def count_killed_mutants(lst):
    return Counter([ mut['operatorClass'] for mut in lst])
@@ -367,7 +370,7 @@ def reportAmp(directory, projectName, fix, verbose):
                   xjson['targetChurn'],
                   xjson['testChurn'],
                   xjson['directTestingOriginal'],
-                  max(number_of_changes([t['selector_generated'] for t in jsonObj['amplifiedMethods']]) or [0]),
+                  max(number_of_changes( jsonObj['amplifiedMethods'] ) or [0]),
                   jsonObj.get('numberOfProcessedMethods','NA'),
                   jsonObj.get('testClassTimeToRunInMillis','NA'),
                   jsonObj.get('numberOfAllMutationsInOriginal','NA'),
