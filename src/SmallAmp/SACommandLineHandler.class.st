@@ -222,7 +222,7 @@ SACommandLineHandler >> mode_diff [
 	| cnf |
 	cnf := SAConfig diffBased.
 	cnf mainloop: SAMainLoopDspot.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -231,7 +231,7 @@ SACommandLineHandler >> mode_diffSnapshotsFast [
 	| cnf |
 	cnf := SAConfig diffBased.
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -240,7 +240,7 @@ SACommandLineHandler >> mode_dspot [
 	| cnf |
 	cnf := SAConfig dspotAllamps.
 	cnf mainloop: SAMainLoopDspot.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -259,7 +259,7 @@ SACommandLineHandler >> mode_dspotFast [
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: false ].
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -278,7 +278,7 @@ SACommandLineHandler >> mode_dspotFastRank [
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: true ].
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -297,7 +297,7 @@ SACommandLineHandler >> mode_fseNone [
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: false ].
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #modes }
@@ -316,7 +316,7 @@ SACommandLineHandler >> mode_fseRank [
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: true ].
 	cnf mainloop: SAMainLoopSnapshotsFast.
-	self runSmallAmp: aTestClass config: cnf
+	self runSmallAmpConfig: cnf
 ]
 
 { #category : #'as yet unclassified' }
