@@ -121,21 +121,31 @@ SAGenericMethods >> allClassesForRepo: repoName [
 
 { #category : #'method operations' }
 SAGenericMethods >> buildTestClassAndLogWith: aCollection using: testClass [
+	^ self buildTestClassAndLogWith: aCollection  using: testClass asName: (testClass name asString , self getId asString)
+			             
+]
+
+{ #category : #'method operations' }
+SAGenericMethods >> buildTestClassAndLogWith: aCollection using: testClass asName: aName [
+
 	| tempClass |
 	tempClass := testClass
-		subclass: (testClass name asString , self getId asString) asSymbol
-		instanceVariableNames: ''
-		classVariableNames: ''
-		package: self defaultTempPackage.
-	tempClass class
-		compile:
-			self srcAllTestSelectors.
-	aCollection
-		do: [ :item | 
-			| ast |
-			ast := self parsedMethodFrom: item.
-			tempClass compile: ast formattedCode ].
+		             subclass: (aName) asSymbol
+		             instanceVariableNames: ''
+		             classVariableNames: ''
+		             package: self defaultTempPackage.
+	tempClass class compile: self srcAllTestSelectors.
+	aCollection do: [ :item | 
+		| ast |
+		ast := self parsedMethodFrom: item.
+		tempClass compile: ast formattedCode ].
 	^ tempClass
+]
+
+{ #category : #'method operations' }
+SAGenericMethods >> buildTestClassAndLogWith: aCollection using: testClass suffix: aSuffix [
+
+	^ self buildTestClassAndLogWith: aCollection using: testClass asName: ('{1}_{2}_{3}' format: {testClass name asString. aSuffix. self getId asString})
 ]
 
 { #category : #'method operations' }

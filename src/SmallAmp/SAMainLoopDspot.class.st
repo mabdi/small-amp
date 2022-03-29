@@ -121,12 +121,19 @@ SAMainLoopDspot >> doInitialAssertionAmplification [
 { #category : #actions }
 SAMainLoopDspot >> finalSteps [
 
-	| generatedClass readable testClasses |
+	| generatedClass readable testClasses  |
 	SmallAmp <~ 'final steps'.
-	generatedClass := SAGenericMethods new
+	generatedClass := config ampNamesSuffix
+		          ifNil: [ SAGenericMethods new
 		                  buildTestClassAndLogWith:
 		                  (resultPeople collect: #testMethod)
-		                  using: testClass smallAmpOriginalTestCase.
+		                  using: testClass smallAmpOriginalTestCase.]
+		          ifNotNil: [ SAGenericMethods new
+		                  buildTestClassAndLogWith:
+		                  (resultPeople collect: #testMethod)
+		                  using: testClass smallAmpOriginalTestCase
+		                  suffix: config ampNamesSuffix ].
+	 .
 	self logAmplifiedMethodsInfo.
 	finalResult amplifiedClass: generatedClass.
 	finalResult amplifiedClassInitial: generatedClass.

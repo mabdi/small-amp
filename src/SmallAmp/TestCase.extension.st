@@ -16,8 +16,8 @@ TestCase class >> smallAmpTargetClasses [
 	| c t |
 	self isAbstract
 		ifTrue: [ ^ nil ].
-	(self name endsWith: 'Test') ifFalse: [^ nil].	
-	c := self name allButLast: 'Test' size.
+	(self name includesSubstring: 'Test') ifFalse: [^ nil].	
+	c := (self name copyUpToSubstring: 'Test') .	
 	(SmalltalkImage current hasClassNamed: c)
 		ifTrue: [ t := SmalltalkImage current classNamed: c ]
 		ifFalse: [ ^ nil ].

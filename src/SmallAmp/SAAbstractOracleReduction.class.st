@@ -33,13 +33,14 @@ SAAbstractOracleReduction >> astHelper [
 
 { #category : #'as yet unclassified' }
 SAAbstractOracleReduction >> createDuplicateClass [
-	| l methods |
-	l := [ :cls | cls testSelectors collect: [ :s | (cls methodNamed: s) sourceCode ] ].
+
+	| l methods suffix|
+	l := [ :cls | 
+	     cls testSelectors collect: [ :s | 
+		     (cls methodNamed: s) sourceCode ] ].
 	methods := l value: newTestClass.
-	^ self astHelper
-		buildTestClassWith: methods
-		using: testClass
-		
+	suffix := config ampNamesSuffix ifNotNil: [ config ampNamesSuffix ] ifNil: [ '' ]. 
+	^ self astHelper buildTestClassAndLogWith: methods using: testClass suffix: suffix
 ]
 
 { #category : #accessing }
