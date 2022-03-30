@@ -174,7 +174,7 @@ jobs:
 
   TestAmplificationPush:
     runs-on: ubuntu-latest
-    needs: TestAmplification
+    needs: [TestAmplification, MatrixBuild] 
     env:
       project_baseline: ${{ inputs.input_project_baseline }}
       project_directory: ${{ inputs.input_project_directory }}
