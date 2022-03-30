@@ -3,7 +3,7 @@ name: SmallAmpCI
 on:
   workflow_call:
     inputs:
-      reponame:
+      reponame: # sometimes for the debugging we may use different name.
         description: 'The name of the repository'
         required: false
         type: string
@@ -102,6 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.result }}
+      reponame: ${{ steps.set-reponame.outputs.reponame }}
     steps:
       - name: configurations 
         run: | 
@@ -127,6 +128,11 @@ jobs:
             a = Array.from({length: l}, (x, i) => {a:i});
             var o = {jobs: a};
             return o
+      - id: set-reponame
+        if: ${{ env.reponame == '' }}
+        run: |
+          echo "reponame is empty. Extracting from GITHUB_REPOSITORY."
+          echo "::set-output name=reponame::${GITHUB_REPOSITORY#*/}"
           
   TestAmplification: 
     needs: MatrixBuild
@@ -139,7 +145,7 @@ jobs:
       project_baseline: ${{ inputs.input_project_baseline }}
       project_directory: ${{ inputs.input_project_directory }}
       project_load: ${{ inputs.input_project_load }}
-      reponame: ${{ inputs.reponame }}
+      reponame: ${{ needs.MatrixBuild.outputs.reponame }}
       iteration: ${{ inputs.iteration }}
       SMALLAMP_NOPUSH: ${{ inputs.SMALLAMP_NOPUSH }}
       SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
@@ -168,12 +174,12 @@ jobs:
 
   TestAmplificationPush:
     runs-on: ubuntu-latest
-    needs: TestAmplification
+    needs: [TestAmplification, MatrixBuild] 
     env:
       project_baseline: ${{ inputs.input_project_baseline }}
       project_directory: ${{ inputs.input_project_directory }}
       project_load: ${{ inputs.input_project_load }}      
-      reponame: ${{ inputs.reponame }}
+      reponame: ${{ needs.MatrixBuild.outputs.reponame }}
       iteration: ${{ inputs.iteration }}
       SMALLAMP_NOPUSH: ${{ inputs.SMALLAMP_NOPUSH }}
       SMALLAMP_MaxCrash: ${{ inputs.SMALLAMP_MaxCrash }}
