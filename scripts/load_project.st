@@ -20,13 +20,13 @@ repoName := Smalltalk os environment asDictionary at: #reponame ifAbsent: [ 'rep
      load ifNotNil: [ b load: load ] ifNil: [ b load ]
 ] on: Warning do: [ :w | w resume ].
 
-repo := (IceRepository registry detect: [ :n | n name = repoName ]
+repo := IceRepository registry detect: [ :n | n name = repoName ]
           ifNone: [ |r tmp|
 		   ('Fatal Error. Project',repoName,' is not registered.') traceCr.
              'List all installed repos:' traceCr.
              (IceRepository registry collect: #name) asString traceCr.
              Smalltalk exitFailure
-		   ].).
+		   ].
 commitId := repo branch commit shortId.
 
 ('Project registered in Iceberg ', commitId asString) traceCr.
