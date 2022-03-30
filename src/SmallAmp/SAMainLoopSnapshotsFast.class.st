@@ -64,6 +64,13 @@ SAMainLoopSnapshotsFast >> filenameForCurrentTest [
 ]
 
 { #category : #actions }
+SAMainLoopSnapshotsFast >> finalCoverage [
+
+	self heartbeat.
+	^ super finalCoverage
+]
+
+{ #category : #actions }
 SAMainLoopSnapshotsFast >> finalSteps [
 	self heartbeat .
 	^ super finalSteps 
@@ -106,10 +113,24 @@ SAMainLoopSnapshotsFast >> isRecoveredFromCrash: aTestMethod [
 			^ true ]
 ]
 
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> makeReadable: readable reducer: reducer [
+
+	self heartbeat.
+	^ super makeReadable: readable reducer: reducer
+]
+
 { #category : #private }
 SAMainLoopSnapshotsFast >> methodProfiling [ 
 	self heartbeat.
 	^ super methodProfiling 
+]
+
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> reduceOracles [
+
+	self heartbeat.
+	^ super reduceOracles
 ]
 
 { #category : #private }

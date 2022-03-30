@@ -6,7 +6,9 @@ Class {
 		'toComment',
 		'reverts',
 		'numberOfCompiledMethods',
-		'namesMapping'
+		'namesMapping',
+		'onBeforeMutant',
+		'onMutationEvaluation'
 	],
 	#category : #'SmallAmp-Core'
 }
@@ -168,6 +170,10 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	| analysis1 mutantGenerator mutants |
 	particularResults := OrderedCollection new.
 	mutantGenerator := SmallAmpMutationsGenerationStrategy new.
+	onBeforeMutant isNotNil & onMutationEvaluation isNotNil ifTrue: [ 
+		mutantGenerator
+			onBeforeMutant: onBeforeMutant;
+			onMutationEvaluation: onMutationEvaluation ].
 	analysis1 := MutationTestingAnalysis
 		             testCasesFrom: { aClass }
 		             mutating: targetClasses
@@ -179,6 +185,10 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	analysis1 generateCoverageAnalysis.
 	mutants
 		do: [ :m | 
+			mutantGenerator onMutationEvaluation ifNotNil: [  
+				mutantGenerator onMutationEvaluation value ].
+			mutantGenerator onBeforeMutant ifNotNil: [ 
+				mutantGenerator onBeforeMutant value: m value: 1 ].
 			mutantGenerator mutants: { m }.
 			aClass setMutant: m.
 			analysis1 generateMutations.
@@ -192,6 +202,30 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 SAMuTalkFirstFailOracleReduction >> namesMapping [
 
 	^ namesMapping
+]
+
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> onBeforeMutant [
+
+	^ onBeforeMutant
+]
+
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> onBeforeMutant: anObject [
+
+	onBeforeMutant := anObject
+]
+
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> onMutationEvaluation [
+
+	^ onMutationEvaluation
+]
+
+{ #category : #accessing }
+SAMuTalkFirstFailOracleReduction >> onMutationEvaluation: anObject [
+
+	onMutationEvaluation := anObject
 ]
 
 { #category : #'as yet unclassified' }

@@ -118,29 +118,9 @@ SAMainLoopDspot >> doInitialAssertionAmplification [
 	resultPeople addAll: theATS.
 ]
 
-{ #category : #actions }
-SAMainLoopDspot >> finalSteps [
-
-	| generatedClass readable testClasses  |
-	SmallAmp <~ 'final steps'.
-	generatedClass := config ampNamesSuffix
-		          ifNil: [ SAGenericMethods new
-		                  buildTestClassAndLogWith:
-		                  (resultPeople collect: #testMethod)
-		                  using: testClass smallAmpOriginalTestCase.]
-		          ifNotNil: [ SAGenericMethods new
-		                  buildTestClassAndLogWith:
-		                  (resultPeople collect: #testMethod)
-		                  using: testClass smallAmpOriginalTestCase
-		                  suffix: config ampNamesSuffix ].
-	 .
-	self logAmplifiedMethodsInfo.
-	finalResult amplifiedClass: generatedClass.
-	finalResult amplifiedClassInitial: generatedClass.
-	readable := self makeReadable.
-	finalResult amplifiedClass: readable.
-	finalResult numberOfProcessedMethods: numberOfAmplified.
-	SAGenericMethods new moveClassToFinal: readable.
+{ #category : #'as yet unclassified' }
+SAMainLoopDspot >> finalCoverage [
+	| testClasses |
 	resultPeople ifNotEmpty: [ 
 		testClasses := OrderedCollection with:
 			               finalResult amplifiedClassInitial.
@@ -151,6 +131,33 @@ SAMainLoopDspot >> finalSteps [
 				 analysisFor: testClasses
 				 targets: targetClasses
 				 ignore: finalResult failedSelectorInOriginal) ]
+]
+
+{ #category : #actions }
+SAMainLoopDspot >> finalSteps [
+
+	| generatedClass readable |
+	SmallAmp <~ 'final steps'.
+	generatedClass := config ampNamesSuffix
+		                  ifNil: [ 
+			                  SAGenericMethods new
+				                  buildTestClassAndLogWith:
+				                  (resultPeople collect: #testMethod)
+				                  using: testClass smallAmpOriginalTestCase ]
+		                  ifNotNil: [ 
+			                  SAGenericMethods new
+				                  buildTestClassAndLogWith:
+				                  (resultPeople collect: #testMethod)
+				                  using: testClass smallAmpOriginalTestCase
+				                  suffix: config ampNamesSuffix ].
+	self logAmplifiedMethodsInfo.
+	finalResult amplifiedClass: generatedClass.
+	finalResult amplifiedClassInitial: generatedClass.
+	readable := self reduceOracles.
+	finalResult amplifiedClass: readable.
+	finalResult numberOfProcessedMethods: numberOfAmplified.
+	SAGenericMethods new moveClassToFinal: readable.
+	self finalCoverage
 ]
 
 { #category : #actions }
@@ -257,24 +264,15 @@ SAMainLoopDspot >> logAmplifiedMethodsInfo [
 ]
 
 { #category : #actions }
-SAMainLoopDspot >> makeReadable [
+SAMainLoopDspot >> makeReadable: readable reducer: reducer [
 
-	| readable reducer prettifier |
-	reducer := (config oracleReducion initializeWith: config)
-		           with: finalResult amplifiedClass
-		           from: testClass smallAmpOriginalTestCase
-		           target: targetClasses
-		           uncovered:
-		           (finalResult notCoveredInOriginal collect: #mutant).
-	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
-	readable := reducer makeReducedResult.
+	| prettifier |
 	finalResult oracleReductionReverts: reducer reverts.
 	finalResult amplifiedMethods do: [ :methodInfo | 
 		| newSelector |
 		newSelector := reducer namesMapping at:
 			               (methodInfo at: #selector_generated).
-			methodInfo at: #selector_pretty put: newSelector
-			 ].
+		methodInfo at: #selector_pretty put: newSelector ].
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
 	^ readable
@@ -313,6 +311,27 @@ SAMainLoopDspot >> rankedPopulation [
 
 	^ (theTS select: [ :mtd | mtd score > 0 ]) sort: [ :a :b | 
 		a score > b score ]
+]
+
+{ #category : #actions }
+SAMainLoopDspot >> reduceOracles [
+
+	| readable reducer |
+	reducer := (config oracleReducion initializeWith: config)
+		           with: finalResult amplifiedClass
+		           from: testClass smallAmpOriginalTestCase
+		           target: targetClasses
+		           uncovered:
+		           (finalResult notCoveredInOriginal collect: #mutant).
+	(selection includesSelector: #onBeforeMutant) ifTrue: [ 
+		reducer onBeforeMutant: selection onBeforeMutant.
+		reducer onMutationEvaluation: selection onMutationEvaluation.
+		 ].
+	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
+	readable := reducer makeReducedResult.
+	finalResult oracleReductionReverts: reducer reverts.
+	readable := self makeReadable: readable reducer: reducer.
+	^ readable
 ]
 
 { #category : #actions }

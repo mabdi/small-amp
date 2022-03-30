@@ -35,7 +35,9 @@ SADSpotSelection >> analysisFor: testClasses targets: targetClasses ignore: aLis
 		             (IgnoreFailingTestsMethodsEvaluationStrategy newWith:
 			              aListOfMethods)
 		             with: self getMutationsGenerationStrategy.
-	analysis1 runSmallAmp.
+	onBeforeMutant isNotNil & onMutationEvaluation isNotNil ifTrue: [ analysis1 runSmallAmpSnapshot ] ifFalse: [ analysis1 runSmallAmp ].
+	.
+	
 	^ analysis1
 ]
 
@@ -98,7 +100,13 @@ SADSpotSelection >> getMutantFromUncovereds: aMutantIndex [
 { #category : #'as yet unclassified' }
 SADSpotSelection >> getMutationsGenerationStrategy [
 
-	^ SmallAmpMutationsGenerationStrategy new 
+	| g |
+	g := SmallAmpMutationsGenerationStrategy new.
+	(onBeforeMutant isNotNil & onMutationEvaluation isNotNil) ifTrue: [ 
+		g
+			onBeforeMutant: onBeforeMutant;
+			onMutationEvaluation: onMutationEvaluation ].
+	^ g
 ]
 
 { #category : #cleanup }
