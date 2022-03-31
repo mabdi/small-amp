@@ -323,10 +323,9 @@ SAMainLoopDspot >> reduceOracles [
 		           target: targetClasses
 		           uncovered:
 		           (finalResult notCoveredInOriginal collect: #mutant).
-	(selection includesSelector: #onBeforeMutant) ifTrue: [ 
+	(selection class includesSelector: #onBeforeMutant) ifTrue: [ 
 		reducer onBeforeMutant: selection onBeforeMutant.
-		reducer onMutationEvaluation: selection onMutationEvaluation.
-		 ].
+		reducer onMutationEvaluation: selection onMutationEvaluation ].
 	reducer ignoredTestMethods: finalResult failedSelectorInOriginal.
 	readable := reducer makeReducedResult.
 	finalResult oracleReductionReverts: reducer reverts.
