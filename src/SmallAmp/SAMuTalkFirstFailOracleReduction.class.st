@@ -177,7 +177,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	analysis1 := MutationTestingAnalysis
 		             testCasesFrom: { aClass }
 		             mutating: targetClasses
-		             using: MutantOperator contents
+		             using: self operators 
 		             with:
 		             SortedTestsMethodsRunningMutantEvaluationStrategy new
 		             with: mutantGenerator.
@@ -185,7 +185,7 @@ SAMuTalkFirstFailOracleReduction >> mutalkRunWithLogging: aClass [
 	analysis1 generateCoverageAnalysis.
 	mutants
 		do: [ :m | 
-			mutantGenerator onMutationEvaluation ifNotNil: [  
+			mutantGenerator onMutationEvaluation ifNotNil: [ 
 				mutantGenerator onMutationEvaluation value ].
 			mutantGenerator onBeforeMutant ifNotNil: [ 
 				mutantGenerator onBeforeMutant value: m value: 1 ].
@@ -226,6 +226,14 @@ SAMuTalkFirstFailOracleReduction >> onMutationEvaluation [
 SAMuTalkFirstFailOracleReduction >> onMutationEvaluation: anObject [
 
 	onMutationEvaluation := anObject
+]
+
+{ #category : #accesing }
+SAMuTalkFirstFailOracleReduction >> operators [
+
+	config mutalkUseOriginalOperators
+		ifNil: [ ^ MutantOperator contentsAll ]
+		ifNotNil: [ ^ MutantOperator contents ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -59,7 +59,7 @@ SADefaultTestCorrection >> checkTest: selector stillCovers: coverage [
 	analysis := MutationTestingAnalysis
 		            for: { (TestCaseReference for: selector in: theClass) }
 		            mutating: theClass smallAmpTargetClasses
-		            using: MutantOperator contents
+		            using: self operators
 		            with: AllTestsMethodsRunningMutantEvaluationStrategy new
 		            with:
 		            (SmallAmpMutationsGenerationStrategy new mutants:
@@ -101,6 +101,14 @@ SADefaultTestCorrection >> manipulateTestMethod [
 		'smallamp_logsAdd: aString self smallamp_logs add: (aString)'.
 	theClass compile:
 		'smallamp_logs: aString  self class smallamp_logsAdd: aString'
+]
+
+{ #category : #accesing }
+SADefaultTestCorrection >> operators [
+
+	config mutalkUseOriginalOperators
+		ifNil: [ ^ MutantOperator contentsAll ]
+		ifNotNil: [ ^ MutantOperator contents ]
 ]
 
 { #category : #'as yet unclassified' }

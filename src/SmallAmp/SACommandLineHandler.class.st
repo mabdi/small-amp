@@ -293,6 +293,7 @@ SACommandLineHandler >> mode_fseNone [
 		ifNone: [ timeBudget := 0 ].
 
 	cnf := SAConfig dspotOldamps.
+	cnf mutalkUseOriginalOperators: true.
 	timeBudget > 0 ifTrue: [ 
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: false ].
@@ -312,6 +313,7 @@ SACommandLineHandler >> mode_fseRank [
 		ifNone: [ timeBudget := 0 ].
 
 	cnf := SAConfig dspotOldamps.
+	cnf mutalkUseOriginalOperators: true.
 	timeBudget > 0 ifTrue: [ 
 		cnf timeBudget: timeBudget * 60.
 		cnf ranking: true ].

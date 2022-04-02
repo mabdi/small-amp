@@ -18,15 +18,16 @@ SAMutationTestingDiffSelection class >> defaultOracleReduction [
 
 { #category : #'as yet unclassified' }
 SAMutationTestingDiffSelection >> analysisFor: testClasses targets: targetClasses ignore: aListOfMethods [
+
 	| analysis1 |
 	analysis1 := MutationTestingAnalysis
-		testCasesFrom: testClasses
-		mutating: targetClasses
-		using: MutantOperator contents
-		with:
-			(IgnoreFailingTestsMethodsEvaluationStrategy
-				newWith: aListOfMethods)
-		with: SmallAmpMutationsGenerationStrategy new.
+		             testCasesFrom: testClasses
+		             mutating: targetClasses
+		             using: self operators 
+		             with:
+		             (IgnoreFailingTestsMethodsEvaluationStrategy newWith:
+			              aListOfMethods)
+		             with: SmallAmpMutationsGenerationStrategy new.
 	analysis1 runSmallAmp.
 	^ analysis1
 ]
@@ -254,21 +255,21 @@ SAMutationTestingDiffSelection >> mutalkRun: aPopulation [
 
 { #category : #'as yet unclassified' }
 SAMutationTestingDiffSelection >> mutalkRunClass: testClasses targetClasses: targetClasses [
+
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
-	self astHelper
-		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
-				testCasesFrom: testClasses
-				mutating: targetClasses
-				using: MutantOperator contents
-				with: AllTestsMethodsRunningMutantEvaluationStrategy new
-				with:
-					(SmallAmpMutationsGenerationStrategy new
-						mutants: (uncovered collect: #mutant)).
-			result := analysis1 runSmallAmpVerbose.
-			config debug
-				ifTrue: [ result
-						ifFalse: [ self halt ] ] ].
+	self astHelper disableDeprecationsWhile: [ 
+		analysis1 := MutationTestingAnalysis
+			             testCasesFrom: testClasses
+			             mutating: targetClasses
+			             using: self operators 
+			             with:
+			             AllTestsMethodsRunningMutantEvaluationStrategy new
+			             with:
+				             (SmallAmpMutationsGenerationStrategy new mutants:
+					              (uncovered collect: #mutant)).
+		result := analysis1 runSmallAmpVerbose.
+		config debug ifTrue: [ result ifFalse: [ self halt ] ] ].
 	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	^ analysis1
@@ -293,23 +294,22 @@ SAMutationTestingDiffSelection >> mutalkRunSnapshot: aPopulation [
 
 { #category : #'as yet unclassified' }
 SAMutationTestingDiffSelection >> mutalkRunSnapshotClass: testClasses targetClasses: targetClasses [
+
 	| analysis1 result |
 	self loggerSubscribe: testClasses.
-	self astHelper
-		disableDeprecationsWhile: [ analysis1 := MutationTestingAnalysis
-				testCasesFrom: testClasses
-				mutating: targetClasses
-				using: MutantOperator contents
-				with: AllTestsMethodsRunningMutantEvaluationStrategy new
-				with:
-					(SmallAmpMutationsGenerationStrategy new
-						onBeforeMutant: onBeforeMutant;
-						onMutationEvaluation: onMutationEvaluation;
-						mutants: (uncovered collect: #mutant)).
-			result := analysis1 runSmallAmpSnapshot.
-			config debug
-				ifTrue: [ result
-						ifFalse: [ self halt ] ] ].
+	self astHelper disableDeprecationsWhile: [ 
+		analysis1 := MutationTestingAnalysis
+			             testCasesFrom: testClasses
+			             mutating: targetClasses
+			             using: self operators 
+			             with:
+			             AllTestsMethodsRunningMutantEvaluationStrategy new
+			             with: (SmallAmpMutationsGenerationStrategy new
+					              onBeforeMutant: onBeforeMutant;
+					              onMutationEvaluation: onMutationEvaluation;
+					              mutants: (uncovered collect: #mutant)).
+		result := analysis1 runSmallAmpSnapshot.
+		config debug ifTrue: [ result ifFalse: [ self halt ] ] ].
 	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	^ analysis1
@@ -333,6 +333,14 @@ SAMutationTestingDiffSelection >> onMutationEvaluation [
 { #category : #accessing }
 SAMutationTestingDiffSelection >> onMutationEvaluation: anObject [
 	onMutationEvaluation := anObject
+]
+
+{ #category : #accesing }
+SAMutationTestingDiffSelection >> operators [
+
+	config mutalkUseOriginalOperators
+		ifNil: [ ^ MutantOperator contentsAll ]
+		ifNotNil: [ ^ MutantOperator contents ]
 ]
 
 { #category : #enumerating }
@@ -369,93 +377,105 @@ SAMutationTestingDiffSelection >> select: aPopulation [
 
 { #category : #enumerating }
 SAMutationTestingDiffSelection >> select: aPopulation forMutantAtIndex: aMutantIndex [
+
 	| analysisResult alives result newKills testClasses testClass targetClasses |
-	aPopulation ifEmpty: [ ^ {} ].
+	aPopulation ifEmpty: [ ^ {  } ].
 	result := Dictionary new.
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
+	testClasses := { (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass) }.
 	self loggerSubscribe: testClasses.
-	self astHelper
-		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
-				testCasesFrom: testClasses
-				mutating: targetClasses
-				using: MutantOperator contents
-				with: AllTestsMethodsRunningMutantEvaluationStrategy new
-				with:
-					(SmallAmpMutationsGenerationStrategy new
-						mutants: ((self getMutantFromUncovereds: aMutantIndex) collect: #mutant)).
-			analysisResult runSmallAmpVerbose ].
+	self astHelper disableDeprecationsWhile: [ 
+		analysisResult := MutationTestingAnalysis
+			                  testCasesFrom: testClasses
+			                  mutating: targetClasses
+			                  using: self operators 
+			                  with:
+			                  AllTestsMethodsRunningMutantEvaluationStrategy
+				                  new
+			                  with:
+				                  (SmallAmpMutationsGenerationStrategy new 
+					                   mutants:
+					                   ((self getMutantFromUncovereds: aMutantIndex) 
+						                    collect: #mutant)).
+		analysisResult runSmallAmpVerbose ].
 	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	alives := analysisResult generalResult aliveMutants.
-	alives
-		ifNotEmpty: [ :x | ^ {} ]
-		ifEmpty: [ newKills := self getMutantFromUncovereds: aMutantIndex.
-			uncovered := uncovered
-				reject:
-					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
-	analysisResult particularResults
-		do: [ :item | 
-			newKills
-				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
-				ifFound: [ :s | 
-					item result
-						ifNotNil: [ item result failures
-								ifNotEmpty: [ | sels selected |
-									sels := item result failures collect: #selector.
-									selected := self
-										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
-										notIncludedIn: result.
-									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	alives ifNotEmpty: [ :x | ^ {  } ] ifEmpty: [ 
+		newKills := self getMutantFromUncovereds: aMutantIndex.
+		uncovered := uncovered reject: [ :s | 
+			             newKills first mutant modifiedSource
+			             = s mutant modifiedSource ] ].
+	analysisResult particularResults do: [ :item | 
+		newKills
+			detect: [ :s | 
+			s mutant modifiedSource = item mutant modifiedSource ]
+			ifFound: [ :s | 
+				item result ifNotNil: [ 
+					item result failures ifNotEmpty: [ 
+						| sels selected |
+						sels := item result failures collect: #selector.
+						selected := self
+							            chooseBestFrom:
+							            (aPopulation select: [ :p | 
+								             sels includes: p selector ])
+							            notIncludedIn: result.
+						selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	shadowResults addAll: result
 ]
 
 { #category : #enumerating }
 SAMutationTestingDiffSelection >> select: aPopulation forMutantEvaluation: aMutantEvaluation [
+
 	| analysisResult alives result newKills testClasses testClass targetClasses |
-	aPopulation ifEmpty: [ ^ {} ].
+	aPopulation ifEmpty: [ ^ {  } ].
 	result := Dictionary new.
 	testClass := aPopulation atRandom testClass.
 	targetClasses := aPopulation atRandom testTargets.
-	testClasses := {(self astHelper
-		buildTestClassWith: (aPopulation collect: [ :tcase | tcase testMethod ])
-		using: testClass)}.
+	testClasses := { (self astHelper
+		                buildTestClassWith:
+		                (aPopulation collect: [ :tcase | tcase testMethod ])
+		                using: testClass) }.
 	self loggerSubscribe: testClasses.
-	self astHelper
-		disableDeprecationsWhile: [ analysisResult := MutationTestingAnalysis
-				testCasesFrom: testClasses
-				mutating: targetClasses
-				using: MutantOperator contents
-				with: AllTestsMethodsRunningMutantEvaluationStrategy new
-				with:
-					(SmallAmpMutationsGenerationStrategy new
-						mutants: {aMutantEvaluation mutant}).
-			analysisResult runSmallAmpVerbose ].
+	self astHelper disableDeprecationsWhile: [ 
+		analysisResult := MutationTestingAnalysis
+			                  testCasesFrom: testClasses
+			                  mutating: targetClasses
+			                  using: self operators 
+			                  with:
+			                  AllTestsMethodsRunningMutantEvaluationStrategy
+				                  new
+			                  with:
+				                  (SmallAmpMutationsGenerationStrategy new 
+					                   mutants: { aMutantEvaluation mutant }).
+		analysisResult runSmallAmpVerbose ].
 	self loggerUnsubscribe: testClasses.
 	testClasses do: [ :newTestClass | self cleanUp: newTestClass ].
 	alives := analysisResult generalResult aliveMutants.
-	alives
-		ifNotEmpty: [ :x | ^ {} ]
-		ifEmpty: [ newKills := {aMutantEvaluation}.
-			uncovered := uncovered
-				reject:
-					[ :s | newKills first mutant modifiedSource = s mutant modifiedSource ] ].
-	analysisResult particularResults
-		do: [ :item | 
-			newKills
-				detect: [ :s | s mutant modifiedSource = item mutant modifiedSource ]
-				ifFound: [ :s | 
-					item result
-						ifNotNil: [ item result failures
-								ifNotEmpty: [ | sels selected |
-									sels := item result failures collect: #selector.
-									selected := self
-										chooseBestFrom: (aPopulation select: [ :p | sels includes: p selector ])
-										notIncludedIn: result.
-									selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
+	alives ifNotEmpty: [ :x | ^ {  } ] ifEmpty: [ 
+		newKills := { aMutantEvaluation }.
+		uncovered := uncovered reject: [ :s | 
+			             newKills first mutant modifiedSource
+			             = s mutant modifiedSource ] ].
+	analysisResult particularResults do: [ :item | 
+		newKills
+			detect: [ :s | 
+			s mutant modifiedSource = item mutant modifiedSource ]
+			ifFound: [ :s | 
+				item result ifNotNil: [ 
+					item result failures ifNotEmpty: [ 
+						| sels selected |
+						sels := item result failures collect: #selector.
+						selected := self
+							            chooseBestFrom:
+							            (aPopulation select: [ :p | 
+								             sels includes: p selector ])
+							            notIncludedIn: result.
+						selected ifNotNil: [ result at: item put: selected ] ] ] ] ].
 	shadowResults addAll: result
 ]
 

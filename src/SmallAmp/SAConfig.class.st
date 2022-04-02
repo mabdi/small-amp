@@ -21,7 +21,8 @@ Class {
 		'hashClass',
 		'ranking',
 		'skipNonPretty',
-		'ampNamesSuffix'
+		'ampNamesSuffix',
+		'mutalkUseOriginalOperators'
 	],
 	#category : #'SmallAmp-Model'
 }
@@ -196,6 +197,18 @@ SAConfig >> maxPop [
 { #category : #accessing }
 SAConfig >> maxPop: anObject [
 	maxPop := anObject
+]
+
+{ #category : #accessing }
+SAConfig >> mutalkUseOriginalOperators [
+
+	^ mutalkUseOriginalOperators
+]
+
+{ #category : #accessing }
+SAConfig >> mutalkUseOriginalOperators: anObject [
+
+	mutalkUseOriginalOperators := anObject
 ]
 
 { #category : #accessing }
