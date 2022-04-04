@@ -83,6 +83,11 @@ on:
         required: false
         type: string        
         default: ''
+      DASHBOARD_api_key:
+        description: 'APIKey for dashboard.'
+        required: false
+        type: string        
+        default: ''
       new_branch_prefix:
         description: 'The name of the new branch in pull-requests'
         required: false
@@ -186,6 +191,7 @@ jobs:
       SMALLAMP_freezeTimeOut: ${{ inputs.SMALLAMP_freezeTimeOut }}
       SmallAmp_ShredSeed: ${{ inputs.SmallAmp_ShredSeed }}
       SMALLAMP_DashboardJson: ${{ inputs.SMALLAMP_DashboardJson }}
+      DASHBOARD_api_key: ${{ inputs.DASHBOARD_api_key }}
     steps:
       - uses: actions/checkout@v2
         with:
