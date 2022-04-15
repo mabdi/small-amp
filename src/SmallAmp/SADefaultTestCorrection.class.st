@@ -159,7 +159,14 @@ SADefaultTestCorrection >> updateVariablesIn: aParsedTree basedOn: logs [
 		                detect: [ :l | 
 		                l key = (aParsedTree selector , '::' , id asString) ]
 		                ifNone: [ nil ].
-	     thisLog ifNotNil: [ node replaceNode: literalNode withNode: (literalNode class value: thisLog value) ].
+	     thisLog ifNotNil: [ 
+		     node isVariable: [ node
+				     replaceNode: literalNode
+				     withNode: (literalNode class named: thisLog value) ].
+		     node isLiteralNode ifTrue: [ 
+			     node
+				     replaceNode: literalNode
+				     withNode: (literalNode class value: thisLog value) ] ].
 	     id := id + 1.
 	     node ].
 	^ SAAssertTransform new

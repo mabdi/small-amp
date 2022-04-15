@@ -41,6 +41,22 @@ SACommandLineHandler >> activate [
 	self end
 ]
 
+{ #category : #compiling }
+SACommandLineHandler >> compileFinalMethod: aMethodAST in: aClass [
+
+	| tree id |
+	tree := aMethodAST copy.
+	id := tree selector asString allButFirst: 'test' size.
+	(tree pragmas anySatisfy: [ :pragma | 
+		 pragma selector = SAGenericMethods defaultPragma ]) ifTrue: [ 
+		tree pragmas: (tree pragmas reject: [ :pragma | 
+				 pragma selector = SAGenericMethods defaultPragma ]) ].
+	tree addPragma: (RBPragmaNode
+			 selector: self class defaultPragmaWithId
+			 arguments: { (RBLiteralValueNode value: id) }).
+	aClass compile: tree formattedCode
+]
+
 { #category : #'as yet unclassified' }
 SACommandLineHandler >> dashboardOutPut [
 
@@ -127,14 +143,8 @@ SACommandLineHandler >> installTest: orig_selector from: aClass repo: repo [
 			 orig_selector asString.
 			 aClass name }).
 	selector := orig_selector.
-	(aClass superclass includesSelector: selector)
-		ifTrue: [ 
-			SmallAmp <~ 'Duplicate selector, Use suffixes.'.
-			Smalltalk exitFailure.
-			 ]
-		ifFalse: [ 
-			aClass superclass compile:
-				(aClass lookupSelector: selector) sourceCode ].
+	self compileFinalMethod: (aClass lookupSelector: selector) ast
+				in: aClass superclass.
 	test := aClass superclass >> selector.
 
 	toCommit := OrderedCollection new.

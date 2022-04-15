@@ -223,22 +223,22 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 		do: [ :amp | 
 			| tmp2 |
 			tmp2 := (testsSizeHalf / amps size) ceiling.
-			(tmp shuffle takeFirst: (tmp2 min: pop size)) do: [ :tcase | 
+			(tmp shuffle first: (tmp2 min: tmp size)) do: [ :tcase | 
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 1' , ' (' , amps size asString , ')'.
-	tmp := pop size > testsSizeHalf
-		       ifTrue: [ tmp shuffle takeFirst: testsSizeHalf ]
+	tmp := tmp size > testsSizeHalf
+		       ifTrue: [ tmp shuffle first: testsSizeHalf ]
 		       ifFalse: [ tmp ].
 	tmp
 		do: [ :tcase | 
 			| tmp2 |
 			tmp2 := (testsSizeHalf + 1 / tmp size) ceiling.
-			(amps shuffle takeFirst: (tmp2 min: amps size)) do: [ :amp | 
+			(amps shuffle first: (tmp2 min: amps size)) do: [ :amp | 
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle takeFirst: testsSizeHalf * 2
+	^ newcodes shuffle first: (testsSizeHalf * 2 min: newcodes size)
 ]
 
 { #category : #accessing }
