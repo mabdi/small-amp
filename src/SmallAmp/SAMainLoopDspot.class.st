@@ -238,7 +238,7 @@ SAMainLoopDspot >> inputAmplificationFrom: pop [
 				applyTransformation value: amp value: tcase ] ]
 		displayingProgress:
 		'Input Amplification half 2' , ' (' , tmp size asString , ')'.
-	^ newcodes shuffle first: testsSizeHalf * 2
+	^ newcodes shuffle first: (testsSizeHalf * 2 min: newcodes size)
 ]
 
 { #category : #accessing }
