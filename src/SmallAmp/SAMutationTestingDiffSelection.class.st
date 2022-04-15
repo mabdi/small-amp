@@ -339,7 +339,7 @@ SAMutationTestingDiffSelection >> onMutationEvaluation: anObject [
 SAMutationTestingDiffSelection >> operators [
 
 	config mutalkUseOriginalOperators
-		ifNil: [ ^ MutantOperator contentsAll ]
+		ifNil: [ ^ MutantOperator contentsAllStopRecursions ]
 		ifNotNil: [ ^ MutantOperator contents ]
 ]
 

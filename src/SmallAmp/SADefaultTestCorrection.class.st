@@ -107,7 +107,7 @@ SADefaultTestCorrection >> manipulateTestMethod [
 SADefaultTestCorrection >> operators [
 
 	config mutalkUseOriginalOperators
-		ifNil: [ ^ MutantOperator contentsAll ]
+		ifNil: [ ^ MutantOperator contentsAllStopRecursions ]
 		ifNotNil: [ ^ MutantOperator contents ]
 ]
 
