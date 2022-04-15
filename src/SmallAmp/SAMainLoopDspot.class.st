@@ -271,7 +271,7 @@ SAMainLoopDspot >> makeReadable: readable reducer: reducer [
 	finalResult amplifiedMethods do: [ :methodInfo | 
 		| newSelector |
 		newSelector := reducer namesMapping at:
-			               (methodInfo at: #selector_generated).
+			               (methodInfo at: #selector_generated ifAbsent: [ '' ]) ifAbsent: [ '' ].
 		methodInfo at: #selector_pretty put: newSelector ].
 	prettifier := config prettifier initializeWith: config.
 	prettifier prettify: readable.
