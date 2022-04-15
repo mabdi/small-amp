@@ -234,12 +234,14 @@ SAGenericMethods >> commitIdFor: repoName [
 
 { #category : #'as yet unclassified' }
 SAGenericMethods >> contextInit [
-	CompilationContext bytecodeBackend = EncoderForSistaV1
-		ifFalse: [ CompilationContext bytecodeBackend: EncoderForSistaV1.
-			SmallAmp <~ 'Encoder changed to SistaV1.' ].
-	Author fullName
-		ifNil: [ Author fullName: 'SmallAmp'.
-			SmallAmp <~ 'Author set.' ]
+
+	(CompilationContext includesSelector: #bytecodeBackend) ifTrue: [ 
+		CompilationContext bytecodeBackend = EncoderForSistaV1 ifFalse: [ 
+			CompilationContext bytecodeBackend: EncoderForSistaV1.
+			SmallAmp <~ 'Encoder changed to SistaV1.' ] ].
+	Author fullName ifNil: [ 
+		Author fullName: 'SmallAmp'.
+		SmallAmp <~ 'Author set.' ]
 ]
 
 { #category : #'as yet unclassified' }
