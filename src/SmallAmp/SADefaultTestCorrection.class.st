@@ -160,10 +160,11 @@ SADefaultTestCorrection >> updateVariablesIn: aParsedTree basedOn: logs [
 		                l key = (aParsedTree selector , '::' , id asString) ]
 		                ifNone: [ nil ].
 	     thisLog ifNotNil: [ 
-		     node isVariable: [ node
+		     literalNode isVariable ifTrue: [ 
+			     node
 				     replaceNode: literalNode
 				     withNode: (literalNode class named: thisLog value) ].
-		     node isLiteralNode ifTrue: [ 
+		     literalNode isLiteralNode ifTrue: [ 
 			     node
 				     replaceNode: literalNode
 				     withNode: (literalNode class value: thisLog value) ] ].
