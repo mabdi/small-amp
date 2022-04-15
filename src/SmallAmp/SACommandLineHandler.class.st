@@ -52,7 +52,7 @@ SACommandLineHandler >> compileFinalMethod: aMethodAST in: aClass [
 		tree pragmas: (tree pragmas reject: [ :pragma | 
 				 pragma selector = SAGenericMethods defaultPragma ]) ].
 	tree addPragma: (RBPragmaNode
-			 selector: self class defaultPragmaWithId
+			 selector: SAGenericMethods defaultPragmaWithId
 			 arguments: { (RBLiteralValueNode value: id) }).
 	aClass compile: tree formattedCode
 ]
