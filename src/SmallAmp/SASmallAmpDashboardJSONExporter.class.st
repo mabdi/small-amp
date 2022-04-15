@@ -124,12 +124,12 @@ SASmallAmpDashboardJSONExporter >> exportClass: aClass smallampJson: smallampJso
 			result := anObject.
 			aCollection := (result at: #amplified_tests) asOrderedCollection ].
 
-	amplifiedMethods := (smallampJson at: #amplifiedMethods) collect: [ 
-		                    :m | m at: #selector_pretty ].
+	amplifiedMethods := ((smallampJson at: #amplifiedMethods) collect: [ 
+		                    :m | m at: #selector_pretty ]) reject: #isEmpty.
 	aCollection addAll: (amplifiedMethods collect: [ :selector | 
 			 self
 				 amplifiedTestsFor: aClass >> selector asSymbol
-				 json: smallampJson ]) .
+				 json: smallampJson ]).
 	result at: #amplified_tests put: aCollection asArray.
 
 	^ result
