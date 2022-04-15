@@ -7,6 +7,11 @@ Class {
 	#category : #'SmallAmp-Tests-Core'
 }
 
+{ #category : #testing }
+SADefaultTestCorrectionTest >> expectedFailures [ 
+^ #(testUpdateClassVariable)
+]
+
 { #category : #tests }
 SADefaultTestCorrectionTest >> testAssertEqualsErrorBlocks [
 
@@ -71,6 +76,30 @@ SADefaultTestCorrectionTest >> testStillCovering [
 		            checkTest: fakeTest selector
 		            stillCovers: mutantsToCheck.
 	self assert: response
+]
+
+{ #category : #test }
+SADefaultTestCorrectionTest >> testUpdateClassVariable [
+
+	| fakeTest theCorr logs newAST |
+	logs := { 
+		        ('testCorrectMe::0' -> FakeSmallBank).
+		        ('testCorrectMe::1' -> $H).
+		        ('testCorrectMe::2' -> $e) }.
+	fakeTest := FakeForTestCorrectionTest >> #testCorrectMe.
+	theCorr := SADefaultTestCorrection new
+		           config: SAConfig default;
+		           theClass: fakeTest methodClass.
+	newAST := theCorr updateVariablesIn: fakeTest ast basedOn: logs.
+	self
+		assertMethodSourceCode: newAST formattedCode
+		equals: 'testCorrectMe
+
+	| str |
+	str := ''Hello world''.
+	self assert: str size equals: FakeSmallBank.
+	self assert: str first equals: $H.
+	self assert: str second equals: $e'
 ]
 
 { #category : #test }

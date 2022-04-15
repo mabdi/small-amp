@@ -163,7 +163,7 @@ SADefaultTestCorrection >> updateVariablesIn: aParsedTree basedOn: logs [
 		     literalNode isVariable ifTrue: [ 
 			     node
 				     replaceNode: literalNode
-				     withNode: (literalNode class named: thisLog value) ].
+				     withNode: (literalNode class named: thisLog name) ].
 		     literalNode isLiteralNode ifTrue: [ 
 			     node
 				     replaceNode: literalNode

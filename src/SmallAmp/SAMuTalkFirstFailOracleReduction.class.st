@@ -67,7 +67,7 @@ SAMuTalkFirstFailOracleReduction >> checkTestIsCorrect: newTree mutants: mutants
 { #category : #'as yet unclassified' }
 SAMuTalkFirstFailOracleReduction >> checkTestIsFixable: newTree mutants: mutantsToCheck [
 
-	| testCorrection theAST |
+	[| testCorrection theAST |
 	testCorrection := SADefaultTestCorrection new.
 	testCorrection theClass: reducedTestClass.
 	testCorrection config: config.
@@ -77,7 +77,9 @@ SAMuTalkFirstFailOracleReduction >> checkTestIsFixable: newTree mutants: mutants
 		^ false ].
 	^ testCorrection
 		  checkTest: theAST selector
-		  stillCovers: mutantsToCheck
+		  stillCovers: mutantsToCheck].
+	
+^ false
 ]
 
 { #category : #cleanup }
