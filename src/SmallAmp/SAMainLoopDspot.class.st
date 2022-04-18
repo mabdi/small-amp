@@ -73,10 +73,15 @@ SAMainLoopDspot >> amplifyNotRanking [
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> amplifyRanking [
 
+	SmallAmp <~ 'amp started'.
 	theTS := self initTs.
+	SmallAmp <~ '1'.
 	self setupSelection.
+	SmallAmp <~ '2'.
 	self methodProfiling.
+	SmallAmp <~ '3'.
 	self scoreTestsWithUncovered: selection uncovered.
+	SmallAmp <~ '4'.
 	self doInitialAssertionAmplification.
 	[ nextTest isNotNil and: [ self careTimeBudget ] ] whileTrue: [ 
 		self
