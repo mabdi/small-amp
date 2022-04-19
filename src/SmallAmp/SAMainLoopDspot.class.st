@@ -85,13 +85,16 @@ SAMainLoopDspot >> amplifyRanking [
 	self doInitialAssertionAmplification.
 	SmallAmp <~ ('5 ' , DateAndTime now asString).
 	[ nextTest isNotNil and: [ self careTimeBudget ] ] whileTrue: [ 
-		SmallAmp <~ ('6 ' , DateAndTime now asString , ' ' , nextTest selector).
+		SmallAmp
+		<~ ('6 ' , DateAndTime now asString , ' ' , nextTest selector).
 		self
 			amplifyATestMethod: nextTest
 			initialAssertionAmplification: false.
 		nextTest isAmplified: true.
 		self scoreTestsWithUncovered: selection uncovered ].
+	SmallAmp <~ ('7 ' , DateAndTime now asString).
 	self finalSteps.
+	SmallAmp <~ ('8 ' , DateAndTime now asString).
 	^ finalResult
 ]
 
@@ -110,19 +113,23 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 
 { #category : #'as yet unclassified' }
 SAMainLoopDspot >> doInitialAssertionAmplification [
+
 	| theV theU theATS |
 	theATS := OrderedCollection new.
 	theV := OrderedCollection withAll: self rankedPopulation.
 	theV do: #strip.
+	SmallAmp <~ ('A1 ' , DateAndTime now asString).
 	theU := self assertionAmplificationFor: (theV collect: #clone).
+	SmallAmp <~ ('A2 ' , DateAndTime now asString).
 	theU := self selectionFrom: theU.
+	SmallAmp <~ ('A3 ' , DateAndTime now asString).
 	theATS addAll: theU.
 	theATS := theATS collect: [ :item | 
 		          | c |
 		          c := item cleanedUpCopy.
 		          c signAsSmallAmp.
 		          c ].
-	resultPeople addAll: theATS.
+	resultPeople addAll: theATS
 ]
 
 { #category : #'as yet unclassified' }
