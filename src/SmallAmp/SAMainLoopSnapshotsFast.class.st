@@ -96,7 +96,7 @@ SAMainLoopSnapshotsFast >> finishedFile [
 SAMainLoopSnapshotsFast >> heartbeat [
 
 	| str |
-	str := DateAndTime now asUnixTime.
+	str := DateAndTime now asUnixTime asString.
 	self heartbeatFile writeStream
 		truncate;
 		nextPutAll: str;
