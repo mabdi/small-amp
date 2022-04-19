@@ -44,7 +44,7 @@ class Command(object):
             if self.expire_time > 0 and self.expire_time < int(datetime.datetime.now().timestamp()):
                 self.log('expire time passed')
                 break
-            self.log('run-while enter')
+            self.log('run-while enter: self.retry: {}'.format(self.retry))
             self.retry = self.retry - 1
             join_time = min(timeout, 60)
             thread.join(join_time)
