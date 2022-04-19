@@ -112,7 +112,7 @@ SAMainLoopSnapshotsFast >> heartbeatFile [
 { #category : #actions }
 SAMainLoopSnapshotsFast >> initTs [
 
-	self finishedFile delete.
+	self finishedFile exists ifTrue: [ self finishedFile delete ].
 	self heartbeat.
 	^ super initTs
 ]
