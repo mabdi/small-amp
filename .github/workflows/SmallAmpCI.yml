@@ -88,6 +88,11 @@ on:
         required: false
         type: string        
         default: ''
+      SMALLAMP_CrashLoopVerbose:
+        description: 'Crash detection loop verbose'
+        required: false
+        type: string        
+        default: 'False'
       new_branch_prefix:
         description: 'The name of the new branch in pull-requests'
         required: false
@@ -176,6 +181,7 @@ jobs:
           SMALLAMP_mode: ${{ inputs.mode }}  
           SMALLAMP_timeBudget: ${{ inputs.timeBudget }}
           SMALLAMP_testClasses: ${{ inputs.testClasses }}
+          SMALLAMP_CrashLoopVerbose: ${{ inputs.SMALLAMP_CrashLoopVerbose }}
 
   TestAmplificationPush:
     runs-on: ubuntu-latest
