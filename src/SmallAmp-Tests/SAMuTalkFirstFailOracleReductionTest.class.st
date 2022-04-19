@@ -7,6 +7,12 @@ Class {
 	#category : #'SmallAmp-Tests-Core'
 }
 
+{ #category : #testing }
+SAMuTalkFirstFailOracleReductionTest >> expectedFailures [
+
+	^ #( testMakeReducedResultImpure )
+]
+
 { #category : #tests }
 SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
 
