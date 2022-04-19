@@ -50,7 +50,8 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 		           from: FakeUglySmallBankTest
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
-	readable := reducer makeReducedResult.
+		
+	[readable := reducer makeReducedResult.] on: Error do: [:x | x traceCr. self assert: false ].
 	self assert: readable allTestSelectors size equals: 0.
 
 	self
