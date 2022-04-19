@@ -75,15 +75,28 @@ SAMainLoopSnapshotsFast >> finalCoverage [
 
 { #category : #actions }
 SAMainLoopSnapshotsFast >> finalSteps [
-	self heartbeat .
-	^ super finalSteps 
+
+	| res |
+	self heartbeat.
+	res := super finalSteps.
+	self finishedFile writeStream
+		truncate;
+		nextPutAll: 'done';
+		close.
+	^ res
+]
+
+{ #category : #'as yet unclassified' }
+SAMainLoopSnapshotsFast >> finishedFile [
+
+	^ FileLocator imageDirectory / '_smallamp_finished.file'
 ]
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> heartbeat [
 
-		| str |
-	str := 'beat'.
+	| str |
+	str := DateAndTime now asUnixTime.
 	self heartbeatFile writeStream
 		truncate;
 		nextPutAll: str;
@@ -97,9 +110,11 @@ SAMainLoopSnapshotsFast >> heartbeatFile [
 ]
 
 { #category : #actions }
-SAMainLoopSnapshotsFast >> initTs [ 
+SAMainLoopSnapshotsFast >> initTs [
+
+	self finishedFile delete.
 	self heartbeat.
-	^ super initTs.
+	^ super initTs
 ]
 
 { #category : #'as yet unclassified' }
