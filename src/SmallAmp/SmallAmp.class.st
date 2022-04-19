@@ -53,16 +53,13 @@ SmallAmp class >> <~ aString [
 		(Smalltalk vm getSystemAttribute: n) ifNotNil: [ :x | 
 			(x includesSubstring: '--' , SACommandLineHandler commandName) 
 				ifTrue: [ isCommandLine := true ] ] ]."
-	UIManager default inform: aString
-	"isCommandLine
-		ifFalse: [ aString traceCr ]
-		ifTrue: [ 
-			Stdio stdout
-				nextPutAll: Time nowUTC print24;
-				nextPutAll: String space;
-				nextPutAll: string;
-				lf;
-				flush ]"
+	Stdio stdout
+		nextPutAll: Time nowUTC print24;
+		nextPutAll: String space;
+		nextPutAll: string;
+		lf;
+		
+			flush
 ]
 
 { #category : #'as yet unclassified' }
