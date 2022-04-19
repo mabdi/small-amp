@@ -26,8 +26,9 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod initialAssertionAmplification
 
 	| theATS theV theU |
 	numberOfAmplified := numberOfAmplified + 1.
-	SmallAmp <~ ('{1}, score: {2}' format:
-		 { aTestMethod selector. aTestMethod score }).
+	SmallAmp <~ ('{1}, score: {2}' format: { 
+			 aTestMethod selector.
+			 aTestMethod score }).
 	self variableTypesProfile: aTestMethod.
 	theATS := OrderedCollection new.
 	theV := OrderedCollection with: aTestMethod.
@@ -40,8 +41,11 @@ SAMainLoopDspot >> amplifyATestMethod: aTestMethod initialAssertionAmplification
 		do: [ :gen | 
 			SmallAmp <~ ('iteration: ' , gen asString).
 			theV := self inputAmplificationFrom: theV.
+			SmallAmp <~ ('Input amplification done. ').
 			theU := self assertionAmplificationFor: (theV collect: #clone).
+			SmallAmp <~ ('Assertion amplification done. ').
 			theU := self selectionFrom: theU.
+			SmallAmp <~ ('Selection done. ').
 			theATS addAll: theU ]
 		displayingProgress:
 		'Main loop' , ' (' , config iterations asString , ')'.
@@ -165,14 +169,20 @@ SAMainLoopDspot >> finalSteps [
 				                  (resultPeople collect: #testMethod)
 				                  using: testClass smallAmpOriginalTestCase
 				                  suffix: config ampNamesSuffix ].
+	SmallAmp <~ ('F1 ' , DateAndTime now asString).
 	self logAmplifiedMethodsInfo.
 	finalResult amplifiedClass: generatedClass.
 	finalResult amplifiedClassInitial: generatedClass.
+	SmallAmp <~ ('F2 ' , DateAndTime now asString).
 	readable := self reduceOracles.
+	SmallAmp <~ ('F3 ' , DateAndTime now asString).
 	finalResult amplifiedClass: readable.
 	finalResult numberOfProcessedMethods: numberOfAmplified.
 	SAGenericMethods new moveClassToFinal: readable.
-	self finalCoverage
+	SmallAmp <~ ('F4 ' , DateAndTime now asString).
+	self finalCoverage.
+	SmallAmp <~ ('F5 ' , DateAndTime now asString).
+	
 ]
 
 { #category : #actions }
