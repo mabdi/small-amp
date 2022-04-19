@@ -49,8 +49,11 @@ SAMainLoopSnapshotsFast >> careTimeBudget [
 
 { #category : #'as yet unclassified' }
 SAMainLoopSnapshotsFast >> doInitialAssertionAmplification [
+
+	SmallAmp <~ ('AA0 ' , DateAndTime now asString).
 	self heartbeat.
-	^ super doInitialAssertionAmplification 
+	SmallAmp <~ ('AA1 ' , DateAndTime now asString).
+	^ super doInitialAssertionAmplification
 ]
 
 { #category : #'as yet unclassified' }
