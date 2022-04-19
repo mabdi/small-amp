@@ -18,7 +18,7 @@ class Command(object):
 
     def log(self, txt):
         if self.verbose:
-            print(datetime.datetime.now().timestamp(), txt)
+            print(datetime.datetime.now().timestamp(), txt, flush=True)
             self.logs.append(txt)
 
     def run(self, timeout, files=[]):
