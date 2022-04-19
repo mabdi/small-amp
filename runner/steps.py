@@ -397,7 +397,7 @@ def runAmplificationCI(args):
        className = cname.strip()
        if not className:
           continue
-       syso('Amplifying: {} (i: {}, all: {}, jobs: {})', className, str(i), str(len(todo)), str(total_jobs) )
+       syso('Amplifying: {} (i: {}, all: {}, jobs: {})'.format(className, str(i), str(len(todo)), str(total_jobs) ))
        
        
        if mode == 'dspot':
