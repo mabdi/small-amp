@@ -243,7 +243,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       if int(datetime.now().timestamp()) > expire_time:
          syso('Time budget finished for this class. Exiting.')
          break
-      c = Command(cmd, redirectTo=redirectTo, verbose=crash_verbose , expire_time=expire_time)
+      c = Command(cmd, redirectTo=redirectTo, verbose=crash_verbose , expire_time=expire_time*2)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if (c.code() == 0) and os.path.exists(finished_file):
