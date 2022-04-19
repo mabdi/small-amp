@@ -63,7 +63,7 @@ class Command(object):
                         now_time = datetime.datetime.now().timestamp()
                         # m_time = os.path.getmtime(file)
                         m_time = float(Path(file).read_text())
-                        self.log('run-while-for-if-1, m_time={}, now_time={}, timeout={}'.format(m_time, now_time, timeout))
+                        self.log('run-while-for-if-1, m_time={}, now_time={}, timeout={}, diff={}'.format(m_time, now_time, timeout, now_time - m_time))
                         if now_time - m_time > timeout:
                             kill_it = True
                         else:
