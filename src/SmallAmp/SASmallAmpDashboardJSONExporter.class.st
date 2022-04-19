@@ -90,13 +90,13 @@ SASmallAmpDashboardJSONExporter >> commitHash: anObject [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| final  |
+	| final |
 	final := Dictionary new.
 	self addCommonMetadataTo: final.
 	self addAmplified_classesTo: final.
-	MutalkCI new
+	"MutalkCI new
 		project: project;
-		mutateAll.
+		mutateAll."
 	self saveJson: final
 ]
 
