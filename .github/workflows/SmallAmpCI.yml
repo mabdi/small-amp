@@ -29,7 +29,7 @@ on:
         type: string
         default: 'NOCREATE'  
       SMALLAMP_freezeTimeOut:
-        description: 'check image freeze each 4*60 sec: a normal test method has a 3 minute time out'
+        description: 'freezing threshold: lack of heartbeat for X sec means a freeze'
         required: false
         type: string
         default: 240
