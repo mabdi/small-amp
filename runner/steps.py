@@ -238,12 +238,12 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       MAX_CRASH = int(maxCrash)
    else:
       MAX_CRASH = 10
-   expire_time = int(datetime.now().timestamp()) + int(timeBudget) * 60
+   expire_time = int(datetime.now().timestamp()) + (int(timeBudget) * 60 * 2)
    while n_crashed < MAX_CRASH:
-      if int(datetime.now().timestamp()) > expire_time:
-         syso('Time budget finished for this class. Exiting.')
+      if int(datetime.now().timestamp()) > expire_time :
+         syso('Expire time finished for this class. Exiting.')
          break
-      c = Command(cmd, redirectTo=redirectTo, verbose=crash_verbose , expire_time=expire_time*2)
+      c = Command(cmd, redirectTo=redirectTo, verbose=crash_verbose , expire_time=expire_time)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
       if (c.code() == 0) and os.path.exists(finished_file):
@@ -397,7 +397,7 @@ def runAmplificationCI(args):
        className = cname.strip()
        if not className:
           continue
-       syso('Amplifying: {} (i: {}, all: {}, jobs: {})', className, str(i), str(len(todo)), str(total_jobs) )
+       syso('Amplifying: {} (i: {}, all: {}, jobs: {})'.format(className, str(i), str(len(todo)), str(total_jobs) ))
        
        
        if mode == 'dspot':

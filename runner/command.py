@@ -35,6 +35,7 @@ class Command(object):
                     for line in self.process.stdout:
                         f.write(line)
                         sys.stdout.buffer.write(line)
+                    sys.stdout.flush()
                         
             self.log('run#target exit')
 
