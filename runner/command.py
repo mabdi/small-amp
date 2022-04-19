@@ -2,6 +2,8 @@ import subprocess, threading, os
 import datetime
 import signal
 import sys
+from pathlib import Path
+
 
 class Command(object):
     def __init__(self, cmd, redirectTo = None, verbose=False, expire_time=0):
@@ -44,7 +46,8 @@ class Command(object):
                 break
             self.log('run-while enter')
             self.retry = self.retry - 1
-            thread.join(timeout)
+            join_time = min(timeout, 60)
+            thread.join(join_time)
             self.log('run-while-1, thread.is_alive={}'.format(thread.is_alive()))
             if not thread.is_alive():
                 break
@@ -58,10 +61,13 @@ class Command(object):
                     self.log('run-while-for-if enter')
                     try:
                         now_time = datetime.datetime.now().timestamp()
-                        m_time = os.path.getmtime(file)
+                        # m_time = os.path.getmtime(file)
+                        m_time = float(Path(file).read_text())
                         self.log('run-while-for-if-1, m_time={}, now_time={}, timeout={}'.format(m_time, now_time, timeout))
                         if now_time - m_time > timeout:
                             kill_it = True
+                        else:
+                            self.retry = 10
                         self.log('run-while-for-if-2, kill_it ={}'.format(kill_it))
                     except:
                         pass
@@ -77,7 +83,7 @@ class Command(object):
             # self.process.terminate()
             # self.process.kill
             #os.killpg(self.process.pid, signal.SIGTERM)
-            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)  
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
             
             self.timedout= True
             self.log('run-if-1')
