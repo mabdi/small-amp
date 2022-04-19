@@ -231,7 +231,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
    cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={}'.format(vm, mode, className, timeBudget)
    cmd2 = '{} Sandbox.image smallamp --resume'.format(vm)
    
-   crash_verbose = os.getenv('SMALLAMP_CrashLoopVerbose', False)
+   crash_verbose = os.getenv('SMALLAMP_CrashLoopVerbose', 'False') == 'True'
    cmd = cmd1
    n_crashed = 0
    if maxCrash:
