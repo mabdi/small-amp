@@ -43,25 +43,26 @@ Class {
 
 { #category : #'as yet unclassified' }
 SmallAmp class >> <~ aString [
+
 	| string isCommandLine |
 	isCommandLine := false.
 	string := aString isString
-		ifFalse: [ aString asString ]
-		ifTrue: [ aString ].
-	-1000 to: 1000 do: [ :n | 
-	(Smalltalk vm getSystemAttribute: n) ifNotNil: [ :x | 
-		(x includesSubstring: ('--',SACommandLineHandler commandName)) ifTrue: [ isCommandLine := true ] ] 
-	].
-	isCommandLine 
-		ifFalse: [ aString traceCr ] 
-		ifTrue: [
+		          ifFalse: [ aString asString ]
+		          ifTrue: [ aString ].
+	"-1000 to: 1000 do: [ :n | 
+		(Smalltalk vm getSystemAttribute: n) ifNotNil: [ :x | 
+			(x includesSubstring: '--' , SACommandLineHandler commandName) 
+				ifTrue: [ isCommandLine := true ] ] ]."
+	UIManager default inform: aString
+	"isCommandLine
+		ifFalse: [ aString traceCr ]
+		ifTrue: [ 
 			Stdio stdout
 				nextPutAll: Time nowUTC print24;
 				nextPutAll: String space;
 				nextPutAll: string;
 				lf;
-				flush
-		]
+				flush ]"
 ]
 
 { #category : #'as yet unclassified' }
