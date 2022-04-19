@@ -223,6 +223,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       tout = int(freezeTimeOut)
    
    tout_files = ['_smallamp_heartbeat.file']
+   finished_file = '_smallamp_finished.file'
    
    os.system('cp '+ imgFile + ' Sandbox.image')
    os.system('cp '+ imgFile[:-6] + '.changes Sandbox.changes')
@@ -230,6 +231,7 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
    cmd1 = '{} Sandbox.image smallamp --mode={} --testClass={} --timeBudget={}'.format(vm, mode, className, timeBudget)
    cmd2 = '{} Sandbox.image smallamp --resume'.format(vm)
    
+   crash_verbose = os.getenv('SMALLAMP_CrashLoopVerbose', False)
    cmd = cmd1
    n_crashed = 0
    if maxCrash:
@@ -241,12 +243,12 @@ def runAmplificationCI_snapshotsFast(imgFile, vm, mode, className, timeBudget, m
       if int(datetime.now().timestamp()) > expire_time:
          syso('Time budget finished for this class. Exiting.')
          break
-      c = Command(cmd, redirectTo=redirectTo, verbose=False, expire_time=expire_time)
+      c = Command(cmd, redirectTo=redirectTo, verbose=crash_verbose , expire_time=expire_time)
       syso('Running command: {}'.format(cmd))
       c.run(timeout=tout, files=tout_files)
-      if c.code() == 0:
-            syso('Amplification finished for className: {}'.format(className))
-            break
+      if (c.code() == 0) and os.path.exists(finished_file):
+         syso('Amplification finished for className: {}'.format(className))
+         break
       if c.timedout:
          syso('Amplification Terminated because timeout, className: {}'.format(className))
       else:
