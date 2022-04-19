@@ -37,27 +37,25 @@ SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResult [
 { #category : #tests }
 SAMuTalkFirstFailOracleReductionTest >> testMakeReducedResultImpure [
 
-	| ugly uncovered reducer readable |
+	| cnf ugly uncovered reducer readable |
 	ugly := FakeUglyImpureSmallBankTest.
-
+	cnf := SAConfig default.
+	cnf skipNonPretty: true.
 	uncovered := { 'ReplacePlusWithMinusMutantOperator#FakeSmallBank#deposit:#29#44' } 
 		             collect: [ :str | 
 		             SADefaultTestCorrection createMutantFromString: str ].
 	reducer := (SAMuTalkFirstFailOracleReduction initializeWith:
-		            SAConfig default)
+		            cnf)
 		           with: ugly
 		           from: FakeUglySmallBankTest
 		           target: { FakeSmallBank }
 		           uncovered: uncovered.
 	readable := reducer makeReducedResult.
-	readable allTestSelectors asString traceCr.
-	self assert: (readable allTestSelectors includes: #testAmplified_1).
+	self assert: readable allTestSelectors size equals: 0.
 
 	self
 		assert:
-			((readable >> #testAmplified_1) ast allStatements select: [ :node | 
-				 node isMessage and: [ node selector = #assert:equals: ] ]) size
-		equals: 1.
+			reducer reverts		equals: 1.
 
 	readable removeFromSystem
 ]
