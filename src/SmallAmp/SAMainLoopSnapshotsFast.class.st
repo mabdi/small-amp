@@ -79,11 +79,16 @@ SAMainLoopSnapshotsFast >> finalSteps [
 	| res |
 	self heartbeat.
 	res := super finalSteps.
+	self finishProcess.
+	^ res
+]
+
+{ #category : #actions }
+SAMainLoopSnapshotsFast >> finishProcess [
 	self finishedFile writeStream
 		truncate;
 		nextPutAll: 'done';
 		close.
-	^ res
 ]
 
 { #category : #'as yet unclassified' }

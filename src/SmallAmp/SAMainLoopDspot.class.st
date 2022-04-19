@@ -208,7 +208,7 @@ SAMainLoopDspot >> initTs [
 		(result failures , result expectedDefects collect: [ :failed | 
 			 failed class lookupSelector: failed selector ])
 			asOrderedCollection.
-	testMethods ifEmpty: [ SANoGreenTest new signal ].
+	testMethods ifEmpty: [ self finishProcess.SANoGreenTest new signal ].
 	finalResult numberOfOriginalTestMethods: testMethods size.
 	^ testMethods collect: [ :tcase | 
 		  (SATestMethod with: tcase class: testClass targets: targetClasses)
@@ -447,7 +447,7 @@ SAMainLoopDspot >> setupSelection [
 		            targets: targetClasses
 		            ignore: finalResult failedSelectorInOriginal.
 	finalResult originalAnalysis: analysis.
-	selection uncovered ifEmpty: [ SANoUncovered new signal ].
+	selection uncovered ifEmpty: [ self finishProcess..SANoUncovered new signal ].
 	testResult := testClass suite run.
 	testResult defects ifNotEmpty: [ SAFlakyMutationTesting new signal ]
 ]

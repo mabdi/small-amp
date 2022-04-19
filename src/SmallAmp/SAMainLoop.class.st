@@ -30,6 +30,10 @@ SAMainLoop >> careTimeBudget [
 	^ true
 ]
 
+{ #category : #actions }
+SAMainLoop >> finishProcess [ 
+]
+
 { #category : #initialization }
 SAMainLoop >> initialize [
 	initalizeTime:= self timestamp_now.
