@@ -18,7 +18,7 @@ class Command(object):
 
     def log(self, txt):
         if self.verbose:
-            print(datetime.datetime.now().timestamp(), txt)
+            print(datetime.datetime.now().timestamp(), txt, flush=True)
             self.logs.append(txt)
 
     def run(self, timeout, files=[]):
@@ -44,7 +44,7 @@ class Command(object):
             if self.expire_time > 0 and self.expire_time < int(datetime.datetime.now().timestamp()):
                 self.log('expire time passed')
                 break
-            self.log('run-while enter')
+            self.log('run-while enter: self.retry: {}'.format(self.retry))
             self.retry = self.retry - 1
             join_time = min(timeout, 60)
             thread.join(join_time)
@@ -63,7 +63,7 @@ class Command(object):
                         now_time = datetime.datetime.now().timestamp()
                         # m_time = os.path.getmtime(file)
                         m_time = float(Path(file).read_text())
-                        self.log('run-while-for-if-1, m_time={}, now_time={}, timeout={}'.format(m_time, now_time, timeout))
+                        self.log('run-while-for-if-1, m_time={}, now_time={}, timeout={}, diff={}'.format(m_time, now_time, timeout, now_time - m_time))
                         if now_time - m_time > timeout:
                             kill_it = True
                         else:
