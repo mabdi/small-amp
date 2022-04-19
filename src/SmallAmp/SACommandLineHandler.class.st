@@ -72,7 +72,8 @@ SACommandLineHandler >> dashboardOutPut [
 	SASmallAmpDashboardJSONExporter new
 		saveTo: '__smallamp_dashboard_export.json';
 		commitHash: commitTo;
-		stfilesSaveTo: FileLocator imageDirectory ;
+		stfilesSaveTo: FileLocator imageDirectory;
+		project: repoName;
 		root: root;
 		exportAll.
 	SmallAmp <~ 'Exporting done'.

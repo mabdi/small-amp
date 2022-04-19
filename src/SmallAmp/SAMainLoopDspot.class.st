@@ -115,6 +115,7 @@ SAMainLoopDspot >> assertionAmplificationFor: aList [
 SAMainLoopDspot >> doInitialAssertionAmplification [
 
 	| theV theU theATS |
+	SmallAmp <~ ('A0 ' , DateAndTime now asString).
 	theATS := OrderedCollection new.
 	theV := OrderedCollection withAll: self rankedPopulation.
 	theV do: #strip.

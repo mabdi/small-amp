@@ -5,7 +5,8 @@ Class {
 		'saveTo',
 		'root',
 		'commitHash',
-		'stfilesSaveTo'
+		'stfilesSaveTo',
+		'project'
 	],
 	#category : #'SmallAmp-Helpers'
 }
@@ -89,10 +90,13 @@ SASmallAmpDashboardJSONExporter >> commitHash: anObject [
 { #category : #'as yet unclassified' }
 SASmallAmpDashboardJSONExporter >> exportAll [
 
-	| final |
+	| final  |
 	final := Dictionary new.
 	self addCommonMetadataTo: final.
 	self addAmplified_classesTo: final.
+	MutalkCI new
+		project: project;
+		mutateAll.
 	self saveJson: final
 ]
 
@@ -213,6 +217,18 @@ SASmallAmpDashboardJSONExporter >> newKilledMutants: classes [
 		            jsonObj := self getJsonFileNameFor: cls.
 		            (jsonObj at: #newCovered) ]) asArray.
 	^ mutants
+]
+
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> project [
+
+	^ project
+]
+
+{ #category : #accessing }
+SASmallAmpDashboardJSONExporter >> project: anObject [
+
+	project := anObject
 ]
 
 { #category : #accessing }
