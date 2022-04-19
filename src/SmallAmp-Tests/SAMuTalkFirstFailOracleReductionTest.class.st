@@ -10,7 +10,7 @@ Class {
 { #category : #testing }
 SAMuTalkFirstFailOracleReductionTest >> expectedFailures [
 
-	^ #( testMakeReducedResultImpure )
+	^ #( testMakeReducedResultImpure  testMakeReducedResult)
 ]
 
 { #category : #tests }
