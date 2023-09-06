@@ -14,7 +14,7 @@ BaselineOfSmallAmp >> baseline: spec [
 			with: [ spec repository: 'github://mabdi/smalltalk-SmallBank/src' ].
 		spec
 			baseline: 'MuTalk'
-			with: [ spec repository: 'github://mabdi/mutalk/src' ].
+			with: [ spec repository: 'github://pharo-contributions/mutalk/src' ].
 		spec package: 'SmallAmp' with: [ spec requires: #( 'MuTalk' ) ].
 		spec
 			package: 'SmallAmp-Tests'
